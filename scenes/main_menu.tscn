@@ -1,0 +1,282 @@
+[gd_scene load_steps=35 format=3 uid="uid://bb8vd44s3pbvd"]
+
+[ext_resource type="Theme" uid="uid://bvvjann13jolv" path="res://ui/DefaultTheme.tres" id="1_bqqt6"]
+[ext_resource type="Script" uid="uid://cjw176fhfhxd3" path="res://script/main_menu.gd" id="1_l6cm7"]
+[ext_resource type="PackedScene" uid="uid://cyfurr3kc6nlw" path="res://scenes/main.tscn" id="2_ekxnf"]
+[ext_resource type="Shader" uid="uid://ckkyx8ys1y55k" path="res://shaders/mainmenuglobe.gdshader" id="4_tbmy8"]
+[ext_resource type="PackedScene" uid="uid://w5l5ko1kgmya" path="res://scenes/options.tscn" id="5_5pajh"]
+[ext_resource type="Texture2D" uid="uid://b7pjup8d36dqk" path="res://gfx/land_ocean_ice_2048.jpg" id="5_jk1qb"]
+[ext_resource type="Script" uid="uid://s8ybkwvnls3t" path="res://scenes/mainmenuglobe.gd" id="5_rtw2f"]
+[ext_resource type="Texture2D" uid="uid://d3o8lo03mrm5a" path="res://gfx/cloud_combined_2048.jpg" id="6_5dd4i"]
+[ext_resource type="PackedScene" uid="uid://sife5t60tud" path="res://scenes/pedia.tscn" id="6_j7ex8"]
+[ext_resource type="Texture2D" uid="uid://65ed4pqun67w" path="res://gfx/space.png" id="8_jk1qb"]
+[ext_resource type="Texture2D" uid="uid://dl2y63y1kgxyu" path="res://gfx/interface/logo.png" id="9_flqon"]
+[ext_resource type="Texture2D" uid="uid://dkindui63gkuy" path="res://gfx/interface/btn_normal.png" id="10_5dd4i"]
+[ext_resource type="Texture2D" uid="uid://bgs3h8jyumgus" path="res://gfx/interface/btn_hover.png" id="10_lgwnu"]
+[ext_resource type="Texture2D" uid="uid://dkqtdkc6hifd5" path="res://gfx/interface/btn_pressed.png" id="11_flqon"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lgwnu"]
+render_priority = 10
+shader = ExtResource("4_tbmy8")
+shader_parameter/base_tex = ExtResource("5_jk1qb")
+shader_parameter/overlay_tex = ExtResource("6_5dd4i")
+shader_parameter/mask_tex = ExtResource("6_5dd4i")
+shader_parameter/base_norm_strength = 1.0
+shader_parameter/overlay_norm_strength = 1.0
+shader_parameter/base_tiling = Vector2(1, 1)
+shader_parameter/overlay_tiling = Vector2(1, 1)
+shader_parameter/overlay_scroll = Vector2(-0.01, 0)
+shader_parameter/mask_uses_overlay_uv = true
+shader_parameter/mask_tiling_override = Vector2(1, 1)
+shader_parameter/mask_scroll_override = Vector2(0, 0)
+shader_parameter/overlay_strength = 1.0
+shader_parameter/roughness = 0.6
+shader_parameter/metallic = 0.5
+shader_parameter/emission_color = Color(0.44, 0.78, 0.94, 1)
+shader_parameter/emission_energy = 0.03
+shader_parameter/rim_strength = 0.38
+shader_parameter/rim_power = 8.0
+shader_parameter/city_boost = 0.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_tbmy8"]
+lightmap_size_hint = Vector2i(17, 9)
+material = SubResource("ShaderMaterial_lgwnu")
+radial_segments = 256
+rings = 128
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_5dd4i"]
+panorama = ExtResource("8_jk1qb")
+
+[sub_resource type="Sky" id="Sky_lgwnu"]
+sky_material = SubResource("PanoramaSkyMaterial_5dd4i")
+
+[sub_resource type="Environment" id="Environment_lgwnu"]
+background_mode = 2
+sky = SubResource("Sky_lgwnu")
+ambient_light_source = 3
+reflected_light_source = 2
+glow_enabled = true
+glow_intensity = 3.0
+glow_bloom = 0.59
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_flqon"]
+texture = ExtResource("10_lgwnu")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_rcqid"]
+texture = ExtResource("11_flqon")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_lgwnu"]
+texture = ExtResource("10_5dd4i")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1ajci"]
+texture = ExtResource("10_lgwnu")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_7b55j"]
+texture = ExtResource("11_flqon")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_5pajh"]
+texture = ExtResource("10_5dd4i")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_j7ex8"]
+texture = ExtResource("10_lgwnu")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_a8gd2"]
+texture = ExtResource("11_flqon")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_hstxw"]
+texture = ExtResource("10_5dd4i")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_8egab"]
+texture = ExtResource("10_lgwnu")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_gw5y6"]
+texture = ExtResource("11_flqon")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_svtp6"]
+texture = ExtResource("10_5dd4i")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_1dfpl"]
+texture = ExtResource("10_lgwnu")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_qywvv"]
+texture = ExtResource("11_flqon")
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_3wgol"]
+texture = ExtResource("10_5dd4i")
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_bqqt6")
+script = ExtResource("1_l6cm7")
+first_scene = ExtResource("2_ekxnf")
+options_scene = ExtResource("5_5pajh")
+pedia_scene = ExtResource("6_j7ex8")
+
+[node name="Fade" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 1)
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+layout_mode = 0
+offset_right = 1152.0
+offset_bottom = 648.0
+stretch = true
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+handle_input_locally = false
+size = Vector2i(1152, 648)
+render_target_update_mode = 4
+
+[node name="WorldRoot" type="Node3D" parent="SubViewportContainer/SubViewport"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="SubViewportContainer/SubViewport/WorldRoot"]
+transform = Transform3D(1.46156, -0.337427, 0, 0.337427, 1.46156, 0, 0, 0, 1.5, 0.5, 0, 0)
+mesh = SubResource("SphereMesh_tbmy8")
+script = ExtResource("5_rtw2f")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="SubViewportContainer/SubViewport/WorldRoot"]
+transform = Transform3D(0.996195, -0.00759612, -0.0868241, 0, 0.996195, -0.0871557, 0.0871557, 0.0868241, 0.992404, 0, 0, 0)
+light_energy = 1.5
+shadow_enabled = true
+directional_shadow_blend_splits = true
+
+[node name="Current" type="Camera3D" parent="SubViewportContainer/SubViewport/WorldRoot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.05, 0, 6)
+environment = SubResource("Environment_lgwnu")
+projection = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+clip_contents = true
+layout_direction = 1
+layout_mode = 0
+offset_left = 150.0
+offset_top = 175.0
+offset_right = 425.0
+offset_bottom = 615.0
+
+[node name="Menu" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Logo" type="TextureRect" parent="MarginContainer/Menu"]
+layout_mode = 2
+texture = ExtResource("9_flqon")
+expand_mode = 5
+stretch_mode = 5
+
+[node name="NewGame" type="Button" parent="MarginContainer/Menu"]
+layout_mode = 2
+theme_override_styles/hover = SubResource("StyleBoxTexture_flqon")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_rcqid")
+theme_override_styles/normal = SubResource("StyleBoxTexture_lgwnu")
+text = "New Game"
+
+[node name="LoadGame" type="Button" parent="MarginContainer/Menu"]
+layout_mode = 2
+theme_override_styles/hover = SubResource("StyleBoxTexture_1ajci")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_7b55j")
+theme_override_styles/normal = SubResource("StyleBoxTexture_5pajh")
+text = "Load Game"
+
+[node name="Options" type="Button" parent="MarginContainer/Menu"]
+layout_mode = 2
+theme_override_styles/hover = SubResource("StyleBoxTexture_j7ex8")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_a8gd2")
+theme_override_styles/normal = SubResource("StyleBoxTexture_hstxw")
+text = "Options"
+
+[node name="Encyclopedia" type="Button" parent="MarginContainer/Menu"]
+layout_mode = 2
+theme_override_styles/hover = SubResource("StyleBoxTexture_8egab")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_gw5y6")
+theme_override_styles/normal = SubResource("StyleBoxTexture_svtp6")
+text = "Encyclopedia"
+
+[node name="Quit" type="Button" parent="MarginContainer/Menu"]
+layout_mode = 2
+theme_override_styles/hover = SubResource("StyleBoxTexture_1dfpl")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_qywvv")
+theme_override_styles/normal = SubResource("StyleBoxTexture_3wgol")
+text = "Exit Game"
+
+[node name="Overlay" type="CanvasLayer" parent="."]
+
+[node name="LoadOverlay" type="Control" parent="Overlay"]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="Overlay/LoadOverlay"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="PanelContainer" parent="Overlay/LoadOverlay"]
+custom_minimum_size = Vector2(960, 560)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -480.0
+offset_top = -280.0
+offset_right = 480.0
+offset_bottom = 280.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Overlay/LoadOverlay/Panel"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Overlay/LoadOverlay/Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="SaveList" type="ItemList" parent="Overlay/LoadOverlay/Panel/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="Preview" type="TextureRect" parent="Overlay/LoadOverlay/Panel/VBoxContainer/HBoxContainer"]
+custom_minimum_size = Vector2(320, 180)
+layout_mode = 2
+stretch_mode = 4
+
+[node name="NameLabel" type="Label" parent="Overlay/LoadOverlay/Panel/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="DateLabel" type="Label" parent="Overlay/LoadOverlay/Panel/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="InfoLabel" type="Label" parent="Overlay/LoadOverlay/Panel/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+
+[node name="HBoxContainer2" type="HBoxContainer" parent="Overlay/LoadOverlay/Panel/VBoxContainer"]
+layout_mode = 2
+
+[node name="LoadBtn" type="Button" parent="Overlay/LoadOverlay/Panel/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "Load"
+
+[node name="DeleteBtn" type="Button" parent="Overlay/LoadOverlay/Panel/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "Delete"
+
+[node name="BackBtn" type="Button" parent="Overlay/LoadOverlay/Panel/VBoxContainer/HBoxContainer2"]
+layout_mode = 2
+text = "Back"

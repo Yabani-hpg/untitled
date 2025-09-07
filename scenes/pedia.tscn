@@ -1,0 +1,86 @@
+[gd_scene load_steps=3 format=3 uid="uid://sife5t60tud"]
+
+[ext_resource type="Script" uid="uid://c5wpv0r4ntl5a" path="res://script/pedia.gd" id="1_1qpnq"]
+
+[sub_resource type="ImageTexture" id="ImageTexture_rrxwm"]
+
+[node name="Pedia" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_1qpnq")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="TopBar" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Back" type="Button" parent="MarginContainer/VBoxContainer/TopBar"]
+layout_mode = 2
+text = "Back"
+
+[node name="Search" type="LineEdit" parent="MarginContainer/VBoxContainer/TopBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Search..."
+caret_blink = true
+
+[node name="Body" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="ArticleList" type="ItemList" parent="MarginContainer/VBoxContainer/Body"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+
+[node name="ArticleScroll" type="ScrollContainer" parent="MarginContainer/VBoxContainer/Body"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Article" type="VBoxContainer" parent="MarginContainer/VBoxContainer/Body/ArticleScroll"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="MarginContainer/VBoxContainer/Body/ArticleScroll/Article"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 40
+
+[node name="Subtitle" type="Label" parent="MarginContainer/VBoxContainer/Body/ArticleScroll/Article"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/Body/ArticleScroll/Article"]
+layout_mode = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/Body/ArticleScroll/Article"]
+layout_mode = 2
+
+[node name="Content" type="RichTextLabel" parent="MarginContainer/VBoxContainer/Body/ArticleScroll/Article/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+bbcode_enabled = true
+
+[node name="InfoBox" type="PanelContainer" parent="MarginContainer/VBoxContainer/Body/ArticleScroll/Article/HBoxContainer"]
+layout_mode = 2
+
+[node name="InfoGrid" type="GridContainer" parent="MarginContainer/VBoxContainer/Body/ArticleScroll/Article/HBoxContainer/InfoBox"]
+layout_mode = 2
+
+[node name="Hero" type="TextureRect" parent="MarginContainer/VBoxContainer/Body/ArticleScroll/Article/HBoxContainer/InfoBox"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+texture = SubResource("ImageTexture_rrxwm")
+
+[node name="HSeparator" type="HSeparator" parent="MarginContainer/VBoxContainer/Body/ArticleScroll/Article/HBoxContainer"]
+layout_mode = 2
+
+[node name="SeeAlso" type="RichTextLabel" parent="MarginContainer/VBoxContainer/Body/ArticleScroll/Article/HBoxContainer"]
+layout_mode = 2
+bbcode_enabled = true

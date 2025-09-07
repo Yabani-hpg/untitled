@@ -1,0 +1,19 @@
+[gd_resource type="JSON" format=3 uid="uid://cnxyv7nhg8i0a"]
+
+[resource]
+data = {
+"body_bbcode": "[b]Overview[/b]
+Rome was the capital of the Roman Kingdom, Republic, and Empire.
+
+[h2]History[/h2]
+From a small city on the Tiber to an empire spanning the Mediterranean.",
+"id": "rome",
+"infobox": {
+"Founded": "753 BC",
+"Population": "≈ 1,000,000 (ancient peak)",
+"Region": "Latium"
+},
+"see_also": ["Italy", "Roman Republic", "Roman Empire"],
+"subtitle": "The Eternal City",
+"title": "Rome"
+}

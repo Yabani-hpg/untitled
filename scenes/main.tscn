@@ -1,0 +1,296 @@
+[gd_scene load_steps=27 format=3 uid="uid://cyfurr3kc6nlw"]
+
+[ext_resource type="Script" uid="uid://2unnrnjnrqwe" path="res://scenes/camera_rig.gd" id="1_ig7tw"]
+[ext_resource type="Texture2D" uid="uid://cd4qk132laylx" path="res://map/landmap.png" id="3_jkv2x"]
+[ext_resource type="Shader" uid="uid://dd0w537nfhp2w" path="res://shaders/main.gdshader" id="3_lquwl"]
+[ext_resource type="Texture2D" uid="uid://cdbpacja1c3nr" path="res://map/terrain/detail_sand_grain_normal.png" id="4_4c57u"]
+[ext_resource type="Texture2D" uid="uid://rh26trr3ie8y" path="res://map/heightmapps.png" id="4_lquwl"]
+[ext_resource type="Texture2D" uid="uid://b6bjrqvhbc0x2" path="res://map/normalmap.png" id="5_5vw27"]
+[ext_resource type="Texture2D" uid="uid://buyuf4qrhab1d" path="res://map/worldmapfull.png" id="5_7mycd"]
+[ext_resource type="Texture2D" uid="uid://7nal0a0dhm2u" path="res://map/terrain/detail_sand_grain.png" id="5_efxa6"]
+[ext_resource type="Script" uid="uid://cw55i23cpdk5r" path="res://script/minimap.gd" id="6_7mycd"]
+[ext_resource type="Texture2D" uid="uid://bofvl6t4udo1v" path="res://map/minimap.png" id="6_272bh"]
+[ext_resource type="Texture2D" uid="uid://cjy4q7ov041l0" path="res://map/rivers.png" id="8_a8y0u"]
+[ext_resource type="Shader" uid="uid://b1jrfrdqgr4g6" path="res://shaders/water.gdshader" id="8_efxa6"]
+[ext_resource type="Texture2D" uid="uid://cp0ip151n7g3h" path="res://map/terrain/riverbottom_diffuse.png" id="8_muem4"]
+[ext_resource type="Texture2D" uid="uid://b8x357vsioqeg" path="res://map/terrain/foam.png" id="9_ycdy4"]
+[ext_resource type="Texture2D" uid="uid://dymas4lmve1na" path="res://map/terrain/river_diffuse.png" id="10_dp3eg"]
+[ext_resource type="Texture2D" uid="uid://c7vrajwokdjtv" path="res://map/terrain/water_normal.png" id="10_w48qg"]
+[ext_resource type="Texture2D" uid="uid://drwxa4fve7vbq" path="res://map/terrain/river_normal.png" id="11_0ld40"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_h2yge"]
+render_priority = 10
+shader = ExtResource("3_lquwl")
+shader_parameter/heightmap = ExtResource("4_lquwl")
+shader_parameter/sea_level_norm = 0.501961
+shader_parameter/height_scale = 35.0
+shader_parameter/terrain_base_y = 0.0
+shader_parameter/uv_tiling = Vector2(1, 1)
+shader_parameter/uv_offset = Vector2(0, 0)
+shader_parameter/albedo_tex = ExtResource("3_jkv2x")
+shader_parameter/albedo_tiling = Vector2(1, 1)
+shader_parameter/normal_tex = ExtResource("5_5vw27")
+shader_parameter/detail_tex = ExtResource("5_efxa6")
+shader_parameter/detail_norm_tex = ExtResource("4_4c57u")
+shader_parameter/detail_tiling = Vector2(512, 512)
+shader_parameter/detail_color_strength = 0.15
+shader_parameter/detail_normal_strength = 0.6
+shader_parameter/detail_fwidth_min = 0.02
+shader_parameter/detail_fwidth_max = 0.02
+shader_parameter/albedo_lod_scale = 0.6
+shader_parameter/normal_lod_scale = 0.6
+shader_parameter/shoreline_width_m = 8.0
+shader_parameter/foam_width_m = 1.2
+shader_parameter/foam_color = Vector3(0.95, 0.98, 1)
+shader_parameter/foam_strength = 0.1
+shader_parameter/foam_speed = 0.15
+shader_parameter/foam_dir = Vector2(1, 0.3)
+shader_parameter/foam_noise_scale = 8.0
+shader_parameter/foam_threshold = 0.45
+shader_parameter/foam_offset_m = 0.1
+shader_parameter/foam_aa_mult = 0.5
+shader_parameter/foam_land_fade = 0.5
+shader_parameter/sea_tex = ExtResource("3_jkv2x")
+shader_parameter/shallow_tint = Vector3(0.08, 0.2, 0.25)
+shader_parameter/shallow_strength = 0.35
+shader_parameter/sea_roughness = 0.05
+shader_parameter/land_roughness = 0.9
+shader_parameter/water_norm_tex = ExtResource("9_ycdy4")
+shader_parameter/water_norm_tiling = Vector2(16, 16)
+shader_parameter/water_scroll_1 = Vector2(0.03, 0)
+shader_parameter/water_scroll_2 = Vector2(-0.02, 0.01)
+shader_parameter/water_norm_strength = 0.7
+shader_parameter/wave_amp_m = 0.35
+shader_parameter/wave_len_m = 6.0
+shader_parameter/wave_speed = 1.4
+shader_parameter/wave_dir_1 = Vector2(1, 0.2)
+shader_parameter/wave_dir_2 = Vector2(-0.6, 1)
+shader_parameter/wave_shore_falloff_m = 10.0
+shader_parameter/river_mask_tex = ExtResource("8_a8y0u")
+shader_parameter/river_mask_tiling = Vector2(1, 1)
+shader_parameter/river_mask_offset = Vector2(0, 0)
+shader_parameter/river_threshold = 0.5
+shader_parameter/river_softness = 1.75
+shader_parameter/river_bottom_diffuse = ExtResource("8_muem4")
+shader_parameter/river_surface_diffuse = ExtResource("10_dp3eg")
+shader_parameter/river_surface_normal = ExtResource("11_0ld40")
+shader_parameter/river_bottom_tiling = Vector2(128, 128)
+shader_parameter/river_surface_tiling = Vector2(128, 128)
+shader_parameter/river_roughness = 0.07
+shader_parameter/river_flow_speed = 0.01
+shader_parameter/river_flow_dir_global = Vector2(1, 0)
+shader_parameter/river_flow_from_height = 0.5
+shader_parameter/river_flow_eps_uv = 0.0015
+shader_parameter/river_depth_power = 1.35
+shader_parameter/river_geo_depth_m = 1.0
+shader_parameter/river_opacity = 1.0
+shader_parameter/river_color_tol = 0.08
+shader_parameter/river_surf_mult_narrowest = 1.5
+shader_parameter/river_surf_mult_narrow = 1.25
+shader_parameter/river_surf_mult_wide = 1.0
+shader_parameter/river_surf_mult_widest = 0.7
+shader_parameter/river_bottom_mult_narrowest = 1.3
+shader_parameter/river_bottom_mult_narrow = 1.15
+shader_parameter/river_bottom_mult_wide = 1.0
+shader_parameter/river_bottom_mult_widest = 0.8
+shader_parameter/river_flow_mult_source = 0.85
+shader_parameter/river_flow_mult_injoin = 1.15
+shader_parameter/river_flow_mult_outflow = 0.95
+shader_parameter/river_width_texels = 1.0
+shader_parameter/river_edge_expand = 0.75
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_0xm2m"]
+material = SubResource("ShaderMaterial_h2yge")
+size = Vector2(5632, 2316)
+subdivide_width = 512
+subdivide_depth = 256
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_trceg"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dg77c"]
+render_priority = 20
+shader = ExtResource("8_efxa6")
+shader_parameter/ripples_a = ExtResource("10_w48qg")
+shader_parameter/ripples_b = ExtResource("10_w48qg")
+shader_parameter/foam_tex = ExtResource("9_ycdy4")
+shader_parameter/water_mask = ExtResource("10_w48qg")
+shader_parameter/heightmap_tex = ExtResource("4_lquwl")
+shader_parameter/map_origin = Vector2(-2816, -1158)
+shader_parameter/map_size = Vector2(5632, 2316)
+shader_parameter/height_scale = 60.0
+shader_parameter/sea_level_norm = 0.501961
+shader_parameter/terrain_base_y = 0.0
+shader_parameter/water_level_y = 0.0
+shader_parameter/deep_world = 35.0
+shader_parameter/shallow_color = Color(0.1, 0.45, 0.6, 1)
+shader_parameter/deep_color = Color(0.02, 0.1, 0.18, 1)
+shader_parameter/shallow_alpha = 0.5
+shader_parameter/deep_alpha = 0.5
+shader_parameter/normal_scale = 0.65
+shader_parameter/ripple_tiling = 0.06
+shader_parameter/ripple_speed_a = Vector2(0.06, 0.02)
+shader_parameter/ripple_speed_b = Vector2(-0.03, -0.05)
+shader_parameter/refraction_strength = 0.012
+shader_parameter/fresnel_power = 5.0
+shader_parameter/foam_band = 0.22
+shader_parameter/foam_intensity = 0.9
+shader_parameter/foam_tiling = 0.35
+shader_parameter/foam_scroll = Vector2(0.035, -0.02)
+shader_parameter/wave_amp = 0.05
+shader_parameter/wave_freq = 0.6
+shader_parameter/wave_dir = Vector2(1, 0.3)
+shader_parameter/use_water_mask = false
+shader_parameter/mask_threshold = 0.5
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_4c57u"]
+material = SubResource("ShaderMaterial_dg77c")
+size = Vector2(5632, 2316)
+subdivide_width = 512
+subdivide_depth = 256
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_272bh"]
+albedo_texture = ExtResource("5_7mycd")
+albedo_texture_force_srgb = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_5vw27"]
+material = SubResource("StandardMaterial3D_272bh")
+radius = 1200.0
+height = 2400.0
+radial_segments = 128
+rings = 64
+
+[sub_resource type="Environment" id="Environment_lquwl"]
+ambient_light_source = 3
+ambient_light_color = Color(1, 1, 1, 1)
+reflected_light_source = 2
+ssr_fade_in = 0.060919
+ssr_fade_out = 0.366021
+glow_intensity = 0.0
+glow_hdr_threshold = 0.26
+glow_hdr_scale = 0.57
+glow_hdr_luminance_cap = 0.0
+fog_mode = 1
+fog_light_energy = 1.23
+fog_density = 1.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_272bh"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.00392157, 0, 0.65098, 1)
+
+[node name="Main" type="Node3D"]
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+light_energy = 3.0
+light_indirect_energy = 1.2
+light_volumetric_fog_energy = 0.7
+light_specular = 0.7
+light_bake_mode = 1
+directional_shadow_mode = 0
+
+[node name="CameraRig" type="Node3D" parent="."]
+script = ExtResource("1_ig7tw")
+start_focus_instant = false
+wrap_edge_west_path = NodePath("../Earth/WrapWest")
+wrap_edge_east_path = NodePath("../Earth/WrapEast")
+pan_speed = 500.0
+edge_pan_speed = 500.0
+max_zoom = 2500.0
+pan_smooth_time = 0.5
+zoom_smooth_time = 0.5
+min_pitch_deg = -45.0
+fov_close = 35.0
+fov_far = 60.0
+flat_world_path = NodePath("../Earth")
+globe_world_path = NodePath("../GlobeWorld")
+globe_zoom_threshold = 0.65
+globe_blend_time = 0.1
+
+[node name="Camera3D" type="Camera3D" parent="CameraRig"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 180)
+size = 80.486
+near = 10.0
+far = 10000.0
+
+[node name="RayCast3D" type="RayCast3D" parent="CameraRig/Camera3D"]
+target_position = Vector3(0, 0, -1)
+collide_with_areas = true
+
+[node name="Earth" type="Node3D" parent="."]
+
+[node name="FlatWorld" type="MeshInstance3D" parent="Earth"]
+mesh = SubResource("PlaneMesh_0xm2m")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Earth/FlatWorld"]
+transform = Transform3D(5632, 0, 0, 0, 2316, 0, 0, 0, 100, 0, 0, 0)
+shape = SubResource("ConcavePolygonShape3D_trceg")
+debug_color = Color(0.533793, 0, 0.131744, 1)
+
+[node name="Water" type="MeshInstance3D" parent="Earth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.2, 0)
+visible = false
+mesh = SubResource("PlaneMesh_4c57u")
+skeleton = NodePath("../..")
+
+[node name="WrapWest" type="Node3D" parent="Earth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2816, 0, 0)
+
+[node name="WrapEast" type="Node3D" parent="Earth"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2816, 0, 0)
+
+[node name="GlobeWorld" type="MeshInstance3D" parent="."]
+visible = false
+mesh = SubResource("SphereMesh_5vw27")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_lquwl")
+
+[node name="MiniMapLayer" type="CanvasLayer" parent="."]
+
+[node name="MiniPanel" type="Panel" parent="MiniMapLayer"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -350.0
+offset_top = -144.0
+grow_horizontal = 0
+grow_vertical = 0
+mouse_filter = 2
+
+[node name="MiniMap" type="TextureRect" parent="MiniMapLayer/MiniPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+texture = ExtResource("6_272bh")
+stretch_mode = 5
+script = ExtResource("6_7mycd")
+camera_path = NodePath("../../../CameraRig/Camera3D")
+pan_receiver_path = NodePath("../../../CameraRig")
+
+[node name="Panel" type="Panel" parent="MiniMapLayer/MiniPanel/MiniMap"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_272bh")
+
+[node name="Panel2" type="Panel" parent="MiniMapLayer/MiniPanel/MiniMap"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_272bh")
