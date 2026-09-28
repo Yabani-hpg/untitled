@@ -45,6 +45,7 @@ class Water:
     river_index: np.ndarray  # int32, river record index + 1 per river pixel off the ocean (kept inside
                              # lakes so navigable chains run through them), 0 elsewhere
     rivers: list             # River per record index
+    river_lines: list        # (width class, Nx2 float pixel coords) per drawn polyline part
 
 
 def build(lakes_path, rivers_path):
@@ -69,6 +70,7 @@ def build(lakes_path, rivers_path):
     classes = Image.new("L", (WIDTH, HEIGHT), 255)
     draw_i, draw_c = ImageDraw.Draw(canvas), ImageDraw.Draw(classes)
     shapes = reader.shapes()
+    river_lines = []
     # narrow first so wider rivers win where they meet
     for i in sorted(range(len(rivers)), key=lambda i: rivers[i].width_class):
         shape = shapes[i]
@@ -76,7 +78,9 @@ def build(lakes_path, rivers_path):
         for a, b in zip(parts[:-1], parts[1:]):
             if b - a < 2:
                 continue
-            pts = [tuple(p) for p in to_pixels(shape.points[a:b])]
+            line = to_pixels(shape.points[a:b])
+            river_lines.append((rivers[i].width_class, line))
+            pts = [tuple(p) for p in line]
             draw_i.line(pts, fill=i + 1, width=1)
             draw_c.line(pts, fill=rivers[i].width_class, width=1)
     river_index = np.asarray(canvas, dtype=np.int32).copy()
@@ -90,4 +94,4 @@ def build(lakes_path, rivers_path):
         rgb[(river_index > 0) & ~water & (river_class_px == cls)] = color   # drawn on land only
     Image.fromarray(rgb, "RGB").save(RIVERS_PNG, optimize=True)
 
-    return Water(ocean, lake_index, lake_names, water, river_index, rivers)
+    return Water(ocean, lake_index, lake_names, water, river_index, rivers, river_lines)

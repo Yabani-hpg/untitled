@@ -163,7 +163,7 @@ def main():
     args = parser.parse_args()
 
     water = ne_water.build(args.lakes, args.rivers)
-    bake_map_fields.main()
+    bake_map_fields.main(water.river_lines)
     heights = load_heights()
     slopes = slope_map(heights).ravel()
 
