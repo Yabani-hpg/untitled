@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using System.Text;
 using Godot;
 using Untitled.Core;
+using Untitled.Data;
 
 namespace Untitled.UI;
 
@@ -28,6 +31,21 @@ public partial class SelectedProvinceLabel : Label
 			return;
 
 		string owner = GameState.Instance.GetCountry(province.OwnerTag)?.Name ?? "Unowned";
-		Text = $"{province.Name}  (#{province.Id})\nTerrain: {province.Terrain}\nOwner: {owner}";
+		var text = new StringBuilder($"{province.Name}  (#{province.Id})\nTerrain: {province.Terrain}\nOwner: {owner}");
+
+		var crossings = new SortedSet<string>();
+		var navigable = new SortedSet<string>();
+		foreach (Adjacency link in province.Neighbors)
+		{
+			if (link.IsRiverCrossing)
+				crossings.Add(link.CrossingRiver);
+			if (link.IsNavigableRiver)
+				navigable.Add(link.NavigableRiver);
+		}
+		if (crossings.Count > 0)
+			text.Append($"\nRiver borders: {string.Join(", ", crossings)}");
+		if (navigable.Count > 0)
+			text.Append($"\nNavigable: {string.Join(", ", navigable)}");
+		Text = text.ToString();
 	}
 }

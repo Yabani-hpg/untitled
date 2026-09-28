@@ -43,6 +43,7 @@ uniform float foam_aa_mult      = 1.0;   // derivative AA
 // ===== Sea look =====
 // Sea color by depth: left = deepest (height 0), right = sea level
 uniform sampler2D water_gradient : source_color, filter_linear, repeat_disable;
+uniform vec3 lake_color : source_color = vec3(0.13, 0.36, 0.46);
 uniform vec3  shallow_tint     = vec3(0.08, 0.20, 0.25);
 uniform float shallow_strength = 0.35;
 uniform float sea_roughness    = 0.05;
@@ -126,11 +127,17 @@ uniform float river_flow_mult_source  = 0.85;  // green
 uniform float river_flow_mult_injoin  = 1.15;  // red
 uniform float river_flow_mult_outflow = 0.95;  // yellow
 
-// River half-width in heightmap texels (max FIELD_RANGE_TEXELS)
-uniform float river_width_texels = 2.5;
+// Widens (+) or narrows (-) every river, in heightmap texels; per-river width is baked by class
+uniform float river_width_bias_texels = 0.0;
 
 // Distance range baked into the coast/river fields; must match RANGE in tools/bake_map_fields.py
 const float FIELD_RANGE_TEXELS = 8.0;
+// Range of the river field (0.5 = river edge); must match RIVER_RANGE in tools/bake_map_fields.py
+const float RIVER_RANGE_TEXELS = 4.0;
+
+float river_edge_threshold() {
+    return 0.5 - river_width_bias_texels / (2.0 * RIVER_RANGE_TEXELS);
+}
 
 // ---- Palette constants (0..1) ----
 const vec3 COL_SRC = vec3(0.0, 1.0, 0.0);                 // green (source)
@@ -175,7 +182,8 @@ void vertex() {
 
     // Optional trench carve along rivers
     if (river_geo_depth_m > 0.0) {
-        float is_river_px = smoothstep(1.0 - river_width_texels / FIELD_RANGE_TEXELS, 1.0, hm.b);
+        float thr = river_edge_threshold();
+        float is_river_px = smoothstep(thr, thr + 0.5 / (2.0 * RIVER_RANGE_TEXELS), hm.b);
         float is_land_v = step(0.0, d_m);
         VERTEX.y -= river_geo_depth_m * is_river_px * is_land_v;
     }
@@ -207,8 +215,8 @@ void fragment() {
     vec3  land_col = base_col * det_mul;
 
     // ===== Rivers (baked distance field, one fetch) =====
-    float rraw = hm.b;                                   // 1 on the river line, 0 at FIELD_RANGE_TEXELS away
-    float river_thr = 1.0 - river_width_texels / FIELD_RANGE_TEXELS;
+    float rraw = hm.b;                                   // > 0.5 inside a river, falls off over RIVER_RANGE_TEXELS
+    float river_thr = river_edge_threshold();
     float r_aa = max(fwidth(rraw) * river_softness, 1e-4);
     float river_cov = smoothstep(river_thr - r_aa, river_thr + r_aa, rraw) * land_mix;
 
@@ -276,7 +284,7 @@ void fragment() {
         r_surf_col  *= mix(0.9, 1.1, r_fake);
 
         // banks vs center
-        float center    = clamp((rraw - river_thr) / max(1.0 - river_thr, 1e-4), 0.0, 1.0);
+        float center    = clamp((rraw - river_thr) * (2.0 * RIVER_RANGE_TEXELS) / 0.6, 0.0, 1.0); // full depth 0.6 texel in
         float depth_mix = pow(center, river_depth_power);
         vec3  river_col = mix(r_bottom, r_surf_col, depth_mix);
 
@@ -287,7 +295,10 @@ void fragment() {
     }
 
     // ===== Sea base & shoreline =====
-    vec3 sea_col = texture(water_gradient, vec2(clamp(h / sea_level_norm, 0.0, 1.0), 0.5)).rgb;
+    // lakes sit above sea level and get their own color; seas are shaded by depth
+    vec3 sea_col = h > sea_level_norm + 0.5 / 255.0
+        ? lake_color
+        : texture(water_gradient, vec2(clamp(h / sea_level_norm, 0.0, 1.0), 0.5)).rgb;
 
     // shallow tint (underwater only)
     float shallow = (1.0 - step(0.0, d_m)) * (1.0 - smoothstep(-w, 0.0, d_m));

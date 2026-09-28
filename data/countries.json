@@ -205,6 +205,7 @@
 	{"tag": "USA", "name": "United States of America", "color": "#bda764"},
 	{"tag": "USG", "name": "US Naval Base Guantanamo Bay", "color": "#324ac2"},
 	{"tag": "UZB", "name": "Uzbekistan", "color": "#c461d4"},
+	{"tag": "VAT", "name": "Vatican", "color": "#bf58a2"},
 	{"tag": "VCT", "name": "Saint Vincent and the Grenadines", "color": "#58d680"},
 	{"tag": "VEN", "name": "Venezuela", "color": "#6933b5"},
 	{"tag": "VNM", "name": "Vietnam", "color": "#a62d71"},

@@ -6,8 +6,9 @@ which gives smooth, resolution-independent coasts and rivers at the cost of a si
 texture fetch (instead of dilating the river mask per pixel at runtime).
 
   R: height (untouched; 128 = sea level)
-  G: coast field  = 0.5 + signed_distance_to_coast_px / (2 * RANGE)   (land > 0.5)
-  B: river field  = 1 - distance_to_river_px / RANGE                   (1 on the river)
+  G: coast field  = 0.5 + signed_distance_to_coast_px / (2 * RANGE)          (land > 0.5)
+  B: river field  = 0.5 - (distance_to_river_px - half_width) / (2 * RIVER_RANGE)
+                    (inside the river > 0.5; half_width depends on the river's width class)
 
 Land/sea comes from map/rivers.png (white land, grey sea); rivers are its colored pixels.
 Rerun after editing rivers.png:  python3 tools/bake_map_fields.py   (needs pillow numpy scipy)
@@ -22,7 +23,10 @@ from scipy.ndimage import distance_transform_edt
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 HEIGHTMAP = ROOT / "map" / "heightmapps.png"
 RIVERS = ROOT / "map" / "rivers.png"
-RANGE = 8.0  # pixels encoded on each side; keep in sync with FIELD_RANGE_TEXELS in shaders/main.gdshader
+RANGE = 8.0        # coast: pixels encoded on each side; = FIELD_RANGE_TEXELS in shaders/main.gdshader
+RIVER_RANGE = 4.0  # rivers: = RIVER_RANGE_TEXELS in shaders/main.gdshader
+# River half-width in pixels per rivers.png class colour, narrowest .. widest
+RIVER_HALF_WIDTH = {(0, 225, 255): 0.35, (0, 200, 255): 0.5, (0, 100, 255): 0.7, (0, 0, 200): 0.95}
 PAD = int(RANGE) + 2
 
 
@@ -58,7 +62,13 @@ def main():
     coast = np.where(sea, -sea_side, land_side)
     coast_field = 0.5 + np.clip(coast, -RANGE, RANGE) / (2.0 * RANGE)
 
-    river_field = 1.0 - np.clip(distance_to(river), 0.0, RANGE) / RANGE
+    # distance to the edge of the nearest river, per width class; negative inside a river
+    edge = np.full(height.shape, RIVER_RANGE, dtype=np.float32)
+    for color, half_width in RIVER_HALF_WIDTH.items():
+        cls = river & (np.abs(rivers - np.array(color)).max(axis=-1) <= 20)
+        if cls.any():
+            edge = np.minimum(edge, distance_to(cls) - half_width)
+    river_field = 0.5 - np.clip(edge, -RIVER_RANGE, RIVER_RANGE) / (2.0 * RIVER_RANGE)
 
     out = np.dstack([height, to_byte(coast_field), to_byte(river_field)])
     Image.fromarray(out, "RGB").save(HEIGHTMAP, optimize=True)

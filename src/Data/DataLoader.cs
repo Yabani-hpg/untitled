@@ -15,6 +15,7 @@ public static class DataLoader
 {
 	public const string ProvincesPath = "res://data/provinces.csv";
 	public const string CountriesPath = "res://data/countries.json";
+	public const string AdjacenciesPath = "res://data/adjacencies.csv";
 
 	/// <summary>Reads provinces.csv. The result is indexed by province id; unused ids are null.</summary>
 	public static Province[] LoadProvinces(string path, IReadOnlyDictionary<string, Country> countries)
@@ -22,25 +23,9 @@ public static class DataLoader
 		var byId = new Dictionary<int, Province>();
 		var usedColors = new Dictionary<Color, int>();
 		int maxId = 0;
-		bool sawHeader = false;
 
-		string[] lines = ReadText(path).Split('\n');
-		for (int i = 0; i < lines.Length; i++)
+		foreach (var (where, cols) in ReadCsvRows(path, "id;color;name;terrain;owner"))
 		{
-			string line = lines[i].Trim();
-			if (line.Length == 0 || line.StartsWith('#'))
-				continue;
-			if (!sawHeader)
-			{
-				sawHeader = true;
-				continue;
-			}
-
-			string where = $"{path}:{i + 1}";
-			string[] cols = line.Split(';');
-			if (cols.Length != 5)
-				throw new DataException($"{where}: expected 5 columns (id;color;name;terrain;owner), got {cols.Length}");
-
 			if (!int.TryParse(cols[0].Trim(), out int id) || id <= 0)
 				throw new DataException($"{where}: id '{cols[0]}' must be a positive integer");
 			if (byId.ContainsKey(id))
@@ -69,6 +54,34 @@ public static class DataLoader
 		foreach (var (id, province) in byId)
 			provinces[id] = province;
 		return provinces;
+	}
+
+	/// <summary>Reads adjacencies.csv and adds each link to both provinces' neighbour lists.</summary>
+	public static int LoadAdjacencies(string path, Province[] provinces)
+	{
+		int count = 0;
+		foreach (var (where, cols) in ReadCsvRows(path, "a;b;border;crossing;navigable"))
+		{
+			Province a = ParseProvinceRef(cols[0], provinces, where);
+			Province b = ParseProvinceRef(cols[1], provinces, where);
+			if (a == b)
+				throw new DataException($"{where}: province {a.Id} is adjacent to itself");
+			if (a.GetAdjacency(b) != null)
+				throw new DataException($"{where}: duplicate adjacency {a.Id};{b.Id}");
+			if (!int.TryParse(cols[2].Trim(), out int border) || border < 0)
+				throw new DataException($"{where}: border '{cols[2]}' must be a non-negative integer");
+
+			string crossing = NullIfEmpty(cols[3]);
+			string navigable = NullIfEmpty(cols[4]);
+			if (border == 0 && navigable == null)
+				throw new DataException($"{where}: provinces with no border must be linked by a navigable river");
+
+			var link = new Adjacency(a, b, border, crossing, navigable);
+			a.AddNeighbor(link);
+			b.AddNeighbor(link.Reversed());
+			count++;
+		}
+		return count;
 	}
 
 	public static Dictionary<string, Country> LoadCountries(string path)
@@ -101,6 +114,45 @@ public static class DataLoader
 			}
 		}
 		return countries;
+	}
+
+	/// <summary>Data rows of a ;-separated file with # comments and one header row (which must match).</summary>
+	static IEnumerable<(string Where, string[] Cols)> ReadCsvRows(string path, string header)
+	{
+		int columns = header.Split(';').Length;
+		bool sawHeader = false;
+		string[] lines = ReadText(path).Split('\n');
+		for (int i = 0; i < lines.Length; i++)
+		{
+			string line = lines[i].Trim();
+			if (line.Length == 0 || line.StartsWith('#'))
+				continue;
+			string where = $"{path}:{i + 1}";
+			if (!sawHeader)
+			{
+				if (line != header)
+					throw new DataException($"{where}: expected header '{header}'");
+				sawHeader = true;
+				continue;
+			}
+			string[] cols = line.Split(';');
+			if (cols.Length != columns)
+				throw new DataException($"{where}: expected {columns} columns ({header}), got {cols.Length}");
+			yield return (where, cols);
+		}
+	}
+
+	static Province ParseProvinceRef(string text, Province[] provinces, string where)
+	{
+		if (!int.TryParse(text.Trim(), out int id) || id <= 0 || id >= provinces.Length || provinces[id] == null)
+			throw new DataException($"{where}: '{text}' is not a province id from {ProvincesPath}");
+		return provinces[id];
+	}
+
+	static string NullIfEmpty(string text)
+	{
+		text = text.Trim();
+		return text.Length == 0 ? null : text;
 	}
 
 	static string ReadText(string path)

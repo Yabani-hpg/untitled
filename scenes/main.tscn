@@ -103,7 +103,6 @@ shader_parameter/river_bottom_mult_widest = 0.8
 shader_parameter/river_flow_mult_source = 0.85
 shader_parameter/river_flow_mult_injoin = 1.15
 shader_parameter/river_flow_mult_outflow = 0.95
-shader_parameter/river_width_texels = 1.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_0xm2m"]
 material = SubResource("ShaderMaterial_h2yge")

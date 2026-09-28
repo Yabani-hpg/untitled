@@ -61,6 +61,7 @@ public partial class GameState : Node
 
 		_countries = DataLoader.LoadCountries(DataLoader.CountriesPath);
 		_provinces = DataLoader.LoadProvinces(DataLoader.ProvincesPath, _countries);
+		int adjacencies = DataLoader.LoadAdjacencies(DataLoader.AdjacenciesPath, _provinces);
 
 		ProvinceMapTexture = GD.Load<Texture2D>(ProvinceMapPath)
 			?? throw new DataException($"{ProvinceMapPath}: cannot load");
@@ -72,7 +73,7 @@ public partial class GameState : Node
 			GD.PushWarning($"{ProvinceMapPath}: {unknownColors.Count - 20} more unlisted colors; run tools/sync_provinces.py");
 
 		int count = _provinces.Count(p => p != null);
-		GD.Print($"GameState: {count} provinces, {_countries.Count} countries loaded in {Time.GetTicksMsec() - start} ms");
+		GD.Print($"GameState: {count} provinces, {_countries.Count} countries, {adjacencies} adjacencies loaded in {Time.GetTicksMsec() - start} ms");
 	}
 
 	public Province GetProvince(int id) =>
