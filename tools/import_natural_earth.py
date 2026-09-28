@@ -11,6 +11,9 @@ Outputs (all regenerated; hand edits are overwritten):
   map/rivers.png, map/heightmapps.png (G/B fields via bake_map_fields.py), map/provinces.png,
   data/provinces.csv, data/countries.json, data/adjacencies.csv
 
+Region overrides in tools/data/regions/*.json (see ne_regions.py) then replace the provinces in
+their area with hand-authored regions, e.g. the nomes of Ancient Egypt.
+
 The coastline comes from tools/data/ocean_mask.png. Provinces snap to it: land pixels outside every
 polygon join the nearest province and sea pixels belong to the single Ocean province. Lakes of at
 least LAKE_MIN_PX become lake provinces; smaller lakes are drawn as water but belong to the land
@@ -33,6 +36,7 @@ from scipy.ndimage import distance_transform_edt, gaussian_filter
 
 import bake_map_fields
 import ne_adjacency
+import ne_regions
 import ne_water
 from map_common import (PROVINCES_PNG, ROOT, SEA_LEVEL, clean, load_heights, rasterize_polygons)
 
@@ -180,7 +184,18 @@ def main():
     regions = fill_from_nearest(regions, land)
     tags = np.array([""] + [clean(r["adm0_a3"]).upper() for r in records])
     regions = merge_small(regions, tags, MIN_PROVINCE_PX)
-    counts = np.bincount(regions.ravel(), minlength=len(records) + 1)
+
+    # hand-authored region overrides (tools/data/regions/*.json) replace provinces in their area
+    metas = list(records)
+    admin_names = {}
+    for r in records:
+        admin_names.setdefault(clean(r["adm0_a3"]).upper(), clean(r["admin"]))
+    for filename, spec in ne_regions.load():
+        print(f"applying {filename}")
+        regions, extra = ne_regions.apply(spec, regions, tags, land, water, len(metas) + 1, admin_names)
+        metas += extra
+        tags = np.concatenate([tags, [m["adm0_a3"] for m in extra]])
+    counts = np.bincount(regions.ravel(), minlength=len(metas) + 1)
 
     ids = np.full(regions.shape, OCEAN_ID, dtype=np.int32)
     rows, used_colors, owners = [], {OCEAN_COLOR}, {}
@@ -194,16 +209,17 @@ def main():
         return next_id - 1
 
     # land provinces in source order; regions that ended up with no pixels are dropped
-    province_of = np.zeros(len(records) + 1, dtype=np.int32)
+    province_of = np.zeros(len(metas) + 1, dtype=np.int32)
     order = np.argsort(regions.ravel(), kind="stable")
     starts = np.concatenate([[0], np.cumsum(counts)])
-    for index, rec in enumerate(records, start=1):
+    for index, rec in enumerate(metas, start=1):
         if counts[index] == 0:
             continue
         tag = clean(rec["adm0_a3"]).upper()
         name = clean(rec["name"]) or clean(rec["name_en"]) or f"{clean(rec['admin'])} {next_id}"
         pixels = order[starts[index]:starts[index + 1]]
-        terrain = terrain_for(heights.ravel()[pixels], slopes[pixels])
+        terrain = (rec.get("terrain") if isinstance(rec, dict) else None) \
+            or terrain_for(heights.ravel()[pixels], slopes[pixels])
         province_of[index] = add(rec["adm1_code"] or index, name, terrain, tag)
         owners.setdefault(tag, clean(rec["admin"]))
     ids[regions > 0] = province_of[regions[regions > 0]]

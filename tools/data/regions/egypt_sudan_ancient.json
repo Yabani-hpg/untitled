@@ -1,0 +1,85 @@
+{
+	"description": "EXPERIMENTAL. Replaces Egypt's governorates and northern Sudan's states with the 42 nomes of Ancient Egypt, the Nubian regions along the Nile, and desert and oasis regions. Nome borders are not known precisely: valley and Delta land goes to the nearest nome capital (seeds), desert to the nearest desert region, oasis circles to their oasis. Delete this file and rerun tools/import_natural_earth.py to go back to modern provinces.",
+	"area": [
+		{ "country": "EGY" },
+		{ "country": "SDN", "min_lat": 16.5 }
+	],
+	"zone_terrain": { "valley": "plains", "oasis": "oasis", "desert": "desert" },
+	"valley": {
+		"rivers": ["Nile", "Rosetta Branch", "Damietta Branch"],
+		"radius_px": 3,
+		"boxes": [
+			{ "name": "Nile Delta", "min_lat": 30.05, "max_lat": 31.7, "min_lon": 29.8, "max_lon": 32.35 }
+		],
+		"circles": [
+			{ "name": "Faiyum", "lat": 29.3, "lon": 30.75, "radius_deg": 0.35 }
+		]
+	},
+	"regions": [
+		{ "name": "Ta-Seti (Abu)", "zone": "valley", "owner": "EGY", "seeds": [[24.09, 32.89]] },
+		{ "name": "Wetjes-Hor (Behdet)", "zone": "valley", "owner": "EGY", "seeds": [[24.98, 32.87]] },
+		{ "name": "Nekhen (Nekheb)", "zone": "valley", "owner": "EGY", "seeds": [[25.20, 32.70]] },
+		{ "name": "Waset (Thebes)", "zone": "valley", "owner": "EGY", "seeds": [[25.70, 32.64]] },
+		{ "name": "Harawi (Gebtu)", "zone": "valley", "owner": "EGY", "seeds": [[26.00, 32.82]] },
+		{ "name": "Iqer (Iunet)", "zone": "valley", "owner": "EGY", "seeds": [[26.14, 32.67]] },
+		{ "name": "Bat (Hut-Sekhem)", "zone": "valley", "owner": "EGY", "seeds": [[26.05, 32.28]] },
+		{ "name": "Ta-Wer (Tjeni)", "zone": "valley", "owner": "EGY", "seeds": [[26.18, 31.92]] },
+		{ "name": "Min (Ipu)", "zone": "valley", "owner": "EGY", "seeds": [[26.56, 31.75]] },
+		{ "name": "Wadjet (Tjebu)", "zone": "valley", "owner": "EGY", "seeds": [[26.99, 31.42]] },
+		{ "name": "Set (Shashotep)", "zone": "valley", "owner": "EGY", "seeds": [[27.12, 31.30]] },
+		{ "name": "Atfet (Per-Nemty)", "zone": "valley", "owner": "EGY", "seeds": [[27.35, 31.15]] },
+		{ "name": "Nedjfet-Khentet (Zawty)", "zone": "valley", "owner": "EGY", "seeds": [[27.18, 31.10]] },
+		{ "name": "Nedjfet-Pehet (Qis)", "zone": "valley", "owner": "EGY", "seeds": [[27.44, 30.82]] },
+		{ "name": "Wenet (Khemenu)", "zone": "valley", "owner": "EGY", "seeds": [[27.78, 30.80]] },
+		{ "name": "Ma-Hedj (Hebenu)", "zone": "valley", "owner": "EGY", "seeds": [[28.08, 30.75]] },
+		{ "name": "Input (Hardai)", "zone": "valley", "owner": "EGY", "seeds": [[28.40, 30.80]] },
+		{ "name": "Nemty (Hut-Nesut)", "zone": "valley", "owner": "EGY", "seeds": [[28.79, 30.92]] },
+		{ "name": "Wabwy (Per-Medjed)", "zone": "valley", "owner": "EGY", "seeds": [[28.53, 30.66]] },
+		{ "name": "Naret-Khentet (Henen-Nesut)", "zone": "valley", "owner": "EGY", "seeds": [[29.08, 30.93]] },
+		{ "name": "Naret-Pehet (Shedet)", "zone": "valley", "owner": "EGY", "seeds": [[29.40, 31.15], [29.31, 30.84], [29.45, 30.60]] },
+		{ "name": "Maten (Tepihu)", "zone": "valley", "owner": "EGY", "seeds": [[29.42, 31.25]] },
+
+		{ "name": "Ineb-Hedj (Memphis)", "zone": "valley", "owner": "EGY", "seeds": [[29.85, 31.25]] },
+		{ "name": "Khensu (Khem)", "zone": "valley", "owner": "EGY", "seeds": [[30.12, 31.10]] },
+		{ "name": "Imentet (Hut-Ihyt)", "zone": "valley", "owner": "EGY", "seeds": [[30.75, 30.55], [30.40, 30.55]] },
+		{ "name": "Sap-Res (Djeqa)", "zone": "valley", "owner": "EGY", "seeds": [[30.78, 30.98]] },
+		{ "name": "Sap-Meh (Sau)", "zone": "valley", "owner": "EGY", "seeds": [[30.97, 30.77]] },
+		{ "name": "Khasu (Khasuu)", "zone": "valley", "owner": "EGY", "seeds": [[31.12, 30.95]] },
+		{ "name": "Ha-Imentet (Behdet-West)", "zone": "valley", "owner": "EGY", "seeds": [[31.03, 30.45], [31.25, 30.10]] },
+		{ "name": "Ha-Iabet (Tjeku)", "zone": "valley", "owner": "EGY", "seeds": [[30.55, 32.10]] },
+		{ "name": "Ati (Djedu)", "zone": "valley", "owner": "EGY", "seeds": [[30.88, 31.20]] },
+		{ "name": "Ka-Kem (Hut-Heryib)", "zone": "valley", "owner": "EGY", "seeds": [[30.47, 31.18]] },
+		{ "name": "Ka-Heseb (Taremu)", "zone": "valley", "owner": "EGY", "seeds": [[30.72, 31.40]] },
+		{ "name": "Theb-Ka (Tjebnutjer)", "zone": "valley", "owner": "EGY", "seeds": [[31.02, 31.25]] },
+		{ "name": "Heqa-Andj (Iunu)", "zone": "valley", "owner": "EGY", "seeds": [[30.13, 31.31]] },
+		{ "name": "Khent-Iabet (Tjaru)", "zone": "valley", "owner": "EGY", "seeds": [[30.85, 32.30]] },
+		{ "name": "Tehut (Ba'h)", "zone": "valley", "owner": "EGY", "seeds": [[31.00, 31.45]] },
+		{ "name": "Kha (Djedet)", "zone": "valley", "owner": "EGY", "seeds": [[30.96, 31.60]] },
+		{ "name": "Sema-Behdet (Paiuenamun)", "zone": "valley", "owner": "EGY", "seeds": [[31.30, 31.55]] },
+		{ "name": "Imet-Khentet (Per-Bast)", "zone": "valley", "owner": "EGY", "seeds": [[30.57, 31.51]] },
+		{ "name": "Imet-Pehet (Djanet)", "zone": "valley", "owner": "EGY", "seeds": [[30.95, 31.90]] },
+		{ "name": "Sopdu (Per-Sopdu)", "zone": "valley", "owner": "EGY", "seeds": [[30.57, 31.70]] },
+
+		{ "name": "Wawat", "zone": "valley", "owner": "auto", "seeds": [[23.30, 32.85], [22.50, 31.80]] },
+		{ "name": "Kush (Batn el-Hajar)", "zone": "valley", "owner": "SDN", "seeds": [[21.50, 30.95], [20.70, 30.33]] },
+		{ "name": "Kerma", "zone": "valley", "owner": "SDN", "seeds": [[19.60, 30.41]] },
+		{ "name": "Napata", "zone": "valley", "owner": "SDN", "seeds": [[18.54, 31.83], [18.90, 32.40]] },
+		{ "name": "Kurgus", "zone": "valley", "owner": "SDN", "seeds": [[19.30, 33.30], [18.40, 33.90]] },
+		{ "name": "Meroë", "zone": "valley", "owner": "SDN", "seeds": [[16.94, 33.75], [17.60, 33.97]] },
+
+		{ "name": "Siwa Oasis (Sekhet-Imau)", "zone": "oasis", "owner": "EGY", "seeds": [[29.20, 25.52]], "radius_deg": 0.3 },
+		{ "name": "Bahariya Oasis (Djesdjes)", "zone": "oasis", "owner": "EGY", "seeds": [[28.35, 28.86]], "radius_deg": 0.35 },
+		{ "name": "Farafra Oasis (Ta-Iht)", "zone": "oasis", "owner": "EGY", "seeds": [[27.06, 27.97]], "radius_deg": 0.3 },
+		{ "name": "Dakhla Oasis (Djesdjes-Res)", "zone": "oasis", "owner": "EGY", "seeds": [[25.50, 29.00]], "radius_deg": 0.35 },
+		{ "name": "Kharga Oasis (Kenem)", "zone": "oasis", "owner": "EGY", "seeds": [[25.44, 30.55]], "radius_deg": 0.35 },
+
+		{ "name": "Marmarica", "zone": "desert", "owner": "EGY", "seeds": [[31.00, 26.50], [30.90, 28.80]] },
+		{ "name": "Western Desert", "zone": "desert", "owner": "EGY", "seeds": [[26.80, 27.50], [24.00, 28.00], [28.80, 29.80]] },
+		{ "name": "Eastern Desert", "zone": "desert", "owner": "EGY", "seeds": [[27.00, 32.80], [24.50, 34.00], [28.90, 31.90]] },
+		{ "name": "Sinai (Mefkat)", "zone": "desert", "owner": "EGY", "seeds": [[29.50, 33.80], [30.80, 33.50]] },
+		{ "name": "Selima Desert", "zone": "desert", "owner": "SDN", "seeds": [[20.80, 28.20], [18.50, 29.00]] },
+		{ "name": "Nubian Desert", "zone": "desert", "owner": "SDN", "seeds": [[20.60, 33.50], [21.30, 32.00]] },
+		{ "name": "Medjay (Red Sea Hills)", "zone": "desert", "owner": "SDN", "seeds": [[19.00, 36.50], [21.30, 35.80], [17.50, 36.50]] },
+		{ "name": "Bayuda", "zone": "desert", "owner": "SDN", "seeds": [[17.80, 32.40], [17.00, 32.00]] }
+	]
+}

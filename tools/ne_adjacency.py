@@ -1,9 +1,10 @@
 """Province adjacency with river crossings and navigable river links. Used by import_natural_earth.py.
 
 A border is a river crossing when a river runs along it (like the Rhine between Alsace and Baden):
-at least RIVER_BORDER_MIN_PX border pixel pairs, and RIVER_BORDER_MIN_SHARE of the border, lie
-within one pixel of a river. A river that merely flows from one province into the next touches
-only a few pairs and doesn't count.
+at least RIVER_BORDER_MIN_PX border pixel pairs, and RIVER_BORDER_MIN_SHARE of the border, have a
+river running parallel to that bit of border within a pixel of it. Direction is what matters: a
+river flowing from one province into the next (like the Nile from nome to nome) crosses the border
+at right angles and doesn't count, however short the border.
 
 Two provinces are linked by a navigable river when a navigable river pixel in one touches the other
 (8-connected). That covers a river flowing from one province into the next and the provinces on both
@@ -13,9 +14,9 @@ when their last land pixels are within MOUTH_REACH_PX of that water.
 from collections import Counter, defaultdict
 
 import numpy as np
-from scipy.ndimage import binary_dilation, distance_transform_edt, maximum_filter
+from scipy.ndimage import distance_transform_edt, maximum_filter
 
-RIVER_BORDER_MIN_PX = 4
+RIVER_BORDER_MIN_PX = 3
 RIVER_BORDER_MIN_SHARE = 0.3
 MOUTH_REACH_PX = 3.0
 
@@ -35,7 +36,14 @@ def compute(ids, is_water, river_index, rivers):
     # 4-connected neighbour pairs; east-west wraps, north-south doesn't
     horiz = (ids, np.roll(ids, -1, axis=1))
     vert = (ids[:-1], ids[1:])
-    near_river = binary_dilation(river_index > 0, np.ones((3, 3), bool))
+    river = river_index > 0
+    # river pixels whose river continues vertically / horizontally through them
+    runs_v = river & (np.roll(river, 1, axis=0) | np.roll(river, -1, axis=0))
+    runs_h = river & (np.roll(river, 1, axis=1) | np.roll(river, -1, axis=1))
+    # a vertical border segment between columns x and x+1 has a river along it if a vertical run lies
+    # in columns x-1..x+2 (same row); likewise for horizontal segments and rows y-1..y+2
+    along_v = runs_v | np.roll(runs_v, 1, axis=1) | np.roll(runs_v, -1, axis=1) | np.roll(runs_v, -2, axis=1)
+    along_h = runs_h | np.roll(runs_h, 1, axis=0) | np.roll(runs_h, -1, axis=0) | np.roll(runs_h, -2, axis=0)
     river_near = maximum_filter(river_index, size=3, mode="wrap")
 
     border = Counter()
@@ -47,13 +55,13 @@ def compute(ids, is_water, river_index, rivers):
         border.update(dict(zip(*np.unique(keys, return_counts=True))))
 
         if shift == "h":
-            r1, r2 = near_river.ravel(), np.roll(near_river, -1, axis=1).ravel()
+            along = along_v.ravel()
             i1, i2 = river_near.ravel(), np.roll(river_near, -1, axis=1).ravel()
         else:
-            r1, r2 = near_river[:-1].ravel(), near_river[1:].ravel()
+            along = along_h[:-1].ravel()
             i1, i2 = river_near[:-1].ravel(), river_near[1:].ravel()
         land = ~is_water[lo] & ~is_water[hi]
-        on_river = (r1[keep] | r2[keep]) & land
+        on_river = along[keep] & land
         rk = keys[on_river]
         river_pairs.update(dict(zip(*np.unique(rk, return_counts=True))))
         for k, r in zip(rk, np.maximum(i1[keep], i2[keep])[on_river]):
