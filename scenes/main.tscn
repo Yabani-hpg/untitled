@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://cyfurr3kc6nlw"]
+[gd_scene load_steps=33 format=3 uid="uid://cyfurr3kc6nlw"]
 
 [ext_resource type="Script" uid="uid://2unnrnjnrqwe" path="res://scenes/camera_rig.gd" id="1_ig7tw"]
 [ext_resource type="Texture2D" uid="uid://cd4qk132laylx" path="res://map/landmap.png" id="3_jkv2x"]
@@ -20,6 +20,8 @@
 [ext_resource type="Script" path="res://src/Map/ProvincePicker.cs" id="20_picker"]
 [ext_resource type="Script" path="res://src/Map/ProvinceHighlight.cs" id="21_highlight"]
 [ext_resource type="Script" path="res://src/UI/SelectedProvinceLabel.cs" id="22_provlabel"]
+[ext_resource type="Script" path="res://src/Map/ProvinceBorders.cs" id="23_borders"]
+[ext_resource type="Shader" path="res://shaders/province_border.gdshader" id="24_bordershader"]
 
 [sub_resource type="Gradient" id="Gradient_water"]
 offsets = PackedFloat32Array(0, 0.15, 0.3, 0.45, 0.62, 0.8, 1)
@@ -204,14 +206,16 @@ start_focus_instant = false
 wrap_tiles_each_side = 2
 wrap_edge_west_path = NodePath("../Earth/WrapWest")
 wrap_edge_east_path = NodePath("../Earth/WrapEast")
-pan_speed = 500.0
-edge_pan_speed = 500.0
+pan_speed = 900.0
+edge_pan_speed = 900.0
 max_zoom = 2500.0
-pan_smooth_time = 0.5
-zoom_smooth_time = 0.5
-min_pitch_deg = -45.0
-fov_close = 35.0
-fov_far = 60.0
+pan_smooth_time = 0.12
+zoom_smooth_time = 0.18
+min_pitch_deg = -52.0
+max_pitch_deg = -84.0
+min_zoom = 120.0
+fov_close = 40.0
+fov_far = 45.0
 flat_world_path = NodePath("../Earth")
 globe_world_path = NodePath("../GlobeWorld")
 globe_zoom_threshold = 0.65
@@ -220,7 +224,7 @@ globe_blend_time = 0.1
 [node name="Camera3D" type="Camera3D" parent="CameraRig"]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0, 180)
 size = 80.486
-near = 10.0
+near = 4.0
 far = 10000.0
 
 [node name="Earth" type="Node3D" parent="."]
@@ -297,6 +301,11 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_272bh")
 [node name="ProvincePicker" type="Node" parent="."]
 script = ExtResource("20_picker")
 FlatWorldPath = NodePath("../Earth/FlatWorld")
+
+[node name="ProvinceBorders" type="Node3D" parent="."]
+script = ExtResource("23_borders")
+FlatWorldPath = NodePath("../Earth/FlatWorld")
+BorderShader = ExtResource("24_bordershader")
 
 [node name="ProvinceHighlight" type="Node" parent="."]
 script = ExtResource("21_highlight")

@@ -69,12 +69,8 @@ uniform float wave_shore_falloff_m = 10.0;
 uniform sampler2D province_map : filter_nearest, repeat_enable;
 uniform vec3  selected_province_color = vec3(-1.0); // map color of the selected province; negative = none
 uniform vec3  selection_tint_color      = vec3(1.0, 0.85, 0.35);
-uniform float selection_tint_strength   : hint_range(0.0, 1.0) = 0.25;
-uniform float selection_border_strength : hint_range(0.0, 1.0) = 0.9;
-uniform float selection_border_px       = 2.0; // outline width in screen pixels
-uniform vec3  province_border_color     = vec3(0.08, 0.07, 0.06);
-uniform float province_border_strength  : hint_range(0.0, 1.0) = 0.45; // 0 hides borders
-uniform float province_border_fade_px   = 0.9; // borders fade out once a map texel is smaller than this on screen
+uniform float selection_tint_strength   : hint_range(0.0, 1.0) = 0.22;
+// Province and country borders and the selection outline are drawn by shaders/province_border.gdshader.
 
 bool is_selected_province(vec2 p) {
     vec3 diff = abs(texture(province_map, p).rgb - selected_province_color);
@@ -333,27 +329,19 @@ void fragment() {
     vec3 shore_mix = mix(sea_animated, land_col, land_mix);
     ALBEDO = mix(shore_mix, foam_color, foam_strength * foam_mask);
 
-    // province borders on land: one texel wide, faded when zoomed out so they don't shimmer
-    if (province_border_strength > 0.0) {
-        vec2 texel = 1.0 / vec2(textureSize(province_map, 0));
-        vec3 pc = texture(province_map, uv).rgb;
-        vec3 px = texture(province_map, uv + vec2(texel.x, 0.0)).rgb;
-        vec3 py = texture(province_map, uv + vec2(0.0, texel.y)).rgb;
-        float edge = step(0.5 / 255.0, max(dot(abs(pc - px), vec3(1.0)), dot(abs(pc - py), vec3(1.0))));
-        float texel_on_screen = texel.x / max(fwidth(uv.x), 1e-7);  // screen pixels per map texel
-        float fade = smoothstep(0.5 * province_border_fade_px, province_border_fade_px, texel_on_screen);
-        ALBEDO = mix(ALBEDO, province_border_color, edge * fade * province_border_strength * land_mix);
-    }
-
-    // selected province: light tint inside, outline along its edge
-    if (selected_province_color.r >= 0.0 && is_selected_province(uv)) {
-        vec2 texel = 1.0 / vec2(textureSize(province_map, 0));
-        vec2 step_uv = max(texel, fwidth(uv) * selection_border_px);
-        bool inside = is_selected_province(uv + vec2(step_uv.x, 0.0))
-                   && is_selected_province(uv - vec2(step_uv.x, 0.0))
-                   && is_selected_province(uv + vec2(0.0, step_uv.y))
-                   && is_selected_province(uv - vec2(0.0, step_uv.y));
-        ALBEDO = mix(ALBEDO, selection_tint_color, inside ? selection_tint_strength : selection_border_strength);
+    // selected province: soft tint with a smooth edge (bilinear blend of the 4 nearest map texels);
+    // the crisp outline comes from the border ribbons
+    if (selected_province_color.r >= 0.0) {
+        vec2 size = vec2(textureSize(province_map, 0));
+        vec2 st = uv * size - 0.5;
+        vec2 f = fract(st);
+        vec2 c = (floor(st) + 0.5) / size;
+        vec2 t = 1.0 / size;
+        float sel = mix(mix(float(is_selected_province(c)), float(is_selected_province(c + vec2(t.x, 0.0))), f.x),
+                        mix(float(is_selected_province(c + vec2(0.0, t.y))), float(is_selected_province(c + t)), f.x), f.y);
+        float aa = max(fwidth(sel), 1e-3);
+        sel = smoothstep(0.5 - aa, 0.5 + aa, sel);
+        ALBEDO = mix(ALBEDO, selection_tint_color, sel * selection_tint_strength);
     }
 
     // final roughness

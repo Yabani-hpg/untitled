@@ -1,5 +1,8 @@
 extends Node3D
-## RTS camera with seamless horizontal wrapping (multi-tile), smooth pan/zoom, edge pan, auto-tilt, zoom-to-cursor.
+## Paradox-style map camera with seamless horizontal wrapping (multi-tile).
+## Zoom is multiplicative per wheel notch and keeps the point under the cursor fixed; the camera looks
+## almost straight down when far out and tilts toward the horizon only near the ground; pan speed
+## scales with zoom; middle-drag grabs the map.
 
 @export var auto_center_on_start: bool = true         # run once on game start
 @export var start_zoom_in_fraction: float = 0.35      # 15% closer than current target zoom
@@ -18,9 +21,9 @@ const SEAM_EPS := 0.02                           # tiny overlap to hide FP seams
 @export var wrap_edge_east_path: NodePath        # OPTIONAL: Node3D at the far EAST  edge of the map
 
 # --- Camera speeds / limits ---
-@export var pan_speed: float = 1000.0
-@export var edge_pan_speed: float = 1000.0
-@export var zoom_step: float = 225.0
+@export var pan_speed: float = 1000.0         # world units/s at zoom distance 1000; scales with zoom
+@export var edge_pan_speed: float = 1000.0    # same, for screen-edge panning
+@export var zoom_step_ratio: float = 0.85     # each wheel notch multiplies the zoom distance by this (or its inverse)
 @export var min_zoom: float = 100.0
 @export var max_zoom: float = 2000.0
 
@@ -36,12 +39,12 @@ const SEAM_EPS := 0.02                           # tiny overlap to hide FP seams
 # --- Rotation + auto tilt ---
 @export var rotate_speed: float = 70.0
 @export var auto_tilt: bool = true
-@export var min_pitch_deg: float = -75.0
-@export var max_pitch_deg: float = -90.0
+@export var min_pitch_deg: float = -75.0      # pitch at the closest zoom
+@export var max_pitch_deg: float = -90.0      # pitch from tilt_zoom_range outward
+@export var tilt_zoom_range: float = 0.45     # fraction of the (logarithmic) zoom range over which the camera tilts
 
 # --- Zoom to cursor ---
 @export var zoom_to_cursor: bool = true
-@export var cursor_zoom_influence: float = 0.35
 @export var ground_y: float = 0.0
 
 @onready var cam: Camera3D = $Camera3D
@@ -57,10 +60,6 @@ const SEAM_EPS := 0.02                           # tiny overlap to hide FP seams
 @export var focus_padding_xz: float = 0.0
 @export var focus_default_zoom: float = -1.0
 
-# --- Raycast ---
-@export var ray_max_distance: float = 5000.0
-@export var ray_collision_mask: int = 1
-@export var ray_fallback_to_plane: bool = true
 
 # --- FOV ---
 @export var fov_close: float = 90.0
@@ -104,7 +103,12 @@ var _wrap_anchor_x: float = 0.0
 
 var _target_yaw: float = 0.0
 var _dragging: bool = false
-var _last_mouse: Vector2 = Vector2.ZERO
+var _grab_world: Vector3 = Vector3.ZERO      # map point held under the cursor while middle-dragging
+
+# zoom-to-cursor: keep this map point under this screen position while the zoom eases in
+var _zoom_anchor_active: bool = false
+var _zoom_anchor_screen: Vector2 = Vector2.ZERO
+var _zoom_anchor_world: Vector3 = Vector3.ZERO
 
 var _target_pos: Vector3
 var _target_zoom: float
@@ -297,12 +301,15 @@ func _physics_process(delta: float) -> void:
 		move_input = Vector3.ZERO
 		edge_input = Vector3.ZERO
 
+	var zoom_scale: float = _curr_zoom / 1000.0
 	if move_input != Vector3.ZERO:
-		_target_pos += (basis.x * move_input.x + basis.z * move_input.z) * pan_speed * delta
+		_zoom_anchor_active = false
+		_target_pos += (basis.x * move_input.x + basis.z * move_input.z) * pan_speed * zoom_scale * delta
 	if edge_input != Vector3.ZERO:
+		_zoom_anchor_active = false
 		if edge_input.length() > 1.0:
 			edge_input = edge_input.normalized() * edge_corner_scale
-		_target_pos += (basis.x * edge_input.x + basis.z * edge_input.z) * edge_pan_speed * delta
+		_target_pos += (basis.x * edge_input.x + basis.z * edge_input.z) * edge_pan_speed * zoom_scale * delta
 
 	if use_bounds:
 		_target_pos = _apply_bounds(_target_pos)
@@ -311,6 +318,7 @@ func _physics_process(delta: float) -> void:
 	global_transform.origin = _exp_smooth_vec3(global_transform.origin, _target_pos, pan_smooth_time, delta)
 	_curr_zoom = _exp_smooth_float(_curr_zoom, _target_zoom, zoom_smooth_time, delta)
 	_apply_zoom_and_pitch(_curr_zoom)
+	_hold_zoom_anchor()
 
 	# Wrap rig + keep the row lined up to the base every frame
 	if not _globe_on:
@@ -369,33 +377,30 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		var mb: InputEventMouseButton = event as InputEventMouseButton
 		if mb.pressed and (mb.button_index == MOUSE_BUTTON_WHEEL_UP or mb.button_index == MOUSE_BUTTON_WHEEL_DOWN):
-			var old_target: float = _target_zoom
-			if mb.button_index == MOUSE_BUTTON_WHEEL_UP:
-				_target_zoom = clampf(_target_zoom - zoom_step, min_zoom, max_zoom)
-			else:
-				_target_zoom = clampf(_target_zoom + zoom_step, min_zoom, max_zoom)
-			if zoom_to_cursor and _target_zoom != old_target:
+			var ratio: float = zoom_step_ratio if mb.button_index == MOUSE_BUTTON_WHEEL_UP else 1.0 / zoom_step_ratio
+			# trackpads send fractional notches
+			if mb.factor > 0.0:
+				ratio = pow(ratio, mb.factor)
+			_target_zoom = clampf(_target_zoom * ratio, min_zoom, max_zoom)
+			if zoom_to_cursor and not _globe_on:
 				var result: Array = _cursor_ground_hit()
-				var hit_ok: bool = bool(result[0])
-				var hit: Vector3 = result[1] as Vector3
-				if hit_ok:
-					var zoom_delta: float = old_target - _target_zoom
-					var zoom_range: float = max(0.001, max_zoom - min_zoom)
-					var strength: float = clampf(absf(zoom_delta) / zoom_range, 0.0, 1.0) * cursor_zoom_influence
-					var to_hit: Vector3 = hit - _target_pos
-					to_hit.y = 0.0
-					_target_pos += to_hit * strength
-					if use_bounds:
-						_target_pos = _apply_bounds(_target_pos)
+				if bool(result[0]):
+					_zoom_anchor_active = true
+					_zoom_anchor_screen = mb.position
+					_zoom_anchor_world = result[1] as Vector3
 		elif mb.button_index == MOUSE_BUTTON_MIDDLE:
-			_dragging = mb.pressed
-			_last_mouse = mb.position
+			_dragging = mb.pressed and not _globe_on
+			if _dragging:
+				_zoom_anchor_active = false
+				var grab: Array = _screen_ground_hit(mb.position)
+				_dragging = bool(grab[0])
+				_grab_world = grab[1] as Vector3
 
 	elif event is InputEventMouseMotion and _dragging:
 		var mm: InputEventMouseMotion = event as InputEventMouseMotion
-		var d: Vector2 = mm.position - _last_mouse
-		_last_mouse = mm.position
-		_target_pos += -(basis.x * d.x + basis.z * d.y) * 0.05
+		var now: Array = _screen_ground_hit(mm.position)
+		if bool(now[0]):
+			_shift_rig(_grab_world - (now[1] as Vector3))
 
 	elif event is InputEventKey:
 		var kev: InputEventKey = event as InputEventKey
@@ -467,14 +472,41 @@ func _collect_edge_pan() -> Vector3:
 	return v
 
 func _apply_zoom_and_pitch(dist: float) -> void:
-	var t: float = clampf((dist - min_zoom) / max(0.001, (max_zoom - min_zoom)), 0.0, 1.0)
+	# zoom feels even on a log scale; tilt happens only in the closest part of the range
+	var t: float = clampf(log(dist / min_zoom) / max(0.001, log(max_zoom / min_zoom)), 0.0, 1.0)
 	if auto_tilt:
-		cam.rotation_degrees.x = lerp(min_pitch_deg, max_pitch_deg, t)
+		var tilt_t: float = smoothstep(0.0, max(tilt_zoom_range, 0.001), t)
+		cam.rotation_degrees.x = lerp(min_pitch_deg, max_pitch_deg, tilt_t)
 	cam.fov = lerp(fov_close, fov_far, t)
 	var tform: Transform3D = cam.transform
 	var forward: Vector3 = tform.basis.z.normalized()
 	tform.origin = forward * dist
 	cam.transform = tform
+
+# Moves the rig (now and its target) by a world offset; x wraps so a map seam in between doesn't matter.
+func _shift_rig(offset: Vector3) -> void:
+	offset.y = 0.0
+	if _tile_width > 0.0:
+		offset.x = fposmod(offset.x + 0.5 * _tile_width, _tile_width) - 0.5 * _tile_width
+	var pos: Vector3 = global_transform.origin + offset
+	if use_bounds:
+		pos = _apply_bounds(pos)
+	global_transform.origin = pos
+	_target_pos = pos
+	_pan_active = false
+
+# While the zoom eases toward its target, keep the anchored map point under the cursor.
+func _hold_zoom_anchor() -> void:
+	if not _zoom_anchor_active:
+		return
+	if _globe_on:
+		_zoom_anchor_active = false
+		return
+	var hit: Array = _screen_ground_hit(_zoom_anchor_screen)
+	if bool(hit[0]):
+		_shift_rig(_zoom_anchor_world - (hit[1] as Vector3))
+	if absf(_curr_zoom - _target_zoom) <= 0.002 * _target_zoom:
+		_zoom_anchor_active = false
 
 # Clamp Z always; clamp X only when globe is on (no flat-mode X clamp).
 func _apply_bounds(p: Vector3) -> Vector3:
@@ -527,50 +559,24 @@ func _cursor_ground_hit() -> Array:
 	var vp: Viewport = get_viewport()
 	if vp == null:
 		return [false, Vector3.ZERO]
-	var mpos: Vector2 = vp.get_mouse_position()
+	return _screen_ground_hit(vp.get_mouse_position())
+
+# Ground point under a screen position (the map's base plane; terrain relief is visual only).
+func _screen_ground_hit(mpos: Vector2) -> Array:
 	var origin: Vector3 = cam.project_ray_origin(mpos)
 	var dir: Vector3 = cam.project_ray_normal(mpos)
-	var to: Vector3 = origin + dir * ray_max_distance
-	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
-	var params := PhysicsRayQueryParameters3D.create(origin, to)
-	params.collision_mask = ray_collision_mask
-	params.collide_with_areas = false
-	params.hit_from_inside = true
-	var res: Dictionary = space.intersect_ray(params)
-	if res.size() > 0 and res.has("position"):
-		return [true, res["position"]]
-	if ray_fallback_to_plane:
-		var denom: float = dir.y
-		if absf(denom) >= 1e-6:
-			var t: float = (ground_y - origin.y) / denom
-			if t >= 0.0:
-				return [true, origin + dir * t]
-	return [false, Vector3.ZERO]
+	if absf(dir.y) < 1e-6:
+		return [false, Vector3.ZERO]
+	var t: float = (ground_y - origin.y) / dir.y
+	if t < 0.0:
+		return [false, Vector3.ZERO]
+	return [true, origin + dir * t]
 
 func _center_ground_hit() -> Array:
 	var vp: Viewport = get_viewport()
 	if vp == null:
 		return [false, Vector3.ZERO]
-	var size: Vector2 = vp.get_visible_rect().size
-	var mpos: Vector2 = size * 0.5
-	var origin: Vector3 = cam.project_ray_origin(mpos)
-	var dir: Vector3 = cam.project_ray_normal(mpos)
-	var to: Vector3 = origin + dir * ray_max_distance
-	var space: PhysicsDirectSpaceState3D = get_world_3d().direct_space_state
-	var params := PhysicsRayQueryParameters3D.create(origin, to)
-	params.collision_mask = ray_collision_mask
-	params.collide_with_areas = false
-	params.hit_from_inside = true
-	var res: Dictionary = space.intersect_ray(params)
-	if res.size() > 0 and res.has("position"):
-		return [true, res["position"]]
-	if ray_fallback_to_plane:
-		var denom: float = dir.y
-		if absf(denom) >= 1e-6:
-			var t: float = (ground_y - origin.y) / denom
-			if t >= 0.0:
-				return [true, origin + dir * t]
-	return [false, Vector3.ZERO]
+	return _screen_ground_hit(vp.get_visible_rect().size * 0.5)
 
 func _flat_xz_to_uv(x: float, z: float) -> Vector2:
 	var w: float = max(0.0001, bounds_max_x - bounds_min_x)

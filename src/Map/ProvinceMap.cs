@@ -72,6 +72,9 @@ public sealed class ProvinceMap
 		return new ProvinceMap(width, height, ids);
 	}
 
+	/// <summary>Row-major province id per pixel (width * height).</summary>
+	public ReadOnlySpan<int> Ids => _ids;
+
 	/// <summary>Province at pixel (x, y). x wraps around the map; y outside the map returns <see cref="NoProvince"/>.</summary>
 	public int GetIdAtPixel(int x, int y)
 	{
