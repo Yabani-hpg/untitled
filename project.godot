@@ -15,6 +15,10 @@ run/main_scene="uid://bb8vd44s3pbvd"
 config/features=PackedStringArray("4.4", "C#", "GL Compatibility")
 config/icon="res://icon.svg"
 
+[autoload]
+
+GameState="*res://src/Core/GameState.cs"
+
 [dotnet]
 
 project/assembly_name="untitled"

@@ -77,11 +77,6 @@ const SEAM_EPS := 0.02                           # tiny overlap to hide FP seams
 @export var globe_zoom_threshold: float = 0.85
 @export var globe_blend_time: float = 0.2
 
-@onready var ray: RayCast3D = $Camera3D/RayCast3D
-@onready var mask_texture: Texture2D = preload("res://map/provinces.png")
-
-var mask_image: Image
-
 var active_tween: Tween = null
 var velocity: Vector3 = Vector3.ZERO
 var edge_pan_velocity: Vector2 = Vector2.ZERO
@@ -119,7 +114,6 @@ var _curr_zoom: float
 var _wrap_tiles: Dictionary = {}   # key: int, value: Node3D
 
 func _ready() -> void:
-	mask_image = mask_texture.get_image()
 	_target_pos = global_transform.origin
 	_curr_zoom = cam.transform.origin.length()
 	_target_zoom = clampf(_curr_zoom, min_zoom, max_zoom)
@@ -417,24 +411,6 @@ func _unhandled_input(event: InputEvent) -> void:
 		else:
 			if kev.keycode == KEY_Q or kev.keycode == KEY_E:
 				_target_yaw = 0.0
-	if event is InputEventMouseButton and event.pressed:
-		if ray.is_colliding():
-			@warning_ignore("unused_variable")
-			var collision = ray.get_collision_point()
-			var collider = ray.get_collider()
-
-			if collider.name == "FlatWorld":
-				var uv = ray.get_collision_uv()
-				var pixel_pos = Vector2(
-					int(uv.x * mask_image.get_width()),
-					int(uv.y * mask_image.get_height())
-				)
-
-				mask_image.lock()
-				var color = mask_image.get_pixelv(pixel_pos)
-				mask_image.unlock()
-
-				print("Clicked province color: ", color)
 # ---- Helpers ---------------------------------------------------------------
 func _measure_tile_x(root: Node3D) -> Dictionary:
 	var min_x: float = INF

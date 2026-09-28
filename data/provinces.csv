@@ -1,0 +1,12 @@
+# Province definitions. One row per colour painted in map/provinces.png.
+# id;color;name;terrain;owner
+# - id:      positive integer, unique. Used everywhere in game logic and saves, so never renumber.
+# - color:   hex RGB of the province in map/provinces.png, unique.
+# - terrain: free-form for now (plains, hills, sea, wasteland, ...). "sea" marks water provinces.
+# - owner:   country tag from data/countries.json, or empty for unowned.
+# tools/sync_provinces.py appends a row for every colour in the map that is not listed here.
+id;color;name;terrain;owner
+1;#0012ff;Kawakami;hills;SHN
+2;#ff0000;Shizuoka;plains;SRG
+3;#000000;Unassigned Sea;sea;
+4;#ffffff;Unassigned Land;wasteland;

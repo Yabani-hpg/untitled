@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=3 uid="uid://cyfurr3kc6nlw"]
+[gd_scene load_steps=30 format=3 uid="uid://cyfurr3kc6nlw"]
 
 [ext_resource type="Script" uid="uid://2unnrnjnrqwe" path="res://scenes/camera_rig.gd" id="1_ig7tw"]
 [ext_resource type="Texture2D" uid="uid://cd4qk132laylx" path="res://map/landmap.png" id="3_jkv2x"]
@@ -17,6 +17,9 @@
 [ext_resource type="Texture2D" uid="uid://dymas4lmve1na" path="res://map/terrain/river_diffuse.png" id="10_dp3eg"]
 [ext_resource type="Texture2D" uid="uid://c7vrajwokdjtv" path="res://map/terrain/water_normal.png" id="10_w48qg"]
 [ext_resource type="Texture2D" uid="uid://drwxa4fve7vbq" path="res://map/terrain/river_normal.png" id="11_0ld40"]
+[ext_resource type="Script" path="res://src/Map/ProvincePicker.cs" id="20_picker"]
+[ext_resource type="Script" path="res://src/Map/ProvinceHighlight.cs" id="21_highlight"]
+[ext_resource type="Script" path="res://src/UI/SelectedProvinceLabel.cs" id="22_provlabel"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_h2yge"]
 render_priority = 10
@@ -215,10 +218,6 @@ size = 80.486
 near = 10.0
 far = 10000.0
 
-[node name="RayCast3D" type="RayCast3D" parent="CameraRig/Camera3D"]
-target_position = Vector3(0, 0, -1)
-collide_with_areas = true
-
 [node name="Earth" type="Node3D" parent="."]
 
 [node name="FlatWorld" type="MeshInstance3D" parent="Earth"]
@@ -294,3 +293,24 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_272bh")
+
+[node name="ProvincePicker" type="Node" parent="."]
+script = ExtResource("20_picker")
+FlatWorldPath = NodePath("../Earth/FlatWorld")
+
+[node name="ProvinceHighlight" type="Node" parent="."]
+script = ExtResource("21_highlight")
+FlatWorldPath = NodePath("../Earth/FlatWorld")
+
+[node name="HudLayer" type="CanvasLayer" parent="."]
+
+[node name="SelectedProvinceLabel" type="Label" parent="HudLayer"]
+visible = false
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 336.0
+offset_bottom = 96.0
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 18
+script = ExtResource("22_provlabel")

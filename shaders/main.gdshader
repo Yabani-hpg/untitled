@@ -60,6 +60,19 @@ uniform vec2  wave_dir_1   = vec2( 1.0,  0.2);
 uniform vec2  wave_dir_2   = vec2(-0.6,  1.0);
 uniform float wave_shore_falloff_m = 10.0;
 
+// ===== Province selection (driven by src/Map/ProvinceHighlight.cs) =====
+uniform sampler2D province_map : filter_nearest, repeat_enable;
+uniform vec3  selected_province_color = vec3(-1.0); // map color of the selected province; negative = none
+uniform vec3  selection_tint_color      = vec3(1.0, 0.85, 0.35);
+uniform float selection_tint_strength   : hint_range(0.0, 1.0) = 0.25;
+uniform float selection_border_strength : hint_range(0.0, 1.0) = 0.9;
+uniform float selection_border_px       = 2.0; // outline width in screen pixels
+
+bool is_selected_province(vec2 p) {
+    vec3 diff = abs(texture(province_map, p).rgb - selected_province_color);
+    return all(lessThan(diff, vec3(0.5 / 255.0)));
+}
+
 // ===== Rivers (mask & materials) =====
 // IMPORTANT: import rivers.png with Filter=Nearest and Mipmaps=Off.
 uniform sampler2D river_mask_tex : source_color, filter_nearest, repeat_disable;
@@ -375,6 +388,17 @@ void fragment() {
     // compose color
     vec3 shore_mix = mix(sea_animated, land_col, land_mix);
     ALBEDO = mix(shore_mix, foam_color, foam_strength * foam_mask);
+
+    // selected province: light tint inside, outline along its edge
+    if (selected_province_color.r >= 0.0 && is_selected_province(uv)) {
+        vec2 texel = 1.0 / vec2(textureSize(province_map, 0));
+        vec2 step_uv = max(texel, fwidth(uv) * selection_border_px);
+        bool inside = is_selected_province(uv + vec2(step_uv.x, 0.0))
+                   && is_selected_province(uv - vec2(step_uv.x, 0.0))
+                   && is_selected_province(uv + vec2(0.0, step_uv.y))
+                   && is_selected_province(uv - vec2(0.0, step_uv.y));
+        ALBEDO = mix(ALBEDO, selection_tint_color, inside ? selection_tint_strength : selection_border_strength);
+    }
 
     // final roughness
     float rgh = mix(sea_roughness, land_roughness, land_mix);
