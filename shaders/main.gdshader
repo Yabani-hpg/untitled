@@ -2,7 +2,8 @@ shader_type spatial;
 render_mode cull_back, depth_draw_opaque;
 
 // ===== Height / base UVs =====
-uniform sampler2D heightmap : source_color;
+// R = height (sea level = sea_level_norm), G = coast field, B = river field; see tools/bake_map_fields.py
+uniform sampler2D heightmap : filter_linear_mipmap, repeat_enable;
 uniform float     sea_level_norm : hint_range(0.0, 1.0, 0.001) = 0.5019608;
 uniform float     height_scale   = 80.0;
 uniform float     terrain_base_y = 0.0;
@@ -12,11 +13,13 @@ uniform vec2      uv_offset      = vec2(0.0, 0.0);
 // ===== Land base =====
 uniform sampler2D albedo_tex : source_color, filter_linear_mipmap, repeat_enable;
 uniform vec2      albedo_tiling = vec2(4.0, 4.0);
-uniform sampler2D normal_tex : hint_normal, filter_linear_mipmap, repeat_enable; // declared (not used here)
+// map/normalmap.png: R = -dh/dx, G = -dh/dz (image-down / DirectX convention), decoded to a world normal below
+uniform sampler2D normal_tex : hint_normal, filter_linear_mipmap, repeat_enable;
+uniform float     terrain_normal_strength = 1.0;
 
 // ===== Detail (micro) =====
 uniform sampler2D detail_tex      : source_color, filter_linear_mipmap, repeat_enable;
-uniform sampler2D detail_norm_tex : hint_normal,  filter_linear_mipmap, repeat_enable; // declared (not used here)
+uniform sampler2D detail_norm_tex : hint_normal,  filter_linear_mipmap, repeat_enable;
 uniform vec2  detail_tiling          = vec2(24.0, 24.0);
 uniform float detail_color_strength  = 0.25;
 uniform float detail_normal_strength = 0.6;
@@ -26,20 +29,20 @@ uniform float albedo_lod_scale  = 0.9;
 uniform float normal_lod_scale  = 0.9;
 
 // ===== Shoreline + foam =====
+uniform float coast_softness_texels = 0.35; // minimum coastline blend, in heightmap texels
 uniform float shoreline_width_m = 8.0;
-uniform float foam_width_m      = 1.2;
+uniform float foam_width_texels = 1.5;   // foam band width from the coastline
 uniform vec3  foam_color        = vec3(0.95, 0.98, 1.0);
 uniform float foam_strength     = 0.7;
 uniform float foam_speed        = 0.15;
 uniform vec2  foam_dir          = vec2(1.0, 0.3);
 uniform float foam_noise_scale  = 8.0;
 uniform float foam_threshold    = 0.45;
-uniform float foam_offset_m     = 0.4;   // move foam slightly underwater
-uniform float foam_aa_mult      = 1.5;   // derivative AA
-uniform float foam_land_fade    = 1.5;   // meters to fade foam on land
+uniform float foam_aa_mult      = 1.0;   // derivative AA
 
 // ===== Sea look =====
-uniform sampler2D sea_tex;
+// Sea color by depth: left = deepest (height 0), right = sea level
+uniform sampler2D water_gradient : source_color, filter_linear, repeat_disable;
 uniform vec3  shallow_tint     = vec3(0.08, 0.20, 0.25);
 uniform float shallow_strength = 0.35;
 uniform float sea_roughness    = 0.05;
@@ -51,6 +54,7 @@ uniform vec2  water_norm_tiling = vec2(8.0, 8.0);
 uniform vec2  water_scroll_1    = vec2( 0.03,  0.00);
 uniform vec2  water_scroll_2    = vec2(-0.02,  0.01);
 uniform float water_norm_strength = 0.7;
+uniform float sea_normal_strength = 0.35; // lighting relief from the animated normals
 
 // ===== Vertex waves =====
 uniform float wave_amp_m   = 0.35;
@@ -78,7 +82,6 @@ bool is_selected_province(vec2 p) {
 uniform sampler2D river_mask_tex : source_color, filter_nearest, repeat_disable;
 uniform vec2  river_mask_tiling  = vec2(1.0, 1.0);
 uniform vec2  river_mask_offset  = vec2(0.0, 0.0);
-uniform float river_threshold    = 0.5;  // AA threshold on per-pixel river signal
 uniform float river_softness     = 1.75; // edge feather (raise for smoother)
 
 // Materials
@@ -120,9 +123,11 @@ uniform float river_flow_mult_source  = 0.85;  // green
 uniform float river_flow_mult_injoin  = 1.15;  // red
 uniform float river_flow_mult_outflow = 0.95;  // yellow
 
-// Texel-space dilation so 1px lines become ribbons
-uniform float river_width_texels = 2.5;  // grow radius in texels (try 2–4)
-uniform float river_edge_expand  = 0.75; // extra screen-space widening (0..2)
+// River half-width in heightmap texels (max FIELD_RANGE_TEXELS)
+uniform float river_width_texels = 2.5;
+
+// Distance range baked into the coast/river fields; must match RANGE in tools/bake_map_fields.py
+const float FIELD_RANGE_TEXELS = 8.0;
 
 // ---- Palette constants (0..1) ----
 const vec3 COL_SRC = vec3(0.0, 1.0, 0.0);                 // green (source)
@@ -139,44 +144,11 @@ float color_match(vec3 c, vec3 t, float tol, float aa) {
     return 1.0 - smoothstep(tol - aa, tol + aa, d); // 1 when close to target
 }
 
-// Classify any river color (union) — used in dilation
-float river_classify_union(vec3 c, float tol, float aa_col) {
-    float m_src = color_match(c, COL_SRC, tol, aa_col);
-    float m_in  = color_match(c, COL_IN,  tol, aa_col);
-    float m_out = color_match(c, COL_OUT, tol, aa_col);
-    float m_b0  = color_match(c, B0, tol, aa_col);
-    float m_b1  = color_match(c, B1, tol, aa_col);
-    float m_b2  = color_match(c, B2, tol, aa_col);
-    float m_b3  = color_match(c, B3, tol, aa_col);
-    return max(max(max(m_b0, m_b1), max(m_b2, m_b3)), max(max(m_src, m_in), m_out));
-}
-
-// Texel-space dilation (no textureLod; rely on import: Mipmaps Off + Nearest)
-float river_dilate(vec2 ruv, float texels, float tol, float aa_base) {
-    // textureSize() is OK in Compatibility fragment shaders
-    ivec2 sz_i = textureSize(river_mask_tex, 0);
-    float sx = float(max(sz_i.x, 1));
-    float sy = float(max(sz_i.y, 1));
-    vec2  texel = vec2(1.0 / sx, 1.0 / sy);
-    vec2  o = texel * texels;
-
-    float m = 0.0;
-    m = max(m, river_classify_union(texture(river_mask_tex, ruv                ).rgb, tol, aa_base));
-    m = max(m, river_classify_union(texture(river_mask_tex, ruv + vec2( o.x, 0.0)).rgb, tol, aa_base));
-    m = max(m, river_classify_union(texture(river_mask_tex, ruv + vec2(-o.x, 0.0)).rgb, tol, aa_base));
-    m = max(m, river_classify_union(texture(river_mask_tex, ruv + vec2(0.0,  o.y)).rgb, tol, aa_base));
-    m = max(m, river_classify_union(texture(river_mask_tex, ruv + vec2(0.0, -o.y)).rgb, tol, aa_base));
-    m = max(m, river_classify_union(texture(river_mask_tex, ruv + vec2( o.x,  o.y)).rgb, tol, aa_base));
-    m = max(m, river_classify_union(texture(river_mask_tex, ruv + vec2( o.x, -o.y)).rgb, tol, aa_base));
-    m = max(m, river_classify_union(texture(river_mask_tex, ruv + vec2(-o.x,  o.y)).rgb, tol, aa_base));
-    m = max(m, river_classify_union(texture(river_mask_tex, ruv + vec2(-o.x, -o.y)).rgb, tol, aa_base));
-    return m; // 0..1
-}
-
 // ---------------- VERTEX ----------------
 void vertex() {
     vec2 h_uv = UV * uv_tiling + uv_offset;
-    float h   = texture(heightmap, h_uv).r;
+    vec3 hm   = texture(heightmap, h_uv).rgb;
+    float h   = hm.r;
 
     float base_y = (h - sea_level_norm) * height_scale + terrain_base_y;
     float d_m    = (h - sea_level_norm) * height_scale;
@@ -194,26 +166,13 @@ void vertex() {
     float shore_fade = smoothstep(-wave_shore_falloff_m, 0.0, d_m);
     float wave_y     = wave_amp_m * 0.5 * (w1 + w2) * shore_fade;
 
+    // water surface sits flat at sea level; depth only drives color
     float is_water = step(d_m, 0.0);
-    VERTEX.y = base_y + is_water * wave_y;
+    VERTEX.y = mix(base_y, terrain_base_y + wave_y, is_water);
 
-    // Optional trench carve (sample with texture(); relies on Mipmaps Off)
+    // Optional trench carve along rivers
     if (river_geo_depth_m > 0.0) {
-        vec2 ruv = h_uv * river_mask_tiling + river_mask_offset;
-        vec3 c   = texture(river_mask_tex, ruv).rgb;
-
-        float is_river_px =
-            max(max( // blues
-                max(color_match(c, B0, river_color_tol, 0.0),
-                    color_match(c, B1, river_color_tol, 0.0)),
-                max(color_match(c, B2, river_color_tol, 0.0),
-                    color_match(c, B3, river_color_tol, 0.0))
-            ),
-            max( // nodes
-                max(color_match(c, COL_SRC, river_color_tol, 0.0),
-                    color_match(c, COL_IN,  river_color_tol, 0.0)),
-                color_match(c, COL_OUT, river_color_tol, 0.0)));
-
+        float is_river_px = smoothstep(1.0 - river_width_texels / FIELD_RANGE_TEXELS, 1.0, hm.b);
         float is_land_v = step(0.0, d_m);
         VERTEX.y -= river_geo_depth_m * is_river_px * is_land_v;
     }
@@ -222,12 +181,14 @@ void vertex() {
 // ---------------- FRAGMENT ----------------
 void fragment() {
     vec2  uv = UV;
-    float h  = texture(heightmap, uv).r;
+    vec3  hm = texture(heightmap, uv).rgb;
+    float h  = hm.r;
     float d_m = (h - sea_level_norm) * height_scale;
-
-    // Land/sea mix
     float w = max(shoreline_width_m, 0.0001);
-    float land_mix = smoothstep(-w, w, d_m); // 0=sea, 1=land
+
+    // Land/sea from the baked coast field: its 0.5 contour is the coastline at any zoom
+    float coast_aa = max(fwidth(hm.g) * 0.75, coast_softness_texels / (2.0 * FIELD_RANGE_TEXELS));
+    float land_mix = smoothstep(0.5 - coast_aa, 0.5 + coast_aa, hm.g); // 0=sea, 1=land
     float sea_mix  = 1.0 - land_mix;
 
     // Land base (with micro detail color)
@@ -242,41 +203,11 @@ void fragment() {
     vec3  det_mul = mix(vec3(1.0), det_col * 2.0, detail_color_strength * dw);
     vec3  land_col = base_col * det_mul;
 
-    // ===== Rivers (palette + dilation + smooth coverage) =====
-    float river_cov = 0.0;
-    float rraw = 0.0;
-    float r_aa = 0.0;
-    {
-        vec2 ruv = (UV * river_mask_tiling) + river_mask_offset;
-
-        // very small AA for color matching
-        float aa_col = max(0.25 * river_softness * length(fwidth(ruv)), 1e-5);
-
-        // 1) texel-space dilation (Paradox-style 1px→ribbon)
-        float rraw_center = river_dilate(ruv, river_width_texels, river_color_tol, aa_col);
-
-        // 2) 4-tap screen-space supersample to soften stair-steps
-        vec2 ddx = dFdx(ruv);
-        vec2 ddy = dFdy(ruv);
-        float rraw_xp = river_dilate(ruv + ddx * 0.5, river_width_texels, river_color_tol, aa_col);
-        float rraw_xn = river_dilate(ruv - ddx * 0.5, river_width_texels, river_color_tol, aa_col);
-        float rraw_yp = river_dilate(ruv + ddy * 0.5, river_width_texels, river_color_tol, aa_col);
-        float rraw_yn = river_dilate(ruv - ddy * 0.5, river_width_texels, river_color_tol, aa_col);
-
-        // averaged raw signal (0..1), smoother edges
-        rraw = (rraw_center + rraw_xp + rraw_xn + rraw_yp + rraw_yn) * 0.2;
-
-        // 3) convert to coverage with angle-aware AA width
-        r_aa = max(length(vec2(dFdx(rraw), dFdy(rraw))) * river_softness * (1.0 + river_edge_expand), 1e-5);
-        float cov_soft = smoothstep(river_threshold - r_aa, river_threshold + r_aa, rraw);
-
-        // 4) guarantee fully opaque center so land can't bleed through
-        float core = smoothstep(river_threshold + 2.0 * r_aa, 1.0, rraw); // 0 edge → 1 center
-        float cov   = max(cov_soft, core);
-
-        // restrict rivers to land
-        river_cov = cov * land_mix;
-    }
+    // ===== Rivers (baked distance field, one fetch) =====
+    float rraw = hm.b;                                   // 1 on the river line, 0 at FIELD_RANGE_TEXELS away
+    float river_thr = 1.0 - river_width_texels / FIELD_RANGE_TEXELS;
+    float r_aa = max(fwidth(rraw) * river_softness, 1e-4);
+    float river_cov = smoothstep(river_thr - r_aa, river_thr + r_aa, rraw) * land_mix;
 
     if (river_cov > 0.0) {
         // classify width & nodes at the center sample
@@ -294,20 +225,21 @@ void fragment() {
         float m_b2  = color_match(c, B2, river_color_tol, aa_col2);
         float m_b3  = color_match(c, B3, river_color_tol, aa_col2);
 
-        float wsum = m_b0 + m_b1 + m_b2 + m_b3 + 1e-5;
-        float surf_mult = (
+        // texels beside the painted line carry no class; they keep the base tiling
+        float wsum = m_b0 + m_b1 + m_b2 + m_b3;
+        float surf_mult = wsum > 0.001 ? (
             m_b0 * river_surf_mult_narrowest +
             m_b1 * river_surf_mult_narrow    +
             m_b2 * river_surf_mult_wide      +
             m_b3 * river_surf_mult_widest
-        ) / wsum;
+        ) / wsum : 1.0;
 
-        float bottom_mult = (
+        float bottom_mult = wsum > 0.001 ? (
             m_b0 * river_bottom_mult_narrowest +
             m_b1 * river_bottom_mult_narrow    +
             m_b2 * river_bottom_mult_wide      +
             m_b3 * river_bottom_mult_widest
-        ) / wsum;
+        ) / wsum : 1.0;
 
         vec2 t_surf   = river_surface_tiling * surf_mult;
         vec2 t_bottom = river_bottom_tiling  * bottom_mult;
@@ -340,9 +272,8 @@ void fragment() {
         float r_fake = clamp(0.5 + 0.5 * rsn.z, 0.0, 1.0);
         r_surf_col  *= mix(0.9, 1.1, r_fake);
 
-        // banks vs center (use our smoothed rraw / width r_aa)
-        float edge      = clamp(1.0 - abs(rraw - river_threshold) / (r_aa + 1e-6), 0.0, 1.0);
-        float center    = 1.0 - edge;
+        // banks vs center
+        float center    = clamp((rraw - river_thr) / max(1.0 - river_thr, 1e-4), 0.0, 1.0);
         float depth_mix = pow(center, river_depth_power);
         vec3  river_col = mix(r_bottom, r_surf_col, depth_mix);
 
@@ -353,7 +284,7 @@ void fragment() {
     }
 
     // ===== Sea base & shoreline =====
-    vec3 sea_col = texture(sea_tex, uv).rgb;
+    vec3 sea_col = texture(water_gradient, vec2(clamp(h / sea_level_norm, 0.0, 1.0), 0.5)).rgb;
 
     // shallow tint (underwater only)
     float shallow = (1.0 - step(0.0, d_m)) * (1.0 - smoothstep(-w, 0.0, d_m));
@@ -374,16 +305,15 @@ void fragment() {
     float water_shade_mod = mix(1.0, water_shade, water_norm_strength * water_mask);
     vec3  sea_animated = sea_tinted * water_shade_mod;
 
-    // foam (pushed underwater, AA'd, killed on land)
-    float fw = max(foam_width_m, 0.0001);
-    float d_f = d_m + foam_offset_m;
-    float aa  = max(fwidth(d_m) * foam_aa_mult, 0.00005);
-    float foam_band = 1.0 - smoothstep(0.0, fw + aa, abs(d_f));
+    // foam: a band along the coastline (distance from the baked coast field), broken up by noise
+    float coast_dist = (hm.g - 0.5) * 2.0 * FIELD_RANGE_TEXELS;   // texels; < 0 at sea
+    float fw = max(foam_width_texels, 0.0001);
+    float faa = max(fwidth(coast_dist) * foam_aa_mult, 1e-4);
+    float foam_band = 1.0 - smoothstep(fw - faa, fw + faa, -coast_dist);
     vec2  foam_uv   = uv * foam_noise_scale + foam_dir * TIME * foam_speed;
     float foam_noise = texture(detail_tex, foam_uv).r;
     float foam_gate  = smoothstep(foam_threshold, 1.0, foam_noise);
-    float land_kill  = 1.0 - smoothstep(0.0, foam_land_fade, d_m);
-    float foam_mask  = foam_band * foam_gate * land_kill * (1.0 - land_mix);
+    float foam_mask  = foam_band * foam_gate * (1.0 - land_mix);
 
     // compose color
     vec3 shore_mix = mix(sea_animated, land_col, land_mix);
@@ -405,4 +335,12 @@ void fragment() {
           rgh = mix(rgh, 0.6,             foam_mask);  // foam rougher
           rgh = mix(rgh, river_roughness, river_cov);  // rivers smoother on land
     ROUGHNESS = clamp(rgh, 0.0, 1.0);
+
+    // normals: terrain relief on land, animated ripples at sea, calm rivers
+    vec2 slope_land = (texture(normal_tex, uv).rg * 2.0 - 1.0) * terrain_normal_strength;
+    slope_land += (texture(detail_norm_tex, uv_det).rg * 2.0 - 1.0) * detail_normal_strength * (1.0 - dw);
+    vec2 slope_sea = (wn1.xy + wn2.xy) * sea_normal_strength;
+    vec2 slope = mix(slope_sea, slope_land, land_mix) * (1.0 - 0.8 * river_cov);
+    vec3 n_obj = normalize(vec3(slope.x, 1.0, slope.y));
+    NORMAL = normalize((VIEW_MATRIX * (MODEL_MATRIX * vec4(n_obj, 0.0))).xyz);
 }

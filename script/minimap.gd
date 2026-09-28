@@ -42,7 +42,6 @@ func _ready() -> void:
 	# Make sure this control receives input and sits on top
 	mouse_filter = Control.MOUSE_FILTER_STOP
 	z_index = 1000
-	print("[Minimap] READY rect=", get_rect(), " global=", get_global_rect())
 
 	# Ensure the parent Panel doesn't swallow events
 	var p := get_parent()
@@ -51,8 +50,6 @@ func _ready() -> void:
 		# or Control.MOUSE_FILTER_IGNORE also works
 
 	# Optional: visibility of hover is a quick sanity check
-	mouse_entered.connect(func(): print("[Minimap] mouse_entered"))
-	mouse_exited.connect(func(): print("[Minimap] mouse_exited"))
 
 
 func _process(_delta: float) -> void:
@@ -181,16 +178,13 @@ func _gui_input(event: InputEvent) -> void:
 			if mb.pressed:
 				_dragging = true
 				_drag_prefer_x = _camera.global_position.x if _camera != null else 0.0
-				print("[Minimap] click @ local=", mb.position)
 				if center_on_click:
 					_pan_to_local_pos(mb.position)
 					accept_event()
 			else:
 				_dragging = false
-				print("[Minimap] release")
 	elif event is InputEventMouseMotion and _dragging and drag_to_pan:
 		var mm := event as InputEventMouseMotion
-		print("[Minimap] drag @ local=", mm.position)
 		_pan_to_local_pos(mm.position)
 		accept_event()
 
@@ -228,9 +222,6 @@ func _pan_to_local_pos(local_pos: Vector2) -> void:
 func _request_pan(xz: Vector2) -> void:
 	# Debug: see what we’re trying to do
 	# (You can comment these out once confirmed)
-	print("[Minimap] pan request -> XZ: ", xz, 
-		  " | receiver=", _pan_receiver, 
-		  " | smooth=", smooth_pan)
 
 	if _pan_receiver != null and _pan_receiver.has_method("pan_to_world_xz"):
 		_pan_receiver.call("pan_to_world_xz", xz, smooth_pan)
@@ -243,11 +234,9 @@ func _request_pan(xz: Vector2) -> void:
 			if rig is Node3D:
 				var y := (rig as Node3D).global_position.y
 				(rig as Node3D).global_position = Vector3(xz.x, y, xz.y)
-				print("[Minimap] Fallback: moved camera parent to ", (rig as Node3D).global_position)
 				return
 			# If your camera has no Node3D parent that moves, move the camera.
 			_camera.global_position = Vector3(xz.x, _camera.global_position.y, xz.y)
-			print("[Minimap] Fallback: moved camera to ", _camera.global_position)
 			return
 
 	push_warning("No pan receiver with 'pan_to_world_xz' and fallback disabled; cannot pan.")
@@ -262,18 +251,15 @@ func _input(event: InputEvent) -> void:
 				if mb.pressed:
 					_dragging = true
 					_drag_prefer_x = _camera.global_position.x if _camera != null else 0.0
-					print("[Minimap] _input CLICK @ local=", get_local_mouse_position())
 					if center_on_click:
 						_pan_to_local_pos(get_local_mouse_position())
 				else:
 					_dragging = false
-					print("[Minimap] _input RELEASE")
 				accept_event()  # stop propagation so nothing above eats it
 	elif event is InputEventMouseMotion and _dragging and drag_to_pan:
 		var gp2: Vector2 = get_viewport().get_mouse_position()
 		if get_global_rect().has_point(gp2):
 			var local := get_local_mouse_position()
-			print("[Minimap] _input DRAG @ local=", local)
 			_pan_to_local_pos(local)
 			accept_event()
 
