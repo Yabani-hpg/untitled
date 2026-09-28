@@ -1,6 +1,7 @@
 """Hand-authored region overrides (tools/data/regions/*.json), applied on top of the admin-1 provinces.
 
-A file replaces every province pixel inside its "area" with its own regions:
+A file replaces every province pixel inside its "area" (countries, optionally limited to named provinces
+or a latitude range) with its own regions:
   - oasis regions claim the pixels within radius_deg of their seed,
   - valley regions split the "valley" (land within radius_px of the named rivers, plus boxes and
     circles) by nearest seed,
@@ -50,15 +51,17 @@ def _nearest_seed(mask, regions_spec):
     return ys, xs, np.array(owner)[nearest]
 
 
-def apply(spec, regions, tags, land, water, first_index, admin_names):
-    """Returns (regions, metas). New regions get indices first_index, first_index + 1, ...; metas are
-    record-like dicts for them, in the same order."""
+def apply(spec, regions, tags, names, land, water, first_index, admin_names):
+    """tags / names: country tag and name per region index. Returns (regions, metas). New regions get
+    indices first_index, first_index + 1, ...; metas are record-like dicts for them, in the same order."""
     lat, lon = _lat_lon_grids()
     tag_px = tags[regions]
 
     area = np.zeros(regions.shape, dtype=bool)
     for a in spec["area"]:
         part = land & (tag_px == a["country"])
+        if "names" in a:
+            part &= np.isin(names, a["names"])[regions]
         if "min_lat" in a:
             part &= lat >= a["min_lat"]
         if "max_lat" in a:

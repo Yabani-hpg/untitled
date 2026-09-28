@@ -114,8 +114,8 @@ id;color;name;terrain;owner
 106;#b9bba1;Gansu;mountains;CHN
 107;#009a0a;Bayanhongor;mountains;MNG
 108;#88dc68;Ömnögovi;hills;MNG
-109;#4edd47;Gorno-Altay;mountains;RUS
-110;#ca7fd1;Ústecký;hills;CZE
+109;#4edd47;Gorno-Altay;hills;RUS
+110;#ca7fd1;Ústecký;mountains;CZE
 111;#c72ce7;Sachsen;mountains;DEU
 112;#fcc2fd;Liberecký;mountains;CZE
 113;#b3d478;Karlovarský;plains;CZE
@@ -146,13 +146,13 @@ id;color;name;terrain;owner
 138;#9332d2;Jelgava;plains;LVA
 139;#2c803f;Ilukstes;plains;LVA
 140;#58f039;Daugavpils;plains;LVA
-141;#9ddb1f;Troms;hills;NOR
+141;#9ddb1f;Troms;mountains;NOR
 142;#4df2ac;Norrbotten;hills;SWE
 143;#4d41d9;Nordland;mountains;NOR
-144;#c926c2;Västerbotten;hills;SWE
+144;#c926c2;Västerbotten;plains;SWE
 145;#20ae46;Jämtland;plains;SWE
 146;#5fd17f;Nord-Trøndelag;hills;NOR
-147;#e3d64d;Sør-Trøndelag;hills;NOR
+147;#e3d64d;Sør-Trøndelag;mountains;NOR
 148;#f087f5;Hedmark;hills;NOR
 149;#33fffe;Dalarna;hills;SWE
 150;#e2c471;Värmland;hills;SWE
@@ -289,7 +289,7 @@ id;color;name;terrain;owner
 281;#270d6d;Dungannon;plains;GBR
 282;#3df409;Armagh;plains;GBR
 283;#7b4a50;Newry and Mourne;plains;GBR
-284;#d247a7;Lower Silesian;hills;POL
+284;#d247a7;Lower Silesian;mountains;POL
 285;#a085c0;Královéhradecký;mountains;CZE
 286;#56f39e;Opole;plains;POL
 287;#e19d62;Olomoucký;mountains;CZE
@@ -312,7 +312,7 @@ id;color;name;terrain;owner
 304;#3bee49;Northern;plains;SLE
 305;#7eb2f0;Faranah;plains;GIN
 306;#6248a2;Kindia;mountains;GIN
-307;#de2fc7;Mamou;hills;GIN
+307;#de2fc7;Mamou;mountains;GIN
 308;#771a2c;Dabola;hills;GIN
 309;#bcd8c7;Forécariah;mountains;GIN
 310;#24f6fb;Guéckédou;hills;GIN
@@ -435,8 +435,8 @@ id;color;name;terrain;owner
 427;#d78101;Oyo;hills;NGA
 428;#5afdb3;Lagos;plains;NGA
 429;#e69b68;Ouémé;plains;BEN
-430;#eedc94;Cabinda;plains;AGO
-431;#65e614;Kouilou;hills;COG
+430;#eedc94;Cabinda;hills;AGO
+431;#65e614;Kouilou;mountains;COG
 432;#cf7ff4;Zala;plains;HUN
 433;#5152fe;Somogy;plains;HUN
 434;#9af2b7;Viroviticko-Podravska;mountains;HRV
@@ -500,7 +500,7 @@ id;color;name;terrain;owner
 492;#b4f7e1;Pedernales;mountains;DOM
 493;#86ff09;Lac;plains;TCD
 494;#e099e0;Borno;plains;NGA
-495;#b63e6d;Al Jahrah;hills;KWT
+495;#b63e6d;Al Jahrah;plains;KWT
 496;#d5f70c;Al-Basrah;plains;IRQ
 497;#179d3b;Al-Muthannia;hills;IRQ
 498;#689d1c;Jutiapa;mountains;GTM
@@ -514,7 +514,7 @@ id;color;name;terrain;owner
 506;#cbcbad;Kalimantan Barat;hills;IDN
 507;#74ecab;Salzburg;mountains;AUT
 508;#c4fcac;Belluno;mountains;ITA
-509;#f038c5;Kärnten;mountains;AUT
+509;#f038c5;Kärnten;hills;AUT
 510;#f5872c;Udine;mountains;ITA
 511;#a3c9ca;Monaco;mountains;MCO
 512;#94f4dc;Timbuktu;plains;MLI
@@ -527,7 +527,7 @@ id;color;name;terrain;owner
 519;#b0358f;Southern;hills;RWA
 520;#063727;Ngozi;hills;BDI
 521;#468a48;Cibitoke;mountains;BDI
-522;#f68bd6;Western;mountains;RWA
+522;#f68bd6;Western;hills;RWA
 523;#82e349;Kayanza;hills;BDI
 524;#d44730;Rakhine;mountains;MMR
 525;#f24a61;Chittagong;hills;BGD
@@ -604,7 +604,7 @@ id;color;name;terrain;owner
 596;#8cb8d2;Putumayo;plains;COL
 597;#bbe59a;Nickerie;plains;SUR
 598;#6515a8;Marowijne;plains;SUR
-599;#31fcb8;Tarija;hills;BOL
+599;#31fcb8;Tarija;mountains;BOL
 600;#cdc1cf;Boquerón;plains;PRY
 601;#bc0d8f;Formosa;plains;ARG
 602;#bd67c6;Presidente Hayes;plains;PRY
@@ -653,7 +653,7 @@ id;color;name;terrain;owner
 645;#eb7785;Nikšic;mountains;MNE
 646;#4ccabf;Sisacko-Moslavacka;hills;HRV
 647;#e81ac5;Banja Luka;mountains;BIH
-648;#935a6b;Brodsko-Posavska;plains;HRV
+648;#935a6b;Brodsko-Posavska;hills;HRV
 649;#473f77;Una-Sana;mountains;BIH
 650;#456263;Karlovacka;mountains;HRV
 651;#992cb6;Zadarska;mountains;HRV
@@ -781,11 +781,11 @@ id;color;name;terrain;owner
 773;#5fb5a8;Amur;hills;RUS
 774;#74571b;Yevrey;hills;RUS
 775;#3b419e;Khabarovsk;hills;RUS
-776;#f08375;Primor'ye;hills;RUS
+776;#f08375;Primor'ye;mountains;RUS
 777;#6db0d1;Jilin;plains;CHN
 778;#b7531d;Hamgyŏng-bukto;mountains;PRK
 779;#4d8a21;Ryanggang;hills;PRK
-780;#4422fd;Chagang-do;hills;PRK
+780;#4422fd;Chagang-do;mountains;PRK
 781;#8df0de;Liaoning;hills;CHN
 782;#c0f693;P'yŏngan-bukto;mountains;PRK
 783;#28ee1d;Sirdaryo;hills;UZB
@@ -814,7 +814,7 @@ id;color;name;terrain;owner
 806;#df4b5e;Hatay;mountains;TUR
 807;#d49a03;Idlib;hills;SYR
 808;#0a0a66;Lattakia;mountains;SYR
-809;#bea8d0;As-Sulaymaniyah;mountains;IRQ
+809;#bea8d0;As-Sulaymaniyah;hills;IRQ
 810;#63350e;Kordestan;mountains;IRN
 811;#a75c0f;Kermanshah;hills;IRN
 812;#7cc2e7;Diyala;plains;IRQ
@@ -836,7 +836,7 @@ id;color;name;terrain;owner
 828;#182005;Bhojpur;mountains;NPL
 829;#da4a32;Mechi;mountains;NPL
 830;#c0f2e8;Kachin;mountains;MMR
-831;#a13c0e;Sagaing;hills;MMR
+831;#a13c0e;Sagaing;mountains;MMR
 832;#ed40f0;Nagaland;mountains;IND
 833;#2f2ac7;Manipur;mountains;IND
 834;#974c73;Mizoram;mountains;IND
@@ -943,7 +943,7 @@ id;color;name;terrain;owner
 935;#15d872;Ouham;plains;CAF
 936;#c7a530;Mandoul;plains;TCD
 937;#1f3663;Logone Oriental;plains;TCD
-938;#627dfc;Ouham-Pendé;plains;CAF
+938;#627dfc;Ouham-Pendé;hills;CAF
 939;#d1acdc;Sud;plains;CMR
 940;#ef0439;Wouleu-Ntem;plains;GAB
 941;#790541;Sangha;plains;COG
@@ -962,7 +962,7 @@ id;color;name;terrain;owner
 954;#f6337e;Nord;hills;CMR
 955;#f24f59;Adamawa;hills;NGA
 956;#345949;Adamaoua;hills;CMR
-957;#f5cb6e;Taraba;hills;NGA
+957;#f5cb6e;Taraba;mountains;NGA
 958;#9c8bf4;Nord-Ouest;mountains;CMR
 959;#1ef151;Sud-Ouest;mountains;CMR
 960;#6be664;Benue;plains;NGA
@@ -1049,7 +1049,7 @@ id;color;name;terrain;owner
 1041;#9975ea;Khulna;plains;BGD
 1042;#25370a;Cabo Delgado;hills;MOZ
 1043;#ac2265;Mtwara;hills;TZA
-1044;#e75d3d;Niassa;plains;MOZ
+1044;#e75d3d;Niassa;hills;MOZ
 1045;#64570d;Cádiz;mountains;ESP
 1046;#472f1d;Washington;hills;USA
 1047;#855ea6;British Columbia;hills;CAN
@@ -1086,7 +1086,7 @@ id;color;name;terrain;owner
 1078;#ba1770;Corozal;plains;BLZ
 1079;#d9f089;Quintana Roo;plains;MEX
 1080;#6c3f30;Campeche;plains;MEX
-1081;#2329b5;Tabasco;hills;MEX
+1081;#2329b5;Tabasco;mountains;MEX
 1082;#9f4ed0;Chiapas;mountains;MEX
 1083;#aa977c;San Marcos;mountains;GTM
 1084;#a33fa0;Huehuetenango;mountains;GTM
@@ -1124,7 +1124,7 @@ id;color;name;terrain;owner
 1116;#d7bd51;Tumbes;mountains;PER
 1117;#79bbfd;El Oro;mountains;ECU
 1118;#8bfa6c;Piura;mountains;PER
-1119;#cdf2ed;Amazonas;hills;VEN
+1119;#cdf2ed;Amazonas;mountains;VEN
 1120;#cdab2d;Chuquisaca;mountains;BOL
 1121;#5d2583;Ucayali;plains;PER
 1122;#37ff8e;Pando;plains;BOL
@@ -1134,7 +1134,7 @@ id;color;name;terrain;owner
 1126;#3e35d5;Puno;mountains;PER
 1127;#f31b0a;Catamarca;mountains;ARG
 1128;#73d168;Atacama;mountains;CHL
-1129;#77cf64;La Rioja;mountains;ARG
+1129;#77cf64;La Rioja;hills;ARG
 1130;#02b45a;San Juan;mountains;ARG
 1131;#b1bb5f;Coquimbo;mountains;CHL
 1132;#8fc8e8;Mendoza;hills;ARG
@@ -1172,11 +1172,11 @@ id;color;name;terrain;owner
 1164;#6d7ae9;Qyzylorda;plains;KAZ
 1165;#6e3013;Karakalpakstan;plains;UZB
 1166;#e9ae87;Aqtöbe;plains;KAZ
-1167;#ac5a24;Navoi;hills;UZB
+1167;#ac5a24;Navoi;plains;UZB
 1168;#87a7e7;Tashauz;plains;TKM
 1169;#288e4a;Khorezm;plains;UZB
 1170;#eae47d;Bukhoro;plains;UZB
-1171;#2c238b;North Khorasan;hills;IRN
+1171;#2c238b;North Khorasan;mountains;IRN
 1172;#391152;Golestan;mountains;IRN
 1173;#6a9dd2;Razavi Khorasan;hills;IRN
 1174;#a8f7e5;South Khorasan;hills;IRN
@@ -1216,7 +1216,7 @@ id;color;name;terrain;owner
 1208;#f64ede;Al Hudud ash Shamaliyah;plains;SAU
 1209;#0d4cc7;Al-Anbar;plains;IRQ
 1210;#318d62;An-Najaf;plains;IRQ
-1211;#b0f087;Al Jawf;hills;SAU
+1211;#b0f087;Al Jawf;plains;SAU
 1212;#89edc8;Ma`an;hills;JOR
 1213;#0d39a6;Amman;hills;JOR
 1214;#7afc7f;Zarqa;plains;JOR
@@ -1243,2140 +1243,2139 @@ id;color;name;terrain;owner
 1235;#1d8f94;Tiris Zemmour;plains;MRT
 1236;#e7aa2d;Tindouf;plains;DZA
 1237;#c04150;Kanem;plains;TCD
-1238;#fe9359;River Nile;plains;SDN
-1239;#b14ef2;Eastern;hills;KEN
-1240;#9aac41;North-Eastern;plains;KEN
-1241;#489cf0;Béchar;plains;DZA
-1242;#a34233;Meknès - Tafilalet;hills;MAR
-1243;#ec54b6;Souss - Massa - Draâ;mountains;MAR
-1244;#90f326;Dakhlet Nouadhibou;plains;MRT
-1245;#2c9443;Adrar;plains;MRT
-1246;#8bffda;Jendouba;mountains;TUN
-1247;#5bad1f;El Tarf;mountains;DZA
-1248;#d7ce07;Kebili;plains;TUN
-1249;#f37fa2;El Oued;plains;DZA
-1250;#c4e95f;Tozeur;plains;TUN
-1251;#d6561d;Tébessa;hills;DZA
-1252;#3e3063;Gafsa;mountains;TUN
-1253;#bae40d;Kassérine;hills;TUN
-1254;#d7b8e7;Le Kef;hills;TUN
-1255;#143c2a;Souk Ahras;hills;DZA
-1256;#38bd49;Ouargla;plains;DZA
-1257;#569eeb;Kidal;plains;MLI
-1258;#10ffbd;North Darfur;hills;SDN
-1259;#b1b882;Western Darfur;hills;SDN
-1260;#7c2635;Ouaddaï;plains;TCD
-1261;#f15a87;Wadi Fira;plains;TCD
-1262;#23a5b7;Al Butnan;plains;LBY
-1263;#2a0d6b;Ajdabiya;plains;LBY
-1264;#200b7e;Bafatá;plains;GNB
-1265;#29a3a2;Oio;plains;GNB
-1266;#220643;Sédhiou;plains;SEN
-1267;#6f1dfb;Cacheu;plains;GNB
-1268;#80d078;Ziguinchor;plains;SEN
-1269;#3a5b53;Jubbada Hoose;plains;SOM
-1270;#b11de3;Coast;hills;KEN
-1271;#0abc64;Mara;hills;TZA
-1272;#b8b53f;Nyanza;hills;KEN
-1273;#c17e8f;Arusha;hills;TZA
-1274;#45aae1;Kilimanjaro;hills;TZA
-1275;#c8d653;Tanga;mountains;TZA
-1276;#efa0c1;Rakai;hills;UGA
-1277;#8d0c26;Kalangala;hills;UGA
-1278;#3a062d;Litoral;mountains;GNQ
-1279;#575ac7;Kié-Ntem;plains;GNQ
-1280;#9530f0;Centro Sur;hills;GNQ
-1281;#f86c1a;Wele-Nzás;plains;GNQ
-1282;#6c3437;Estuaire;hills;GAB
-1283;#529911;Brakna;plains;MRT
-1284;#64b81a;Saint-Louis;plains;SEN
-1285;#486075;Trarza;plains;MRT
-1286;#253c9f;Gorgol;plains;MRT
-1287;#b86373;Matam;plains;SEN
-1288;#e756a8;Guidimaka;plains;MRT
-1289;#6a2a1a;Hodh ech Chargui;plains;MRT
-1290;#a8402d;Hodh el Gharbi;plains;MRT
-1291;#8a0a42;Assaba;hills;MRT
-1292;#f5c802;Western;hills;ZMB
-1293;#364fc7;Cuando Cubango;hills;AGO
-1294;#1dad74;Moxico;hills;AGO
-1295;#711c6c;North-Western;hills;ZMB
-1296;#dfc743;Namibe;mountains;AGO
-1297;#900222;Kunene;hills;NAM
-1298;#f425f0;Cunene;hills;AGO
-1299;#6373c2;Omusati;hills;NAM
-1300;#e7a7ac;Ohangwena;hills;NAM
-1301;#6adb1e;Kavango;hills;NAM
-1302;#ee0f70;Caprivi;hills;NAM
-1303;#3666b2;Tete;hills;MOZ
-1304;#7c348e;Mashonaland East;hills;ZWE
-1305;#b2b2dc;Manica;hills;MOZ
-1306;#be5eb9;Manicaland;hills;ZWE
-1307;#d1456d;Gaza;plains;MOZ
-1308;#a1ca11;Zaire;hills;AGO
-1309;#e77448;Uíge;hills;AGO
-1310;#85b434;Kasaï-Occidental;plains;COD
-1311;#4fa6f5;Lunda Norte;hills;AGO
-1312;#cb729b;Malanje;hills;AGO
-1313;#8dccc2;Lunda Sul;hills;AGO
-1314;#d91791;Hardap;hills;NAM
-1315;#0e2f28;Otjozondjupa;hills;NAM
-1316;#25cd9b;Omaheke;hills;NAM
-1317;#369a1c;Ghanzi;hills;BWA
-1318;#3c5342;Central River;plains;GMB
-1319;#a6d22d;Kaffrine;plains;SEN
-1320;#5f8603;North Bank;plains;GMB
-1321;#3cb71d;Kaolack;plains;SEN
-1322;#7aed1b;Upper River;plains;GMB
-1323;#f791a9;Lower River;plains;GMB
-1324;#fedd2a;Fatick;plains;SEN
-1325;#9dec34;West Coast;plains;GMB
-1326;#9e2348;Illizi;plains;DZA
-1327;#fcd284;Ash Shati';plains;LBY
-1328;#a095b9;Ghat;plains;LBY
-1329;#99bd47;Séno;plains;BFA
-1330;#5bd770;Yagha;plains;BFA
-1331;#df031e;Komondjari;plains;BFA
-1332;#2d6b79;Sangha-Mbaéré;plains;CAF
-1333;#72e710;Est;plains;CMR
-1334;#a017cb;Nana-Mambéré;hills;CAF
-1335;#6bd520;Mambéré-Kadéï;plains;CAF
-1336;#44cc2a;Kaabong;hills;UGA
-1337;#63dcc2;Kitgum;hills;UGA
-1338;#b9471e;Lamwo;hills;UGA
-1339;#3d9370;Amuru;hills;UGA
-1340;#e0eccc;Adjumani;hills;UGA
-1341;#9905fe;Moyo;plains;UGA
-1342;#dfbba7;Yumbe;hills;UGA
-1343;#eb0d00;Mpumalanga;hills;ZAF
-1344;#eff0f3;Hhohho;mountains;SWZ
-1345;#6b249d;Manzini;mountains;SWZ
-1346;#a94eaa;Shiselweni;mountains;SWZ
-1347;#0f7169;Luapula;hills;ZMB
-1348;#49cf30;Copperbelt;hills;ZMB
-1349;#8ba507;Central;hills;ZMB
-1350;#852742;Koulpélogo;plains;BFA
-1351;#474d75;Boulgou;plains;BFA
-1352;#4e49d5;Donga;plains;BEN
-1353;#badc55;Zou;plains;BEN
-1354;#24f15f;Kouffo;plains;BEN
-1355;#ca9dbb;Mono;plains;BEN
-1356;#7656a2;Nahouri;plains;BFA
-1357;#ca31c7;Sissili;plains;BFA
-1358;#a96d5c;Upper West;plains;GHA
-1359;#30e8fb;Ioba;plains;BFA
-1360;#e66036;Nkhotakota;mountains;MWI
-1361;#d77be1;Salima;mountains;MWI
-1362;#ded33d;Mangochi;hills;MWI
-1363;#6b1c84;Machinga;plains;MWI
-1364;#2da2dd;Dedza;hills;MWI
-1365;#b38fd7;Lilongwe;hills;MWI
-1366;#0fe8b2;Nsanje;hills;MWI
-1367;#53af8f;Chikwawa;mountains;MWI
-1368;#bf7c2a;Neno;mountains;MWI
-1369;#5a0753;Ntcheu;mountains;MWI
-1370;#6b7cd3;Zomba;hills;MWI
-1371;#c31e4b;Zambezia;hills;MOZ
-1372;#62d40f;Phalombe;hills;MWI
-1373;#2dc28a;Mulanje;hills;MWI
-1374;#cd8285;Thyolo;mountains;MWI
-1375;#c01844;Moroto;hills;UGA
-1376;#1e782f;Western;hills;KEN
-1377;#cee290;Amudat;hills;UGA
-1378;#4d64f6;Tororo;hills;UGA
-1379;#52c715;Arua;hills;UGA
-1380;#3a90f7;Zombo;mountains;UGA
-1381;#5b6fc9;Nebbi;mountains;UGA
-1382;#d6137b;Buliisa;hills;UGA
-1383;#4d04a1;Hoima;hills;UGA
-1384;#439e22;Ntoroko;hills;UGA
-1385;#8f6e96;Bundibugyo;mountains;UGA
-1386;#0bbaf8;Kabarole;mountains;UGA
-1387;#62dc73;Kasese;mountains;UGA
-1388;#345bfb;Rubirizi;hills;UGA
-1389;#d713ca;Rukungiri;hills;UGA
-1390;#debb16;Kanungu;mountains;UGA
-1391;#3dd750;Debub;mountains;ERI
-1392;#ffbd67;Semenawi Keyih Bahri;mountains;ERI
-1393;#b9033e;Gash Barka;hills;ERI
-1394;#db3d56;Kassala;plains;SDN
-1395;#b0abe2;Maekel;hills;ERI
-1396;#a22452;Ida-Viru;plains;EST
-1397;#ee6a87;Põlva;plains;EST
-1398;#b8dd36;Tartu;plains;EST
-1399;#26f03c;Jõgeva;plains;EST
-1400;#47107b;Punjab;plains;PAK
-1401;#44c91b;Punjab;plains;IND
-1402;#2995f1;Rajasthan;plains;IND
-1403;#0806fe;Sind;plains;PAK
-1404;#9592c3;Gujarat;plains;IND
-1405;#079272;Alaska;hills;USA
-1406;#4e9c4d;Yukon;hills;CAN
-1407;#60be53;White Nile;plains;SDN
-1408;#5641e4;South Kordufan;plains;SDN
-1409;#7a12e5;Unity;plains;SDS
-1410;#d3637c;Guangdong;hills;CHN
-1411;#cada2f;Vatican;hills;VAT
-1412;#52a3c8;Northern Bahr el Ghazal;plains;SDS
-1413;#edffbf;Eastern Darfur;plains;SDN
-1414;#8af6c7;Naâma;hills;DZA
-1415;#14dbcd;Tlemcen;mountains;DZA
-1416;#33b0c2;Himachal Pradesh;mountains;IND
-1417;#6d340f;Northern Cyprus;hills;CYN
-1418;#a7e7c3;Nicosia;mountains;CYP
-1419;#e24187;Kashmir;mountains;KAS
-1420;#4bd6fd;Baykonur lease in Qyzylorda;plains;KAB
-1421;#a003a3;Limassol;mountains;CYP
-1422;#2b9190;Toledo;mountains;BLZ
-1423;#41f877;Thimphu;mountains;BTN
-1424;#1dbf4a;Paro;mountains;BTN
-1425;#dfd57d;Gasa;mountains;BTN
-1426;#9c861f;Jammu and Kashmir;mountains;IND
-1427;#47eb8a;Crimea;hills;RUS
-1428;#d58f51;Kherson;plains;UKR
-1429;#3ac449;Bihar;plains;IND
-1430;#955cb7;Narayani;mountains;NPL
-1431;#e2f939;Lumbini;mountains;NPL
-1432;#6f2ba8;Uttar Pradesh;plains;IND
-1433;#c6814a;Rapti;mountains;NPL
-1434;#a44760;Bheri;mountains;NPL
-1435;#f2fc5e;Salto;plains;URY
-1436;#fb5482;Rivera;plains;URY
-1437;#c387de;Rocha;plains;URY
-1438;#7f80ec;Treinta y Tres;hills;URY
-1439;#762830;Cerro Largo;plains;URY
-1440;#964036;Heredia;mountains;CRI
-1441;#abe960;Varaždinska;plains;HRV
-1442;#870854;Krapinsko-Zagorska;hills;HRV
-1443;#108d82;Zagrebacka;hills;HRV
-1444;#8ea088;Primorsko-Goranska;mountains;HRV
-1445;#a10aa3;Jerusalem;mountains;ISR
-1446;#6cf2c8;Azad Kashmir;mountains;PAK
-1447;#fa1a50;Orense;hills;ESP
-1448;#61103d;Viana do Castelo;mountains;PRT
-1449;#22e954;Cáceres;hills;ESP
-1450;#dd7758;Castelo Branco;mountains;PRT
-1451;#59a336;Guarda;hills;PRT
-1452;#fc1966;Salamanca;hills;ESP
-1453;#1f1d6f;Bragança;hills;PRT
-1454;#06c05a;Zamora;hills;ESP
-1455;#9261dd;Vila Real;hills;PRT
-1456;#724185;Braga;mountains;PRT
-1457;#3e7351;Pontevedra;mountains;ESP
-1458;#5c8451;Huelva;mountains;ESP
-1459;#68b8e1;Faro;mountains;PRT
-1460;#e5c453;Beja;hills;PRT
-1461;#28e420;Cheshire West and Chester;plains;GBR
-1462;#64c12b;Shropshire;hills;GBR
-1463;#5c3aef;Powys;hills;GBR
-1464;#7e384f;Herefordshire;hills;GBR
-1465;#134c3d;Monmouthshire;mountains;GBR
-1466;#268a6c;Gloucestershire;plains;GBR
-1467;#c6aa34;Scottish Borders;hills;GBR
-1468;#fe193f;Northumberland;hills;GBR
-1469;#46a3dc;Cumbria;mountains;GBR
-1470;#84c9eb;Dumfries and Galloway;mountains;GBR
-1471;#fb14ae;Flemish Brabant;plains;BEL
-1472;#d7127d;Walloon Brabant;hills;BEL
-1473;#01812e;Central Bosnia;hills;BIH
-1474;#503ed6;Zenica-Doboj;mountains;BIH
-1475;#ce13dc;Tuzla;mountains;BIH
-1476;#e1b219;Sarajevo-romanija;hills;BIH
-1477;#3d623c;Sarajevo;hills;BIH
-1478;#ff080b;Bosnian Podrinje;hills;BIH
-1479;#2a3ce1;Grad Beograd;hills;SRB
-1480;#652a64;Podunavski;hills;SRB
-1481;#db1da8;Guria;mountains;GEO
-1482;#c29cd5;Sala ad-Din;plains;IRQ
-1483;#2b1451;At-Ta'mim;hills;IRQ
-1484;#d679b1;Antarctica;mountains;ATA
-1485;#fd63f9;Auckland Islands;hills;NZL
-1486;#50bfdb;Buenos Aires;plains;ARG
-1487;#9f9670;Maranhão;plains;BRA
-1488;#fc0196;Piauí;hills;BRA
-1489;#babfcf;Ceará;hills;BRA
-1490;#6b8440;Rio Grande do Norte;hills;BRA
-1491;#f5a94a;Paraíba;hills;BRA
-1492;#5170b2;Pernambuco;hills;BRA
-1493;#3e6ba1;Alagoas;mountains;BRA
-1494;#a9ee77;Sergipe;hills;BRA
-1495;#717d24;Bahia;hills;BRA
-1496;#b31713;Espírito Santo;mountains;BRA
-1497;#37c37d;Rio de Janeiro;mountains;BRA
-1498;#d5a4dc;São Paulo;plains;BRA
-1499;#4753b0;Maldonado;hills;URY
-1500;#bdeadb;Canelones;plains;URY
-1501;#853987;Montevideo;plains;URY
-1502;#4ca365;San José;plains;URY
-1503;#8ec952;Colonia;plains;URY
-1504;#309669;Soriano;plains;URY
-1505;#565a01;Río Negro;plains;URY
-1506;#0c74df;Ciudad de Buenos Aires;plains;ARG
-1507;#2c0f7f;Nord;mountains;NCL
-1508;#0b2ec9;Western Australia;plains;AUS
-1509;#c944fe;Northern Territory;plains;AUS
-1510;#838bc1;Boeny;hills;MDG
-1511;#e09b97;Sofia;hills;MDG
-1512;#075faf;Diana;mountains;MDG
-1513;#52b04e;Sava;mountains;MDG
-1514;#7952fd;Analanjirofo;mountains;MDG
-1515;#2cbd1c;Atsinanana;mountains;MDG
-1516;#644ff9;Vatovavy-Fitovinany;mountains;MDG
-1517;#70fa21;Atsimo-Atsinanana;mountains;MDG
-1518;#f42e4f;Anosy;hills;MDG
-1519;#364478;Androy;hills;MDG
-1520;#b29016;Atsimo-Andrefana;hills;MDG
-1521;#90da79;Menabe;mountains;MDG
-1522;#0ef773;Melaky;hills;MDG
-1523;#028615;South Australia;plains;AUS
-1524;#86527b;Queensland;plains;AUS
-1525;#c0ec22;New South Wales;plains;AUS
-1526;#44384c;Victoria;hills;AUS
-1527;#9735a6;Cuanza Sul;hills;AGO
-1528;#6a08fa;Benguela;hills;AGO
-1529;#cc451f;Erongo;hills;NAM
-1530;#ff5f3f;Western Cape;hills;ZAF
-1531;#8c6899;Inhambane;plains;MOZ
-1532;#85a012;Sofala;hills;MOZ
-1533;#9e53e8;Nampula;hills;MOZ
-1534;#f06558;Lindi;hills;TZA
-1535;#3ba7b3;Pwani;hills;TZA
-1536;#cf3233;Dar-Es-Salaam;hills;TZA
-1537;#224329;Jawa Timur;mountains;IDN
-1538;#cfe9d5;Maluku;mountains;IDN
-1539;#0d83e2;Nusa Tenggara Barat;mountains;IDN
-1540;#e981c2;Sulawesi Selatan;mountains;IDN
-1541;#d132c9;Jawa Tengah;mountains;IDN
-1542;#9e244c;Jawa Barat;mountains;IDN
-1543;#55e6a7;Banten;mountains;IDN
-1544;#7a266c;Yogyakarta;mountains;IDN
-1545;#4b3dbb;Sulawesi Tenggara;mountains;IDN
-1546;#f27238;Papua Barat;mountains;IDN
-1547;#e9da4b;Guayas;hills;ECU
-1548;#89578c;Sulawesi Tengah;mountains;IDN
-1549;#be4f6d;Maluku Utara;mountains;IDN
-1550;#8aca1d;Galápagos;mountains;ECU
-1551;#6ffd68;East Sepik;mountains;PNG
-1552;#69fe5e;Madang;mountains;PNG
-1553;#932762;Morobe;mountains;PNG
-1554;#58e589;Northern;mountains;PNG
-1555;#514d55;Milne Bay;mountains;PNG
-1556;#b8c5d1;Central;mountains;PNG
-1557;#605682;Gulf;mountains;PNG
-1558;#b4eed6;Kepulauan Riau;plains;IDN
-1559;#f4036f;Riau;plains;IDN
-1560;#9bf354;Gorontalo;mountains;IDN
-1561;#e26807;Sulawesi Utara;mountains;IDN
-1562;#2bebf5;Sulawesi Barat;mountains;IDN
-1563;#ca068b;Cauca;mountains;COL
-1564;#712350;Moquegua;mountains;PER
-1565;#788b8c;Arequipa;mountains;PER
-1566;#caa055;Ica;mountains;PER
-1567;#659688;Lima;mountains;PER
-1568;#548d5f;Lima Province;mountains;PER
-1569;#379d09;Áncash;mountains;PER
-1570;#1b9bda;La Libertad;mountains;PER
-1571;#49905b;Lambayeque;mountains;PER
-1572;#a37a27;Santa Elena;hills;ECU
-1573;#6d0e25;Manabi;hills;ECU
-1574;#d0ffef;Valle del Cauca;mountains;COL
-1575;#ff0314;Panama;hills;PAN
-1576;#a5471f;Coclé;mountains;PAN
-1577;#cfc23c;Sulu;plains;PHL
-1578;#b4cc61;Jambi;plains;IDN
-1579;#64fd70;Sumatera Selatan;plains;IDN
-1580;#09a19a;Lampung;hills;IDN
-1581;#1358fe;Bengkulu;mountains;IDN
-1582;#7c255a;Sumatera Barat;mountains;IDN
-1583;#2e0643;Sumatera Utara;mountains;IDN
-1584;#49fb12;Aceh;mountains;IDN
-1585;#d6ea8d;Demerara-Mahaica;plains;GUY
-1586;#76a656;Kalimantan Tengah;plains;IDN
-1587;#6d55ac;Kalimantan Selatan;mountains;IDN
-1588;#0587d6;Davao del Norte;mountains;PHL
-1589;#3d6923;Veraguas;mountains;PAN
-1590;#0400d7;Zamboanga Sibugay;mountains;PHL
-1591;#73a559;Palawan;hills;PHL
-1592;#5a6b76;Sóc Trăng;plains;VNM
-1593;#8153b8;Surigao del Norte;plains;PHL
-1594;#ce453d;Surigao del Sur;mountains;PHL
-1595;#349c01;Agusan del Norte;mountains;PHL
-1596;#0c2f0a;Misamis Oriental;mountains;PHL
-1597;#5e248b;Lanao del Norte;mountains;PHL
-1598;#42be8e;Zamboanga del Sur;mountains;PHL
-1599;#80d4b9;Misamis Occidental;mountains;PHL
-1600;#c66ae0;Zamboanga del Norte;mountains;PHL
-1601;#57d7f7;Zamboanga;mountains;PHL
-1602;#11320e;Lanao del Sur;mountains;PHL
-1603;#95e660;Maguindanao;mountains;PHL
-1604;#7b8a84;Sultan Kudarat;mountains;PHL
-1605;#d4bc59;Sarangani;mountains;PHL
-1606;#4a9153;Davao del Sur;mountains;PHL
-1607;#d00be0;Davao;mountains;PHL
-1608;#43398f;Compostela Valley;mountains;PHL
-1609;#88fb64;Davao Oriental;mountains;PHL
-1610;#629b47;Trikuṇāmalaya;plains;LKA
-1611;#786223;Mulativ;plains;LKA
-1612;#de9c75;Kilinŏchchi;plains;LKA
-1613;#24251e;Mannārama;plains;LKA
-1614;#5a481b;Puttalama;plains;LKA
-1615;#e62f7e;Kaḷutara;mountains;LKA
-1616;#d734a9;Gālla;mountains;LKA
-1617;#53e0c7;Mātara;mountains;LKA
-1618;#155e9e;Hambantŏṭa;hills;LKA
-1619;#a959ac;Ampāra;hills;LKA
-1620;#efe7f5;Maḍakalapuva;hills;LKA
-1621;#148ba6;Tiền Giang;plains;VNM
-1622;#ea9e1f;Bà Rịa - Vũng Tàu;hills;VNM
-1623;#2f6ef5;Krong Preah Sihanouk;mountains;KHM
-1624;#8b50f9;Hồ Chí Minh city;plains;VNM
-1625;#3d34dd;Leyte;mountains;PHL
-1626;#ff5eea;Eastern Samar;mountains;PHL
-1627;#b9e0b3;Biliran;hills;PHL
-1628;#722258;Samar;mountains;PHL
-1629;#2f1048;Khánh Hòa;mountains;VNM
-1630;#672d28;Colón;mountains;PAN
-1631;#56bdfe;Antioquia;mountains;COL
-1632;#d26990;Córdoba;hills;COL
-1633;#30dfb7;Sucre;hills;COL
-1634;#39776b;Bolívar;mountains;COL
-1635;#fb1d5c;Atlántico;plains;COL
-1636;#f2b580;Magdalena;plains;COL
-1637;#2dd2b5;Mérida;mountains;VEN
-1638;#b3ffbf;Trujillo;mountains;VEN
-1639;#247a69;Falcón;mountains;VEN
-1640;#53dfe7;Yaracuy;mountains;VEN
-1641;#981d0c;Carabobo;hills;VEN
-1642;#cbf1db;Aragua;mountains;VEN
-1643;#468d69;Miranda;mountains;VEN
-1644;#099bec;Anzoátegui;plains;VEN
-1645;#d8a063;Sucre;mountains;VEN
-1646;#84e75e;Monagas;hills;VEN
-1647;#a6ab63;Cuyuni-Mazaruni;plains;GUY
-1648;#83056c;Upper Takutu-Upper Essequibo;plains;GUY
-1649;#8aadb0;East Berbice-Corentyne;plains;GUY
-1650;#1480ba;Essequibo Islands-West Demerara;plains;GUY
-1651;#540e7f;Coronie;plains;SUR
-1652;#d0da11;Saramacca;plains;SUR
-1653;#966448;Commewijne;plains;SUR
-1654;#4bbea6;Andhra Pradesh;hills;IND
-1655;#99d0ca;Sud;mountains;HTI
-1656;#1c43ea;Ondo;hills;NGA
-1657;#ef525d;Delta;hills;NGA
-1658;#2d583d;Bayelsa;plains;NGA
-1659;#ef320a;Rivers;plains;NGA
-1660;#624eb8;Akwa Ibom;plains;NGA
-1661;#5ee1c3;Littoral;mountains;CMR
-1662;#348614;Ogooué-Maritime;plains;GAB
-1663;#0918ac;Bengo;hills;AGO
-1664;#251e7f;Luanda;plains;AGO
-1665;#a771d9;Surt;hills;LBY
-1666;#0fa364;Misratah;hills;LBY
-1667;#3eb8b3;Al Marqab;mountains;LBY
-1668;#1cf2dc;Tajura' wa an Nawahi al Arba;mountains;LBY
-1669;#c4618f;Az Zawiyah;hills;LBY
-1670;#788e3a;Gabès;hills;TUN
-1671;#b34cd1;Sfax;plains;TUN
-1672;#3798bf;Mahdia;plains;TUN
-1673;#f5f288;Monastir;plains;TUN
-1674;#6bdf82;Sousse;plains;TUN
-1675;#4995ed;Nabeul;hills;TUN
-1676;#825706;Manubah;hills;TUN
-1677;#cd4183;Bizerte;mountains;TUN
-1678;#403d31;Béja;hills;TUN
-1679;#df7971;Skikda;mountains;DZA
-1680;#99c728;Jijel;mountains;DZA
-1681;#8a7177;Béjaïa;mountains;DZA
-1682;#7e0310;Tizi Ouzou;mountains;DZA
-1683;#9920cf;Chlef;hills;DZA
-1684;#1df4a1;Mostaganem;hills;DZA
-1685;#900fa3;Oran;mountains;DZA
-1686;#526594;Aïn Témouchent;mountains;DZA
-1687;#d4e7bd;Taza - Al Hoceima - Taounate;mountains;MAR
-1688;#88a080;Gharb - Chrarda - Béni Hssen;mountains;MAR
-1689;#e5fc6a;Rabat - Salé - Zemmour - Zaer;mountains;MAR
-1690;#4acab7;Chaouia - Ouardigha;mountains;MAR
-1691;#6880d8;Doukkala - Abda;hills;MAR
-1692;#aaeaef;Marrakech - Tensift - Al Haouz;mountains;MAR
-1693;#d64d7f;Inchiri;plains;MRT
-1694;#142748;Nouakchott;plains;MRT
-1695;#7a0944;Louga;plains;SEN
-1696;#e4244e;Thiès;plains;SEN
-1697;#2863fa;Biombo;plains;GNB
-1698;#ebc995;Quinara;plains;GNB
-1699;#ad77cc;Bolama;plains;GNB
-1700;#5cf89f;Boffa;hills;GIN
-1701;#380ca9;Dubréka;hills;GIN
-1702;#31a475;Coyah;mountains;GIN
-1703;#acce9f;Bomi;plains;LBR
-1704;#f9217e;Montserrado;plains;LBR
-1705;#3b4b49;Margibi;hills;LBR
-1706;#21b22d;Grand Bassa;hills;LBR
-1707;#d2c3cd;River Cess;hills;LBR
-1708;#6ea4a8;Sinoe;plains;LBR
-1709;#ea70c6;Grand Kru;hills;LBR
-1710;#47dae7;Sud-Bandama;hills;CIV
-1711;#a7fabf;Lagunes;plains;CIV
-1712;#53d437;Central;plains;GHA
-1713;#6b673c;Greater Accra;hills;GHA
-1714;#a02531;Atlantique;plains;BEN
-1715;#4e1508;Colima;mountains;MEX
-1716;#7c0eb3;Aurora;mountains;PHL
-1717;#9c4ebc;Quezon;hills;PHL
-1718;#351b00;Camarines Norte;hills;PHL
-1719;#695c3d;Camarines Sur;hills;PHL
-1720;#f77137;Albay;hills;PHL
-1721;#6f5f0b;Sorsogon;hills;PHL
-1722;#ad556b;Batangas;hills;PHL
-1723;#6f3f5c;Bulacan;mountains;PHL
-1724;#0203e1;Pampanga;mountains;PHL
-1725;#a4fdb7;Zambales;mountains;PHL
-1726;#2029d9;Pangasinan;mountains;PHL
-1727;#be6484;Ilocos Sur;mountains;PHL
-1728;#e223b9;Ilocos Norte;mountains;PHL
-1729;#66f7d7;Cagayan;mountains;PHL
-1730;#115259;Isabela;mountains;PHL
-1731;#3b4461;Hainan;mountains;CHN
-1732;#2a8169;Nayarit;mountains;MEX
-1733;#4c91a7;Inagua;plains;BHS
-1734;#d7888c;Middle Caicos;plains;TCA
-1735;#d2bcad;Acklins;plains;BHS
-1736;#a32292;Fujian;hills;CHN
-1737;#ae3550;Baja California Sur;mountains;MEX
-1738;#042411;Jubbada Dhexe;plains;SOM
-1739;#429a48;Shabeellaha Hoose;plains;SOM
-1740;#ef3aea;Shabeellaha Dhexe;plains;SOM
-1741;#2ebdda;Tabuk;hills;SAU
-1742;#f62e89;Al Madinah;hills;SAU
-1743;#f80262;Makkah;hills;SAU
-1744;#06d58c;Al Hudaydah;mountains;YEM
-1745;#d7ee03;Ta`izz;mountains;YEM
-1746;#8ba93e;Lahij;mountains;YEM
-1747;#1db09f;Abyan;mountains;YEM
-1748;#e2cfb5;Shabwah;hills;YEM
-1749;#356f3e;Ash Sharqiyah South;hills;OMN
-1750;#38100c;Ash Sharqiyah North;mountains;OMN
-1751;#3ca7b5;Muscat;mountains;OMN
-1752;#fa7a3b;Al Batnah South;mountains;OMN
-1753;#371eb4;Umm Al Qaywayn;hills;ARE
-1754;#26ebc9;Al Wakrah;plains;QAT
-1755;#2f4315;Al Khawr;plains;QAT
-1756;#69fd4c;Madinat ach Shamal;plains;QAT
-1757;#83d710;Hsinchu;mountains;TWN
-1758;#ccc195;Miaoli;mountains;TWN
-1759;#b2ccc7;Taichung City;mountains;TWN
-1760;#bb641b;Chiayi;mountains;TWN
-1761;#07037e;Tainan City;mountains;TWN
-1762;#3fd022;Kaohsiung City;mountains;TWN
-1763;#a1fd28;Pingtung;mountains;TWN
-1764;#f4729e;Taitung;mountains;TWN
-1765;#3fb075;Hualien;mountains;TWN
-1766;#41bd27;Yilan;mountains;TWN
-1767;#4815fb;New Taipei City;mountains;TWN
-1768;#9f2e87;Sinaloa;mountains;MEX
-1769;#541ef2;Louisiana;plains;USA
-1770;#414c7c;Mississippi;plains;USA
-1771;#8a8e97;Alabama;plains;USA
-1772;#cc30ce;Florida;plains;USA
-1773;#0e5af9;Georgia;plains;USA
-1774;#83264b;South Carolina;plains;USA
-1775;#99df2f;North Carolina;plains;USA
-1776;#7057ab;Virginia;plains;USA
-1777;#bb9540;Maryland;hills;USA
-1778;#3f412e;Delaware;hills;USA
-1779;#e7d27d;New Jersey;plains;USA
-1780;#d0ca9c;Connecticut;hills;USA
-1781;#4ee796;Rhode Island;hills;USA
-1782;#d0aacb;Massachusetts;hills;USA
-1783;#a2b1b6;Ngöbe Buglé;mountains;PAN
-1784;#60edb8;Atlántico Sur;plains;NIC
-1785;#d56278;Colón;mountains;HND
-1786;#892545;Atlántida;mountains;HND
-1787;#6d2fc9;Stann Creek;mountains;BLZ
-1788;#376bc2;Belize;mountains;BLZ
-1789;#1b9abe;Yucatán;plains;MEX
-1790;#5d24e7;Veracruz;mountains;MEX
-1791;#8c7f3f;Jalisco;hills;MEX
-1792;#e8eb5e;Michoacán;mountains;MEX
-1793;#39d0d1;Guerrero;mountains;MEX
-1794;#ae5507;Oaxaca;mountains;MEX
-1795;#68fd4b;Retalhuleu;mountains;GTM
-1796;#dd32f2;Suchitepéquez;mountains;GTM
-1797;#59e69c;Escuintla;mountains;GTM
-1798;#16f019;Santa Rosa;mountains;GTM
-1799;#ca2466;Sonsonate;mountains;SLV
-1800;#54096c;La Libertad;mountains;SLV
-1801;#23ace2;San Vicente;mountains;SLV
-1802;#6cba67;Usulután;mountains;SLV
-1803;#c673b9;León;hills;NIC
-1804;#04198e;Managua;mountains;NIC
-1805;#dc8add;Carazo;mountains;NIC
-1806;#f90022;Los Santos;mountains;PAN
-1807;#3b6a15;Herrera;mountains;PAN
-1808;#7ee169;Zhejiang;mountains;CHN
-1809;#1a7508;Shanghai;plains;CHN
-1810;#e0edcc;Kagoshima;mountains;JPN
-1811;#d81f3f;Jiangsu;plains;CHN
-1812;#7faf0b;Bushehr;mountains;IRN
-1813;#d9515d;Hormozgan;mountains;IRN
-1814;#e1cf80;Al Qubbah;plains;LBY
-1815;#e8675c;Al Jabal al Akhdar;hills;LBY
-1816;#aed905;Al Marj;mountains;LBY
-1817;#651bee;Benghazi;plains;LBY
-1818;#048f44;Ōita;mountains;JPN
-1819;#a21145;Fukuoka;mountains;JPN
-1820;#3c3c4f;Saga;hills;JPN
-1821;#2287fb;Nagasaki;hills;JPN
-1822;#cf4daf;Kumamoto;mountains;JPN
-1823;#0d2798;Miyazaki;mountains;JPN
-1824;#42311d;Tokushima;mountains;JPN
-1825;#89f3f6;Kagawa;mountains;JPN
-1826;#4b99c1;Ehime;mountains;JPN
-1827;#c6e573;Kōchi;mountains;JPN
-1828;#7a8216;Shimane;mountains;JPN
-1829;#5542ca;South Chungcheong;hills;KOR
-1830;#fe5678;Yamaguchi;mountains;JPN
-1831;#b8e821;Tottori;mountains;JPN
-1832;#c94e99;Hyōgo;mountains;JPN
-1833;#a41273;Kyōto;mountains;JPN
-1834;#0b24ae;Fukui;mountains;JPN
-1835;#9ca178;Ishikawa;mountains;JPN
-1836;#9509a4;Toyama;mountains;JPN
-1837;#5eab18;Niigata;mountains;JPN
-1838;#02ec25;Yamagata;mountains;JPN
-1839;#9569f3;Akita;mountains;JPN
-1840;#5703c4;Aomori;mountains;JPN
-1841;#da7f76;Iwate;mountains;JPN
-1842;#9cc12f;Miyagi;mountains;JPN
-1843;#181541;Fukushima;mountains;JPN
-1844;#296ec1;Ibaraki;hills;JPN
-1845;#6fd098;Chiba;plains;JPN
-1846;#11bd9d;Tokyo;mountains;JPN
-1847;#eb04f6;Kanagawa;mountains;JPN
-1848;#d3b7fd;Shizuoka;mountains;JPN
-1849;#187516;Aichi;mountains;JPN
-1850;#5ecb4f;Mie;mountains;JPN
-1851;#adbaaf;Wakayama;mountains;JPN
-1852;#20c61d;Ōsaka;mountains;JPN
-1853;#f7fea4;Okayama;mountains;JPN
-1854;#b140fd;Hiroshima;mountains;JPN
-1855;#e87997;Oregon;hills;USA
-1856;#ca4823;Nunavut;hills;CAN
-1857;#4f1b4c;Newfoundland and Labrador;plains;CAN
-1858;#09a515;Nova Scotia;plains;CAN
-1859;#576393;Hokkaidō;mountains;JPN
-1860;#807c4d;Odisha;hills;IND
-1861;#b4f438;Barisal;plains;BGD
-1862;#593b82;Ayeyarwady;hills;MMR
-1863;#ffa583;Yangon;plains;MMR
-1864;#3dcfb4;Bago;mountains;MMR
-1865;#f4ed1a;Phangnga;mountains;THA
-1866;#00789a;Krabi;plains;THA
-1867;#cbba71;Trang;hills;THA
-1868;#cf9d89;Pulau Pinang;hills;MYS
-1869;#dacf07;Selangor;mountains;MYS
-1870;#44e20d;Negeri Sembilan;mountains;MYS
-1871;#025c54;Melaka;hills;MYS
-1872;#8f20e6;Johor;plains;MYS
-1873;#86883a;Pahang;mountains;MYS
-1874;#18a530;Terengganu;mountains;MYS
-1875;#11bf5d;Pattani;hills;THA
-1876;#c212ad;Phatthalung;mountains;THA
-1877;#6ac010;Nakhon Si Thammarat;hills;THA
-1878;#84acf4;Surat Thani;mountains;THA
-1879;#2143dc;Bangkok Metropolis;plains;THA
-1880;#679dd2;Chachoengsao;plains;THA
-1881;#a5f7e5;Chon Buri;plains;THA
-1882;#ac5f39;Rayong;plains;THA
-1883;#062c4b;Cà Mau;plains;VNM
-1884;#c4467c;Bạc Liêu;plains;VNM
-1885;#82f825;Hau Giang;plains;VNM
-1886;#f55dab;Vĩnh Long;plains;VNM
-1887;#980141;Trà Vinh;plains;VNM
-1888;#409212;Bến Tre;plains;VNM
-1889;#6e4a71;Đông Nam Bộ;hills;VNM
-1890;#ac2046;Bình Thuận;mountains;VNM
-1891;#5f51a6;Ninh Thuận;mountains;VNM
-1892;#19efff;Phú Yên;mountains;VNM
-1893;#56f97a;Bình Định;mountains;VNM
-1894;#8e6a29;Quảng Ngãi;mountains;VNM
-1895;#cf3010;Ninh Bình;plains;VNM
-1896;#511d1a;Nam Định;plains;VNM
-1897;#3c41f0;Thái Bình;plains;VNM
-1898;#9832f5;Hải Phòng;mountains;VNM
-1899;#c2e65b;Shandong;plains;CHN
-1900;#0924b0;Hebei;hills;CHN
-1901;#463235;Tianjin;mountains;CHN
-1902;#029ca4;P'yŏngan-namdo;mountains;PRK
-1903;#f1ed44;Hwanghae-namdo;hills;PRK
-1904;#68cb11;North Jeolla;mountains;KOR
-1905;#5cea16;South Jeolla;hills;KOR
-1906;#1a544f;South Gyeongsang;mountains;KOR
-1907;#00ad2b;North Gyeongsang;mountains;KOR
-1908;#8648ca;Hamgyŏng-namdo;mountains;PRK
-1909;#f92ba9;Maga Buryatdan;hills;RUS
-1910;#42167a;Dadra and Nagar Haveli and Daman and Diu;mountains;IND
-1911;#c6c214;Maharashtra;hills;IND
-1912;#57f8f4;Goa;mountains;IND
-1913;#04a823;Karnataka;plains;IND
-1914;#0d00ff;Kerala;mountains;IND
-1915;#da8446;Tamil Nadu;hills;IND
-1916;#bf95f0;Sakhalin;hills;RUS
-1917;#fe9734;Wicklow;mountains;IRL
-1918;#3cfd03;Wexford;hills;IRL
-1919;#1ed73b;Kilkenny;plains;IRL
-1920;#05a433;Waterford;hills;IRL
-1921;#854576;Cork;hills;IRL
-1922;#51c1be;Kerry;hills;IRL
-1923;#177fe7;Limerick;hills;IRL
-1924;#1b687c;Clare;plains;IRL
-1925;#6912e2;Galway;plains;IRL
-1926;#260467;Mayo;plains;IRL
-1927;#8952ed;Sligo;plains;IRL
-1928;#a6e3d3;Limavady;hills;GBR
-1929;#c72d35;Carrickfergus;hills;GBR
-1930;#e46e50;Meath;plains;IRL
-1931;#85d431;Zaporizhzhya;plains;UKR
-1932;#2fb86b;Mykolayiv;plains;UKR
-1933;#579cba;Varna;hills;BGR
-1934;#1ac509;Istanbul;hills;TUR
-1935;#5c1b07;Tekirdag;hills;TUR
-1936;#decc5f;Çanakkale;mountains;TUR
-1937;#7305da;Stirling;mountains;GBR
-1938;#427e5a;Midlothian;mountains;GBR
-1939;#9aed09;Durham;mountains;GBR
-1940;#40a0ea;North Yorkshire;hills;GBR
-1941;#2257ea;East Riding of Yorkshire;plains;GBR
-1942;#d3f8ba;North Lincolnshire;plains;GBR
-1943;#345cd5;Lincolnshire;plains;GBR
-1944;#8f3837;Norfolk;plains;GBR
-1945;#4d5200;Suffolk;plains;GBR
-1946;#11153d;Essex;plains;GBR
-1947;#4f50e7;Kent;plains;GBR
-1948;#9ac591;East Sussex;plains;GBR
-1949;#1304f2;West Sussex;plains;GBR
-1950;#3c7308;Hampshire;plains;GBR
-1951;#5e8408;Dorset;plains;GBR
-1952;#33d8e2;Devon;hills;GBR
-1953;#9e50d8;Cornwall;hills;GBR
-1954;#6f9fdf;Somerset;plains;GBR
-1955;#2b9f61;Carmarthenshire;hills;GBR
-1956;#af4b0f;Pembrokeshire;plains;GBR
-1957;#e9f556;Ceredigion;hills;GBR
-1958;#979853;Gwynedd;mountains;GBR
-1959;#fac4b9;Conwy;mountains;GBR
-1960;#e03ddd;Denbighshire;mountains;GBR
-1961;#6d416f;Lancashire;hills;GBR
-1962;#932582;South Ayrshire;mountains;GBR
-1963;#8d29f8;Argyll and Bute;hills;GBR
-1964;#cb97a1;Highland;hills;GBR
-1965;#f7d1b4;Moray;mountains;GBR
-1966;#b8c731;Aberdeenshire;hills;GBR
-1967;#2f42e7;Angus;mountains;GBR
-1968;#ed28d0;Perthshire and Kinross;hills;GBR
-1969;#89bcb1;Fife;plains;GBR
-1970;#a5a3eb;Chukchi Autonomous Okrug;hills;RUS
-1971;#9a6f91;Austurland;mountains;ISL
-1972;#f209ab;Suðurland;mountains;ISL
-1973;#e8f0cf;Höfuðborgarsvæði;hills;ISL
-1974;#85ac25;Vesturland;mountains;ISL
-1975;#51ad7a;Vestfirðir;mountains;ISL
-1976;#1ebbff;Norðurland vestra;mountains;ISL
-1977;#bd1f2e;Norðurland eystra;mountains;ISL
-1978;#5efdd6;Yamal-Nenets;plains;RUS
-1979;#18438f;Nenets;plains;RUS
-1980;#082214;Northwest Territories;plains;CAN
-1981;#b63d2c;Sakha (Yakutia);plains;RUS
-1982;#ae3730;Grobinas;plains;LVA
-1983;#1558f8;Ventspils;plains;LVA
-1984;#548e5b;Dundagas;plains;LVA
-1985;#e4975c;Talsi;plains;LVA
-1986;#17e6bc;Limbaži;plains;LVA
-1987;#1e2360;Lääne;plains;EST
-1988;#604e65;Harju;plains;EST
-1989;#7ab701;Lääne-Viru;plains;EST
-1990;#94b83c;City of St. Petersburg;plains;RUS
-1991;#b3c44c;Uusimaa;plains;FIN
-1992;#371022;Finland Proper;plains;FIN
-1993;#71ae7b;Satakunta;plains;FIN
-1994;#cdc91e;Ostrobothnia;plains;FIN
-1995;#8b7747;Central Ostrobothnia;plains;FIN
-1996;#8f989b;Västernorrland;hills;SWE
-1997;#81d427;Gävleborg;hills;SWE
-1998;#863047;Uppsala;plains;SWE
-1999;#445a70;Stockholm;plains;SWE
-2000;#3a5722;Södermanland;plains;SWE
-2001;#f83d15;Östergötland;plains;SWE
-2002;#f195c9;Kalmar;plains;SWE
-2003;#0a4c44;Blekinge;hills;SWE
-2004;#2a86f2;Skåne;plains;SWE
-2005;#be834c;Halland;plains;SWE
-2006;#32edc2;Buskerud;hills;NOR
-2007;#d2adcd;Vestfold;mountains;NOR
-2008;#10c7fa;Telemark;hills;NOR
-2009;#a56814;Aust-Agder;mountains;NOR
-2010;#acc0c8;Vest-Agder;mountains;NOR
-2011;#2814a6;Rogaland;mountains;NOR
-2012;#670223;Hordaland;hills;NOR
-2013;#ea7e91;Sogn og Fjordane;hills;NOR
-2014;#21bc7a;Møre og Romsdal;mountains;NOR
-2015;#181bb9;Rize;mountains;TUR
-2016;#5ea5e0;Trabzon;mountains;TUR
-2017;#36c3da;Giresun;hills;TUR
-2018;#f4a9ed;Ordu;mountains;TUR
-2019;#3f6b06;Samsun;mountains;TUR
-2020;#bbbf68;Sinop;mountains;TUR
-2021;#6d6087;Kastamonu;hills;TUR
-2022;#54162a;Bartın;mountains;TUR
-2023;#9abf9e;Zinguldak;mountains;TUR
-2024;#f2e87c;Düzce;mountains;TUR
-2025;#9e1167;Sakarya;mountains;TUR
-2026;#5c7b50;Kocaeli;mountains;TUR
-2027;#d8af3e;Bursa;mountains;TUR
-2028;#1ca668;Balikesir;mountains;TUR
-2029;#0ff7d0;Izmir;mountains;TUR
-2030;#62ab3a;Aydin;mountains;TUR
-2031;#7e313f;Mugla;mountains;TUR
-2032;#af0ab0;Antalya;mountains;TUR
-2033;#c5b23a;Mersin;mountains;TUR
-2034;#89ee26;Adana;mountains;TUR
-2035;#28185b;Mount Lebanon;mountains;LBN
-2036;#b959b9;Arkhangel'sk;plains;RUS
-2037;#c8307e;Krasnoyarsk;plains;RUS
-2038;#0f945c;Ayion Oros;plains;GRC
-2039;#830fb8;Thessalia;mountains;GRC
-2040;#e61cd8;Stereá Elláda;mountains;GRC
-2041;#5ea63b;Attiki;mountains;GRC
-2042;#9ccc0c;Peloponnisos;mountains;GRC
-2043;#da7255;Dytiki Ellada;mountains;GRC
-2044;#f2ddfc;Fier;mountains;ALB
-2045;#898a29;Tiranë;mountains;ALB
-2046;#30b7cb;Durrës;mountains;ALB
-2047;#4be01e;Lezhë;mountains;ALB
-2048;#1df8d8;Šibensko-Kninska;mountains;HRV
-2049;#0a74e6;Licko-Senjska;mountains;HRV
-2050;#49801e;Venezia;plains;ITA
-2051;#cd5470;Padova;plains;ITA
-2052;#0f3e47;Rovigo;plains;ITA
-2053;#ed8860;Ferrara;plains;ITA
-2054;#a29ee5;Ravenna;mountains;ITA
-2055;#60f4d2;Forlì-Cesena;mountains;ITA
-2056;#a66bfb;Ancona;mountains;ITA
-2057;#3846f1;Macerata;mountains;ITA
-2058;#551a1b;Fermo;mountains;ITA
-2059;#97702c;Ascoli Piceno;mountains;ITA
-2060;#8de91f;Teramo;mountains;ITA
-2061;#4f8328;Pescara;mountains;ITA
-2062;#2b1749;Chieti;mountains;ITA
-2063;#22dfc2;Campobasso;mountains;ITA
-2064;#e91d29;Foggia;mountains;ITA
-2065;#2b771e;Barletta-Andria Trani;mountains;ITA
-2066;#a60bac;Bari;mountains;ITA
-2067;#afa370;Lecce;plains;ITA
-2068;#f3e44d;Taranto;mountains;ITA
-2069;#a57a85;Matera;mountains;ITA
-2070;#0a4c58;Cosenza;mountains;ITA
-2071;#4cf201;Crotene;mountains;ITA
-2072;#8e9836;Catanzaro;mountains;ITA
-2073;#03e484;Reggio Calabria;mountains;ITA
-2074;#c18eb3;Vibo Valentia;mountains;ITA
-2075;#c8266f;Potenza;mountains;ITA
-2076;#e0b5f5;Salerno;mountains;ITA
-2077;#455add;Caserta;mountains;ITA
-2078;#6da910;Roma;mountains;ITA
-2079;#afc327;Viterbo;mountains;ITA
-2080;#c66ad3;Grosseto;mountains;ITA
-2081;#b62b3d;Pisa;mountains;ITA
-2082;#32ff53;Lucca;mountains;ITA
-2083;#f09564;Massa-Carrara;mountains;ITA
-2084;#e420bc;Genova;mountains;ITA
-2085;#b86781;Savona;mountains;ITA
-2086;#cdd1e7;Var;mountains;FRA
-2087;#6ff237;Bouches-du-Rhône;mountains;FRA
-2088;#ff9381;Gard;hills;FRA
-2089;#9e5d67;Hérault;mountains;FRA
-2090;#a430dc;Aude;mountains;FRA
-2091;#8ddf89;Barcelona;mountains;ESP
-2092;#b30fe3;Tarragona;mountains;ESP
-2093;#e92bbf;Castellón;mountains;ESP
-2094;#ef48de;Valencia;mountains;ESP
-2095;#1a5a5f;Alicante;mountains;ESP
-2096;#64375a;Murcia;mountains;ESP
-2097;#554cda;Almería;mountains;ESP
-2098;#9746ba;Granada;mountains;ESP
-2099;#e0e334;Málaga;mountains;ESP
-2100;#37db8d;Sevilla;mountains;ESP
-2101;#014720;Setúbal;plains;PRT
-2102;#2e06b8;Lisboa;hills;PRT
-2103;#b02bb2;Santarém;hills;PRT
-2104;#a37a0a;Leiria;mountains;PRT
-2105;#9bc901;Coimbra;mountains;PRT
-2106;#a5793c;Aveiro;mountains;PRT
-2107;#16b5b3;Porto;mountains;PRT
-2108;#1a3a08;La Coruña;mountains;ESP
-2109;#6d9f86;Lugo;hills;ESP
-2110;#9726ed;Asturias;mountains;ESP
-2111;#a63d3a;Cantabria;mountains;ESP
-2112;#407e03;Bizkaia;mountains;ESP
-2113;#2b92de;Landes;plains;FRA
-2114;#72ef33;Gironde;plains;FRA
-2115;#750b53;Charente-Maritime;plains;FRA
-2116;#490589;Vendée;plains;FRA
-2117;#e05035;Loire-Atlantique;plains;FRA
-2118;#9795ec;Morbihan;plains;FRA
-2119;#3df9b6;Finistère;hills;FRA
-2120;#43f4e4;Côtes-d'Armor;plains;FRA
-2121;#c21a5a;Ille-et-Vilaine;plains;FRA
-2122;#5c5707;Manche;hills;FRA
-2123;#ad9800;Calvados;hills;FRA
-2124;#b92dd8;Eure;plains;FRA
-2125;#f562ec;Seine-Maritime;plains;FRA
-2126;#781e5e;Somme;plains;FRA
-2127;#6d4cd0;Pas-de-Calais;plains;FRA
-2128;#e24998;Zuid-Holland;plains;NLD
-2129;#a4f7c1;Noord-Holland;plains;NLD
-2130;#bfd1d9;Friesland;plains;NLD
-2131;#b9c652;Bremen;plains;DEU
-2132;#615501;Hamburg;plains;DEU
-2133;#5812a8;Midtjylland;plains;DNK
-2134;#c63fa2;Nordjylland;plains;DNK
-2135;#f73714;Kommuneqarfik Sermersooq;mountains;GRL
-2136;#75e04c;Nationalparken;mountains;GRL
-2137;#b78a7b;Qaasuitsup Kommunia;mountains;GRL
-2138;#355d23;Pituffik;mountains;GRL
-2139;#335e15;Qeqqata Kommunia;hills;GRL
-2140;#f13422;Kommune Kujalleq;mountains;GRL
-2141;#300708;Windward Islands;mountains;PYF
-2142;#7f118d;Leeward Islands;plains;PYF
-2143;#a19281;Outer Islands;plains;SYC
-2144;#1aca54;Nueva Esparta;plains;VEN
-2145;#2aa9ae;Princes Town;plains;TTO
-2146;#ae7dc0;Rio Claro-Mayaro;plains;TTO
-2147;#b244d5;Western Tobago;plains;TTO
-2148;#846cd1;Saint Andrew;plains;GRD
-2149;#35d3a3;Andaman and Nicobar;plains;IND
-2150;#976329;Bonaire;plains;NLD
-2151;#123822;Charlotte;plains;VCT
-2152;#5cdf26;Dennery;plains;LCA
-2153;#8696dd;Martinique;hills;FRA
-2154;#8e1f2e;Saint Paul;hills;DMA
-2155;#2ba96e;Guadeloupe;hills;FRA
-2156;#9f0349;Saint Mary;plains;ATG
-2157;#a74532;Saint Thomas Lowland;plains;KNA
-2158;#8fd794;Puerto Rico;mountains;PRI
-2159;#de4f6b;La Altagracia;plains;DOM
-2160;#0f0461;Saint Elizabeth;mountains;JAM
-2161;#49ba38;Clarendon;mountains;JAM
-2162;#2aaa6e;Saint Catherine;mountains;JAM
-2163;#5aeb80;Portland;mountains;JAM
-2164;#1c255c;El Seybo;hills;DOM
-2165;#9159ee;Hato Mayor;hills;DOM
-2166;#8d6512;Nord;mountains;HTI
-2167;#cbdb4b;L'Artibonite;mountains;HTI
-2168;#f249b8;Barahona;mountains;DOM
-2169;#fbe164;Azua;mountains;DOM
-2170;#948ef6;Santo Domingo;mountains;DOM
-2171;#105a98;San Pedro de Macorís;plains;DOM
-2172;#e55f9a;Camagüey;plains;CUB
-2173;#aa491f;Ciego de Ávila;plains;CUB
-2174;#a3e1c3;Holguín;plains;CUB
-2175;#8e6011;Isla de la Juventud;plains;CUB
-2176;#9402f4;Crooked Island and Long Cay;plains;BHS
-2177;#0ab47f;Sancti Spíritus;hills;CUB
-2178;#d0b153;Villa Clara;hills;CUB
-2179;#12db64;Matanzas;plains;CUB
-2180;#197e46;Long Island;plains;BHS
-2181;#e3a77a;Central Andros;plains;BHS
-2182;#677314;South Andros;plains;BHS
-2183;#87331b;North Andros;plains;BHS
-2184;#45592c;Berry Islands;plains;BHS
-2185;#d2dcfa;East Grand Bahama;plains;BHS
-2186;#db7426;South Abaco;plains;BHS
-2187;#5fa048;North Abaco;plains;BHS
-2188;#664edd;Kalmyk;plains;RUS
-2189;#e34445;Xizı;mountains;AZE
-2190;#8b227f;Bakı;plains;AZE
-2191;#f9bd21;Salyan;plains;AZE
-2192;#327fca;Neftçala;plains;AZE
-2193;#c10e2a;Lankaran;mountains;AZE
-2194;#9d4917;Masallı;mountains;AZE
-2195;#7607d7;Mazandaran;mountains;IRN
-2196;#b9ca4d;Heard Island and McDonald Islands;mountains;HMD
-2197;#53237e;Archipel des Kerguelen;mountains;ATF
-2198;#af7d00;La Réunion;mountains;FRA
-2199;#e9c359;Mayotte;plains;FRA
-2200;#0c2897;Andjouân;hills;COM
-2201;#4a96ce;Andjazîdja;mountains;COM
-2202;#b6db01;Zanzibar West;plains;TZA
-2203;#bf73dd;Kaskazini-Pemba;plains;TZA
-2204;#84db69;Au Cap;plains;SYC
-2205;#789e2e;São Tomé;mountains;STP
-2206;#eb3da2;Bioko Sur;mountains;GNQ
-2207;#36a9fb;São Filipe;hills;CPV
-2208;#8ace9e;Ribeira Grande de Santiago;mountains;CPV
-2209;#07b22c;Maio;plains;CPV
-2210;#c5d81b;Boa Vista;plains;CPV
-2211;#836642;Sal;plains;CPV
-2212;#bbb51e;Porto Novo;mountains;CPV
-2213;#baa73f;Santa Cruz de Tenerife;mountains;ESP
-2214;#841702;Las Palmas;hills;ESP
-2215;#f93e01;Madeira;mountains;PRT
-2216;#8b4032;Kriti;mountains;GRC
-2217;#356750;Notio Aigaio;mountains;GRC
-2218;#658df4;Paphos;mountains;CYP
-2219;#318e7a;Trapani;mountains;ITA
-2220;#bf8058;Azores;hills;PRT
-2221;#2476ef;Voreio Aigaio;mountains;GRC
-2222;#11b0be;Ionioi Nisoi;hills;GRC
-2223;#9eb8a7;Messina;mountains;ITA
-2224;#5cd290;Palermo;mountains;ITA
-2225;#13c415;Agrigento;mountains;ITA
-2226;#d1ae22;Caltanissetta;mountains;ITA
-2227;#97107b;Ragusa;mountains;ITA
-2228;#557a4c;Siracusa;mountains;ITA
-2229;#1a6cc9;Catania;mountains;ITA
-2230;#4fb5be;Baleares;hills;ESP
-2231;#1ef980;Sassari;mountains;ITA
-2232;#9a2dee;Nuoro;mountains;ITA
-2233;#dc93b7;Olbia-Tempio;mountains;ITA
-2234;#51ef05;Oristrano;mountains;ITA
-2235;#938532;Medio Campidano;mountains;ITA
-2236;#0400e4;Cagliari;mountains;ITA
-2237;#5847d9;Ogliastra;mountains;ITA
-2238;#f63b5d;Haute-Corse;mountains;FRA
-2239;#c7208a;Corse-du-Sud;mountains;FRA
-2240;#b28140;Isle of Man;plains;IMN
-2241;#60c1f4;Sjaælland;plains;DNK
-2242;#045595;Hovedstaden;plains;DNK
-2243;#312eca;Eilean Siar;plains;GBR
-2244;#0b4cf5;Gotland;plains;SWE
-2245;#09fd96;Orkney;plains;GBR
-2246;#4f43cf;Shetland Islands;plains;GBR
-2247;#df42cd;Jomala;plains;ALD
-2248;#ceeed8;Eysturoyar;hills;FRO
-2249;#7ceb10;Tasmania;mountains;AUS
-2250;#e0291e;Bali;mountains;IDN
-2251;#3945bd;British Indian Ocean Territory;plains;IOT
-2252;#0d5391;North West;plains;SGP
-2253;#a8aa27;Phuket;plains;THA
-2254;#d90217;Hawaii;mountains;USA
-2255;#a65395;Okinawa;plains;JPN
-2256;#33d757;Kinmen;plains;TWN
-2257;#6df1c1;Jeju;mountains;KOR
-2258;#6a0086;Kamchatka;mountains;RUS
-2259;#99cf09;Saare;plains;EST
-2260;#dc4957;Hiiu;plains;EST
-2261;#5fb128;Svalbard;mountains;NOR
-2262;#2c5876;Chatham Islands Territory;plains;NZL
-2263;#66392b;Eastern;plains;FJI
-2264;#e0785c;Fa'asaleleaga;mountains;WSM
-2265;#83c103;Rennell and Bellona;plains;SLB
-2266;#39afd4;Marquesas Islands;plains;PYF
-2267;#13b27c;Makira;mountains;SLB
-2268;#46c2cb;Temotu;plains;SLB
-2269;#41ab34;Malaita;mountains;SLB
-2270;#07156d;Guadalcanal;mountains;SLB
-2271;#c57f5a;Central;plains;SLB
-2272;#8d9f76;Western;hills;SLB
-2273;#4803e8;Isabel;hills;SLB
-2274;#6768a3;Manufahi;mountains;TLS
-2275;#21d6fa;Viqueque;mountains;TLS
-2276;#e3bccd;Lautém;mountains;TLS
-2277;#a23cb5;North Solomons;mountains;PNG
-2278;#9a8fbe;West New Britain;mountains;PNG
-2279;#d5993b;East New Britain;mountains;PNG
-2280;#1e5bd0;New Ireland;mountains;PNG
-2281;#a69747;Bangka-Belitung;plains;IDN
-2282;#17f30c;Manus;hills;PNG
-2283;#55670c;Gaafu Dhaalu;plains;MDV
-2284;#970d3b;Gaafu Alifu;plains;MDV
-2285;#b1af39;Tawi-Tawi;plains;PHL
-2286;#a2fe81;Basilan;mountains;PHL
-2287;#497c8a;Pohnpei;plains;FSM
-2288;#c7ede1;Camiguin;hills;PHL
-2289;#357b57;Bohol;mountains;PHL
-2290;#6094b6;Negros Occidental;mountains;PHL
-2291;#feb9bc;Negros Oriental;mountains;PHL
-2292;#7a6dd2;Cebu;hills;PHL
-2293;#398364;Puerto Princesa;mountains;PHL
-2294;#4b1652;Antique;mountains;PHL
-2295;#17516f;Iloilo;mountains;PHL
-2296;#d53b58;Capiz;mountains;PHL
-2297;#b1cf6e;Romblon;hills;PHL
-2298;#f6f636;Northern Samar;hills;PHL
-2299;#ad353c;Masbate;plains;PHL
-2300;#daf0e5;Mindoro Oriental;mountains;PHL
-2301;#189ad2;Mindoro Occidental;mountains;PHL
-2302;#75c638;Marinduque;hills;PHL
-2303;#ab360a;Catanduanes;mountains;PHL
-2304;#95a869;South Georgia and the South Sandwich Islands;mountains;SGS
-2305;#89b9f5;Falkland Islands;plains;FLK
-2306;#46e8ee;Sud;mountains;NCL
-2307;#8482d9;Îles Loyauté;plains;NCL
-2308;#603305;Tongatapu;plains;TON
-2309;#31451c;Tafea;hills;VUT
-2310;#c0c77d;Western;mountains;FJI
-2311;#3a7e16;Central;mountains;FJI
-2312;#7e5399;Shefa;hills;VUT
-2313;#a4531c;Northern;hills;FJI
-2314;#f32f2b;Malampa;hills;VUT
-2315;#77fb45;Sanma;mountains;VUT
-2316;#bc39ae;Penama;plains;VUT
-2317;#b59172;Torba;plains;VUT
-2318;#fa8138;A'ana;hills;WSM
-2319;#d1d84b;Choiseul;hills;SLB
-2320;#7e670e;Airai;plains;PLW
-2321;#c66ad1;Guam;plains;GUM
-2322;#ffa6fe;Las Tunas;plains;CUB
-2323;#5325fc;Mayabeque;plains;CUB
-2324;#4c0a26;Pinar del Río;hills;CUB
-2325;#eaf470;Cienfuegos;plains;CUB
-2326;#618bf4;Granma;mountains;CUB
-2327;#3dccc9;Santiago de Cuba;mountains;CUB
-2328;#164788;Al Wusţá;plains;BHR
-2329;#8d717b;Prince Edward Island;plains;CAN
-2330;#53643a;Thaa;plains;MDV
-2331;#8bf769;Vaavu;plains;MDV
-2332;#82676d;Salt Cay;plains;TCA
-2333;#26a4c3;Macau;plains;MAC
-2334;#5668c3;Ragged Island;plains;BHS
-2335;#32f6f2;Tuen Mun;plains;HKG
-2336;#2c537a;Brändö;plains;ALD
-2337;#b1d26a;Southland;mountains;NZL
-2338;#60e9e5;Marlborough District;mountains;NZL
-2339;#e43d8b;Tasman District;mountains;NZL
-2340;#2fff60;West Coast;mountains;NZL
-2341;#ed9557;Otago;mountains;NZL
-2342;#a283d2;Canterbury;mountains;NZL
-2343;#9941f0;Auckland;plains;NZL
-2344;#836eab;Waikato;hills;NZL
-2345;#41049c;Wellington;mountains;NZL
-2346;#3e58f0;Manawatu-Wanganui;mountains;NZL
-2347;#694139;Taranaki;mountains;NZL
-2348;#ab2b0e;Northland;hills;NZL
-2349;#5b2bc7;Bay of Plenty;mountains;NZL
-2350;#076cfa;Gisborne District;mountains;NZL
-2351;#c506cd;Hawke's Bay;mountains;NZL
-2352;#2073b3;Midlands;hills;ZWE
-2353;#a4a7dd;Harare;hills;ZWE
-2354;#20a582;Ma'rib;hills;YEM
-2355;#86a745;Sana'a;mountains;YEM
-2356;#dae078;Raymah;mountains;YEM
-2357;#290d5e;Al Bayda';mountains;YEM
-2358;#0f7d50;Amran;mountains;YEM
-2359;#661bdb;Al Dali';mountains;YEM
-2360;#49c309;Ibb;mountains;YEM
-2361;#406bd5;Al Mahwit;mountains;YEM
-2362;#8201e2;Dhamar;mountains;YEM
-2363;#26d8c3;Hòa Bình;mountains;VNM
-2364;#b8f5c9;Tuyên Quang;mountains;VNM
-2365;#e4b2f4;Yên Bái;mountains;VNM
-2366;#4be47e;Vĩnh Phúc;mountains;VNM
-2367;#93772d;Phú Thọ;mountains;VNM
-2368;#c698cc;Ha Noi;mountains;VNM
-2369;#35897b;Đông Bắc;hills;VNM
-2370;#802695;Đồng Bằng Sông Hồng;plains;VNM
-2371;#fe2bc7;Bắc Giang;hills;VNM
-2372;#733722;Thái Nguyên;mountains;VNM
-2373;#424ca2;Hải Dương;hills;VNM
-2374;#0d5a27;Hà Nam;hills;VNM
-2375;#db85c8;Bình Dương;plains;VNM
-2376;#9d3b91;Lâm Đồng;mountains;VNM
-2377;#f0677b;Can Tho;plains;VNM
-2378;#393eb5;Tacuarembó;plains;URY
-2379;#b44207;Durazno;plains;URY
-2380;#c8770b;Flores;plains;URY
-2381;#e1ade6;Florida;plains;URY
-2382;#23c7d1;Lavalleja;hills;URY
-2383;#c25907;Guárico;plains;VEN
-2384;#5a773b;Cojedes;hills;VEN
-2385;#efb882;Barinas;plains;VEN
-2386;#d70b89;Lara;hills;VEN
-2387;#1561be;Portuguesa;plains;VEN
-2388;#47be06;Poltava;plains;UKR
-2389;#9a77d2;Khmel'nyts'kyy;plains;UKR
-2390;#1ea3bc;Ternopil';plains;UKR
-2391;#76a5d1;Dnipropetrovs'k;plains;UKR
-2392;#9f4d02;Cherkasy;plains;UKR
-2393;#fbd963;Kirovohrad;plains;UKR
-2394;#7126e6;Siliana;mountains;TUN
-2395;#fc5a54;Sidi Bou Zid;mountains;TUN
-2396;#a9b5b5;Kairouan;mountains;TUN
-2397;#0f4be3;Zaghouan;mountains;TUN
-2398;#2519e9;Bern;mountains;CHE
-2399;#333d55;Lucerne;mountains;CHE
-2400;#022682;Uri;mountains;CHE
-2401;#8f5a30;Schwyz;mountains;CHE
-2402;#a4b883;Glarus;mountains;CHE
-2403;#eedb02;Fribourg;mountains;CHE
-2404;#63a7b0;Obwalden;mountains;CHE
-2405;#ed2a30;Chimbu;mountains;PNG
-2406;#ad975f;Enga;mountains;PNG
-2407;#26e8db;Western Highlands;mountains;PNG
-2408;#e482ec;Southern Highlands;mountains;PNG
-2409;#2f4007;Eastern Highlands;mountains;PNG
-2410;#42b58c;Anenii Noi;plains;MDA
-2411;#be6f86;Orhei;plains;MDA
-2412;#e42b8d;Floreşti;plains;MDA
-2413;#f17903;Rezina;plains;MDA
-2414;#f8d1df;Ialoveni;plains;MDA
-2415;#c2565a;Bolu;mountains;TUR
-2416;#358943;Ankara;hills;TUR
-2417;#97b9bb;Bilecik;mountains;TUR
-2418;#003c6d;Eskisehir;hills;TUR
-2419;#f7e374;Çankiri;hills;TUR
-2420;#967c1d;Karabük;mountains;TUR
-2421;#a4e943;Jharkhand;hills;IND
-2422;#f1daf5;Delhi;plains;IND
-2423;#5e5028;Madhya Pradesh;hills;IND
-2424;#aec7ce;Utah;hills;USA
-2425;#6cadf9;Wyoming;mountains;USA
-2426;#650525;Nevada;hills;USA
-2427;#a76f12;Colorado;mountains;USA
-2428;#9674c5;South Dakota;plains;USA
-2429;#1b0877;Nebraska;hills;USA
-2430;#9fdc19;Kansas;plains;USA
-2431;#d96240;Oklahoma;plains;USA
-2432;#f280f3;Iowa;plains;USA
-2433;#5db62e;Missouri;plains;USA
-2434;#b6a65d;Khon Kaen;plains;THA
-2435;#3dd9d9;Sakon Nakhon;plains;THA
-2436;#56e652;Suphan Buri;mountains;THA
-2437;#5f4e8e;Chai Nat;hills;THA
-2438;#9d24b9;Ang Thong;plains;THA
-2439;#67fd85;Saraburi;mountains;THA
-2440;#b0a56b;Nakhon Ratchasima;hills;THA
-2441;#c16384;Nakhon Nayok;mountains;THA
-2442;#ea8137;Pathum Thani;plains;THA
-2443;#db9ae0;Uthai Thani;mountains;THA
-2444;#74cc6a;Kalasin;plains;THA
-2445;#f61b32;Roi Et;plains;THA
-2446;#72cf5c;Maha Sarakham;plains;THA
-2447;#a3f4d3;Nong Bua Lam Phu;hills;THA
-2448;#0309b3;Lop Buri;plains;THA
-2449;#619ee4;Udon Thani;plains;THA
-2450;#28eb00;Phra Nakhon Si Ayutthaya;plains;THA
-2451;#bf6ed6;Nakhon Pathom;plains;THA
-2452;#10580b;Kamphaeng Phet;hills;THA
-2453;#faa1a6;Lampang;hills;THA
-2454;#77dd14;Sukhothai;hills;THA
-2455;#6e5559;Nakhon Sawan;plains;THA
-2456;#948c65;Phetchabun;mountains;THA
-2457;#d2323c;Phichit;plains;THA
-2458;#eae160;Chaiyaphum;hills;THA
-2459;#f3097a;Phrae;hills;THA
-2460;#bc1fff;Lamphun;hills;THA
-2461;#ac3f6e;Prachin Buri;mountains;THA
-2462;#0ac138;Yasothon;plains;THA
-2463;#fdda42;Nantou;mountains;TWN
-2464;#fd0131;Tokat;hills;TUR
-2465;#79d55f;Sivas;hills;TUR
-2466;#707d83;Çorum;hills;TUR
-2467;#b217b4;Amasya;hills;TUR
-2468;#0d5804;Morogoro;hills;TZA
-2469;#74b136;Dodoma;hills;TZA
-2470;#87c0d6;Manyara;hills;TZA
-2471;#b46de0;Semnan;hills;IRN
-2472;#7fcf5c;Zanjan;mountains;IRN
-2473;#bda56b;Qazvin;hills;IRN
-2474;#10f302;Hamah;hills;SYR
-2475;#2b0e5b;Gornji Grad;mountains;SVN
-2476;#008cbf;Pivka;mountains;SVN
-2477;#772931;Ljubljana;mountains;SVN
-2478;#7ce97b;Västmanland;plains;SWE
-2479;#43be10;Jönköping;hills;SWE
-2480;#b72b90;Orebro;plains;SWE
-2481;#7541a7;Kronoberg;plains;SWE
-2482;#395295;Para;plains;SUR
-2483;#a77f9f;Brokopondo;plains;SUR
-2484;#7a4737;Gezira;plains;SDN
-2485;#b82d00;Khartoum;plains;SDN
-2486;#942bd3;North Kordufan;plains;SDN
-2487;#42a1ee;Lakes;plains;SDS
-2488;#3cacbc;Warrap;plains;SDS
-2489;#c4aa6d;Zaragoza;mountains;ESP
-2490;#467d35;La Rioja;mountains;ESP
-2491;#9e8e31;Álava;hills;ESP
-2492;#d83068;Albacete;hills;ESP
-2493;#7165d4;Teruel;mountains;ESP
-2494;#f3d2db;Cuenca;hills;ESP
-2495;#2d22e9;Toledo;plains;ESP
-2496;#e94be8;León;hills;ESP
-2497;#f5b1ba;Soria;hills;ESP
-2498;#e08363;Burgos;hills;ESP
-2499;#d198b4;Ávila;mountains;ESP
-2500;#296737;Gauteng;hills;ZAF
-2501;#b82b90;Bled;mountains;SVN
-2502;#93c923;Idrija;mountains;SVN
-2503;#ee6dc4;Žužemberk;mountains;SVN
-2504;#b1cbaf;Diourbel;plains;SEN
-2505;#9c21e2;Ar Riyad;plains;SAU
-2506;#b090d0;Al Quassim;hills;SAU
-2507;#72fae7;Ha'il;hills;SAU
-2508;#209131;Al Bahah;mountains;SAU
-2509;#9b56dd;Cluj;hills;ROU
-2510;#dde884;Bistrita-Nasaud;hills;ROU
-2511;#7e4c55;Salaj;mountains;ROU
-2512;#0bb0db;Dâmbovita;mountains;ROU
-2513;#0d2db8;Ilfov;plains;ROU
-2514;#fa983b;Arges;mountains;ROU
-2515;#f169e7;Gorj;mountains;ROU
-2516;#593cea;Hunedoara;mountains;ROU
-2517;#77e489;Vâlcea;mountains;ROU
-2518;#c22b30;Prahova;mountains;ROU
-2519;#f330e7;Covasna;hills;ROU
-2520;#8d3db5;Vrancea;mountains;ROU
-2521;#cb83ec;Buzau;mountains;ROU
-2522;#b58ebe;Brasov;hills;ROU
-2523;#38f20c;Sibiu;mountains;ROU
-2524;#c711e0;Mures;hills;ROU
-2525;#315ad0;Harghita;hills;ROU
-2526;#af77da;Neamt;hills;ROU
-2527;#46ff5e;Bacau;mountains;ROU
-2528;#1f82b3;Alba;mountains;ROU
-2529;#83312e;Slovenska Bistrica;mountains;SVN
-2530;#aeb0fc;Križevci;hills;SVN
-2531;#a74053;Nišavski;mountains;SRB
-2532;#23943d;Pomoravski;mountains;SRB
-2533;#767bdc;Šumadijski;mountains;SRB
-2534;#ca1cb9;Moravicki;hills;SRB
-2535;#e856d6;Kolubarski;mountains;SRB
-2536;#941394;Oppland;hills;NOR
-2537;#71e5e0;Dowa;hills;MWI
-2538;#1511d6;Balaka;hills;MWI
-2539;#91c5b8;Chiradzulu;hills;MWI
-2540;#a916e4;Blantyre;mountains;MWI
-2541;#986d64;Ntchisi;mountains;MWI
-2542;#93c1e5;Kauno;plains;LTU
-2543;#5f4c1d;Santiago Rodríguez;mountains;DOM
-2544;#398b53;La Vega;mountains;DOM
-2545;#237237;Duarte;hills;DOM
-2546;#9d262a;Santiago;mountains;DOM
-2547;#9f1552;Bahoruco;mountains;DOM
-2548;#db9873;San Juan;mountains;DOM
-2549;#ea8cce;Xocalı;mountains;AZE
-2550;#28e6f9;Tərtər;mountains;AZE
-2551;#9873c7;Goranboy;mountains;AZE
-2552;#321f9d;Xocavənd;mountains;AZE
-2553;#efd649;Hajigabul;mountains;AZE
-2554;#e67e95;Abşeron;mountains;AZE
-2555;#5a19f0;Xanlar;mountains;AZE
-2556;#03641d;Kürdəmir;plains;AZE
-2557;#3bd716;Sabirabad;hills;AZE
-2558;#117244;Buyende;hills;UGA
-2559;#8418fa;Jinja;hills;UGA
-2560;#f6519b;Apac;hills;UGA
-2561;#eea070;Nakasongola;hills;UGA
-2562;#021224;Masindi;hills;UGA
-2563;#c2a6a3;Kayunga;hills;UGA
-2564;#6a741e;Luweero;hills;UGA
-2565;#31d743;Amolatar;hills;UGA
-2566;#83fc9a;Kiboga;hills;UGA
-2567;#fff947;Gomba;hills;UGA
-2568;#2cca47;Wakiso;hills;UGA
-2569;#25629b;Nakaseke;hills;UGA
-2570;#7b2d29;Kyankwanzi;hills;UGA
-2571;#00cc94;Kaberamaido;hills;UGA
-2572;#86c64a;Dokolo;hills;UGA
-2573;#c9d0cf;Kyenjojo;hills;UGA
-2574;#3e9b4e;Kamwenge;hills;UGA
-2575;#81f415;Kyegegwa;hills;UGA
-2576;#7ec1c6;Sembabule;hills;UGA
-2577;#9597f2;Kibale;hills;UGA
-2578;#a81e29;Mubende;hills;UGA
-2579;#849569;Braila;plains;ROU
-2580;#8f64b5;Ialomita;plains;ROU
-2581;#d4df84;Viseu;mountains;PRT
-2582;#68db3c;Agusan del Sur;mountains;PHL
-2583;#aab10b;Bukidnon;mountains;PHL
-2584;#c9a15d;Cotabato;mountains;PHL
-2585;#16d66e;South Cotabato;mountains;PHL
-2586;#bae1bb;Cusco;mountains;PER
-2587;#96e768;Ayacucho;mountains;PER
-2588;#15d766;Apurímac;mountains;PER
-2589;#08ca62;Huancavelica;mountains;PER
-2590;#9f4fb4;San Martín;mountains;PER
-2591;#a9b003;Huánuco;mountains;PER
-2592;#d9f1ed;Pasco;mountains;PER
-2593;#a7fcbf;Junín;mountains;PER
-2594;#fbd99f;San Pedro;plains;PRY
-2595;#85d4cd;Caaguazú;plains;PRY
-2596;#7f0df1;Cordillera;plains;PRY
-2597;#d993f0;Caazapá;plains;PRY
-2598;#08a87f;Paraguarí;plains;PRY
-2599;#65f495;Guairá;hills;PRY
-2600;#01ae22;F.C.T.;hills;PAK
-2601;#edf15d;Matagalpa;mountains;NIC
-2602;#73dc57;Boaco;mountains;NIC
-2603;#b1b660;Chontales;mountains;NIC
-2604;#692533;Estelí;mountains;NIC
-2605;#1ee0ea;Granada;mountains;NIC
-2606;#608def;Masaya;mountains;NIC
-2607;#98a166;Flevoland;plains;NLD
-2608;#2023af;Utrecht;plains;NLD
-2609;#168d8a;Fès - Boulemane;mountains;MAR
-2610;#612804;Tadla - Azilal;mountains;MAR
-2611;#5eb83c;Cetinje;mountains;MNE
-2612;#33e4d6;Šavnik;mountains;MNE
-2613;#660b37;Kolašin;mountains;MNE
-2614;#20b56e;Danilovgrad;mountains;MNE
-2615;#ab3d08;Călărași;hills;MDA
-2616;#f71a62;Drochia;plains;MDA
-2617;#175a6d;Sîngerei;plains;MDA
-2618;#bb38ca;Analamanga;hills;MDG
-2619;#eed72b;Betsiboka;mountains;MDG
-2620;#41e1f6;Bongolava;hills;MDG
-2621;#22f1a0;Vakinankaratra;hills;MDG
-2622;#fd8693;Amoron'i Mania;hills;MDG
-2623;#3feca4;Alaotra-Mangoro;hills;MDG
-2624;#8432d5;Smiltenes;hills;LVA
-2625;#035364;Balvu;plains;LVA
-2626;#22acd4;Burtnieku;plains;LVA
-2627;#c8918f;Rezeknes;plains;LVA
-2628;#d1dd34;Pargaujas;plains;LVA
-2629;#dc2457;Gulbene;plains;LVA
-2630;#3fd187;Rugaju;plains;LVA
-2631;#eeea08;Aglonas;plains;LVA
-2632;#d58c8b;Madona;plains;LVA
-2633;#97636d;Lubanas;plains;LVA
-2634;#89cbb6;Ogre;plains;LVA
-2635;#36190c;Ikskiles;plains;LVA
-2636;#790f89;Keguma;plains;LVA
-2637;#ae5767;Jaunjelgavas;plains;LVA
-2638;#4ba181;Preilu;plains;LVA
-2639;#5d2687;Jekabpils;plains;LVA
-2640;#1b98de;Krustpils;plains;LVA
-2641;#4e1768;Kuldigas;plains;LVA
-2642;#a79fec;Skrundas;plains;LVA
-2643;#3fb1d0;Kandavas;plains;LVA
-2644;#a22905;Tukums;plains;LVA
-2645;#1e4e60;Dobele;plains;LVA
-2646;#e121b5;Brocenu;plains;LVA
-2647;#65958c;Ozolnieku;plains;LVA
-2648;#24478e;Orahovac;mountains;KOS
-2649;#f046d1;Mališevo;hills;KOS
-2650;#3c6151;Central;mountains;KEN
-2651;#04917a;Ajlun;mountains;JOR
-2652;#6439a2;Gunma;mountains;JPN
-2653;#11ddca;Nagano;mountains;JPN
-2654;#7529fc;Tochigi;mountains;JPN
-2655;#da1f21;Gifu;mountains;JPN
-2656;#e2ac2a;Shiga;mountains;JPN
-2657;#b743cb;Saitama;mountains;JPN
-2658;#d3d7aa;Yamanashi;mountains;JPN
-2659;#667844;Nara;mountains;JPN
-2660;#85b0d0;Haut-Sassandra;plains;CIV
-2661;#76c130;Agnéby;plains;CIV
-2662;#307f69;N'zi-Comoé;plains;CIV
-2663;#0164be;Marahoué;plains;CIV
-2664;#c30e89;Fromager;plains;CIV
-2665;#b4ab07;Vallée du Bandama;plains;CIV
-2666;#c36ede;Lacs;plains;CIV
-2667;#4e723b;Worodougou;plains;CIV
-2668;#586962;Kildare;hills;IRL
-2669;#d9024b;Carlow;plains;IRL
-2670;#dcbd0c;Laoighis;plains;IRL
-2671;#a2d009;Offaly;plains;IRL
-2672;#60ba3e;Westmeath;plains;IRL
-2673;#e40e07;Longford;plains;IRL
-2674;#d515d0;Roscommon;plains;IRL
-2675;#93ab89;North Tipperary;hills;IRL
-2676;#cc1cc9;South Tipperary;plains;IRL
-2677;#9c77cb;Comayagua;hills;HND
-2678;#57b520;Yoro;mountains;HND
-2679;#17084f;Francisco Morazán;hills;HND
-2680;#2d5e27;Kissidougou;plains;GIN
-2681;#a02295;Kérouané;plains;GIN
-2682;#2d3e70;Télimélé;hills;GIN
-2683;#f5cd74;Lélouma;mountains;GIN
-2684;#b5701b;Dalaba;plains;GIN
-2685;#37a743;Labé;hills;GIN
-2686;#15ed2c;Pita;hills;GIN
-2687;#6be07e;Kouroussa;plains;GIN
-2688;#e09ffa;Fria;mountains;GIN
-2689;#34ba76;Chimaltenango;mountains;GTM
-2690;#9b8cab;Guatemala;mountains;GTM
-2691;#2e2345;Jalapa;mountains;GTM
-2692;#d49a2e;El Progreso;mountains;GTM
-2693;#504e40;Sololá;mountains;GTM
-2694;#2e4312;Quezaltenango;mountains;GTM
-2695;#615597;Baja Verapaz;hills;GTM
-2696;#922477;Totonicapán;mountains;GTM
-2697;#f52a61;Ashanti;hills;GHA
-2698;#91be00;Eastern;hills;GHA
-2699;#7bac65;Hessen;hills;DEU
-2700;#3d123c;Thüringen;hills;DEU
-2701;#0546d0;Sachsen-Anhalt;plains;DEU
-2702;#7c4805;Berlin;plains;DEU
-2703;#ff44ff;Moyen-Ogooué;hills;GAB
-2704;#b22dba;Rapla;plains;EST
-2705;#e49a0b;Järva;plains;EST
-2706;#7b6909;Anseba;mountains;ERI
-2707;#084e51;San Salvador;mountains;SLV
-2708;#bbd1ca;Azuay;mountains;ECU
-2709;#999ba5;Cañar;mountains;ECU
-2710;#38e1c4;Napo;mountains;ECU
-2711;#55bd2e;Tungurahua;mountains;ECU
-2712;#e07297;Chimborazo;mountains;ECU
-2713;#c5dc98;Bolivar;mountains;ECU
-2714;#a16061;Imbabura;mountains;ECU
-2715;#5bf192;Cotopaxi;mountains;ECU
-2716;#2bb07c;Los Rios;mountains;ECU
-2717;#a6ccce;Pichincha;mountains;ECU
-2718;#ff3d1a;Santo Domingo de los Tsáchilas;mountains;ECU
-2719;#7f350a;Monseñor Nouel;mountains;DOM
-2720;#56e4c1;Sánchez Ramírez;mountains;DOM
-2721;#e11800;San José de Ocoa;mountains;DOM
-2722;#5333d9;Monte Plata;hills;DOM
-2723;#589880;Bjelovarsko-bilogorska;plains;HRV
-2724;#d2e7b5;Grad Zagreb;hills;HRV
-2725;#1e26d9;Brodsko-Posavska;hills;HRV
-2726;#fb1cdc;San José;mountains;CRI
-2727;#ca070b;Cartago;mountains;CRI
-2728;#85100e;Caquetá;plains;COL
-2729;#086cbc;Huila;mountains;COL
-2730;#8cd885;Guaviare;plains;COL
-2731;#a42b48;Caldas;mountains;COL
-2732;#4eb2b2;Casanare;plains;COL
-2733;#01a437;Meta;plains;COL
-2734;#1003a7;Santander;mountains;COL
-2735;#477a39;Tolima;mountains;COL
-2736;#c3ae57;Quindío;mountains;COL
-2737;#f86c75;Cundinamarca;mountains;COL
-2738;#01c460;Risaralda;mountains;COL
-2739;#72794a;Beijing;mountains;CHN
-2740;#536bdb;Kasaï-Oriental;plains;COD
-2741;#15d582;Maniema;plains;COD
-2742;#a6126d;Sichuan;mountains;CHN
-2743;#b0137d;Chongqing;hills;CHN
-2744;#ff05f8;Guizhou;hills;CHN
-2745;#64785a;Hunan;hills;CHN
-2746;#3197bb;Ningxia;hills;CHN
-2747;#7e813e;Shaanxi;hills;CHN
-2748;#7bd196;Qinghai;mountains;CHN
-2749;#bceb09;Shanxi;hills;CHN
-2750;#845802;Jiangxi;hills;CHN
-2751;#4f9ae9;Henan;plains;CHN
-2752;#383f67;Hubei;hills;CHN
-2753;#6148a5;Anhui;plains;CHN
-2754;#e7f519;Barh El Gazel;plains;TCD
-2755;#9be20d;Tandjilé;plains;TCD
-2756;#dd5c54;Logone Occidental;plains;TCD
-2757;#be4c02;Guéra;plains;TCD
-2758;#3330b0;Batha;plains;TCD
-2759;#dc9b66;Ouest;hills;CMR
-2760;#b08d27;Centre;plains;CMR
-2761;#001320;Kâmpóng Chhnang;hills;KHM
-2762;#d88073;Kâmpóng Thum;plains;KHM
-2763;#84c74e;Kâmpóng Spœ;hills;KHM
-2764;#ca6768;Goiás;plains;BRA
-2765;#0813a6;Distrito Federal;hills;BRA
-2766;#b37744;Minas Gerais;plains;BRA
-2767;#54549b;Tocantins;plains;BRA
-2768;#6590cd;Kweneng;hills;BWA
-2769;#8b1574;Cochabamba;mountains;BOL
-2770;#de527c;Wangdi Phodrang;mountains;BTN
-2771;#996b24;Daga;mountains;BTN
-2772;#47fb41;Punakha;mountains;BTN
-2773;#2d239c;Mongar;mountains;BTN
-2774;#1c384b;Tongsa;mountains;BTN
-2775;#ef49ab;Pemagatsel;mountains;BTN
-2776;#a021b7;Minsk;plains;BLR
-2777;#5e9371;Saint George;plains;BRB
-2778;#4dc2c9;Saint Thomas;plains;BRB
-2779;#74c193;Saatlı;plains;AZE
-2780;#6b0227;Bərdə;mountains;AZE
-2781;#91db1b;Şəmkir;mountains;AZE
-2782;#a0c0cc;Ağsu;mountains;AZE
-2783;#e6a992;Nana-Grébizi;plains;CAF
-2784;#bf0378;Şamaxı;mountains;AZE
-2785;#94819c;Quba;mountains;AZE
-2786;#f015fd;Qobustan;mountains;AZE
-2787;#45da44;İsmayıllı;mountains;AZE
-2788;#494848;Yevlakh Rayon;mountains;AZE
-2789;#c8a6f6;Göyçay;mountains;AZE
-2790;#62aafb;Ağdaş;mountains;AZE
-2791;#03044a;Ağcabədi;mountains;AZE
-2792;#8ffaa7;Australian Capital Territory;hills;AUS
-2793;#45f77c;Wien;mountains;AUT
-2794;#420e52;Kotayk;mountains;ARM
-2795;#4f7c6f;Santa Fe;plains;ARG
-2796;#38d9e1;Tucumán;mountains;ARG
-2797;#fab3d6;Santiago del Estero;plains;ARG
-2798;#882c88;San Luis;hills;ARG
-2799;#160182;La Pampa;plains;ARG
-2800;#4a46bf;Córdoba;hills;ARG
-2801;#a862cd;Bié;hills;AGO
-2802;#555f91;Cuanza Norte;hills;AGO
-2803;#5b132d;Huíla;hills;AGO
-2804;#99791a;Huambo;hills;AGO
-2805;#ee8541;Sétif;hills;DZA
-2806;#d6364a;Bordj Bou Arréridj;hills;DZA
-2807;#2547aa;Bouira;hills;DZA
-2808;#481b40;Blida;mountains;DZA
-2809;#145c7d;Tissemsilt;hills;DZA
-2810;#e02e1a;Aïn Defla;mountains;DZA
-2811;#df9e96;Relizane;mountains;DZA
-2812;#311595;El Bayadh;hills;DZA
-2813;#908813;Saïda;hills;DZA
-2814;#d6b1fa;Sidi Bel Abbès;hills;DZA
-2815;#5b4af8;Mascara;mountains;DZA
-2816;#b5c1fb;Ghardaïa;plains;DZA
-2817;#77abcc;Laghouat;hills;DZA
-2818;#63f9f3;Médéa;hills;DZA
-2819;#52e224;Tiaret;hills;DZA
-2820;#2cef76;M'Sila;hills;DZA
-2821;#a83b18;Batna;mountains;DZA
-2822;#f47c25;Khenchela;mountains;DZA
-2823;#361612;Guelma;mountains;DZA
-2824;#6a512f;Constantine;hills;DZA
-2825;#90e844;Mila;hills;DZA
-2826;#528273;Oum el Bouaghi;hills;DZA
-2827;#e72d9d;Biskra;mountains;DZA
-2828;#a193c4;Djelfa;hills;DZA
-2829;#1e0fff;Berat;mountains;ALB
-2830;#058aeb;Uruzgan;mountains;AFG
-2831;#ce4800;Ghazni;mountains;AFG
-2832;#e5cae4;Parwan;mountains;AFG
-2833;#7be7ee;Kabul;mountains;AFG
-2834;#88960e;Laghman;mountains;AFG
-2835;#4afc39;Logar;mountains;AFG
-2836;#27a0d3;Kapisa;mountains;AFG
-2837;#813ed2;Wardak;mountains;AFG
-2838;#7b87b9;Bamyan;mountains;AFG
-2839;#0c4260;Parwan;mountains;AFG
-2840;#2e6858;Sari Pul;mountains;AFG
-2841;#722f65;Ghor;mountains;AFG
-2842;#b98dd9;Baghlan;mountains;AFG
-2843;#ce2857;Samangan;mountains;AFG
-2844;#c7e0dc;Uruzgan;mountains;AFG
-2845;#559233;Rhondda, Cynon, Taff;mountains;GBR
-2846;#c07813;Oyam;hills;UGA
-2847;#343bac;Kole;hills;UGA
-2848;#44ac7d;Pader;hills;UGA
-2849;#fcf179;Ibanda;hills;UGA
-2850;#98054f;Mbarara;hills;UGA
-2851;#fdf1c8;Gulu;hills;UGA
-2852;#2ec2c8;Kiryandongo;hills;UGA
-2853;#0c88a7;Lwengo;hills;UGA
-2854;#eca8ff;Agago;hills;UGA
-2855;#c9b098;Kotido;hills;UGA
-2856;#027273;Abim;hills;UGA
-2857;#b0efc2;Otuke;hills;UGA
-2858;#7285f5;Alebtong;hills;UGA
-2859;#86a61d;Amuria;hills;UGA
-2860;#0bdaaf;Katakwi;hills;UGA
-2861;#dab0af;Serere;hills;UGA
-2862;#387f9f;Soroti;hills;UGA
-2863;#bcabf1;Pallisa;hills;UGA
-2864;#53c7a4;Mbarara;hills;UGA
-2865;#50cf9a;Lyantonde;hills;UGA
-2866;#a91e98;Masaka;hills;UGA
-2867;#80743a;East Ayrshire;hills;GBR
-2868;#fe7968;South Lanarkshire;mountains;GBR
-2869;#ff9e3e;Omagh;plains;GBR
-2870;#883bb0;Mid Ulster;hills;GBR
-2871;#b92067;Banbridge;plains;GBR
-2872;#4a5187;Lisburn;hills;GBR
-2873;#43f95b;Ballymena;hills;GBR
-2874;#a45d34;Hertfordshire;plains;GBR
-2875;#da5066;Cambridgeshire;plains;GBR
-2876;#20895a;Buckinghamshire;plains;GBR
-2877;#40821a;Central Bedfordshire;plains;GBR
-2878;#00351d;Nottinghamshire;plains;GBR
-2879;#d16ec5;Northamptonshire;plains;GBR
-2880;#62c875;Doncaster;hills;GBR
-2881;#9546e3;Leicestershire;plains;GBR
-2882;#ea8e17;Cheshire East;hills;GBR
-2883;#4dd5b0;Derbyshire;hills;GBR
-2884;#faec21;Staffordshire;plains;GBR
-2885;#388616;Worcestershire;plains;GBR
-2886;#bc322f;Warwickshire;plains;GBR
-2887;#7e5818;Oxfordshire;plains;GBR
-2888;#9ff529;Wigan;plains;GBR
-2889;#67f2a5;West Berkshire;plains;GBR
-2890;#77f0c4;Surrey;plains;GBR
-2891;#f324aa;Wiltshire;plains;GBR
-2892;#fa15a8;Mukono;hills;UGA
-2893;#18da98;Buikwe;hills;UGA
-2894;#9c5f79;Nakapiripirit;hills;UGA
-2895;#c74a4c;Kween;mountains;UGA
-2896;#ff9910;Buhweju;hills;UGA
-2897;#a0b644;Bushenyi;hills;UGA
-2898;#75b7aa;Bugiri;hills;UGA
-2899;#3df327;Nwoya;hills;UGA
-2900;#f163c4;Mbale;mountains;UGA
-2901;#885cc9;Napak;hills;UGA
-2902;#4672cd;Kumi;hills;UGA
-2903;#57cc1d;Ngora;hills;UGA
-2904;#95a62a;Bukedea;mountains;UGA
-2905;#77691a;Namutumba;hills;UGA
-2906;#e01c35;Kütahya;hills;TUR
-2907;#58d5a9;Konya;hills;TUR
-2908;#1e6bf0;Karaman;hills;TUR
-2909;#2f1070;Nigde;hills;TUR
-2910;#416654;Kayseri;hills;TUR
-2911;#a6a26c;Isparta;hills;TUR
-2912;#227602;Manisa;mountains;TUR
-2913;#64c85b;Denizli;hills;TUR
-2914;#2bdede;Burdur;hills;TUR
-2915;#ed7a47;Aksaray;hills;TUR
-2916;#1d2169;Nevsehir;hills;TUR
-2917;#a26cc2;Yozgat;hills;TUR
-2918;#830c63;Kirsehir;hills;TUR
-2919;#931742;Usak;hills;TUR
-2920;#da718e;Erzincan;mountains;TUR
-2921;#8f8d47;Tunceli;mountains;TUR
-2922;#e9b4e9;Afyonkarahisar;hills;TUR
-2923;#4b8411;Kinkkale;hills;TUR
-2924;#48ce88;K. Maras;hills;TUR
-2925;#6616eb;Mus;hills;TUR
-2926;#632c3b;Erzurum;mountains;TUR
-2927;#07d80d;Malatya;hills;TUR
-2928;#8aa4bf;Elazig;hills;TUR
-2929;#a47cdc;Bitlis;mountains;TUR
-2930;#c92036;Bingöl;mountains;TUR
-2931;#24f0e1;Abia;plains;NGA
-2932;#a9ec04;Ebonyi;plains;NGA
-2933;#15eb36;Anambra;plains;NGA
-2934;#2d386a;Edo;hills;NGA
-2935;#49ac0b;Bauchi;plains;NGA
-2936;#622eef;Plateau;hills;NGA
-2937;#a044d8;Nassarawa;hills;NGA
-2938;#8bc63c;Gombe;hills;NGA
-2939;#6b8633;Enugu;mountains;NGA
-2940;#2490b6;Kogi;mountains;NGA
-2941;#913f58;Osun;hills;NGA
-2942;#a0248f;Imo;plains;NGA
-2943;#b5e0bb;Osmaniye;mountains;TUR
-2944;#cc1ae6;Adiyaman;mountains;TUR
-2945;#0b4a01;Diyarbakir;hills;TUR
-2946;#c09bc2;Batman;hills;TUR
-2947;#02f1f5;Siirt;mountains;TUR
-2948;#17a37b;Bayburt;mountains;TUR
-2949;#511d22;Gümüshane;mountains;TUR
-2950;#0314b8;Singida;hills;TZA
-2951;#04908f;Tabora;hills;TZA
-2952;#320f6f;Iringa;hills;TZA
-2953;#9abd85;Mwanza;hills;TZA
-2954;#6da78b;Simiyu;hills;TZA
-2955;#2b19d2;Geita;hills;TZA
-2956;#c6fab8;Shinyanga;hills;TZA
-2957;#98222c;Ratnapura;mountains;LKA
-2958;#cdcdcd;Mŏṇarāgala;mountains;LKA
-2959;#0fa7fa;Kægalla;mountains;LKA
-2960;#918af0;Badulla;mountains;LKA
-2961;#066f71;Mātale;mountains;LKA
-2962;#2d8dc2;Pŏḷŏnnaruva;hills;LKA
-2963;#1cf642;Kuruṇægala;hills;LKA
-2964;#a0f170;Anurādhapura;plains;LKA
-2965;#6b339b;Nuvara Ĕliya;mountains;LKA
-2966;#e64f29;Vavuniyāva;plains;LKA
-2967;#c40546;Mahanuvara;mountains;LKA
-2968;#8958a3;Bay;hills;SOM
-2969;#aa6856;Bashkortostan;hills;RUS
-2970;#57550a;Sverdlovsk;plains;RUS
-2971;#eb326f;Khanty-Mansiy;plains;RUS
-2972;#43e0d2;Lipetsk;plains;RUS
-2973;#72fb05;Tambov;plains;RUS
-2974;#8a1b6e;Tomsk;plains;RUS
-2975;#6fe601;Tatarstan;plains;RUS
-2976;#ad8c36;Ul'yanovsk;plains;RUS
-2977;#ff87b7;Penza;plains;RUS
-2978;#8cb770;Kemerovo;hills;RUS
-2979;#882239;Orel;plains;RUS
-2980;#0a5a49;Irkutsk;plains;RUS
-2981;#ca0929;Khakass;hills;RUS
-2982;#3ded80;Mordovia;plains;RUS
-2983;#c734bc;Kaluga;plains;RUS
-2984;#3d8dd7;Kostroma;plains;RUS
-2985;#055e8b;Yaroslavl';plains;RUS
-2986;#34455c;Vladimir;plains;RUS
-2987;#b09132;Ryazan';plains;RUS
-2988;#7b338e;Ivanovo;plains;RUS
-2989;#ffe7e0;Nizhegorod;plains;RUS
-2990;#160f33;Tula;plains;RUS
-2991;#f6e61b;Seoul;hills;KOR
-2992;#b05842;North Chungcheong;mountains;KOR
-2993;#d83e78;Daegu;hills;KOR
-2994;#0b1237;Chuvash;plains;RUS
-2995;#61caea;Vologda;plains;RUS
-2996;#d20665;Novgorod;plains;RUS
-2997;#a3a0dd;Tver';plains;RUS
-2998;#0cf657;Moskovskaya;plains;RUS
-2999;#ce9c60;Moskva;plains;RUS
-3000;#11eb53;Mariy-El;plains;RUS
-3001;#d38164;Kirov;plains;RUS
-3002;#953f3d;Udmurt;plains;RUS
-3003;#9c97e1;Komi;plains;RUS
-3004;#52fb42;Perm';plains;RUS
-3005;#e29ab3;Samara;plains;RUS
-3006;#e37de5;Stavropol';hills;RUS
-3007;#082bd1;Adygey;mountains;RUS
-3008;#037c28;Masovian;plains;POL
-3009;#5f3b15;Łódź;plains;POL
-3010;#dbef7b;Kuyavian-Pomeranian;plains;POL
-3011;#19854c;Greater Poland;plains;POL
-3012;#c1161f;Świętokrzyskie;hills;POL
-3013;#5e44dc;Nueva Ecija;mountains;PHL
-3014;#298105;Laguna;hills;PHL
-3015;#ebeb32;Rizal;mountains;PHL
-3016;#18fa85;Quirino;mountains;PHL
-3017;#57ec00;Nueva Vizcaya;mountains;PHL
-3018;#c069d6;Benguet;mountains;PHL
-3019;#d3386e;Ifugao;mountains;PHL
-3020;#958637;Mountain Province;mountains;PHL
-3021;#9c2eeb;Tarlac;mountains;PHL
-3022;#20498e;Apayao;mountains;PHL
-3023;#1169ae;Kalinga;mountains;PHL
-3024;#29e152;Abra;mountains;PHL
-3025;#b1bb50;Ad Dakhliyah;hills;OMN
-3026;#53556f;Ekiti;hills;NGA
-3027;#e6fa81;Kaduna;plains;NGA
-3028;#3e69d2;Kano;plains;NGA
-3029;#ff0b9c;Federal Capital Territory;hills;NGA
-3030;#338773;P'yŏngyang;hills;PRK
-3031;#df14a7;Khomas;hills;NAM
-3032;#a119f5;Oshana;hills;NAM
-3033;#a8b129;Oshikoto;hills;NAM
-3034;#e972d9;Darhan-Uul;hills;MNG
-3035;#2b18ee;Töv;hills;MNG
-3036;#c2f03d;Arhangay;mountains;MNG
-3037;#f38bbd;Orhon;hills;MNG
-3038;#31e18a;Dundgovi;hills;MNG
-3039;#b535e4;Övörhangay;hills;MNG
-3040;#464404;Govĭ-Sümber;hills;MNG
-3041;#96e60c;México;mountains;MEX
-3042;#e14382;Puebla;mountains;MEX
-3043;#d05855;Morelos;mountains;MEX
-3044;#123262;Querétaro;mountains;MEX
-3045;#548c3b;Hidalgo;mountains;MEX
-3046;#fbbae6;Guanajuato;mountains;MEX
-3047;#96865b;San Luis Potosí;hills;MEX
-3048;#1bfae9;Zacatecas;mountains;MEX
-3049;#125235;Aguascalientes;mountains;MEX
-3050;#5d44b0;Durango;mountains;MEX
-3051;#842e33;Ulaanbaatar;hills;MNG
-3052;#6597ec;Tlaxcala;mountains;MEX
-3053;#a7fddb;Distrito Federal;mountains;MEX
-3054;#f40710;Tagant;plains;MRT
-3055;#ae57a9;Brvenica;mountains;MKD
-3056;#d659cd;Sopište;mountains;MKD
-3057;#8a7ea7;Čaška;hills;MKD
-3058;#2012fd;Demir Hisar;hills;MKD
-3059;#796f10;Štip;mountains;MKD
-3060;#70c7cc;Veles;mountains;MKD
-3061;#cca0a9;Radoviš;mountains;MKD
-3062;#491d3d;Al Jifarah;mountains;LBY
-3063;#82dfd6;Mizdah;plains;LBY
-3064;#ba6cdd;Al Jufrah;hills;LBY
-3065;#cdc953;Sabha;plains;LBY
-3066;#ea1683;Wadi al Hayaa;plains;LBY
-3067;#0e8d58;Aqmola;plains;KAZ
-3068;#cce76f;Qaraghandy;plains;KAZ
-3069;#b5590c;Baghdad;plains;IRQ
-3070;#4bf29e;Babil;plains;IRQ
-3071;#588bbe;Al-Qādisiyyah;plains;IRQ
-3072;#9ae189;Dhi-Qar;plains;IRQ
-3073;#77333b;Karbala';plains;IRQ
-3074;#b40db7;Markazi;mountains;IRN
-3075;#bdc53c;Esfahan;hills;IRN
-3076;#6cfeb3;Chahar Mahall and Bakhtiari;mountains;IRN
-3077;#12f3e1;Kohgiluyeh and Buyer Ahmad;mountains;IRN
-3078;#fb7b65;Fars;hills;IRN
-3079;#b20e81;Kerman;hills;IRN
-3080;#30d9d9;Hamadan;mountains;IRN
-3081;#ca00e5;Lorestan;hills;IRN
-3082;#30b98e;Yazd;hills;IRN
-3083;#f2b3ee;Qom;hills;IRN
-3084;#f2d3b9;Tehran;mountains;IRN
-3085;#d29159;Alborz;mountains;IRN
-3086;#9c3a1f;Chhattisgarh;hills;IND
-3087;#5eec28;Haryana;plains;IND
-3088;#1571ff;Telangana;hills;IND
-3089;#dc4e1b;Jász-Nagykun-Szolnok;plains;HUN
-3090;#2f3ffb;Fejér;plains;HUN
-3091;#0d15c3;Veszprém;hills;HUN
-3092;#60297e;Tolna;plains;HUN
-3093;#abeb95;Budapest;hills;HUN
-3094;#1e242c;Heves;hills;HUN
-3095;#38d3d5;Miskolc;mountains;HUN
-3096;#46bed0;Hódmezôvásárhely;plains;HUN
-3097;#742b75;Imereti;mountains;GEO
-3098;#395c9e;Northern Savonia;plains;FIN
-3099;#9826ff;Southern Savonia;plains;FIN
-3100;#651ba3;Central Finland;plains;FIN
-3101;#0fa329;Southern Ostrobothnia;plains;FIN
-3102;#c461c2;Pirkanmaa;plains;FIN
-3103;#82df9b;Tavastia Proper;plains;FIN
-3104;#40b5ac;Päijät-Häme;plains;FIN
-3105;#544f38;Dire Dawa;mountains;ETH
-3106;#d9338a;Addis Ababa;mountains;ETH
-3107;#84e07f;Gitega;hills;BDI
-3108;#fcb5fc;Muramvya;mountains;BDI
-3109;#e24721;Mwaro;mountains;BDI
-3110;#1365a9;Karuzi;hills;BDI
-3111;#854715;Balé;plains;BFA
-3112;#aea5a6;Sanguié;plains;BFA
-3113;#7ffe7e;Tuy;plains;BFA
-3114;#f282cc;Bougouriba;plains;BFA
-3115;#ca5190;Mou Houn;plains;BFA
-3116;#1b0a48;Kouritenga;plains;BFA
-3117;#d9607f;Ganzourgou;plains;BFA
-3118;#b43c95;Zoundwéogo;plains;BFA
-3119;#085bf0;Ziro;plains;BFA
-3120;#fb4a47;Boulkiemdé;plains;BFA
-3121;#b45cc2;Kadiogo;plains;BFA
-3122;#f2e29b;Oubritenga;plains;BFA
-3123;#6e1b0e;Gourma;plains;BFA
-3124;#1d6929;Gnagna;plains;BFA
-3125;#7636f5;Bazéga;plains;BFA
-3126;#392070;Kourwéogo;plains;BFA
-3127;#8cefc9;Nayala;plains;BFA
-3128;#3088ac;Passoré;plains;BFA
-3129;#6ccf91;Zondoma;plains;BFA
-3130;#c3991b;Namentenga;plains;BFA
-3131;#01f32c;Sanmatenga;plains;BFA
-3132;#bdf41e;Bam;plains;BFA
-3133;#1f85db;Magway;mountains;MMR
-3134;#618889;Mandalay;mountains;MMR
-3135;#42ae63;Plovdiv;mountains;BGR
-3136;#cfd2d1;Stara Zagora;mountains;BGR
-3137;#4b06bf;Sliven;mountains;BGR
-3138;#f162ec;Shumen;hills;BGR
-3139;#6f4fe6;Razgrad;mountains;BGR
-3140;#ad25d1;Targovishte;mountains;BGR
-3141;#d32883;Gabrovo;mountains;BGR
-3142;#80c454;Pazardzhik;mountains;BGR
-3143;#1142b4;Lovech;mountains;BGR
-3144;#18ea68;Grad Sofiya;hills;BGR
-3145;#b99d53;Kigali City;hills;RWA
-3146;#b23d9c;Wisconsin;plains;USA
-3147;#c59812;Illinois;plains;USA
-3148;#5bb518;Kentucky;plains;USA
-3149;#30eac4;Arkansas;plains;USA
-3150;#36e9f2;Tennessee;plains;USA
-3151;#fd2b19;West Virginia;hills;USA
-3152;#07f225;Indiana;plains;USA
-3153;#ba7ca4;Vysočina;hills;CZE
-3154;#3ea8ca;Středočeský;hills;CZE
-3155;#781693;Prague;mountains;CZE
-3156;#42ac67;City of Minsk;hills;BLR
-3157;#17e566;Kiev City;plains;UKR
-3158;#8adec1;Astana;plains;KAZ
-3159;#200393;Niamey;plains;NER
-3160;#cf4925;Andorra la Vella;mountains;AND
-3161;#b5af67;Debrecen;plains;HUN
-3162;#a9c1bd;Plaines Wilhems;mountains;MUS
-3163;#d806fe;Enna;mountains;ITA
-3164;#db77d7;Benevento;mountains;ITA
-3165;#8222a2;Asti;mountains;ITA
-3166;#c49cfb;Bergamo;mountains;ITA
-3167;#49e049;Brescia;mountains;ITA
-3168;#cd3427;Cremona;plains;ITA
-3169;#0f5e10;Mantova;hills;ITA
-3170;#3e45c7;Milano;hills;ITA
-3171;#78fb9e;Lecco;mountains;ITA
-3172;#37ed1b;Monza e Brianza;mountains;ITA
-3173;#91731a;Lodi;plains;ITA
-3174;#6710b2;Siena;hills;ITA
-3175;#3b578f;Arezzo;hills;ITA
-3176;#f93db8;Firenze;mountains;ITA
-3177;#d866a9;Vercelli;mountains;ITA
-3178;#53192d;Pavia;mountains;ITA
-3179;#e0d5a2;Rieti;mountains;ITA
-3180;#464ba3;Novara;mountains;ITA
-3181;#842194;Alessandria;mountains;ITA
-3182;#8bea29;Trento;mountains;ITA
-3183;#4028c2;Vicenza;mountains;ITA
-3184;#8242f5;Verona;mountains;ITA
-3185;#06969b;Treviso;mountains;ITA
-3186;#695c0e;Piacenza;mountains;ITA
-3187;#ab3639;Parma;mountains;ITA
-3188;#cfa258;Reggio Emilia;mountains;ITA
-3189;#0dc86f;Modena;mountains;ITA
-3190;#2fe257;Bologna;mountains;ITA
-3191;#7de9d6;Pistoia;mountains;ITA
-3192;#13a442;Terni;hills;ITA
-3193;#d1ce75;Perugia;hills;ITA
-3194;#22bf95;Frosinone;mountains;ITA
-3195;#191de0;Avellino;mountains;ITA
-3196;#e97d7e;L'Aquila;mountains;ITA
-3197;#b33975;Pordenone;mountains;ITA
-3198;#64619b;Isernia;mountains;ITA
-3199;#9ed8f0;Biella;mountains;ITA
-3200;#bf83e1;Prato;mountains;ITA
-3201;#b08504;Gers;hills;FRA
-3202;#97f5bb;Haute-Vienne;hills;FRA
-3203;#054abd;Corrèze;mountains;FRA
-3204;#fcca30;Tarn-et-Garonne;plains;FRA
-3205;#3ea007;Tarn;mountains;FRA
-3206;#af46b0;Isère;mountains;FRA
-3207;#161b05;Drôme;mountains;FRA
-3208;#e28e85;Aveyron;hills;FRA
-3209;#7e7d3f;Lot;hills;FRA
-3210;#6d2c87;Indre-et-Loire;plains;FRA
-3211;#00706d;Indre;hills;FRA
-3212;#64845b;Loir-et-Cher;plains;FRA
-3213;#0ce261;Creuse;hills;FRA
-3214;#d12bb5;Mayenne;plains;FRA
-3215;#b3dcb5;Sarthe;plains;FRA
-3216;#8b6fbe;Vaucluse;mountains;FRA
-3217;#d14be2;Haute-Marne;hills;FRA
-3218;#9e3d30;Marne;plains;FRA
-3219;#88360f;Dordogne;plains;FRA
-3220;#77b5b4;Rhône;mountains;FRA
-3221;#c4793b;Vosges;hills;FRA
-3222;#952b0b;Ardèche;mountains;FRA
-3223;#a6ee6c;Loire;mountains;FRA
-3224;#af26e7;Puy-de-Dôme;hills;FRA
-3225;#d39552;Allier;mountains;FRA
-3226;#223a02;Loiret;plains;FRA
-3227;#1ae95e;Maine-et-Loire;plains;FRA
-3228;#665aeb;Aube;hills;FRA
-3229;#62e73a;Val-d'Oise;plains;FRA
-3230;#40ad55;Yvelines;plains;FRA
-3231;#294c6e;Charente;plains;FRA
-3232;#b76164;Cher;hills;FRA
-3233;#7b47ef;Eure-et-Loir;plains;FRA
-3234;#681657;Haute-Loire;hills;FRA
-3235;#eb2659;Cantal;hills;FRA
-3236;#bc1708;Lot-et-Garonne;plains;FRA
-3237;#d88369;Lozère;hills;FRA
-3238;#09b8e6;Nièvre;hills;FRA
-3239;#819ed3;Côte-d'Or;hills;FRA
-3240;#a68e3b;Oise;plains;FRA
-3241;#e03062;Orne;hills;FRA
-3242;#1321d5;Haute-Saône;hills;FRA
-3243;#b5df83;Saône-et-Loire;hills;FRA
-3244;#ce8856;Deux-Sèvres;plains;FRA
-3245;#06130c;Vienne;plains;FRA
-3246;#82c762;Yonne;hills;FRA
-3247;#d47132;Essonne;plains;FRA
-3248;#3708db;Seien-et-Marne;plains;FRA
-3249;#d94b70;Leeds;hills;GBR
-3250;#a0a242;Barnsley;mountains;GBR
-3251;#b3f3fa;Rochdale;mountains;GBR
-3252;#96e46c;Durbes;plains;LVA
-3253;#9a9a0e;Cesu;hills;LVA
-3254;#387067;Palencia;hills;ESP
-3255;#6dffd1;Ciudad Real;plains;ESP
-3256;#af95e6;Córdoba;mountains;ESP
-3257;#d1f8e3;Guadalajara;hills;ESP
-3258;#d8503f;Jaén;mountains;ESP
-3259;#aff5b1;Madrid;hills;ESP
-3260;#78cd08;Segovia;hills;ESP
-3261;#821434;Valladolid;hills;ESP
-3262;#8a231d;Ihorombe;hills;MDG
-3263;#c53598;Haute Matsiatra;hills;MDG
-3264;#48492a;Itasy;hills;MDG
-3265;#7492bf;Uroševac;hills;KOS
-3266;#b6f888;Štimlje;hills;KOS
-3267;#2def52;Vučitrn;hills;KOS
-3268;#6da1f6;Balzan;plains;MLT
-3269;#3e2d76;Gudja;plains;MLT
-3270;#ba4e6a;Ta-Seti (Abu);plains;EGY
-3271;#ea58df;Wetjes-Hor (Behdet);plains;EGY
-3272;#5971b2;Nekhen (Nekheb);plains;EGY
-3273;#3556c3;Waset (Thebes);plains;EGY
-3274;#28903c;Harawi (Gebtu);plains;EGY
-3275;#acf616;Iqer (Iunet);plains;EGY
-3276;#916e95;Bat (Hut-Sekhem);plains;EGY
-3277;#3c1182;Ta-Wer (Tjeni);plains;EGY
-3278;#79d398;Min (Ipu);plains;EGY
-3279;#c4eff5;Wadjet (Tjebu);plains;EGY
-3280;#8fa784;Set (Shashotep);plains;EGY
-3281;#e16af3;Atfet (Per-Nemty);plains;EGY
-3282;#6027bd;Nedjfet-Khentet (Zawty);plains;EGY
-3283;#56eeeb;Nedjfet-Pehet (Qis);plains;EGY
-3284;#a864bf;Wenet (Khemenu);plains;EGY
-3285;#d02328;Ma-Hedj (Hebenu);plains;EGY
-3286;#c12442;Input (Hardai);plains;EGY
-3287;#6e62d5;Nemty (Hut-Nesut);plains;EGY
-3288;#999475;Wabwy (Per-Medjed);plains;EGY
-3289;#f27db9;Naret-Khentet (Henen-Nesut);plains;EGY
-3290;#7d4d43;Naret-Pehet (Shedet);plains;EGY
-3291;#9cb03a;Maten (Tepihu);plains;EGY
-3292;#f7b8da;Ineb-Hedj (Memphis);plains;EGY
-3293;#2bf26d;Khensu (Khem);plains;EGY
-3294;#10caaf;Imentet (Hut-Ihyt);plains;EGY
-3295;#810fff;Sap-Res (Djeqa);plains;EGY
-3296;#900dd2;Sap-Meh (Sau);plains;EGY
-3297;#eed180;Khasu (Khasuu);plains;EGY
-3298;#fb71e8;Ha-Imentet (Behdet-West);plains;EGY
-3299;#b7ab92;Ha-Iabet (Tjeku);plains;EGY
-3300;#43b3e3;Ati (Djedu);plains;EGY
-3301;#12a140;Ka-Kem (Hut-Heryib);plains;EGY
-3302;#273b23;Ka-Heseb (Taremu);plains;EGY
-3303;#0d5454;Theb-Ka (Tjebnutjer);plains;EGY
-3304;#c85b8e;Heqa-Andj (Iunu);plains;EGY
-3305;#189805;Khent-Iabet (Tjaru);plains;EGY
-3306;#c68c08;Tehut (Ba'h);plains;EGY
-3307;#b8294a;Kha (Djedet);plains;EGY
-3308;#b4b75f;Sema-Behdet (Paiuenamun);plains;EGY
-3309;#888803;Imet-Khentet (Per-Bast);plains;EGY
-3310;#d88160;Imet-Pehet (Djanet);plains;EGY
-3311;#255eb9;Sopdu (Per-Sopdu);plains;EGY
-3312;#4f8900;Wawat;plains;EGY
-3313;#72c949;Kush (Batn el-Hajar);plains;SDN
-3314;#7b6cff;Kerma;plains;SDN
-3315;#8fa3cb;Napata;plains;SDN
-3316;#6851a2;Kurgus;plains;SDN
-3317;#2afae4;Meroë;plains;SDN
-3318;#a6394f;Siwa Oasis (Sekhet-Imau);oasis;EGY
-3319;#531668;Bahariya Oasis (Djesdjes);oasis;EGY
-3320;#1f8c65;Farafra Oasis (Ta-Iht);oasis;EGY
-3321;#639ec8;Dakhla Oasis (Djesdjes-Res);oasis;EGY
-3322;#1588c1;Kharga Oasis (Kenem);oasis;EGY
-3323;#e71339;Marmarica;desert;EGY
-3324;#d71016;Western Desert;desert;EGY
-3325;#2c6e88;Eastern Desert;desert;EGY
-3326;#1d28a7;Sinai (Mefkat);desert;EGY
-3327;#3b0381;Selima Desert;desert;SDN
-3328;#121754;Nubian Desert;desert;SDN
-3329;#3571d2;Medjay (Red Sea Hills);desert;SDN
-3330;#568191;Bayuda;desert;SDN
-3331;#a33528;Great Bear;lake;
-3332;#32479a;Great Slave;lake;
-3333;#e7586f;Winnipeg;lake;
-3334;#1ef749;Erie;lake;
-3335;#6002db;Ontario;lake;
-3336;#bfa1e9;Nicaragua;lake;
-3337;#8ab7a7;Reindeer;lake;
-3338;#5cff16;Woods;lake;
-3339;#09d13d;Nipigon;lake;
-3340;#0358a4;Manitoba;lake;
-3341;#2eaca2;Winnipegosis;lake;
-3342;#fbb324;Athabasca;lake;
-3343;#4b1f6d;Mistassini;lake;
-3344;#32b047;Nettilling;lake;
-3345;#0874fb;Dubawnt;lake;
-3346;#39b893;Churchill;lake;
-3347;#160bef;Amadjuak;lake;
-3348;#ca3fe2;Aberdeen;lake;
-3349;#7f874d;Contwoyto;lake;
-3350;#ea93d9;Nueltin;lake;
-3351;#a30065;Garry;lake;
-3352;#a593d0;Superior;lake;
-3353;#99b824;Michigan;lake;
-3354;#ce977a;Huron;lake;
-3355;#1a837b;Georgian Bay;lake;
-3356;#42a328;Ladoga;lake;
-3357;#14ee2b;Balkhash;lake;
-3358;#54be7f;Baikal;lake;
-3359;#afa3b1;Malawi;lake;
-3360;#87f42a;Tanganyika;lake;
-3361;#376612;Nyanza;lake;
-3362;#79d06d;Vänern;lake;
-3363;#ff4ee7;Onega;lake;
-3364;#bff706;Titicaca;lake;
-3365;#4717f0;Saimaa;lake;
-3366;#3d559b;Päijänne;lake;
-3367;#a4b648;Peipus;lake;
-3368;#62848f;Taymyr;lake;
-3369;#1839f8;Lake 3369;lake;
-3370;#a48889;Eyre North;lake;
-3371;#4bb3a9;Torrens;lake;
-3372;#304031;Everard;lake;
-3373;#56c90a;Issyk-Kul;lake;
-3374;#5e4f6e;Turkana;lake;
+1238;#b14ef2;Eastern;hills;KEN
+1239;#9aac41;North-Eastern;plains;KEN
+1240;#489cf0;Béchar;plains;DZA
+1241;#a34233;Meknès - Tafilalet;hills;MAR
+1242;#ec54b6;Souss - Massa - Draâ;mountains;MAR
+1243;#90f326;Dakhlet Nouadhibou;plains;MRT
+1244;#2c9443;Adrar;plains;MRT
+1245;#8bffda;Jendouba;mountains;TUN
+1246;#5bad1f;El Tarf;mountains;DZA
+1247;#d7ce07;Kebili;plains;TUN
+1248;#f37fa2;El Oued;plains;DZA
+1249;#c4e95f;Tozeur;plains;TUN
+1250;#d6561d;Tébessa;hills;DZA
+1251;#3e3063;Gafsa;mountains;TUN
+1252;#bae40d;Kassérine;hills;TUN
+1253;#d7b8e7;Le Kef;hills;TUN
+1254;#143c2a;Souk Ahras;hills;DZA
+1255;#38bd49;Ouargla;plains;DZA
+1256;#569eeb;Kidal;plains;MLI
+1257;#10ffbd;North Darfur;plains;SDN
+1258;#b1b882;Western Darfur;hills;SDN
+1259;#7c2635;Ouaddaï;plains;TCD
+1260;#f15a87;Wadi Fira;plains;TCD
+1261;#23a5b7;Al Butnan;plains;LBY
+1262;#2a0d6b;Ajdabiya;plains;LBY
+1263;#200b7e;Bafatá;plains;GNB
+1264;#29a3a2;Oio;plains;GNB
+1265;#220643;Sédhiou;plains;SEN
+1266;#6f1dfb;Cacheu;plains;GNB
+1267;#80d078;Ziguinchor;plains;SEN
+1268;#3a5b53;Jubbada Hoose;plains;SOM
+1269;#b11de3;Coast;hills;KEN
+1270;#0abc64;Mara;hills;TZA
+1271;#b8b53f;Nyanza;hills;KEN
+1272;#c17e8f;Arusha;hills;TZA
+1273;#45aae1;Kilimanjaro;hills;TZA
+1274;#c8d653;Tanga;mountains;TZA
+1275;#efa0c1;Rakai;hills;UGA
+1276;#8d0c26;Kalangala;hills;UGA
+1277;#3a062d;Litoral;mountains;GNQ
+1278;#575ac7;Kié-Ntem;plains;GNQ
+1279;#9530f0;Centro Sur;hills;GNQ
+1280;#f86c1a;Wele-Nzás;plains;GNQ
+1281;#6c3437;Estuaire;hills;GAB
+1282;#529911;Brakna;plains;MRT
+1283;#64b81a;Saint-Louis;plains;SEN
+1284;#486075;Trarza;plains;MRT
+1285;#253c9f;Gorgol;plains;MRT
+1286;#b86373;Matam;plains;SEN
+1287;#e756a8;Guidimaka;plains;MRT
+1288;#6a2a1a;Hodh ech Chargui;plains;MRT
+1289;#a8402d;Hodh el Gharbi;plains;MRT
+1290;#8a0a42;Assaba;hills;MRT
+1291;#f5c802;Western;hills;ZMB
+1292;#364fc7;Cuando Cubango;hills;AGO
+1293;#1dad74;Moxico;hills;AGO
+1294;#711c6c;North-Western;hills;ZMB
+1295;#dfc743;Namibe;mountains;AGO
+1296;#900222;Kunene;hills;NAM
+1297;#f425f0;Cunene;hills;AGO
+1298;#6373c2;Omusati;hills;NAM
+1299;#e7a7ac;Ohangwena;hills;NAM
+1300;#6adb1e;Kavango;hills;NAM
+1301;#ee0f70;Caprivi;hills;NAM
+1302;#3666b2;Tete;hills;MOZ
+1303;#7c348e;Mashonaland East;hills;ZWE
+1304;#b2b2dc;Manica;hills;MOZ
+1305;#be5eb9;Manicaland;hills;ZWE
+1306;#d1456d;Gaza;plains;MOZ
+1307;#a1ca11;Zaire;hills;AGO
+1308;#e77448;Uíge;hills;AGO
+1309;#85b434;Kasaï-Occidental;plains;COD
+1310;#4fa6f5;Lunda Norte;hills;AGO
+1311;#cb729b;Malanje;hills;AGO
+1312;#8dccc2;Lunda Sul;hills;AGO
+1313;#d91791;Hardap;hills;NAM
+1314;#0e2f28;Otjozondjupa;hills;NAM
+1315;#25cd9b;Omaheke;hills;NAM
+1316;#369a1c;Ghanzi;hills;BWA
+1317;#3c5342;Central River;plains;GMB
+1318;#a6d22d;Kaffrine;plains;SEN
+1319;#5f8603;North Bank;plains;GMB
+1320;#3cb71d;Kaolack;plains;SEN
+1321;#7aed1b;Upper River;plains;GMB
+1322;#f791a9;Lower River;plains;GMB
+1323;#fedd2a;Fatick;plains;SEN
+1324;#9dec34;West Coast;plains;GMB
+1325;#9e2348;Illizi;plains;DZA
+1326;#fcd284;Ash Shati';plains;LBY
+1327;#a095b9;Ghat;plains;LBY
+1328;#99bd47;Séno;plains;BFA
+1329;#5bd770;Yagha;plains;BFA
+1330;#df031e;Komondjari;plains;BFA
+1331;#2d6b79;Sangha-Mbaéré;plains;CAF
+1332;#72e710;Est;plains;CMR
+1333;#a017cb;Nana-Mambéré;hills;CAF
+1334;#6bd520;Mambéré-Kadéï;plains;CAF
+1335;#44cc2a;Kaabong;hills;UGA
+1336;#63dcc2;Kitgum;hills;UGA
+1337;#b9471e;Lamwo;hills;UGA
+1338;#3d9370;Amuru;hills;UGA
+1339;#e0eccc;Adjumani;hills;UGA
+1340;#9905fe;Moyo;plains;UGA
+1341;#dfbba7;Yumbe;hills;UGA
+1342;#eb0d00;Mpumalanga;hills;ZAF
+1343;#eff0f3;Hhohho;mountains;SWZ
+1344;#6b249d;Manzini;mountains;SWZ
+1345;#a94eaa;Shiselweni;mountains;SWZ
+1346;#0f7169;Luapula;hills;ZMB
+1347;#49cf30;Copperbelt;hills;ZMB
+1348;#8ba507;Central;hills;ZMB
+1349;#852742;Koulpélogo;plains;BFA
+1350;#474d75;Boulgou;plains;BFA
+1351;#4e49d5;Donga;plains;BEN
+1352;#badc55;Zou;plains;BEN
+1353;#24f15f;Kouffo;plains;BEN
+1354;#ca9dbb;Mono;plains;BEN
+1355;#7656a2;Nahouri;plains;BFA
+1356;#ca31c7;Sissili;plains;BFA
+1357;#a96d5c;Upper West;plains;GHA
+1358;#30e8fb;Ioba;plains;BFA
+1359;#e66036;Nkhotakota;mountains;MWI
+1360;#d77be1;Salima;mountains;MWI
+1361;#ded33d;Mangochi;hills;MWI
+1362;#6b1c84;Machinga;plains;MWI
+1363;#2da2dd;Dedza;mountains;MWI
+1364;#b38fd7;Lilongwe;hills;MWI
+1365;#0fe8b2;Nsanje;hills;MWI
+1366;#53af8f;Chikwawa;mountains;MWI
+1367;#bf7c2a;Neno;mountains;MWI
+1368;#5a0753;Ntcheu;mountains;MWI
+1369;#6b7cd3;Zomba;plains;MWI
+1370;#c31e4b;Zambezia;hills;MOZ
+1371;#62d40f;Phalombe;hills;MWI
+1372;#2dc28a;Mulanje;hills;MWI
+1373;#cd8285;Thyolo;mountains;MWI
+1374;#c01844;Moroto;hills;UGA
+1375;#1e782f;Western;hills;KEN
+1376;#cee290;Amudat;hills;UGA
+1377;#4d64f6;Tororo;hills;UGA
+1378;#52c715;Arua;hills;UGA
+1379;#3a90f7;Zombo;mountains;UGA
+1380;#5b6fc9;Nebbi;mountains;UGA
+1381;#d6137b;Buliisa;hills;UGA
+1382;#4d04a1;Hoima;hills;UGA
+1383;#439e22;Ntoroko;hills;UGA
+1384;#8f6e96;Bundibugyo;mountains;UGA
+1385;#0bbaf8;Kabarole;mountains;UGA
+1386;#62dc73;Kasese;mountains;UGA
+1387;#345bfb;Rubirizi;hills;UGA
+1388;#d713ca;Rukungiri;hills;UGA
+1389;#debb16;Kanungu;mountains;UGA
+1390;#3dd750;Debub;mountains;ERI
+1391;#ffbd67;Semenawi Keyih Bahri;mountains;ERI
+1392;#b9033e;Gash Barka;hills;ERI
+1393;#db3d56;Kassala;plains;SDN
+1394;#b0abe2;Maekel;hills;ERI
+1395;#a22452;Ida-Viru;plains;EST
+1396;#ee6a87;Põlva;plains;EST
+1397;#b8dd36;Tartu;plains;EST
+1398;#26f03c;Jõgeva;plains;EST
+1399;#47107b;Punjab;plains;PAK
+1400;#44c91b;Punjab;plains;IND
+1401;#2995f1;Rajasthan;plains;IND
+1402;#0806fe;Sind;plains;PAK
+1403;#9592c3;Gujarat;plains;IND
+1404;#079272;Alaska;hills;USA
+1405;#4e9c4d;Yukon;hills;CAN
+1406;#60be53;White Nile;plains;SDN
+1407;#5641e4;South Kordufan;plains;SDN
+1408;#7a12e5;Unity;plains;SDS
+1409;#d3637c;Guangdong;hills;CHN
+1410;#cada2f;Vatican;hills;VAT
+1411;#52a3c8;Northern Bahr el Ghazal;plains;SDS
+1412;#edffbf;Eastern Darfur;plains;SDN
+1413;#8af6c7;Naâma;hills;DZA
+1414;#14dbcd;Tlemcen;mountains;DZA
+1415;#33b0c2;Himachal Pradesh;mountains;IND
+1416;#6d340f;Northern Cyprus;hills;CYN
+1417;#a7e7c3;Nicosia;mountains;CYP
+1418;#e24187;Kashmir;mountains;KAS
+1419;#4bd6fd;Baykonur lease in Qyzylorda;plains;KAB
+1420;#a003a3;Limassol;mountains;CYP
+1421;#2b9190;Toledo;mountains;BLZ
+1422;#41f877;Thimphu;mountains;BTN
+1423;#1dbf4a;Paro;mountains;BTN
+1424;#dfd57d;Gasa;mountains;BTN
+1425;#9c861f;Jammu and Kashmir;mountains;IND
+1426;#47eb8a;Crimea;hills;RUS
+1427;#d58f51;Kherson;plains;UKR
+1428;#3ac449;Bihar;plains;IND
+1429;#955cb7;Narayani;mountains;NPL
+1430;#e2f939;Lumbini;mountains;NPL
+1431;#6f2ba8;Uttar Pradesh;plains;IND
+1432;#c6814a;Rapti;mountains;NPL
+1433;#a44760;Bheri;mountains;NPL
+1434;#f2fc5e;Salto;plains;URY
+1435;#fb5482;Rivera;plains;URY
+1436;#c387de;Rocha;plains;URY
+1437;#7f80ec;Treinta y Tres;hills;URY
+1438;#762830;Cerro Largo;plains;URY
+1439;#964036;Heredia;mountains;CRI
+1440;#abe960;Varaždinska;plains;HRV
+1441;#870854;Krapinsko-Zagorska;hills;HRV
+1442;#108d82;Zagrebacka;hills;HRV
+1443;#8ea088;Primorsko-Goranska;mountains;HRV
+1444;#a10aa3;Jerusalem;mountains;ISR
+1445;#6cf2c8;Azad Kashmir;mountains;PAK
+1446;#fa1a50;Orense;hills;ESP
+1447;#61103d;Viana do Castelo;mountains;PRT
+1448;#22e954;Cáceres;hills;ESP
+1449;#dd7758;Castelo Branco;mountains;PRT
+1450;#59a336;Guarda;hills;PRT
+1451;#fc1966;Salamanca;hills;ESP
+1452;#1f1d6f;Bragança;hills;PRT
+1453;#06c05a;Zamora;hills;ESP
+1454;#9261dd;Vila Real;hills;PRT
+1455;#724185;Braga;mountains;PRT
+1456;#3e7351;Pontevedra;mountains;ESP
+1457;#5c8451;Huelva;mountains;ESP
+1458;#68b8e1;Faro;mountains;PRT
+1459;#e5c453;Beja;hills;PRT
+1460;#28e420;Cheshire West and Chester;plains;GBR
+1461;#64c12b;Shropshire;hills;GBR
+1462;#5c3aef;Powys;hills;GBR
+1463;#7e384f;Herefordshire;hills;GBR
+1464;#134c3d;Monmouthshire;mountains;GBR
+1465;#268a6c;Gloucestershire;plains;GBR
+1466;#c6aa34;Scottish Borders;hills;GBR
+1467;#fe193f;Northumberland;hills;GBR
+1468;#46a3dc;Cumbria;mountains;GBR
+1469;#84c9eb;Dumfries and Galloway;mountains;GBR
+1470;#fb14ae;Flemish Brabant;plains;BEL
+1471;#d7127d;Walloon Brabant;hills;BEL
+1472;#01812e;Central Bosnia;hills;BIH
+1473;#503ed6;Zenica-Doboj;mountains;BIH
+1474;#ce13dc;Tuzla;mountains;BIH
+1475;#e1b219;Sarajevo-romanija;hills;BIH
+1476;#3d623c;Sarajevo;hills;BIH
+1477;#ff080b;Bosnian Podrinje;hills;BIH
+1478;#2a3ce1;Grad Beograd;hills;SRB
+1479;#652a64;Podunavski;hills;SRB
+1480;#db1da8;Guria;mountains;GEO
+1481;#c29cd5;Sala ad-Din;plains;IRQ
+1482;#2b1451;At-Ta'mim;hills;IRQ
+1483;#d679b1;Antarctica;mountains;ATA
+1484;#fd63f9;Auckland Islands;hills;NZL
+1485;#50bfdb;Buenos Aires;plains;ARG
+1486;#9f9670;Maranhão;plains;BRA
+1487;#fc0196;Piauí;hills;BRA
+1488;#babfcf;Ceará;hills;BRA
+1489;#6b8440;Rio Grande do Norte;hills;BRA
+1490;#f5a94a;Paraíba;hills;BRA
+1491;#5170b2;Pernambuco;hills;BRA
+1492;#3e6ba1;Alagoas;hills;BRA
+1493;#a9ee77;Sergipe;hills;BRA
+1494;#717d24;Bahia;hills;BRA
+1495;#b31713;Espírito Santo;mountains;BRA
+1496;#37c37d;Rio de Janeiro;mountains;BRA
+1497;#d5a4dc;São Paulo;plains;BRA
+1498;#4753b0;Maldonado;hills;URY
+1499;#bdeadb;Canelones;plains;URY
+1500;#853987;Montevideo;plains;URY
+1501;#4ca365;San José;plains;URY
+1502;#8ec952;Colonia;plains;URY
+1503;#309669;Soriano;plains;URY
+1504;#565a01;Río Negro;plains;URY
+1505;#0c74df;Ciudad de Buenos Aires;plains;ARG
+1506;#2c0f7f;Nord;mountains;NCL
+1507;#0b2ec9;Western Australia;plains;AUS
+1508;#c944fe;Northern Territory;plains;AUS
+1509;#838bc1;Boeny;hills;MDG
+1510;#e09b97;Sofia;hills;MDG
+1511;#075faf;Diana;mountains;MDG
+1512;#52b04e;Sava;mountains;MDG
+1513;#7952fd;Analanjirofo;mountains;MDG
+1514;#2cbd1c;Atsinanana;mountains;MDG
+1515;#644ff9;Vatovavy-Fitovinany;mountains;MDG
+1516;#70fa21;Atsimo-Atsinanana;mountains;MDG
+1517;#f42e4f;Anosy;hills;MDG
+1518;#364478;Androy;hills;MDG
+1519;#b29016;Atsimo-Andrefana;hills;MDG
+1520;#90da79;Menabe;mountains;MDG
+1521;#0ef773;Melaky;hills;MDG
+1522;#028615;South Australia;plains;AUS
+1523;#86527b;Queensland;plains;AUS
+1524;#c0ec22;New South Wales;plains;AUS
+1525;#44384c;Victoria;hills;AUS
+1526;#9735a6;Cuanza Sul;hills;AGO
+1527;#6a08fa;Benguela;hills;AGO
+1528;#cc451f;Erongo;hills;NAM
+1529;#ff5f3f;Western Cape;hills;ZAF
+1530;#8c6899;Inhambane;plains;MOZ
+1531;#85a012;Sofala;hills;MOZ
+1532;#9e53e8;Nampula;hills;MOZ
+1533;#f06558;Lindi;hills;TZA
+1534;#3ba7b3;Pwani;hills;TZA
+1535;#cf3233;Dar-Es-Salaam;hills;TZA
+1536;#224329;Jawa Timur;mountains;IDN
+1537;#cfe9d5;Maluku;mountains;IDN
+1538;#0d83e2;Nusa Tenggara Barat;mountains;IDN
+1539;#e981c2;Sulawesi Selatan;mountains;IDN
+1540;#d132c9;Jawa Tengah;mountains;IDN
+1541;#9e244c;Jawa Barat;mountains;IDN
+1542;#55e6a7;Banten;mountains;IDN
+1543;#7a266c;Yogyakarta;mountains;IDN
+1544;#4b3dbb;Sulawesi Tenggara;mountains;IDN
+1545;#f27238;Papua Barat;mountains;IDN
+1546;#e9da4b;Guayas;hills;ECU
+1547;#89578c;Sulawesi Tengah;mountains;IDN
+1548;#be4f6d;Maluku Utara;mountains;IDN
+1549;#8aca1d;Galápagos;mountains;ECU
+1550;#6ffd68;East Sepik;mountains;PNG
+1551;#69fe5e;Madang;mountains;PNG
+1552;#932762;Morobe;mountains;PNG
+1553;#58e589;Northern;mountains;PNG
+1554;#514d55;Milne Bay;mountains;PNG
+1555;#b8c5d1;Central;mountains;PNG
+1556;#605682;Gulf;mountains;PNG
+1557;#b4eed6;Kepulauan Riau;plains;IDN
+1558;#f4036f;Riau;plains;IDN
+1559;#9bf354;Gorontalo;mountains;IDN
+1560;#e26807;Sulawesi Utara;mountains;IDN
+1561;#2bebf5;Sulawesi Barat;mountains;IDN
+1562;#ca068b;Cauca;mountains;COL
+1563;#712350;Moquegua;mountains;PER
+1564;#788b8c;Arequipa;mountains;PER
+1565;#caa055;Ica;mountains;PER
+1566;#659688;Lima;mountains;PER
+1567;#548d5f;Lima Province;mountains;PER
+1568;#379d09;Áncash;mountains;PER
+1569;#1b9bda;La Libertad;mountains;PER
+1570;#49905b;Lambayeque;mountains;PER
+1571;#a37a27;Santa Elena;hills;ECU
+1572;#6d0e25;Manabi;hills;ECU
+1573;#d0ffef;Valle del Cauca;mountains;COL
+1574;#ff0314;Panama;hills;PAN
+1575;#a5471f;Coclé;mountains;PAN
+1576;#cfc23c;Sulu;plains;PHL
+1577;#b4cc61;Jambi;plains;IDN
+1578;#64fd70;Sumatera Selatan;plains;IDN
+1579;#09a19a;Lampung;hills;IDN
+1580;#1358fe;Bengkulu;mountains;IDN
+1581;#7c255a;Sumatera Barat;mountains;IDN
+1582;#2e0643;Sumatera Utara;mountains;IDN
+1583;#49fb12;Aceh;mountains;IDN
+1584;#d6ea8d;Demerara-Mahaica;plains;GUY
+1585;#76a656;Kalimantan Tengah;plains;IDN
+1586;#6d55ac;Kalimantan Selatan;mountains;IDN
+1587;#0587d6;Davao del Norte;mountains;PHL
+1588;#3d6923;Veraguas;mountains;PAN
+1589;#0400d7;Zamboanga Sibugay;mountains;PHL
+1590;#73a559;Palawan;hills;PHL
+1591;#5a6b76;Sóc Trăng;plains;VNM
+1592;#8153b8;Surigao del Norte;plains;PHL
+1593;#ce453d;Surigao del Sur;mountains;PHL
+1594;#349c01;Agusan del Norte;mountains;PHL
+1595;#0c2f0a;Misamis Oriental;mountains;PHL
+1596;#5e248b;Lanao del Norte;mountains;PHL
+1597;#42be8e;Zamboanga del Sur;mountains;PHL
+1598;#80d4b9;Misamis Occidental;mountains;PHL
+1599;#c66ae0;Zamboanga del Norte;mountains;PHL
+1600;#57d7f7;Zamboanga;mountains;PHL
+1601;#11320e;Lanao del Sur;mountains;PHL
+1602;#95e660;Maguindanao;mountains;PHL
+1603;#7b8a84;Sultan Kudarat;mountains;PHL
+1604;#d4bc59;Sarangani;mountains;PHL
+1605;#4a9153;Davao del Sur;mountains;PHL
+1606;#d00be0;Davao;mountains;PHL
+1607;#43398f;Compostela Valley;mountains;PHL
+1608;#88fb64;Davao Oriental;mountains;PHL
+1609;#629b47;Trikuṇāmalaya;plains;LKA
+1610;#786223;Mulativ;plains;LKA
+1611;#de9c75;Kilinŏchchi;plains;LKA
+1612;#24251e;Mannārama;plains;LKA
+1613;#5a481b;Puttalama;plains;LKA
+1614;#e62f7e;Kaḷutara;mountains;LKA
+1615;#d734a9;Gālla;mountains;LKA
+1616;#53e0c7;Mātara;mountains;LKA
+1617;#155e9e;Hambantŏṭa;hills;LKA
+1618;#a959ac;Ampāra;hills;LKA
+1619;#efe7f5;Maḍakalapuva;hills;LKA
+1620;#148ba6;Tiền Giang;plains;VNM
+1621;#ea9e1f;Bà Rịa - Vũng Tàu;hills;VNM
+1622;#2f6ef5;Krong Preah Sihanouk;mountains;KHM
+1623;#8b50f9;Hồ Chí Minh city;plains;VNM
+1624;#3d34dd;Leyte;mountains;PHL
+1625;#ff5eea;Eastern Samar;mountains;PHL
+1626;#b9e0b3;Biliran;hills;PHL
+1627;#722258;Samar;mountains;PHL
+1628;#2f1048;Khánh Hòa;mountains;VNM
+1629;#672d28;Colón;mountains;PAN
+1630;#56bdfe;Antioquia;mountains;COL
+1631;#d26990;Córdoba;hills;COL
+1632;#30dfb7;Sucre;hills;COL
+1633;#39776b;Bolívar;mountains;COL
+1634;#fb1d5c;Atlántico;plains;COL
+1635;#f2b580;Magdalena;plains;COL
+1636;#2dd2b5;Mérida;mountains;VEN
+1637;#b3ffbf;Trujillo;mountains;VEN
+1638;#247a69;Falcón;mountains;VEN
+1639;#53dfe7;Yaracuy;mountains;VEN
+1640;#981d0c;Carabobo;hills;VEN
+1641;#cbf1db;Aragua;mountains;VEN
+1642;#468d69;Miranda;mountains;VEN
+1643;#099bec;Anzoátegui;plains;VEN
+1644;#d8a063;Sucre;mountains;VEN
+1645;#84e75e;Monagas;hills;VEN
+1646;#a6ab63;Cuyuni-Mazaruni;plains;GUY
+1647;#83056c;Upper Takutu-Upper Essequibo;plains;GUY
+1648;#8aadb0;East Berbice-Corentyne;plains;GUY
+1649;#1480ba;Essequibo Islands-West Demerara;plains;GUY
+1650;#540e7f;Coronie;plains;SUR
+1651;#d0da11;Saramacca;plains;SUR
+1652;#966448;Commewijne;plains;SUR
+1653;#4bbea6;Andhra Pradesh;hills;IND
+1654;#99d0ca;Sud;mountains;HTI
+1655;#1c43ea;Ondo;hills;NGA
+1656;#ef525d;Delta;hills;NGA
+1657;#2d583d;Bayelsa;plains;NGA
+1658;#ef320a;Rivers;plains;NGA
+1659;#624eb8;Akwa Ibom;plains;NGA
+1660;#5ee1c3;Littoral;mountains;CMR
+1661;#348614;Ogooué-Maritime;plains;GAB
+1662;#0918ac;Bengo;hills;AGO
+1663;#251e7f;Luanda;plains;AGO
+1664;#a771d9;Surt;hills;LBY
+1665;#0fa364;Misratah;hills;LBY
+1666;#3eb8b3;Al Marqab;mountains;LBY
+1667;#1cf2dc;Tajura' wa an Nawahi al Arba;mountains;LBY
+1668;#c4618f;Az Zawiyah;hills;LBY
+1669;#788e3a;Gabès;hills;TUN
+1670;#b34cd1;Sfax;plains;TUN
+1671;#3798bf;Mahdia;plains;TUN
+1672;#f5f288;Monastir;plains;TUN
+1673;#6bdf82;Sousse;plains;TUN
+1674;#4995ed;Nabeul;hills;TUN
+1675;#825706;Manubah;hills;TUN
+1676;#cd4183;Bizerte;mountains;TUN
+1677;#403d31;Béja;hills;TUN
+1678;#df7971;Skikda;mountains;DZA
+1679;#99c728;Jijel;mountains;DZA
+1680;#8a7177;Béjaïa;mountains;DZA
+1681;#7e0310;Tizi Ouzou;mountains;DZA
+1682;#9920cf;Chlef;hills;DZA
+1683;#1df4a1;Mostaganem;hills;DZA
+1684;#900fa3;Oran;mountains;DZA
+1685;#526594;Aïn Témouchent;mountains;DZA
+1686;#d4e7bd;Taza - Al Hoceima - Taounate;mountains;MAR
+1687;#88a080;Gharb - Chrarda - Béni Hssen;mountains;MAR
+1688;#e5fc6a;Rabat - Salé - Zemmour - Zaer;mountains;MAR
+1689;#4acab7;Chaouia - Ouardigha;mountains;MAR
+1690;#6880d8;Doukkala - Abda;mountains;MAR
+1691;#aaeaef;Marrakech - Tensift - Al Haouz;mountains;MAR
+1692;#d64d7f;Inchiri;plains;MRT
+1693;#142748;Nouakchott;plains;MRT
+1694;#7a0944;Louga;plains;SEN
+1695;#e4244e;Thiès;plains;SEN
+1696;#2863fa;Biombo;plains;GNB
+1697;#ebc995;Quinara;plains;GNB
+1698;#ad77cc;Bolama;plains;GNB
+1699;#5cf89f;Boffa;hills;GIN
+1700;#380ca9;Dubréka;hills;GIN
+1701;#31a475;Coyah;mountains;GIN
+1702;#acce9f;Bomi;plains;LBR
+1703;#f9217e;Montserrado;plains;LBR
+1704;#3b4b49;Margibi;hills;LBR
+1705;#21b22d;Grand Bassa;hills;LBR
+1706;#d2c3cd;River Cess;hills;LBR
+1707;#6ea4a8;Sinoe;plains;LBR
+1708;#ea70c6;Grand Kru;hills;LBR
+1709;#47dae7;Sud-Bandama;hills;CIV
+1710;#a7fabf;Lagunes;plains;CIV
+1711;#53d437;Central;plains;GHA
+1712;#6b673c;Greater Accra;hills;GHA
+1713;#a02531;Atlantique;plains;BEN
+1714;#4e1508;Colima;mountains;MEX
+1715;#7c0eb3;Aurora;mountains;PHL
+1716;#9c4ebc;Quezon;hills;PHL
+1717;#351b00;Camarines Norte;hills;PHL
+1718;#695c3d;Camarines Sur;hills;PHL
+1719;#f77137;Albay;hills;PHL
+1720;#6f5f0b;Sorsogon;hills;PHL
+1721;#ad556b;Batangas;hills;PHL
+1722;#6f3f5c;Bulacan;mountains;PHL
+1723;#0203e1;Pampanga;mountains;PHL
+1724;#a4fdb7;Zambales;mountains;PHL
+1725;#2029d9;Pangasinan;mountains;PHL
+1726;#be6484;Ilocos Sur;mountains;PHL
+1727;#e223b9;Ilocos Norte;mountains;PHL
+1728;#66f7d7;Cagayan;mountains;PHL
+1729;#115259;Isabela;mountains;PHL
+1730;#3b4461;Hainan;mountains;CHN
+1731;#2a8169;Nayarit;mountains;MEX
+1732;#4c91a7;Inagua;plains;BHS
+1733;#d7888c;Middle Caicos;plains;TCA
+1734;#d2bcad;Acklins;plains;BHS
+1735;#a32292;Fujian;hills;CHN
+1736;#ae3550;Baja California Sur;mountains;MEX
+1737;#042411;Jubbada Dhexe;plains;SOM
+1738;#429a48;Shabeellaha Hoose;plains;SOM
+1739;#ef3aea;Shabeellaha Dhexe;plains;SOM
+1740;#2ebdda;Tabuk;hills;SAU
+1741;#f62e89;Al Madinah;hills;SAU
+1742;#f80262;Makkah;hills;SAU
+1743;#06d58c;Al Hudaydah;mountains;YEM
+1744;#d7ee03;Ta`izz;mountains;YEM
+1745;#8ba93e;Lahij;mountains;YEM
+1746;#1db09f;Abyan;mountains;YEM
+1747;#e2cfb5;Shabwah;hills;YEM
+1748;#356f3e;Ash Sharqiyah South;hills;OMN
+1749;#38100c;Ash Sharqiyah North;mountains;OMN
+1750;#3ca7b5;Muscat;mountains;OMN
+1751;#fa7a3b;Al Batnah South;mountains;OMN
+1752;#371eb4;Umm Al Qaywayn;hills;ARE
+1753;#26ebc9;Al Wakrah;plains;QAT
+1754;#2f4315;Al Khawr;plains;QAT
+1755;#69fd4c;Madinat ach Shamal;plains;QAT
+1756;#83d710;Hsinchu;mountains;TWN
+1757;#ccc195;Miaoli;mountains;TWN
+1758;#b2ccc7;Taichung City;mountains;TWN
+1759;#bb641b;Chiayi;mountains;TWN
+1760;#07037e;Tainan City;mountains;TWN
+1761;#3fd022;Kaohsiung City;mountains;TWN
+1762;#a1fd28;Pingtung;mountains;TWN
+1763;#f4729e;Taitung;mountains;TWN
+1764;#3fb075;Hualien;mountains;TWN
+1765;#41bd27;Yilan;mountains;TWN
+1766;#4815fb;New Taipei City;mountains;TWN
+1767;#9f2e87;Sinaloa;mountains;MEX
+1768;#541ef2;Louisiana;plains;USA
+1769;#414c7c;Mississippi;plains;USA
+1770;#8a8e97;Alabama;plains;USA
+1771;#cc30ce;Florida;plains;USA
+1772;#0e5af9;Georgia;plains;USA
+1773;#83264b;South Carolina;plains;USA
+1774;#99df2f;North Carolina;plains;USA
+1775;#7057ab;Virginia;hills;USA
+1776;#bb9540;Maryland;plains;USA
+1777;#3f412e;Delaware;hills;USA
+1778;#e7d27d;New Jersey;plains;USA
+1779;#d0ca9c;Connecticut;hills;USA
+1780;#4ee796;Rhode Island;hills;USA
+1781;#d0aacb;Massachusetts;hills;USA
+1782;#a2b1b6;Ngöbe Buglé;mountains;PAN
+1783;#60edb8;Atlántico Sur;plains;NIC
+1784;#d56278;Colón;mountains;HND
+1785;#892545;Atlántida;mountains;HND
+1786;#6d2fc9;Stann Creek;mountains;BLZ
+1787;#376bc2;Belize;mountains;BLZ
+1788;#1b9abe;Yucatán;plains;MEX
+1789;#5d24e7;Veracruz;mountains;MEX
+1790;#8c7f3f;Jalisco;hills;MEX
+1791;#e8eb5e;Michoacán;mountains;MEX
+1792;#39d0d1;Guerrero;mountains;MEX
+1793;#ae5507;Oaxaca;mountains;MEX
+1794;#68fd4b;Retalhuleu;mountains;GTM
+1795;#dd32f2;Suchitepéquez;mountains;GTM
+1796;#59e69c;Escuintla;mountains;GTM
+1797;#16f019;Santa Rosa;mountains;GTM
+1798;#ca2466;Sonsonate;mountains;SLV
+1799;#54096c;La Libertad;mountains;SLV
+1800;#23ace2;San Vicente;mountains;SLV
+1801;#6cba67;Usulután;mountains;SLV
+1802;#c673b9;León;hills;NIC
+1803;#04198e;Managua;mountains;NIC
+1804;#dc8add;Carazo;mountains;NIC
+1805;#f90022;Los Santos;mountains;PAN
+1806;#3b6a15;Herrera;mountains;PAN
+1807;#7ee169;Zhejiang;mountains;CHN
+1808;#1a7508;Shanghai;plains;CHN
+1809;#e0edcc;Kagoshima;mountains;JPN
+1810;#d81f3f;Jiangsu;plains;CHN
+1811;#7faf0b;Bushehr;mountains;IRN
+1812;#d9515d;Hormozgan;mountains;IRN
+1813;#e1cf80;Al Qubbah;plains;LBY
+1814;#e8675c;Al Jabal al Akhdar;hills;LBY
+1815;#aed905;Al Marj;mountains;LBY
+1816;#651bee;Benghazi;plains;LBY
+1817;#048f44;Ōita;mountains;JPN
+1818;#a21145;Fukuoka;mountains;JPN
+1819;#3c3c4f;Saga;hills;JPN
+1820;#2287fb;Nagasaki;hills;JPN
+1821;#cf4daf;Kumamoto;mountains;JPN
+1822;#0d2798;Miyazaki;mountains;JPN
+1823;#42311d;Tokushima;mountains;JPN
+1824;#89f3f6;Kagawa;mountains;JPN
+1825;#4b99c1;Ehime;mountains;JPN
+1826;#c6e573;Kōchi;mountains;JPN
+1827;#7a8216;Shimane;mountains;JPN
+1828;#5542ca;South Chungcheong;hills;KOR
+1829;#fe5678;Yamaguchi;mountains;JPN
+1830;#b8e821;Tottori;mountains;JPN
+1831;#c94e99;Hyōgo;mountains;JPN
+1832;#a41273;Kyōto;mountains;JPN
+1833;#0b24ae;Fukui;mountains;JPN
+1834;#9ca178;Ishikawa;mountains;JPN
+1835;#9509a4;Toyama;mountains;JPN
+1836;#5eab18;Niigata;mountains;JPN
+1837;#02ec25;Yamagata;mountains;JPN
+1838;#9569f3;Akita;mountains;JPN
+1839;#5703c4;Aomori;mountains;JPN
+1840;#da7f76;Iwate;mountains;JPN
+1841;#9cc12f;Miyagi;mountains;JPN
+1842;#181541;Fukushima;mountains;JPN
+1843;#296ec1;Ibaraki;hills;JPN
+1844;#6fd098;Chiba;plains;JPN
+1845;#11bd9d;Tokyo;mountains;JPN
+1846;#eb04f6;Kanagawa;mountains;JPN
+1847;#d3b7fd;Shizuoka;mountains;JPN
+1848;#187516;Aichi;mountains;JPN
+1849;#5ecb4f;Mie;mountains;JPN
+1850;#adbaaf;Wakayama;mountains;JPN
+1851;#20c61d;Ōsaka;mountains;JPN
+1852;#f7fea4;Okayama;mountains;JPN
+1853;#b140fd;Hiroshima;mountains;JPN
+1854;#e87997;Oregon;hills;USA
+1855;#ca4823;Nunavut;hills;CAN
+1856;#4f1b4c;Newfoundland and Labrador;plains;CAN
+1857;#09a515;Nova Scotia;plains;CAN
+1858;#576393;Hokkaidō;mountains;JPN
+1859;#807c4d;Odisha;hills;IND
+1860;#b4f438;Barisal;plains;BGD
+1861;#593b82;Ayeyarwady;mountains;MMR
+1862;#ffa583;Yangon;plains;MMR
+1863;#3dcfb4;Bago;mountains;MMR
+1864;#f4ed1a;Phangnga;mountains;THA
+1865;#00789a;Krabi;plains;THA
+1866;#cbba71;Trang;hills;THA
+1867;#cf9d89;Pulau Pinang;hills;MYS
+1868;#dacf07;Selangor;mountains;MYS
+1869;#44e20d;Negeri Sembilan;mountains;MYS
+1870;#025c54;Melaka;hills;MYS
+1871;#8f20e6;Johor;plains;MYS
+1872;#86883a;Pahang;mountains;MYS
+1873;#18a530;Terengganu;mountains;MYS
+1874;#11bf5d;Pattani;hills;THA
+1875;#c212ad;Phatthalung;mountains;THA
+1876;#6ac010;Nakhon Si Thammarat;hills;THA
+1877;#84acf4;Surat Thani;mountains;THA
+1878;#2143dc;Bangkok Metropolis;plains;THA
+1879;#679dd2;Chachoengsao;plains;THA
+1880;#a5f7e5;Chon Buri;plains;THA
+1881;#ac5f39;Rayong;plains;THA
+1882;#062c4b;Cà Mau;plains;VNM
+1883;#c4467c;Bạc Liêu;plains;VNM
+1884;#82f825;Hau Giang;plains;VNM
+1885;#f55dab;Vĩnh Long;plains;VNM
+1886;#980141;Trà Vinh;plains;VNM
+1887;#409212;Bến Tre;plains;VNM
+1888;#6e4a71;Đông Nam Bộ;hills;VNM
+1889;#ac2046;Bình Thuận;mountains;VNM
+1890;#5f51a6;Ninh Thuận;mountains;VNM
+1891;#19efff;Phú Yên;mountains;VNM
+1892;#56f97a;Bình Định;mountains;VNM
+1893;#8e6a29;Quảng Ngãi;mountains;VNM
+1894;#cf3010;Ninh Bình;plains;VNM
+1895;#511d1a;Nam Định;plains;VNM
+1896;#3c41f0;Thái Bình;plains;VNM
+1897;#9832f5;Hải Phòng;mountains;VNM
+1898;#c2e65b;Shandong;plains;CHN
+1899;#0924b0;Hebei;hills;CHN
+1900;#463235;Tianjin;mountains;CHN
+1901;#029ca4;P'yŏngan-namdo;mountains;PRK
+1902;#f1ed44;Hwanghae-namdo;hills;PRK
+1903;#68cb11;North Jeolla;mountains;KOR
+1904;#5cea16;South Jeolla;hills;KOR
+1905;#1a544f;South Gyeongsang;mountains;KOR
+1906;#00ad2b;North Gyeongsang;mountains;KOR
+1907;#8648ca;Hamgyŏng-namdo;mountains;PRK
+1908;#f92ba9;Maga Buryatdan;hills;RUS
+1909;#42167a;Dadra and Nagar Haveli and Daman and Diu;mountains;IND
+1910;#c6c214;Maharashtra;hills;IND
+1911;#57f8f4;Goa;mountains;IND
+1912;#04a823;Karnataka;plains;IND
+1913;#0d00ff;Kerala;mountains;IND
+1914;#da8446;Tamil Nadu;hills;IND
+1915;#bf95f0;Sakhalin;hills;RUS
+1916;#fe9734;Wicklow;mountains;IRL
+1917;#3cfd03;Wexford;hills;IRL
+1918;#1ed73b;Kilkenny;plains;IRL
+1919;#05a433;Waterford;hills;IRL
+1920;#854576;Cork;hills;IRL
+1921;#51c1be;Kerry;hills;IRL
+1922;#177fe7;Limerick;hills;IRL
+1923;#1b687c;Clare;plains;IRL
+1924;#6912e2;Galway;plains;IRL
+1925;#260467;Mayo;plains;IRL
+1926;#8952ed;Sligo;plains;IRL
+1927;#a6e3d3;Limavady;hills;GBR
+1928;#c72d35;Carrickfergus;hills;GBR
+1929;#e46e50;Meath;plains;IRL
+1930;#85d431;Zaporizhzhya;plains;UKR
+1931;#2fb86b;Mykolayiv;plains;UKR
+1932;#579cba;Varna;hills;BGR
+1933;#1ac509;Istanbul;hills;TUR
+1934;#5c1b07;Tekirdag;hills;TUR
+1935;#decc5f;Çanakkale;mountains;TUR
+1936;#7305da;Stirling;mountains;GBR
+1937;#427e5a;Midlothian;mountains;GBR
+1938;#9aed09;Durham;mountains;GBR
+1939;#40a0ea;North Yorkshire;hills;GBR
+1940;#2257ea;East Riding of Yorkshire;plains;GBR
+1941;#d3f8ba;North Lincolnshire;plains;GBR
+1942;#345cd5;Lincolnshire;plains;GBR
+1943;#8f3837;Norfolk;plains;GBR
+1944;#4d5200;Suffolk;plains;GBR
+1945;#11153d;Essex;plains;GBR
+1946;#4f50e7;Kent;plains;GBR
+1947;#9ac591;East Sussex;plains;GBR
+1948;#1304f2;West Sussex;plains;GBR
+1949;#3c7308;Hampshire;plains;GBR
+1950;#5e8408;Dorset;plains;GBR
+1951;#33d8e2;Devon;hills;GBR
+1952;#9e50d8;Cornwall;hills;GBR
+1953;#6f9fdf;Somerset;plains;GBR
+1954;#2b9f61;Carmarthenshire;hills;GBR
+1955;#af4b0f;Pembrokeshire;plains;GBR
+1956;#e9f556;Ceredigion;hills;GBR
+1957;#979853;Gwynedd;mountains;GBR
+1958;#fac4b9;Conwy;mountains;GBR
+1959;#e03ddd;Denbighshire;mountains;GBR
+1960;#6d416f;Lancashire;hills;GBR
+1961;#932582;South Ayrshire;mountains;GBR
+1962;#8d29f8;Argyll and Bute;hills;GBR
+1963;#cb97a1;Highland;hills;GBR
+1964;#f7d1b4;Moray;mountains;GBR
+1965;#b8c731;Aberdeenshire;mountains;GBR
+1966;#2f42e7;Angus;mountains;GBR
+1967;#ed28d0;Perthshire and Kinross;hills;GBR
+1968;#89bcb1;Fife;plains;GBR
+1969;#a5a3eb;Chukchi Autonomous Okrug;hills;RUS
+1970;#9a6f91;Austurland;mountains;ISL
+1971;#f209ab;Suðurland;mountains;ISL
+1972;#e8f0cf;Höfuðborgarsvæði;hills;ISL
+1973;#85ac25;Vesturland;mountains;ISL
+1974;#51ad7a;Vestfirðir;mountains;ISL
+1975;#1ebbff;Norðurland vestra;mountains;ISL
+1976;#bd1f2e;Norðurland eystra;mountains;ISL
+1977;#5efdd6;Yamal-Nenets;plains;RUS
+1978;#18438f;Nenets;plains;RUS
+1979;#082214;Northwest Territories;plains;CAN
+1980;#b63d2c;Sakha (Yakutia);plains;RUS
+1981;#ae3730;Grobinas;plains;LVA
+1982;#1558f8;Ventspils;plains;LVA
+1983;#548e5b;Dundagas;plains;LVA
+1984;#e4975c;Talsi;plains;LVA
+1985;#17e6bc;Limbaži;plains;LVA
+1986;#1e2360;Lääne;plains;EST
+1987;#604e65;Harju;plains;EST
+1988;#7ab701;Lääne-Viru;plains;EST
+1989;#94b83c;City of St. Petersburg;plains;RUS
+1990;#b3c44c;Uusimaa;plains;FIN
+1991;#371022;Finland Proper;plains;FIN
+1992;#71ae7b;Satakunta;plains;FIN
+1993;#cdc91e;Ostrobothnia;plains;FIN
+1994;#8b7747;Central Ostrobothnia;plains;FIN
+1995;#8f989b;Västernorrland;hills;SWE
+1996;#81d427;Gävleborg;hills;SWE
+1997;#863047;Uppsala;plains;SWE
+1998;#445a70;Stockholm;plains;SWE
+1999;#3a5722;Södermanland;plains;SWE
+2000;#f83d15;Östergötland;plains;SWE
+2001;#f195c9;Kalmar;plains;SWE
+2002;#0a4c44;Blekinge;hills;SWE
+2003;#2a86f2;Skåne;plains;SWE
+2004;#be834c;Halland;plains;SWE
+2005;#32edc2;Buskerud;hills;NOR
+2006;#d2adcd;Vestfold;mountains;NOR
+2007;#10c7fa;Telemark;hills;NOR
+2008;#a56814;Aust-Agder;mountains;NOR
+2009;#acc0c8;Vest-Agder;mountains;NOR
+2010;#2814a6;Rogaland;mountains;NOR
+2011;#670223;Hordaland;mountains;NOR
+2012;#ea7e91;Sogn og Fjordane;hills;NOR
+2013;#21bc7a;Møre og Romsdal;mountains;NOR
+2014;#181bb9;Rize;mountains;TUR
+2015;#5ea5e0;Trabzon;mountains;TUR
+2016;#36c3da;Giresun;hills;TUR
+2017;#f4a9ed;Ordu;mountains;TUR
+2018;#3f6b06;Samsun;mountains;TUR
+2019;#bbbf68;Sinop;hills;TUR
+2020;#6d6087;Kastamonu;hills;TUR
+2021;#54162a;Bartın;mountains;TUR
+2022;#9abf9e;Zinguldak;mountains;TUR
+2023;#f2e87c;Düzce;mountains;TUR
+2024;#9e1167;Sakarya;mountains;TUR
+2025;#5c7b50;Kocaeli;mountains;TUR
+2026;#d8af3e;Bursa;mountains;TUR
+2027;#1ca668;Balikesir;mountains;TUR
+2028;#0ff7d0;Izmir;mountains;TUR
+2029;#62ab3a;Aydin;mountains;TUR
+2030;#7e313f;Mugla;mountains;TUR
+2031;#af0ab0;Antalya;mountains;TUR
+2032;#c5b23a;Mersin;mountains;TUR
+2033;#89ee26;Adana;mountains;TUR
+2034;#28185b;Mount Lebanon;mountains;LBN
+2035;#b959b9;Arkhangel'sk;plains;RUS
+2036;#c8307e;Krasnoyarsk;plains;RUS
+2037;#0f945c;Ayion Oros;plains;GRC
+2038;#830fb8;Thessalia;mountains;GRC
+2039;#e61cd8;Stereá Elláda;mountains;GRC
+2040;#5ea63b;Attiki;mountains;GRC
+2041;#9ccc0c;Peloponnisos;mountains;GRC
+2042;#da7255;Dytiki Ellada;mountains;GRC
+2043;#f2ddfc;Fier;mountains;ALB
+2044;#898a29;Tiranë;mountains;ALB
+2045;#30b7cb;Durrës;mountains;ALB
+2046;#4be01e;Lezhë;mountains;ALB
+2047;#1df8d8;Šibensko-Kninska;mountains;HRV
+2048;#0a74e6;Licko-Senjska;mountains;HRV
+2049;#49801e;Venezia;plains;ITA
+2050;#cd5470;Padova;plains;ITA
+2051;#0f3e47;Rovigo;plains;ITA
+2052;#ed8860;Ferrara;plains;ITA
+2053;#a29ee5;Ravenna;mountains;ITA
+2054;#60f4d2;Forlì-Cesena;mountains;ITA
+2055;#a66bfb;Ancona;mountains;ITA
+2056;#3846f1;Macerata;mountains;ITA
+2057;#551a1b;Fermo;mountains;ITA
+2058;#97702c;Ascoli Piceno;mountains;ITA
+2059;#8de91f;Teramo;mountains;ITA
+2060;#4f8328;Pescara;mountains;ITA
+2061;#2b1749;Chieti;mountains;ITA
+2062;#22dfc2;Campobasso;mountains;ITA
+2063;#e91d29;Foggia;mountains;ITA
+2064;#2b771e;Barletta-Andria Trani;mountains;ITA
+2065;#a60bac;Bari;mountains;ITA
+2066;#afa370;Lecce;plains;ITA
+2067;#f3e44d;Taranto;mountains;ITA
+2068;#a57a85;Matera;mountains;ITA
+2069;#0a4c58;Cosenza;mountains;ITA
+2070;#4cf201;Crotene;mountains;ITA
+2071;#8e9836;Catanzaro;mountains;ITA
+2072;#03e484;Reggio Calabria;mountains;ITA
+2073;#c18eb3;Vibo Valentia;mountains;ITA
+2074;#c8266f;Potenza;mountains;ITA
+2075;#e0b5f5;Salerno;mountains;ITA
+2076;#455add;Caserta;mountains;ITA
+2077;#6da910;Roma;mountains;ITA
+2078;#afc327;Viterbo;mountains;ITA
+2079;#c66ad3;Grosseto;mountains;ITA
+2080;#b62b3d;Pisa;mountains;ITA
+2081;#32ff53;Lucca;mountains;ITA
+2082;#f09564;Massa-Carrara;mountains;ITA
+2083;#e420bc;Genova;mountains;ITA
+2084;#b86781;Savona;mountains;ITA
+2085;#cdd1e7;Var;mountains;FRA
+2086;#6ff237;Bouches-du-Rhône;mountains;FRA
+2087;#ff9381;Gard;hills;FRA
+2088;#9e5d67;Hérault;mountains;FRA
+2089;#a430dc;Aude;mountains;FRA
+2090;#8ddf89;Barcelona;mountains;ESP
+2091;#b30fe3;Tarragona;mountains;ESP
+2092;#e92bbf;Castellón;mountains;ESP
+2093;#ef48de;Valencia;mountains;ESP
+2094;#1a5a5f;Alicante;mountains;ESP
+2095;#64375a;Murcia;mountains;ESP
+2096;#554cda;Almería;mountains;ESP
+2097;#9746ba;Granada;mountains;ESP
+2098;#e0e334;Málaga;mountains;ESP
+2099;#37db8d;Sevilla;mountains;ESP
+2100;#014720;Setúbal;plains;PRT
+2101;#2e06b8;Lisboa;hills;PRT
+2102;#b02bb2;Santarém;hills;PRT
+2103;#a37a0a;Leiria;mountains;PRT
+2104;#9bc901;Coimbra;mountains;PRT
+2105;#a5793c;Aveiro;mountains;PRT
+2106;#16b5b3;Porto;mountains;PRT
+2107;#1a3a08;La Coruña;mountains;ESP
+2108;#6d9f86;Lugo;hills;ESP
+2109;#9726ed;Asturias;mountains;ESP
+2110;#a63d3a;Cantabria;mountains;ESP
+2111;#407e03;Bizkaia;mountains;ESP
+2112;#2b92de;Landes;plains;FRA
+2113;#72ef33;Gironde;plains;FRA
+2114;#750b53;Charente-Maritime;plains;FRA
+2115;#490589;Vendée;plains;FRA
+2116;#e05035;Loire-Atlantique;plains;FRA
+2117;#9795ec;Morbihan;plains;FRA
+2118;#3df9b6;Finistère;hills;FRA
+2119;#43f4e4;Côtes-d'Armor;plains;FRA
+2120;#c21a5a;Ille-et-Vilaine;plains;FRA
+2121;#5c5707;Manche;plains;FRA
+2122;#ad9800;Calvados;hills;FRA
+2123;#b92dd8;Eure;plains;FRA
+2124;#f562ec;Seine-Maritime;plains;FRA
+2125;#781e5e;Somme;plains;FRA
+2126;#6d4cd0;Pas-de-Calais;plains;FRA
+2127;#e24998;Zuid-Holland;plains;NLD
+2128;#a4f7c1;Noord-Holland;plains;NLD
+2129;#bfd1d9;Friesland;plains;NLD
+2130;#b9c652;Bremen;plains;DEU
+2131;#615501;Hamburg;plains;DEU
+2132;#5812a8;Midtjylland;plains;DNK
+2133;#c63fa2;Nordjylland;plains;DNK
+2134;#f73714;Kommuneqarfik Sermersooq;mountains;GRL
+2135;#75e04c;Nationalparken;mountains;GRL
+2136;#b78a7b;Qaasuitsup Kommunia;mountains;GRL
+2137;#355d23;Pituffik;mountains;GRL
+2138;#335e15;Qeqqata Kommunia;hills;GRL
+2139;#f13422;Kommune Kujalleq;mountains;GRL
+2140;#300708;Windward Islands;mountains;PYF
+2141;#7f118d;Leeward Islands;plains;PYF
+2142;#a19281;Outer Islands;plains;SYC
+2143;#1aca54;Nueva Esparta;plains;VEN
+2144;#2aa9ae;Princes Town;plains;TTO
+2145;#ae7dc0;Rio Claro-Mayaro;plains;TTO
+2146;#b244d5;Western Tobago;plains;TTO
+2147;#846cd1;Saint Andrew;plains;GRD
+2148;#35d3a3;Andaman and Nicobar;plains;IND
+2149;#976329;Bonaire;plains;NLD
+2150;#123822;Charlotte;plains;VCT
+2151;#5cdf26;Dennery;plains;LCA
+2152;#8696dd;Martinique;hills;FRA
+2153;#8e1f2e;Saint Paul;hills;DMA
+2154;#2ba96e;Guadeloupe;hills;FRA
+2155;#9f0349;Saint Mary;plains;ATG
+2156;#a74532;Saint Thomas Lowland;plains;KNA
+2157;#8fd794;Puerto Rico;mountains;PRI
+2158;#de4f6b;La Altagracia;plains;DOM
+2159;#0f0461;Saint Elizabeth;mountains;JAM
+2160;#49ba38;Clarendon;mountains;JAM
+2161;#2aaa6e;Saint Catherine;mountains;JAM
+2162;#5aeb80;Portland;mountains;JAM
+2163;#1c255c;El Seybo;hills;DOM
+2164;#9159ee;Hato Mayor;hills;DOM
+2165;#8d6512;Nord;mountains;HTI
+2166;#cbdb4b;L'Artibonite;mountains;HTI
+2167;#f249b8;Barahona;mountains;DOM
+2168;#fbe164;Azua;mountains;DOM
+2169;#948ef6;Santo Domingo;mountains;DOM
+2170;#105a98;San Pedro de Macorís;plains;DOM
+2171;#e55f9a;Camagüey;plains;CUB
+2172;#aa491f;Ciego de Ávila;plains;CUB
+2173;#a3e1c3;Holguín;plains;CUB
+2174;#8e6011;Isla de la Juventud;plains;CUB
+2175;#9402f4;Crooked Island and Long Cay;plains;BHS
+2176;#0ab47f;Sancti Spíritus;hills;CUB
+2177;#d0b153;Villa Clara;hills;CUB
+2178;#12db64;Matanzas;plains;CUB
+2179;#197e46;Long Island;plains;BHS
+2180;#e3a77a;Central Andros;plains;BHS
+2181;#677314;South Andros;plains;BHS
+2182;#87331b;North Andros;plains;BHS
+2183;#45592c;Berry Islands;plains;BHS
+2184;#d2dcfa;East Grand Bahama;plains;BHS
+2185;#db7426;South Abaco;plains;BHS
+2186;#5fa048;North Abaco;plains;BHS
+2187;#664edd;Kalmyk;plains;RUS
+2188;#e34445;Xizı;mountains;AZE
+2189;#8b227f;Bakı;plains;AZE
+2190;#f9bd21;Salyan;plains;AZE
+2191;#327fca;Neftçala;plains;AZE
+2192;#c10e2a;Lankaran;mountains;AZE
+2193;#9d4917;Masallı;mountains;AZE
+2194;#7607d7;Mazandaran;mountains;IRN
+2195;#b9ca4d;Heard Island and McDonald Islands;mountains;HMD
+2196;#53237e;Archipel des Kerguelen;mountains;ATF
+2197;#af7d00;La Réunion;mountains;FRA
+2198;#e9c359;Mayotte;plains;FRA
+2199;#0c2897;Andjouân;hills;COM
+2200;#4a96ce;Andjazîdja;mountains;COM
+2201;#b6db01;Zanzibar West;plains;TZA
+2202;#bf73dd;Kaskazini-Pemba;plains;TZA
+2203;#84db69;Au Cap;plains;SYC
+2204;#789e2e;São Tomé;mountains;STP
+2205;#eb3da2;Bioko Sur;mountains;GNQ
+2206;#36a9fb;São Filipe;hills;CPV
+2207;#8ace9e;Ribeira Grande de Santiago;mountains;CPV
+2208;#07b22c;Maio;plains;CPV
+2209;#c5d81b;Boa Vista;plains;CPV
+2210;#836642;Sal;plains;CPV
+2211;#bbb51e;Porto Novo;mountains;CPV
+2212;#baa73f;Santa Cruz de Tenerife;mountains;ESP
+2213;#841702;Las Palmas;hills;ESP
+2214;#f93e01;Madeira;mountains;PRT
+2215;#8b4032;Kriti;mountains;GRC
+2216;#356750;Notio Aigaio;mountains;GRC
+2217;#658df4;Paphos;mountains;CYP
+2218;#318e7a;Trapani;mountains;ITA
+2219;#bf8058;Azores;hills;PRT
+2220;#2476ef;Voreio Aigaio;mountains;GRC
+2221;#11b0be;Ionioi Nisoi;hills;GRC
+2222;#9eb8a7;Messina;mountains;ITA
+2223;#5cd290;Palermo;mountains;ITA
+2224;#13c415;Agrigento;mountains;ITA
+2225;#d1ae22;Caltanissetta;mountains;ITA
+2226;#97107b;Ragusa;mountains;ITA
+2227;#557a4c;Siracusa;mountains;ITA
+2228;#1a6cc9;Catania;mountains;ITA
+2229;#4fb5be;Baleares;hills;ESP
+2230;#1ef980;Sassari;mountains;ITA
+2231;#9a2dee;Nuoro;mountains;ITA
+2232;#dc93b7;Olbia-Tempio;mountains;ITA
+2233;#51ef05;Oristrano;mountains;ITA
+2234;#938532;Medio Campidano;mountains;ITA
+2235;#0400e4;Cagliari;mountains;ITA
+2236;#5847d9;Ogliastra;mountains;ITA
+2237;#f63b5d;Haute-Corse;mountains;FRA
+2238;#c7208a;Corse-du-Sud;mountains;FRA
+2239;#b28140;Isle of Man;plains;IMN
+2240;#60c1f4;Sjaælland;plains;DNK
+2241;#045595;Hovedstaden;plains;DNK
+2242;#312eca;Eilean Siar;plains;GBR
+2243;#0b4cf5;Gotland;plains;SWE
+2244;#09fd96;Orkney;plains;GBR
+2245;#4f43cf;Shetland Islands;plains;GBR
+2246;#df42cd;Jomala;plains;ALD
+2247;#ceeed8;Eysturoyar;hills;FRO
+2248;#7ceb10;Tasmania;mountains;AUS
+2249;#e0291e;Bali;mountains;IDN
+2250;#3945bd;British Indian Ocean Territory;plains;IOT
+2251;#0d5391;North West;plains;SGP
+2252;#a8aa27;Phuket;plains;THA
+2253;#d90217;Hawaii;mountains;USA
+2254;#a65395;Okinawa;plains;JPN
+2255;#33d757;Kinmen;plains;TWN
+2256;#6df1c1;Jeju;mountains;KOR
+2257;#6a0086;Kamchatka;mountains;RUS
+2258;#99cf09;Saare;plains;EST
+2259;#dc4957;Hiiu;plains;EST
+2260;#5fb128;Svalbard;mountains;NOR
+2261;#2c5876;Chatham Islands Territory;plains;NZL
+2262;#66392b;Eastern;plains;FJI
+2263;#e0785c;Fa'asaleleaga;mountains;WSM
+2264;#83c103;Rennell and Bellona;plains;SLB
+2265;#39afd4;Marquesas Islands;plains;PYF
+2266;#13b27c;Makira;mountains;SLB
+2267;#46c2cb;Temotu;plains;SLB
+2268;#41ab34;Malaita;mountains;SLB
+2269;#07156d;Guadalcanal;mountains;SLB
+2270;#c57f5a;Central;plains;SLB
+2271;#8d9f76;Western;hills;SLB
+2272;#4803e8;Isabel;hills;SLB
+2273;#6768a3;Manufahi;mountains;TLS
+2274;#21d6fa;Viqueque;mountains;TLS
+2275;#e3bccd;Lautém;mountains;TLS
+2276;#a23cb5;North Solomons;mountains;PNG
+2277;#9a8fbe;West New Britain;mountains;PNG
+2278;#d5993b;East New Britain;mountains;PNG
+2279;#1e5bd0;New Ireland;mountains;PNG
+2280;#a69747;Bangka-Belitung;plains;IDN
+2281;#17f30c;Manus;hills;PNG
+2282;#55670c;Gaafu Dhaalu;plains;MDV
+2283;#970d3b;Gaafu Alifu;plains;MDV
+2284;#b1af39;Tawi-Tawi;plains;PHL
+2285;#a2fe81;Basilan;mountains;PHL
+2286;#497c8a;Pohnpei;plains;FSM
+2287;#c7ede1;Camiguin;hills;PHL
+2288;#357b57;Bohol;mountains;PHL
+2289;#6094b6;Negros Occidental;mountains;PHL
+2290;#feb9bc;Negros Oriental;mountains;PHL
+2291;#7a6dd2;Cebu;hills;PHL
+2292;#398364;Puerto Princesa;mountains;PHL
+2293;#4b1652;Antique;mountains;PHL
+2294;#17516f;Iloilo;mountains;PHL
+2295;#d53b58;Capiz;mountains;PHL
+2296;#b1cf6e;Romblon;hills;PHL
+2297;#f6f636;Northern Samar;hills;PHL
+2298;#ad353c;Masbate;plains;PHL
+2299;#daf0e5;Mindoro Oriental;mountains;PHL
+2300;#189ad2;Mindoro Occidental;mountains;PHL
+2301;#75c638;Marinduque;hills;PHL
+2302;#ab360a;Catanduanes;mountains;PHL
+2303;#95a869;South Georgia and the South Sandwich Islands;mountains;SGS
+2304;#89b9f5;Falkland Islands;plains;FLK
+2305;#46e8ee;Sud;mountains;NCL
+2306;#8482d9;Îles Loyauté;plains;NCL
+2307;#603305;Tongatapu;plains;TON
+2308;#31451c;Tafea;hills;VUT
+2309;#c0c77d;Western;mountains;FJI
+2310;#3a7e16;Central;mountains;FJI
+2311;#7e5399;Shefa;hills;VUT
+2312;#a4531c;Northern;hills;FJI
+2313;#f32f2b;Malampa;hills;VUT
+2314;#77fb45;Sanma;mountains;VUT
+2315;#bc39ae;Penama;plains;VUT
+2316;#b59172;Torba;plains;VUT
+2317;#fa8138;A'ana;hills;WSM
+2318;#d1d84b;Choiseul;hills;SLB
+2319;#7e670e;Airai;plains;PLW
+2320;#c66ad1;Guam;plains;GUM
+2321;#ffa6fe;Las Tunas;plains;CUB
+2322;#5325fc;Mayabeque;plains;CUB
+2323;#4c0a26;Pinar del Río;hills;CUB
+2324;#eaf470;Cienfuegos;plains;CUB
+2325;#618bf4;Granma;mountains;CUB
+2326;#3dccc9;Santiago de Cuba;mountains;CUB
+2327;#164788;Al Wusţá;plains;BHR
+2328;#8d717b;Prince Edward Island;plains;CAN
+2329;#53643a;Thaa;plains;MDV
+2330;#8bf769;Vaavu;plains;MDV
+2331;#82676d;Salt Cay;plains;TCA
+2332;#26a4c3;Macau;plains;MAC
+2333;#5668c3;Ragged Island;plains;BHS
+2334;#32f6f2;Tuen Mun;plains;HKG
+2335;#2c537a;Brändö;plains;ALD
+2336;#b1d26a;Southland;mountains;NZL
+2337;#60e9e5;Marlborough District;mountains;NZL
+2338;#e43d8b;Tasman District;mountains;NZL
+2339;#2fff60;West Coast;mountains;NZL
+2340;#ed9557;Otago;mountains;NZL
+2341;#a283d2;Canterbury;mountains;NZL
+2342;#9941f0;Auckland;plains;NZL
+2343;#836eab;Waikato;hills;NZL
+2344;#41049c;Wellington;mountains;NZL
+2345;#3e58f0;Manawatu-Wanganui;mountains;NZL
+2346;#694139;Taranaki;mountains;NZL
+2347;#ab2b0e;Northland;hills;NZL
+2348;#5b2bc7;Bay of Plenty;mountains;NZL
+2349;#076cfa;Gisborne District;mountains;NZL
+2350;#c506cd;Hawke's Bay;mountains;NZL
+2351;#2073b3;Midlands;hills;ZWE
+2352;#a4a7dd;Harare;hills;ZWE
+2353;#20a582;Ma'rib;hills;YEM
+2354;#86a745;Sana'a;mountains;YEM
+2355;#dae078;Raymah;mountains;YEM
+2356;#290d5e;Al Bayda';mountains;YEM
+2357;#0f7d50;Amran;mountains;YEM
+2358;#661bdb;Al Dali';mountains;YEM
+2359;#49c309;Ibb;mountains;YEM
+2360;#406bd5;Al Mahwit;mountains;YEM
+2361;#8201e2;Dhamar;mountains;YEM
+2362;#26d8c3;Hòa Bình;mountains;VNM
+2363;#b8f5c9;Tuyên Quang;mountains;VNM
+2364;#e4b2f4;Yên Bái;mountains;VNM
+2365;#4be47e;Vĩnh Phúc;mountains;VNM
+2366;#93772d;Phú Thọ;mountains;VNM
+2367;#c698cc;Ha Noi;mountains;VNM
+2368;#35897b;Đông Bắc;hills;VNM
+2369;#802695;Đồng Bằng Sông Hồng;plains;VNM
+2370;#fe2bc7;Bắc Giang;hills;VNM
+2371;#733722;Thái Nguyên;mountains;VNM
+2372;#424ca2;Hải Dương;hills;VNM
+2373;#0d5a27;Hà Nam;hills;VNM
+2374;#db85c8;Bình Dương;plains;VNM
+2375;#9d3b91;Lâm Đồng;mountains;VNM
+2376;#f0677b;Can Tho;plains;VNM
+2377;#393eb5;Tacuarembó;plains;URY
+2378;#b44207;Durazno;plains;URY
+2379;#c8770b;Flores;plains;URY
+2380;#e1ade6;Florida;plains;URY
+2381;#23c7d1;Lavalleja;hills;URY
+2382;#c25907;Guárico;plains;VEN
+2383;#5a773b;Cojedes;plains;VEN
+2384;#efb882;Barinas;plains;VEN
+2385;#d70b89;Lara;hills;VEN
+2386;#1561be;Portuguesa;plains;VEN
+2387;#47be06;Poltava;plains;UKR
+2388;#9a77d2;Khmel'nyts'kyy;plains;UKR
+2389;#1ea3bc;Ternopil';plains;UKR
+2390;#76a5d1;Dnipropetrovs'k;plains;UKR
+2391;#9f4d02;Cherkasy;plains;UKR
+2392;#fbd963;Kirovohrad;plains;UKR
+2393;#7126e6;Siliana;mountains;TUN
+2394;#fc5a54;Sidi Bou Zid;mountains;TUN
+2395;#a9b5b5;Kairouan;mountains;TUN
+2396;#0f4be3;Zaghouan;mountains;TUN
+2397;#2519e9;Bern;mountains;CHE
+2398;#333d55;Lucerne;mountains;CHE
+2399;#022682;Uri;mountains;CHE
+2400;#8f5a30;Schwyz;mountains;CHE
+2401;#a4b883;Glarus;mountains;CHE
+2402;#eedb02;Fribourg;mountains;CHE
+2403;#63a7b0;Obwalden;mountains;CHE
+2404;#ed2a30;Chimbu;mountains;PNG
+2405;#ad975f;Enga;mountains;PNG
+2406;#26e8db;Western Highlands;mountains;PNG
+2407;#e482ec;Southern Highlands;mountains;PNG
+2408;#2f4007;Eastern Highlands;mountains;PNG
+2409;#42b58c;Anenii Noi;plains;MDA
+2410;#be6f86;Orhei;plains;MDA
+2411;#e42b8d;Floreşti;plains;MDA
+2412;#f17903;Rezina;plains;MDA
+2413;#f8d1df;Ialoveni;plains;MDA
+2414;#c2565a;Bolu;mountains;TUR
+2415;#358943;Ankara;hills;TUR
+2416;#97b9bb;Bilecik;mountains;TUR
+2417;#003c6d;Eskisehir;hills;TUR
+2418;#f7e374;Çankiri;hills;TUR
+2419;#967c1d;Karabük;mountains;TUR
+2420;#a4e943;Jharkhand;hills;IND
+2421;#f1daf5;Delhi;plains;IND
+2422;#5e5028;Madhya Pradesh;hills;IND
+2423;#aec7ce;Utah;hills;USA
+2424;#6cadf9;Wyoming;mountains;USA
+2425;#650525;Nevada;hills;USA
+2426;#a76f12;Colorado;mountains;USA
+2427;#9674c5;South Dakota;plains;USA
+2428;#1b0877;Nebraska;plains;USA
+2429;#9fdc19;Kansas;plains;USA
+2430;#d96240;Oklahoma;plains;USA
+2431;#f280f3;Iowa;plains;USA
+2432;#5db62e;Missouri;plains;USA
+2433;#b6a65d;Khon Kaen;plains;THA
+2434;#3dd9d9;Sakon Nakhon;hills;THA
+2435;#56e652;Suphan Buri;mountains;THA
+2436;#5f4e8e;Chai Nat;hills;THA
+2437;#9d24b9;Ang Thong;plains;THA
+2438;#67fd85;Saraburi;mountains;THA
+2439;#b0a56b;Nakhon Ratchasima;plains;THA
+2440;#c16384;Nakhon Nayok;mountains;THA
+2441;#ea8137;Pathum Thani;plains;THA
+2442;#db9ae0;Uthai Thani;mountains;THA
+2443;#74cc6a;Kalasin;plains;THA
+2444;#f61b32;Roi Et;plains;THA
+2445;#72cf5c;Maha Sarakham;plains;THA
+2446;#a3f4d3;Nong Bua Lam Phu;hills;THA
+2447;#0309b3;Lop Buri;plains;THA
+2448;#619ee4;Udon Thani;plains;THA
+2449;#28eb00;Phra Nakhon Si Ayutthaya;plains;THA
+2450;#bf6ed6;Nakhon Pathom;plains;THA
+2451;#10580b;Kamphaeng Phet;hills;THA
+2452;#faa1a6;Lampang;hills;THA
+2453;#77dd14;Sukhothai;hills;THA
+2454;#6e5559;Nakhon Sawan;plains;THA
+2455;#948c65;Phetchabun;mountains;THA
+2456;#d2323c;Phichit;plains;THA
+2457;#eae160;Chaiyaphum;hills;THA
+2458;#f3097a;Phrae;hills;THA
+2459;#bc1fff;Lamphun;hills;THA
+2460;#ac3f6e;Prachin Buri;mountains;THA
+2461;#0ac138;Yasothon;plains;THA
+2462;#fdda42;Nantou;mountains;TWN
+2463;#fd0131;Tokat;hills;TUR
+2464;#79d55f;Sivas;hills;TUR
+2465;#707d83;Çorum;hills;TUR
+2466;#b217b4;Amasya;hills;TUR
+2467;#0d5804;Morogoro;hills;TZA
+2468;#74b136;Dodoma;hills;TZA
+2469;#87c0d6;Manyara;hills;TZA
+2470;#b46de0;Semnan;hills;IRN
+2471;#7fcf5c;Zanjan;mountains;IRN
+2472;#bda56b;Qazvin;hills;IRN
+2473;#10f302;Hamah;hills;SYR
+2474;#2b0e5b;Gornji Grad;mountains;SVN
+2475;#008cbf;Pivka;mountains;SVN
+2476;#772931;Ljubljana;mountains;SVN
+2477;#7ce97b;Västmanland;plains;SWE
+2478;#43be10;Jönköping;plains;SWE
+2479;#b72b90;Orebro;plains;SWE
+2480;#7541a7;Kronoberg;plains;SWE
+2481;#395295;Para;plains;SUR
+2482;#a77f9f;Brokopondo;plains;SUR
+2483;#7a4737;Gezira;plains;SDN
+2484;#b82d00;Khartoum;plains;SDN
+2485;#942bd3;North Kordufan;plains;SDN
+2486;#42a1ee;Lakes;plains;SDS
+2487;#3cacbc;Warrap;plains;SDS
+2488;#c4aa6d;Zaragoza;mountains;ESP
+2489;#467d35;La Rioja;mountains;ESP
+2490;#9e8e31;Álava;hills;ESP
+2491;#d83068;Albacete;hills;ESP
+2492;#7165d4;Teruel;mountains;ESP
+2493;#f3d2db;Cuenca;hills;ESP
+2494;#2d22e9;Toledo;plains;ESP
+2495;#e94be8;León;hills;ESP
+2496;#f5b1ba;Soria;hills;ESP
+2497;#e08363;Burgos;hills;ESP
+2498;#d198b4;Ávila;mountains;ESP
+2499;#296737;Gauteng;hills;ZAF
+2500;#b82b90;Bled;mountains;SVN
+2501;#93c923;Idrija;mountains;SVN
+2502;#ee6dc4;Žužemberk;hills;SVN
+2503;#b1cbaf;Diourbel;plains;SEN
+2504;#9c21e2;Ar Riyad;plains;SAU
+2505;#b090d0;Al Quassim;hills;SAU
+2506;#72fae7;Ha'il;hills;SAU
+2507;#209131;Al Bahah;mountains;SAU
+2508;#9b56dd;Cluj;hills;ROU
+2509;#dde884;Bistrita-Nasaud;hills;ROU
+2510;#7e4c55;Salaj;mountains;ROU
+2511;#0bb0db;Dâmbovita;mountains;ROU
+2512;#0d2db8;Ilfov;plains;ROU
+2513;#fa983b;Arges;mountains;ROU
+2514;#f169e7;Gorj;mountains;ROU
+2515;#593cea;Hunedoara;mountains;ROU
+2516;#77e489;Vâlcea;mountains;ROU
+2517;#c22b30;Prahova;mountains;ROU
+2518;#f330e7;Covasna;hills;ROU
+2519;#8d3db5;Vrancea;mountains;ROU
+2520;#cb83ec;Buzau;mountains;ROU
+2521;#b58ebe;Brasov;hills;ROU
+2522;#38f20c;Sibiu;mountains;ROU
+2523;#c711e0;Mures;hills;ROU
+2524;#315ad0;Harghita;hills;ROU
+2525;#af77da;Neamt;hills;ROU
+2526;#46ff5e;Bacau;mountains;ROU
+2527;#1f82b3;Alba;mountains;ROU
+2528;#83312e;Slovenska Bistrica;mountains;SVN
+2529;#aeb0fc;Križevci;hills;SVN
+2530;#a74053;Nišavski;mountains;SRB
+2531;#23943d;Pomoravski;mountains;SRB
+2532;#767bdc;Šumadijski;mountains;SRB
+2533;#ca1cb9;Moravicki;hills;SRB
+2534;#e856d6;Kolubarski;mountains;SRB
+2535;#941394;Oppland;hills;NOR
+2536;#71e5e0;Dowa;hills;MWI
+2537;#1511d6;Balaka;hills;MWI
+2538;#91c5b8;Chiradzulu;hills;MWI
+2539;#a916e4;Blantyre;mountains;MWI
+2540;#986d64;Ntchisi;mountains;MWI
+2541;#93c1e5;Kauno;plains;LTU
+2542;#5f4c1d;Santiago Rodríguez;mountains;DOM
+2543;#398b53;La Vega;mountains;DOM
+2544;#237237;Duarte;hills;DOM
+2545;#9d262a;Santiago;mountains;DOM
+2546;#9f1552;Bahoruco;mountains;DOM
+2547;#db9873;San Juan;mountains;DOM
+2548;#ea8cce;Xocalı;mountains;AZE
+2549;#28e6f9;Tərtər;mountains;AZE
+2550;#9873c7;Goranboy;mountains;AZE
+2551;#321f9d;Xocavənd;mountains;AZE
+2552;#efd649;Hajigabul;mountains;AZE
+2553;#e67e95;Abşeron;mountains;AZE
+2554;#5a19f0;Xanlar;mountains;AZE
+2555;#03641d;Kürdəmir;plains;AZE
+2556;#3bd716;Sabirabad;hills;AZE
+2557;#117244;Buyende;hills;UGA
+2558;#8418fa;Jinja;hills;UGA
+2559;#f6519b;Apac;hills;UGA
+2560;#eea070;Nakasongola;hills;UGA
+2561;#021224;Masindi;hills;UGA
+2562;#c2a6a3;Kayunga;hills;UGA
+2563;#6a741e;Luweero;hills;UGA
+2564;#31d743;Amolatar;hills;UGA
+2565;#83fc9a;Kiboga;hills;UGA
+2566;#fff947;Gomba;hills;UGA
+2567;#2cca47;Wakiso;hills;UGA
+2568;#25629b;Nakaseke;hills;UGA
+2569;#7b2d29;Kyankwanzi;hills;UGA
+2570;#00cc94;Kaberamaido;hills;UGA
+2571;#86c64a;Dokolo;hills;UGA
+2572;#c9d0cf;Kyenjojo;hills;UGA
+2573;#3e9b4e;Kamwenge;hills;UGA
+2574;#81f415;Kyegegwa;hills;UGA
+2575;#7ec1c6;Sembabule;hills;UGA
+2576;#9597f2;Kibale;hills;UGA
+2577;#a81e29;Mubende;hills;UGA
+2578;#849569;Braila;plains;ROU
+2579;#8f64b5;Ialomita;plains;ROU
+2580;#d4df84;Viseu;mountains;PRT
+2581;#68db3c;Agusan del Sur;mountains;PHL
+2582;#aab10b;Bukidnon;mountains;PHL
+2583;#c9a15d;Cotabato;mountains;PHL
+2584;#16d66e;South Cotabato;mountains;PHL
+2585;#bae1bb;Cusco;mountains;PER
+2586;#96e768;Ayacucho;mountains;PER
+2587;#15d766;Apurímac;mountains;PER
+2588;#08ca62;Huancavelica;mountains;PER
+2589;#9f4fb4;San Martín;mountains;PER
+2590;#a9b003;Huánuco;mountains;PER
+2591;#d9f1ed;Pasco;mountains;PER
+2592;#a7fcbf;Junín;mountains;PER
+2593;#fbd99f;San Pedro;plains;PRY
+2594;#85d4cd;Caaguazú;plains;PRY
+2595;#7f0df1;Cordillera;plains;PRY
+2596;#d993f0;Caazapá;plains;PRY
+2597;#08a87f;Paraguarí;plains;PRY
+2598;#65f495;Guairá;hills;PRY
+2599;#01ae22;F.C.T.;hills;PAK
+2600;#edf15d;Matagalpa;mountains;NIC
+2601;#73dc57;Boaco;mountains;NIC
+2602;#b1b660;Chontales;mountains;NIC
+2603;#692533;Estelí;mountains;NIC
+2604;#1ee0ea;Granada;mountains;NIC
+2605;#608def;Masaya;mountains;NIC
+2606;#98a166;Flevoland;plains;NLD
+2607;#2023af;Utrecht;plains;NLD
+2608;#168d8a;Fès - Boulemane;mountains;MAR
+2609;#612804;Tadla - Azilal;mountains;MAR
+2610;#5eb83c;Cetinje;mountains;MNE
+2611;#33e4d6;Šavnik;mountains;MNE
+2612;#660b37;Kolašin;mountains;MNE
+2613;#20b56e;Danilovgrad;mountains;MNE
+2614;#ab3d08;Călărași;hills;MDA
+2615;#f71a62;Drochia;plains;MDA
+2616;#175a6d;Sîngerei;plains;MDA
+2617;#bb38ca;Analamanga;hills;MDG
+2618;#eed72b;Betsiboka;mountains;MDG
+2619;#41e1f6;Bongolava;hills;MDG
+2620;#22f1a0;Vakinankaratra;hills;MDG
+2621;#fd8693;Amoron'i Mania;hills;MDG
+2622;#3feca4;Alaotra-Mangoro;hills;MDG
+2623;#8432d5;Smiltenes;hills;LVA
+2624;#035364;Balvu;plains;LVA
+2625;#22acd4;Burtnieku;plains;LVA
+2626;#c8918f;Rezeknes;plains;LVA
+2627;#d1dd34;Pargaujas;plains;LVA
+2628;#dc2457;Gulbene;plains;LVA
+2629;#3fd187;Rugaju;plains;LVA
+2630;#eeea08;Aglonas;plains;LVA
+2631;#d58c8b;Madona;plains;LVA
+2632;#97636d;Lubanas;plains;LVA
+2633;#89cbb6;Ogre;plains;LVA
+2634;#36190c;Ikskiles;plains;LVA
+2635;#790f89;Keguma;plains;LVA
+2636;#ae5767;Jaunjelgavas;plains;LVA
+2637;#4ba181;Preilu;plains;LVA
+2638;#5d2687;Jekabpils;plains;LVA
+2639;#1b98de;Krustpils;plains;LVA
+2640;#4e1768;Kuldigas;plains;LVA
+2641;#a79fec;Skrundas;plains;LVA
+2642;#3fb1d0;Kandavas;plains;LVA
+2643;#a22905;Tukums;plains;LVA
+2644;#1e4e60;Dobele;plains;LVA
+2645;#e121b5;Brocenu;plains;LVA
+2646;#65958c;Ozolnieku;plains;LVA
+2647;#24478e;Orahovac;mountains;KOS
+2648;#f046d1;Mališevo;hills;KOS
+2649;#3c6151;Central;mountains;KEN
+2650;#04917a;Ajlun;mountains;JOR
+2651;#6439a2;Gunma;mountains;JPN
+2652;#11ddca;Nagano;mountains;JPN
+2653;#7529fc;Tochigi;mountains;JPN
+2654;#da1f21;Gifu;mountains;JPN
+2655;#e2ac2a;Shiga;mountains;JPN
+2656;#b743cb;Saitama;mountains;JPN
+2657;#d3d7aa;Yamanashi;mountains;JPN
+2658;#667844;Nara;mountains;JPN
+2659;#85b0d0;Haut-Sassandra;plains;CIV
+2660;#76c130;Agnéby;plains;CIV
+2661;#307f69;N'zi-Comoé;plains;CIV
+2662;#0164be;Marahoué;plains;CIV
+2663;#c30e89;Fromager;plains;CIV
+2664;#b4ab07;Vallée du Bandama;plains;CIV
+2665;#c36ede;Lacs;plains;CIV
+2666;#4e723b;Worodougou;plains;CIV
+2667;#586962;Kildare;hills;IRL
+2668;#d9024b;Carlow;plains;IRL
+2669;#dcbd0c;Laoighis;plains;IRL
+2670;#a2d009;Offaly;plains;IRL
+2671;#60ba3e;Westmeath;plains;IRL
+2672;#e40e07;Longford;plains;IRL
+2673;#d515d0;Roscommon;plains;IRL
+2674;#93ab89;North Tipperary;hills;IRL
+2675;#cc1cc9;South Tipperary;plains;IRL
+2676;#9c77cb;Comayagua;mountains;HND
+2677;#57b520;Yoro;mountains;HND
+2678;#17084f;Francisco Morazán;hills;HND
+2679;#2d5e27;Kissidougou;plains;GIN
+2680;#a02295;Kérouané;plains;GIN
+2681;#2d3e70;Télimélé;hills;GIN
+2682;#f5cd74;Lélouma;mountains;GIN
+2683;#b5701b;Dalaba;plains;GIN
+2684;#37a743;Labé;hills;GIN
+2685;#15ed2c;Pita;hills;GIN
+2686;#6be07e;Kouroussa;plains;GIN
+2687;#e09ffa;Fria;mountains;GIN
+2688;#34ba76;Chimaltenango;mountains;GTM
+2689;#9b8cab;Guatemala;mountains;GTM
+2690;#2e2345;Jalapa;mountains;GTM
+2691;#d49a2e;El Progreso;mountains;GTM
+2692;#504e40;Sololá;mountains;GTM
+2693;#2e4312;Quezaltenango;mountains;GTM
+2694;#615597;Baja Verapaz;hills;GTM
+2695;#922477;Totonicapán;mountains;GTM
+2696;#f52a61;Ashanti;hills;GHA
+2697;#91be00;Eastern;hills;GHA
+2698;#7bac65;Hessen;hills;DEU
+2699;#3d123c;Thüringen;hills;DEU
+2700;#0546d0;Sachsen-Anhalt;plains;DEU
+2701;#7c4805;Berlin;plains;DEU
+2702;#ff44ff;Moyen-Ogooué;hills;GAB
+2703;#b22dba;Rapla;plains;EST
+2704;#e49a0b;Järva;plains;EST
+2705;#7b6909;Anseba;mountains;ERI
+2706;#084e51;San Salvador;mountains;SLV
+2707;#bbd1ca;Azuay;mountains;ECU
+2708;#999ba5;Cañar;mountains;ECU
+2709;#38e1c4;Napo;mountains;ECU
+2710;#55bd2e;Tungurahua;mountains;ECU
+2711;#e07297;Chimborazo;mountains;ECU
+2712;#c5dc98;Bolivar;mountains;ECU
+2713;#a16061;Imbabura;mountains;ECU
+2714;#5bf192;Cotopaxi;mountains;ECU
+2715;#2bb07c;Los Rios;mountains;ECU
+2716;#a6ccce;Pichincha;mountains;ECU
+2717;#ff3d1a;Santo Domingo de los Tsáchilas;mountains;ECU
+2718;#7f350a;Monseñor Nouel;mountains;DOM
+2719;#56e4c1;Sánchez Ramírez;mountains;DOM
+2720;#e11800;San José de Ocoa;mountains;DOM
+2721;#5333d9;Monte Plata;hills;DOM
+2722;#589880;Bjelovarsko-bilogorska;plains;HRV
+2723;#d2e7b5;Grad Zagreb;hills;HRV
+2724;#1e26d9;Brodsko-Posavska;hills;HRV
+2725;#fb1cdc;San José;mountains;CRI
+2726;#ca070b;Cartago;mountains;CRI
+2727;#85100e;Caquetá;plains;COL
+2728;#086cbc;Huila;mountains;COL
+2729;#8cd885;Guaviare;plains;COL
+2730;#a42b48;Caldas;mountains;COL
+2731;#4eb2b2;Casanare;plains;COL
+2732;#01a437;Meta;plains;COL
+2733;#1003a7;Santander;mountains;COL
+2734;#477a39;Tolima;mountains;COL
+2735;#c3ae57;Quindío;mountains;COL
+2736;#f86c75;Cundinamarca;mountains;COL
+2737;#01c460;Risaralda;mountains;COL
+2738;#72794a;Beijing;mountains;CHN
+2739;#536bdb;Kasaï-Oriental;plains;COD
+2740;#15d582;Maniema;plains;COD
+2741;#a6126d;Sichuan;mountains;CHN
+2742;#b0137d;Chongqing;hills;CHN
+2743;#ff05f8;Guizhou;hills;CHN
+2744;#64785a;Hunan;hills;CHN
+2745;#3197bb;Ningxia;hills;CHN
+2746;#7e813e;Shaanxi;hills;CHN
+2747;#7bd196;Qinghai;mountains;CHN
+2748;#bceb09;Shanxi;hills;CHN
+2749;#845802;Jiangxi;hills;CHN
+2750;#4f9ae9;Henan;plains;CHN
+2751;#383f67;Hubei;hills;CHN
+2752;#6148a5;Anhui;plains;CHN
+2753;#e7f519;Barh El Gazel;plains;TCD
+2754;#9be20d;Tandjilé;plains;TCD
+2755;#dd5c54;Logone Occidental;plains;TCD
+2756;#be4c02;Guéra;plains;TCD
+2757;#3330b0;Batha;plains;TCD
+2758;#dc9b66;Ouest;hills;CMR
+2759;#b08d27;Centre;plains;CMR
+2760;#001320;Kâmpóng Chhnang;hills;KHM
+2761;#d88073;Kâmpóng Thum;plains;KHM
+2762;#84c74e;Kâmpóng Spœ;hills;KHM
+2763;#ca6768;Goiás;plains;BRA
+2764;#0813a6;Distrito Federal;hills;BRA
+2765;#b37744;Minas Gerais;plains;BRA
+2766;#54549b;Tocantins;plains;BRA
+2767;#6590cd;Kweneng;hills;BWA
+2768;#8b1574;Cochabamba;mountains;BOL
+2769;#de527c;Wangdi Phodrang;mountains;BTN
+2770;#996b24;Daga;mountains;BTN
+2771;#47fb41;Punakha;mountains;BTN
+2772;#2d239c;Mongar;mountains;BTN
+2773;#1c384b;Tongsa;mountains;BTN
+2774;#ef49ab;Pemagatsel;mountains;BTN
+2775;#a021b7;Minsk;plains;BLR
+2776;#5e9371;Saint George;plains;BRB
+2777;#4dc2c9;Saint Thomas;plains;BRB
+2778;#74c193;Saatlı;plains;AZE
+2779;#6b0227;Bərdə;mountains;AZE
+2780;#91db1b;Şəmkir;mountains;AZE
+2781;#a0c0cc;Ağsu;mountains;AZE
+2782;#e6a992;Nana-Grébizi;plains;CAF
+2783;#bf0378;Şamaxı;mountains;AZE
+2784;#94819c;Quba;mountains;AZE
+2785;#f015fd;Qobustan;mountains;AZE
+2786;#45da44;İsmayıllı;mountains;AZE
+2787;#494848;Yevlakh Rayon;mountains;AZE
+2788;#c8a6f6;Göyçay;mountains;AZE
+2789;#62aafb;Ağdaş;mountains;AZE
+2790;#03044a;Ağcabədi;mountains;AZE
+2791;#8ffaa7;Australian Capital Territory;hills;AUS
+2792;#45f77c;Wien;mountains;AUT
+2793;#420e52;Kotayk;mountains;ARM
+2794;#4f7c6f;Santa Fe;plains;ARG
+2795;#38d9e1;Tucumán;mountains;ARG
+2796;#fab3d6;Santiago del Estero;plains;ARG
+2797;#882c88;San Luis;plains;ARG
+2798;#160182;La Pampa;plains;ARG
+2799;#4a46bf;Córdoba;plains;ARG
+2800;#a862cd;Bié;hills;AGO
+2801;#555f91;Cuanza Norte;hills;AGO
+2802;#5b132d;Huíla;hills;AGO
+2803;#99791a;Huambo;hills;AGO
+2804;#ee8541;Sétif;hills;DZA
+2805;#d6364a;Bordj Bou Arréridj;hills;DZA
+2806;#2547aa;Bouira;hills;DZA
+2807;#481b40;Blida;mountains;DZA
+2808;#145c7d;Tissemsilt;hills;DZA
+2809;#e02e1a;Aïn Defla;mountains;DZA
+2810;#df9e96;Relizane;mountains;DZA
+2811;#311595;El Bayadh;hills;DZA
+2812;#908813;Saïda;hills;DZA
+2813;#d6b1fa;Sidi Bel Abbès;hills;DZA
+2814;#5b4af8;Mascara;mountains;DZA
+2815;#b5c1fb;Ghardaïa;plains;DZA
+2816;#77abcc;Laghouat;hills;DZA
+2817;#63f9f3;Médéa;hills;DZA
+2818;#52e224;Tiaret;hills;DZA
+2819;#2cef76;M'Sila;hills;DZA
+2820;#a83b18;Batna;mountains;DZA
+2821;#f47c25;Khenchela;mountains;DZA
+2822;#361612;Guelma;mountains;DZA
+2823;#6a512f;Constantine;hills;DZA
+2824;#90e844;Mila;hills;DZA
+2825;#528273;Oum el Bouaghi;hills;DZA
+2826;#e72d9d;Biskra;mountains;DZA
+2827;#a193c4;Djelfa;hills;DZA
+2828;#1e0fff;Berat;mountains;ALB
+2829;#058aeb;Uruzgan;mountains;AFG
+2830;#ce4800;Ghazni;mountains;AFG
+2831;#e5cae4;Parwan;mountains;AFG
+2832;#7be7ee;Kabul;mountains;AFG
+2833;#88960e;Laghman;mountains;AFG
+2834;#4afc39;Logar;mountains;AFG
+2835;#27a0d3;Kapisa;mountains;AFG
+2836;#813ed2;Wardak;mountains;AFG
+2837;#7b87b9;Bamyan;mountains;AFG
+2838;#0c4260;Parwan;mountains;AFG
+2839;#2e6858;Sari Pul;mountains;AFG
+2840;#722f65;Ghor;mountains;AFG
+2841;#b98dd9;Baghlan;mountains;AFG
+2842;#ce2857;Samangan;mountains;AFG
+2843;#c7e0dc;Uruzgan;mountains;AFG
+2844;#559233;Rhondda, Cynon, Taff;mountains;GBR
+2845;#c07813;Oyam;hills;UGA
+2846;#343bac;Kole;hills;UGA
+2847;#44ac7d;Pader;hills;UGA
+2848;#fcf179;Ibanda;hills;UGA
+2849;#98054f;Mbarara;hills;UGA
+2850;#fdf1c8;Gulu;hills;UGA
+2851;#2ec2c8;Kiryandongo;hills;UGA
+2852;#0c88a7;Lwengo;hills;UGA
+2853;#eca8ff;Agago;hills;UGA
+2854;#c9b098;Kotido;hills;UGA
+2855;#027273;Abim;hills;UGA
+2856;#b0efc2;Otuke;hills;UGA
+2857;#7285f5;Alebtong;hills;UGA
+2858;#86a61d;Amuria;hills;UGA
+2859;#0bdaaf;Katakwi;hills;UGA
+2860;#dab0af;Serere;hills;UGA
+2861;#387f9f;Soroti;hills;UGA
+2862;#bcabf1;Pallisa;hills;UGA
+2863;#53c7a4;Mbarara;hills;UGA
+2864;#50cf9a;Lyantonde;hills;UGA
+2865;#a91e98;Masaka;hills;UGA
+2866;#80743a;East Ayrshire;hills;GBR
+2867;#fe7968;South Lanarkshire;mountains;GBR
+2868;#ff9e3e;Omagh;plains;GBR
+2869;#883bb0;Mid Ulster;hills;GBR
+2870;#b92067;Banbridge;plains;GBR
+2871;#4a5187;Lisburn;hills;GBR
+2872;#43f95b;Ballymena;hills;GBR
+2873;#a45d34;Hertfordshire;plains;GBR
+2874;#da5066;Cambridgeshire;plains;GBR
+2875;#20895a;Buckinghamshire;plains;GBR
+2876;#40821a;Central Bedfordshire;plains;GBR
+2877;#00351d;Nottinghamshire;plains;GBR
+2878;#d16ec5;Northamptonshire;plains;GBR
+2879;#62c875;Doncaster;hills;GBR
+2880;#9546e3;Leicestershire;plains;GBR
+2881;#ea8e17;Cheshire East;plains;GBR
+2882;#4dd5b0;Derbyshire;hills;GBR
+2883;#faec21;Staffordshire;plains;GBR
+2884;#388616;Worcestershire;plains;GBR
+2885;#bc322f;Warwickshire;plains;GBR
+2886;#7e5818;Oxfordshire;plains;GBR
+2887;#9ff529;Wigan;plains;GBR
+2888;#67f2a5;West Berkshire;plains;GBR
+2889;#77f0c4;Surrey;plains;GBR
+2890;#f324aa;Wiltshire;plains;GBR
+2891;#fa15a8;Mukono;hills;UGA
+2892;#18da98;Buikwe;hills;UGA
+2893;#9c5f79;Nakapiripirit;hills;UGA
+2894;#c74a4c;Kween;mountains;UGA
+2895;#ff9910;Buhweju;hills;UGA
+2896;#a0b644;Bushenyi;hills;UGA
+2897;#75b7aa;Bugiri;hills;UGA
+2898;#3df327;Nwoya;hills;UGA
+2899;#f163c4;Mbale;mountains;UGA
+2900;#885cc9;Napak;hills;UGA
+2901;#4672cd;Kumi;hills;UGA
+2902;#57cc1d;Ngora;hills;UGA
+2903;#95a62a;Bukedea;mountains;UGA
+2904;#77691a;Namutumba;hills;UGA
+2905;#e01c35;Kütahya;hills;TUR
+2906;#58d5a9;Konya;hills;TUR
+2907;#1e6bf0;Karaman;hills;TUR
+2908;#2f1070;Nigde;hills;TUR
+2909;#416654;Kayseri;hills;TUR
+2910;#a6a26c;Isparta;hills;TUR
+2911;#227602;Manisa;mountains;TUR
+2912;#64c85b;Denizli;hills;TUR
+2913;#2bdede;Burdur;hills;TUR
+2914;#ed7a47;Aksaray;hills;TUR
+2915;#1d2169;Nevsehir;hills;TUR
+2916;#a26cc2;Yozgat;hills;TUR
+2917;#830c63;Kirsehir;hills;TUR
+2918;#931742;Usak;hills;TUR
+2919;#da718e;Erzincan;mountains;TUR
+2920;#8f8d47;Tunceli;mountains;TUR
+2921;#e9b4e9;Afyonkarahisar;hills;TUR
+2922;#4b8411;Kinkkale;hills;TUR
+2923;#48ce88;K. Maras;hills;TUR
+2924;#6616eb;Mus;hills;TUR
+2925;#632c3b;Erzurum;mountains;TUR
+2926;#07d80d;Malatya;hills;TUR
+2927;#8aa4bf;Elazig;hills;TUR
+2928;#a47cdc;Bitlis;mountains;TUR
+2929;#c92036;Bingöl;mountains;TUR
+2930;#24f0e1;Abia;plains;NGA
+2931;#a9ec04;Ebonyi;plains;NGA
+2932;#15eb36;Anambra;plains;NGA
+2933;#2d386a;Edo;hills;NGA
+2934;#49ac0b;Bauchi;plains;NGA
+2935;#622eef;Plateau;hills;NGA
+2936;#a044d8;Nassarawa;hills;NGA
+2937;#8bc63c;Gombe;hills;NGA
+2938;#6b8633;Enugu;mountains;NGA
+2939;#2490b6;Kogi;mountains;NGA
+2940;#913f58;Osun;hills;NGA
+2941;#a0248f;Imo;plains;NGA
+2942;#b5e0bb;Osmaniye;mountains;TUR
+2943;#cc1ae6;Adiyaman;mountains;TUR
+2944;#0b4a01;Diyarbakir;hills;TUR
+2945;#c09bc2;Batman;hills;TUR
+2946;#02f1f5;Siirt;mountains;TUR
+2947;#17a37b;Bayburt;mountains;TUR
+2948;#511d22;Gümüshane;mountains;TUR
+2949;#0314b8;Singida;hills;TZA
+2950;#04908f;Tabora;hills;TZA
+2951;#320f6f;Iringa;hills;TZA
+2952;#9abd85;Mwanza;hills;TZA
+2953;#6da78b;Simiyu;hills;TZA
+2954;#2b19d2;Geita;hills;TZA
+2955;#c6fab8;Shinyanga;hills;TZA
+2956;#98222c;Ratnapura;mountains;LKA
+2957;#cdcdcd;Mŏṇarāgala;mountains;LKA
+2958;#0fa7fa;Kægalla;mountains;LKA
+2959;#918af0;Badulla;mountains;LKA
+2960;#066f71;Mātale;mountains;LKA
+2961;#2d8dc2;Pŏḷŏnnaruva;hills;LKA
+2962;#1cf642;Kuruṇægala;hills;LKA
+2963;#a0f170;Anurādhapura;plains;LKA
+2964;#6b339b;Nuvara Ĕliya;mountains;LKA
+2965;#e64f29;Vavuniyāva;plains;LKA
+2966;#c40546;Mahanuvara;mountains;LKA
+2967;#8958a3;Bay;hills;SOM
+2968;#aa6856;Bashkortostan;hills;RUS
+2969;#57550a;Sverdlovsk;plains;RUS
+2970;#eb326f;Khanty-Mansiy;plains;RUS
+2971;#43e0d2;Lipetsk;plains;RUS
+2972;#72fb05;Tambov;plains;RUS
+2973;#8a1b6e;Tomsk;plains;RUS
+2974;#6fe601;Tatarstan;plains;RUS
+2975;#ad8c36;Ul'yanovsk;plains;RUS
+2976;#ff87b7;Penza;plains;RUS
+2977;#8cb770;Kemerovo;hills;RUS
+2978;#882239;Orel;plains;RUS
+2979;#0a5a49;Irkutsk;plains;RUS
+2980;#ca0929;Khakass;hills;RUS
+2981;#3ded80;Mordovia;plains;RUS
+2982;#c734bc;Kaluga;plains;RUS
+2983;#3d8dd7;Kostroma;plains;RUS
+2984;#055e8b;Yaroslavl';plains;RUS
+2985;#34455c;Vladimir;plains;RUS
+2986;#b09132;Ryazan';plains;RUS
+2987;#7b338e;Ivanovo;plains;RUS
+2988;#ffe7e0;Nizhegorod;plains;RUS
+2989;#160f33;Tula;plains;RUS
+2990;#f6e61b;Seoul;hills;KOR
+2991;#b05842;North Chungcheong;mountains;KOR
+2992;#d83e78;Daegu;hills;KOR
+2993;#0b1237;Chuvash;plains;RUS
+2994;#61caea;Vologda;plains;RUS
+2995;#d20665;Novgorod;plains;RUS
+2996;#a3a0dd;Tver';plains;RUS
+2997;#0cf657;Moskovskaya;plains;RUS
+2998;#ce9c60;Moskva;plains;RUS
+2999;#11eb53;Mariy-El;plains;RUS
+3000;#d38164;Kirov;plains;RUS
+3001;#953f3d;Udmurt;plains;RUS
+3002;#9c97e1;Komi;plains;RUS
+3003;#52fb42;Perm';plains;RUS
+3004;#e29ab3;Samara;plains;RUS
+3005;#e37de5;Stavropol';hills;RUS
+3006;#082bd1;Adygey;mountains;RUS
+3007;#037c28;Masovian;plains;POL
+3008;#5f3b15;Łódź;plains;POL
+3009;#dbef7b;Kuyavian-Pomeranian;plains;POL
+3010;#19854c;Greater Poland;plains;POL
+3011;#c1161f;Świętokrzyskie;hills;POL
+3012;#5e44dc;Nueva Ecija;mountains;PHL
+3013;#298105;Laguna;hills;PHL
+3014;#ebeb32;Rizal;mountains;PHL
+3015;#18fa85;Quirino;mountains;PHL
+3016;#57ec00;Nueva Vizcaya;mountains;PHL
+3017;#c069d6;Benguet;mountains;PHL
+3018;#d3386e;Ifugao;mountains;PHL
+3019;#958637;Mountain Province;mountains;PHL
+3020;#9c2eeb;Tarlac;mountains;PHL
+3021;#20498e;Apayao;mountains;PHL
+3022;#1169ae;Kalinga;mountains;PHL
+3023;#29e152;Abra;mountains;PHL
+3024;#b1bb50;Ad Dakhliyah;hills;OMN
+3025;#53556f;Ekiti;hills;NGA
+3026;#e6fa81;Kaduna;plains;NGA
+3027;#3e69d2;Kano;plains;NGA
+3028;#ff0b9c;Federal Capital Territory;hills;NGA
+3029;#338773;P'yŏngyang;hills;PRK
+3030;#df14a7;Khomas;hills;NAM
+3031;#a119f5;Oshana;hills;NAM
+3032;#a8b129;Oshikoto;hills;NAM
+3033;#e972d9;Darhan-Uul;hills;MNG
+3034;#2b18ee;Töv;hills;MNG
+3035;#c2f03d;Arhangay;mountains;MNG
+3036;#f38bbd;Orhon;hills;MNG
+3037;#31e18a;Dundgovi;hills;MNG
+3038;#b535e4;Övörhangay;hills;MNG
+3039;#464404;Govĭ-Sümber;hills;MNG
+3040;#96e60c;México;mountains;MEX
+3041;#e14382;Puebla;mountains;MEX
+3042;#d05855;Morelos;mountains;MEX
+3043;#123262;Querétaro;mountains;MEX
+3044;#548c3b;Hidalgo;mountains;MEX
+3045;#fbbae6;Guanajuato;mountains;MEX
+3046;#96865b;San Luis Potosí;hills;MEX
+3047;#1bfae9;Zacatecas;mountains;MEX
+3048;#125235;Aguascalientes;mountains;MEX
+3049;#5d44b0;Durango;mountains;MEX
+3050;#842e33;Ulaanbaatar;hills;MNG
+3051;#6597ec;Tlaxcala;mountains;MEX
+3052;#a7fddb;Distrito Federal;mountains;MEX
+3053;#f40710;Tagant;plains;MRT
+3054;#ae57a9;Brvenica;mountains;MKD
+3055;#d659cd;Sopište;mountains;MKD
+3056;#8a7ea7;Čaška;hills;MKD
+3057;#2012fd;Demir Hisar;hills;MKD
+3058;#796f10;Štip;mountains;MKD
+3059;#70c7cc;Veles;mountains;MKD
+3060;#cca0a9;Radoviš;mountains;MKD
+3061;#491d3d;Al Jifarah;mountains;LBY
+3062;#82dfd6;Mizdah;plains;LBY
+3063;#ba6cdd;Al Jufrah;hills;LBY
+3064;#cdc953;Sabha;plains;LBY
+3065;#ea1683;Wadi al Hayaa;plains;LBY
+3066;#0e8d58;Aqmola;plains;KAZ
+3067;#cce76f;Qaraghandy;plains;KAZ
+3068;#b5590c;Baghdad;plains;IRQ
+3069;#4bf29e;Babil;plains;IRQ
+3070;#588bbe;Al-Qādisiyyah;plains;IRQ
+3071;#9ae189;Dhi-Qar;plains;IRQ
+3072;#77333b;Karbala';plains;IRQ
+3073;#b40db7;Markazi;mountains;IRN
+3074;#bdc53c;Esfahan;hills;IRN
+3075;#6cfeb3;Chahar Mahall and Bakhtiari;mountains;IRN
+3076;#12f3e1;Kohgiluyeh and Buyer Ahmad;mountains;IRN
+3077;#fb7b65;Fars;hills;IRN
+3078;#b20e81;Kerman;mountains;IRN
+3079;#30d9d9;Hamadan;mountains;IRN
+3080;#ca00e5;Lorestan;hills;IRN
+3081;#30b98e;Yazd;hills;IRN
+3082;#f2b3ee;Qom;hills;IRN
+3083;#f2d3b9;Tehran;mountains;IRN
+3084;#d29159;Alborz;mountains;IRN
+3085;#9c3a1f;Chhattisgarh;hills;IND
+3086;#5eec28;Haryana;plains;IND
+3087;#1571ff;Telangana;hills;IND
+3088;#dc4e1b;Jász-Nagykun-Szolnok;plains;HUN
+3089;#2f3ffb;Fejér;plains;HUN
+3090;#0d15c3;Veszprém;hills;HUN
+3091;#60297e;Tolna;plains;HUN
+3092;#abeb95;Budapest;hills;HUN
+3093;#1e242c;Heves;hills;HUN
+3094;#38d3d5;Miskolc;mountains;HUN
+3095;#46bed0;Hódmezôvásárhely;plains;HUN
+3096;#742b75;Imereti;mountains;GEO
+3097;#395c9e;Northern Savonia;plains;FIN
+3098;#9826ff;Southern Savonia;plains;FIN
+3099;#651ba3;Central Finland;plains;FIN
+3100;#0fa329;Southern Ostrobothnia;plains;FIN
+3101;#c461c2;Pirkanmaa;plains;FIN
+3102;#82df9b;Tavastia Proper;plains;FIN
+3103;#40b5ac;Päijät-Häme;plains;FIN
+3104;#544f38;Dire Dawa;mountains;ETH
+3105;#d9338a;Addis Ababa;mountains;ETH
+3106;#84e07f;Gitega;hills;BDI
+3107;#fcb5fc;Muramvya;mountains;BDI
+3108;#e24721;Mwaro;mountains;BDI
+3109;#1365a9;Karuzi;hills;BDI
+3110;#854715;Balé;plains;BFA
+3111;#aea5a6;Sanguié;plains;BFA
+3112;#7ffe7e;Tuy;plains;BFA
+3113;#f282cc;Bougouriba;plains;BFA
+3114;#ca5190;Mou Houn;plains;BFA
+3115;#1b0a48;Kouritenga;plains;BFA
+3116;#d9607f;Ganzourgou;plains;BFA
+3117;#b43c95;Zoundwéogo;plains;BFA
+3118;#085bf0;Ziro;plains;BFA
+3119;#fb4a47;Boulkiemdé;plains;BFA
+3120;#b45cc2;Kadiogo;plains;BFA
+3121;#f2e29b;Oubritenga;plains;BFA
+3122;#6e1b0e;Gourma;plains;BFA
+3123;#1d6929;Gnagna;plains;BFA
+3124;#7636f5;Bazéga;plains;BFA
+3125;#392070;Kourwéogo;plains;BFA
+3126;#8cefc9;Nayala;plains;BFA
+3127;#3088ac;Passoré;plains;BFA
+3128;#6ccf91;Zondoma;plains;BFA
+3129;#c3991b;Namentenga;plains;BFA
+3130;#01f32c;Sanmatenga;plains;BFA
+3131;#bdf41e;Bam;plains;BFA
+3132;#1f85db;Magway;mountains;MMR
+3133;#618889;Mandalay;mountains;MMR
+3134;#42ae63;Plovdiv;mountains;BGR
+3135;#cfd2d1;Stara Zagora;mountains;BGR
+3136;#4b06bf;Sliven;mountains;BGR
+3137;#f162ec;Shumen;hills;BGR
+3138;#6f4fe6;Razgrad;mountains;BGR
+3139;#ad25d1;Targovishte;mountains;BGR
+3140;#d32883;Gabrovo;mountains;BGR
+3141;#80c454;Pazardzhik;mountains;BGR
+3142;#1142b4;Lovech;mountains;BGR
+3143;#18ea68;Grad Sofiya;hills;BGR
+3144;#b99d53;Kigali City;hills;RWA
+3145;#b23d9c;Wisconsin;plains;USA
+3146;#c59812;Illinois;plains;USA
+3147;#5bb518;Kentucky;plains;USA
+3148;#30eac4;Arkansas;plains;USA
+3149;#36e9f2;Tennessee;hills;USA
+3150;#fd2b19;West Virginia;hills;USA
+3151;#07f225;Indiana;plains;USA
+3152;#ba7ca4;Vysočina;hills;CZE
+3153;#3ea8ca;Středočeský;hills;CZE
+3154;#781693;Prague;mountains;CZE
+3155;#42ac67;City of Minsk;hills;BLR
+3156;#17e566;Kiev City;plains;UKR
+3157;#8adec1;Astana;plains;KAZ
+3158;#200393;Niamey;plains;NER
+3159;#cf4925;Andorra la Vella;mountains;AND
+3160;#b5af67;Debrecen;plains;HUN
+3161;#a9c1bd;Plaines Wilhems;mountains;MUS
+3162;#d806fe;Enna;mountains;ITA
+3163;#db77d7;Benevento;mountains;ITA
+3164;#8222a2;Asti;hills;ITA
+3165;#c49cfb;Bergamo;mountains;ITA
+3166;#49e049;Brescia;mountains;ITA
+3167;#cd3427;Cremona;plains;ITA
+3168;#0f5e10;Mantova;hills;ITA
+3169;#3e45c7;Milano;hills;ITA
+3170;#78fb9e;Lecco;mountains;ITA
+3171;#37ed1b;Monza e Brianza;mountains;ITA
+3172;#91731a;Lodi;plains;ITA
+3173;#6710b2;Siena;hills;ITA
+3174;#3b578f;Arezzo;hills;ITA
+3175;#f93db8;Firenze;mountains;ITA
+3176;#d866a9;Vercelli;hills;ITA
+3177;#53192d;Pavia;mountains;ITA
+3178;#e0d5a2;Rieti;mountains;ITA
+3179;#464ba3;Novara;mountains;ITA
+3180;#842194;Alessandria;mountains;ITA
+3181;#8bea29;Trento;mountains;ITA
+3182;#4028c2;Vicenza;mountains;ITA
+3183;#8242f5;Verona;mountains;ITA
+3184;#06969b;Treviso;mountains;ITA
+3185;#695c0e;Piacenza;mountains;ITA
+3186;#ab3639;Parma;mountains;ITA
+3187;#cfa258;Reggio Emilia;mountains;ITA
+3188;#0dc86f;Modena;mountains;ITA
+3189;#2fe257;Bologna;mountains;ITA
+3190;#7de9d6;Pistoia;mountains;ITA
+3191;#13a442;Terni;hills;ITA
+3192;#d1ce75;Perugia;hills;ITA
+3193;#22bf95;Frosinone;mountains;ITA
+3194;#191de0;Avellino;mountains;ITA
+3195;#e97d7e;L'Aquila;mountains;ITA
+3196;#b33975;Pordenone;mountains;ITA
+3197;#64619b;Isernia;mountains;ITA
+3198;#9ed8f0;Biella;mountains;ITA
+3199;#bf83e1;Prato;mountains;ITA
+3200;#b08504;Gers;hills;FRA
+3201;#97f5bb;Haute-Vienne;hills;FRA
+3202;#054abd;Corrèze;mountains;FRA
+3203;#fcca30;Tarn-et-Garonne;plains;FRA
+3204;#3ea007;Tarn;mountains;FRA
+3205;#af46b0;Isère;mountains;FRA
+3206;#161b05;Drôme;mountains;FRA
+3207;#e28e85;Aveyron;hills;FRA
+3208;#7e7d3f;Lot;hills;FRA
+3209;#6d2c87;Indre-et-Loire;plains;FRA
+3210;#00706d;Indre;hills;FRA
+3211;#64845b;Loir-et-Cher;plains;FRA
+3212;#0ce261;Creuse;hills;FRA
+3213;#d12bb5;Mayenne;plains;FRA
+3214;#b3dcb5;Sarthe;plains;FRA
+3215;#8b6fbe;Vaucluse;mountains;FRA
+3216;#d14be2;Haute-Marne;hills;FRA
+3217;#9e3d30;Marne;plains;FRA
+3218;#88360f;Dordogne;plains;FRA
+3219;#77b5b4;Rhône;mountains;FRA
+3220;#c4793b;Vosges;hills;FRA
+3221;#952b0b;Ardèche;mountains;FRA
+3222;#a6ee6c;Loire;mountains;FRA
+3223;#af26e7;Puy-de-Dôme;hills;FRA
+3224;#d39552;Allier;mountains;FRA
+3225;#223a02;Loiret;plains;FRA
+3226;#1ae95e;Maine-et-Loire;plains;FRA
+3227;#665aeb;Aube;hills;FRA
+3228;#62e73a;Val-d'Oise;plains;FRA
+3229;#40ad55;Yvelines;plains;FRA
+3230;#294c6e;Charente;plains;FRA
+3231;#b76164;Cher;hills;FRA
+3232;#7b47ef;Eure-et-Loir;plains;FRA
+3233;#681657;Haute-Loire;hills;FRA
+3234;#eb2659;Cantal;hills;FRA
+3235;#bc1708;Lot-et-Garonne;plains;FRA
+3236;#d88369;Lozère;hills;FRA
+3237;#09b8e6;Nièvre;hills;FRA
+3238;#819ed3;Côte-d'Or;hills;FRA
+3239;#a68e3b;Oise;plains;FRA
+3240;#e03062;Orne;hills;FRA
+3241;#1321d5;Haute-Saône;hills;FRA
+3242;#b5df83;Saône-et-Loire;hills;FRA
+3243;#ce8856;Deux-Sèvres;plains;FRA
+3244;#06130c;Vienne;plains;FRA
+3245;#82c762;Yonne;hills;FRA
+3246;#d47132;Essonne;plains;FRA
+3247;#3708db;Seien-et-Marne;plains;FRA
+3248;#d94b70;Leeds;hills;GBR
+3249;#a0a242;Barnsley;mountains;GBR
+3250;#b3f3fa;Rochdale;mountains;GBR
+3251;#96e46c;Durbes;plains;LVA
+3252;#9a9a0e;Cesu;hills;LVA
+3253;#387067;Palencia;hills;ESP
+3254;#6dffd1;Ciudad Real;plains;ESP
+3255;#af95e6;Córdoba;mountains;ESP
+3256;#d1f8e3;Guadalajara;hills;ESP
+3257;#d8503f;Jaén;mountains;ESP
+3258;#aff5b1;Madrid;hills;ESP
+3259;#78cd08;Segovia;hills;ESP
+3260;#821434;Valladolid;hills;ESP
+3261;#8a231d;Ihorombe;hills;MDG
+3262;#c53598;Haute Matsiatra;hills;MDG
+3263;#48492a;Itasy;hills;MDG
+3264;#7492bf;Uroševac;hills;KOS
+3265;#b6f888;Štimlje;hills;KOS
+3266;#2def52;Vučitrn;hills;KOS
+3267;#6da1f6;Balzan;plains;MLT
+3268;#3e2d76;Gudja;plains;MLT
+3269;#ba4e6a;Ta-Seti (Abu);plains;EGY
+3270;#ea58df;Wetjes-Hor (Behdet);plains;EGY
+3271;#5971b2;Nekhen (Nekheb);plains;EGY
+3272;#3556c3;Waset (Thebes);plains;EGY
+3273;#28903c;Harawi (Gebtu);plains;EGY
+3274;#acf616;Iqer (Iunet);plains;EGY
+3275;#916e95;Bat (Hut-Sekhem);plains;EGY
+3276;#3c1182;Ta-Wer (Tjeni);plains;EGY
+3277;#79d398;Min (Ipu);plains;EGY
+3278;#c4eff5;Wadjet (Tjebu);plains;EGY
+3279;#8fa784;Set (Shashotep);plains;EGY
+3280;#e16af3;Atfet (Per-Nemty);plains;EGY
+3281;#6027bd;Nedjfet-Khentet (Zawty);plains;EGY
+3282;#56eeeb;Nedjfet-Pehet (Qis);plains;EGY
+3283;#a864bf;Wenet (Khemenu);plains;EGY
+3284;#d02328;Ma-Hedj (Hebenu);plains;EGY
+3285;#c12442;Input (Hardai);plains;EGY
+3286;#6e62d5;Nemty (Hut-Nesut);plains;EGY
+3287;#999475;Wabwy (Per-Medjed);plains;EGY
+3288;#f27db9;Naret-Khentet (Henen-Nesut);plains;EGY
+3289;#7d4d43;Naret-Pehet (Shedet);plains;EGY
+3290;#9cb03a;Maten (Tepihu);plains;EGY
+3291;#f7b8da;Ineb-Hedj (Memphis);plains;EGY
+3292;#2bf26d;Khensu (Khem);plains;EGY
+3293;#10caaf;Imentet (Hut-Ihyt);plains;EGY
+3294;#810fff;Sap-Res (Djeqa);plains;EGY
+3295;#900dd2;Sap-Meh (Sau);plains;EGY
+3296;#eed180;Khasu (Khasuu);plains;EGY
+3297;#fb71e8;Ha-Imentet (Behdet-West);plains;EGY
+3298;#b7ab92;Ha-Iabet (Tjeku);plains;EGY
+3299;#43b3e3;Ati (Djedu);plains;EGY
+3300;#12a140;Ka-Kem (Hut-Heryib);plains;EGY
+3301;#273b23;Ka-Heseb (Taremu);plains;EGY
+3302;#0d5454;Theb-Ka (Tjebnutjer);plains;EGY
+3303;#c85b8e;Heqa-Andj (Iunu);plains;EGY
+3304;#189805;Khent-Iabet (Tjaru);plains;EGY
+3305;#c68c08;Tehut (Ba'h);plains;EGY
+3306;#b8294a;Kha (Djedet);plains;EGY
+3307;#b4b75f;Sema-Behdet (Paiuenamun);plains;EGY
+3308;#888803;Imet-Khentet (Per-Bast);plains;EGY
+3309;#d88160;Imet-Pehet (Djanet);plains;EGY
+3310;#255eb9;Sopdu (Per-Sopdu);plains;EGY
+3311;#4f8900;Wawat;plains;EGY
+3312;#72c949;Kush (Batn el-Hajar);plains;SDN
+3313;#7b6cff;Kerma;plains;SDN
+3314;#8fa3cb;Napata;plains;SDN
+3315;#6851a2;Kurgus;plains;SDN
+3316;#2afae4;Meroë;plains;SDN
+3317;#a6394f;Siwa Oasis (Sekhet-Imau);oasis;EGY
+3318;#531668;Bahariya Oasis (Djesdjes);oasis;EGY
+3319;#1f8c65;Farafra Oasis (Ta-Iht);oasis;EGY
+3320;#639ec8;Dakhla Oasis (Djesdjes-Res);oasis;EGY
+3321;#1588c1;Kharga Oasis (Kenem);oasis;EGY
+3322;#e71339;Marmarica;desert;EGY
+3323;#d71016;Western Desert;desert;EGY
+3324;#2c6e88;Eastern Desert;desert;EGY
+3325;#1d28a7;Sinai (Mefkat);desert;EGY
+3326;#3b0381;Selima Desert;desert;SDN
+3327;#121754;Nubian Desert;desert;SDN
+3328;#3571d2;Medjay (Red Sea Hills);desert;SDN
+3329;#568191;Bayuda;desert;SDN
+3330;#a33528;Great Bear;lake;
+3331;#32479a;Great Slave;lake;
+3332;#e7586f;Winnipeg;lake;
+3333;#1ef749;Erie;lake;
+3334;#6002db;Ontario;lake;
+3335;#bfa1e9;Nicaragua;lake;
+3336;#8ab7a7;Reindeer;lake;
+3337;#5cff16;Woods;lake;
+3338;#09d13d;Nipigon;lake;
+3339;#0358a4;Manitoba;lake;
+3340;#2eaca2;Winnipegosis;lake;
+3341;#fbb324;Athabasca;lake;
+3342;#4b1f6d;Mistassini;lake;
+3343;#32b047;Nettilling;lake;
+3344;#0874fb;Dubawnt;lake;
+3345;#39b893;Churchill;lake;
+3346;#160bef;Amadjuak;lake;
+3347;#ca3fe2;Aberdeen;lake;
+3348;#7f874d;Contwoyto;lake;
+3349;#ea93d9;Nueltin;lake;
+3350;#a30065;Garry;lake;
+3351;#a593d0;Superior;lake;
+3352;#99b824;Michigan;lake;
+3353;#ce977a;Huron;lake;
+3354;#1a837b;Georgian Bay;lake;
+3355;#42a328;Ladoga;lake;
+3356;#14ee2b;Balkhash;lake;
+3357;#54be7f;Baikal;lake;
+3358;#afa3b1;Malawi;lake;
+3359;#87f42a;Tanganyika;lake;
+3360;#376612;Nyanza;lake;
+3361;#79d06d;Vänern;lake;
+3362;#ff4ee7;Onega;lake;
+3363;#bff706;Titicaca;lake;
+3364;#4717f0;Saimaa;lake;
+3365;#3d559b;Päijänne;lake;
+3366;#a4b648;Peipus;lake;
+3367;#62848f;Taymyr;lake;
+3368;#6f324c;Lake 3368;lake;
+3369;#a48889;Eyre North;lake;
+3370;#4bb3a9;Torrens;lake;
+3371;#304031;Everard;lake;
+3372;#56c90a;Issyk-Kul;lake;
+3373;#5e4f6e;Turkana;lake;

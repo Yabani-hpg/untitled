@@ -1,8 +1,8 @@
 {
-	"description": "EXPERIMENTAL. Replaces Egypt's governorates and northern Sudan's states with the 42 nomes of Ancient Egypt, the Nubian regions along the Nile, and desert and oasis regions. Nome borders are not known precisely: valley and Delta land goes to the nearest nome capital (seeds), desert to the nearest desert region, oasis circles to their oasis. Delete this file and rerun tools/import_natural_earth.py to go back to modern provinces.",
+	"description": "EXPERIMENTAL. Replaces Egypt's governorates and Sudan's Northern, River Nile and Red Sea states with the 42 nomes of Ancient Egypt, the Nubian regions along the Nile, and desert and oasis regions. Nome borders are not known precisely: valley and Delta land goes to the nearest nome capital (seeds), desert to the nearest desert region, oasis circles to their oasis. Delete this file and rerun tools/import_natural_earth.py to go back to modern provinces.",
 	"area": [
 		{ "country": "EGY" },
-		{ "country": "SDN", "min_lat": 16.5 }
+		{ "country": "SDN", "names": ["Northern", "River Nile", "Red Sea"] }
 	],
 	"zone_terrain": { "valley": "plains", "oasis": "oasis", "desert": "desert" },
 	"valley": {

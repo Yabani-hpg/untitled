@@ -12,7 +12,8 @@ Outputs (all regenerated; hand edits are overwritten):
   data/provinces.csv, data/countries.json, data/adjacencies.csv
 
 Region overrides in tools/data/regions/*.json (see ne_regions.py) then replace the provinces in
-their area with hand-authored regions, e.g. the nomes of Ancient Egypt.
+their area with hand-authored regions, e.g. the nomes of Ancient Egypt. Finally, ruler-straight
+modern borders are redrawn along a natural-looking course (ne_smooth.py).
 
 The coastline comes from tools/data/ocean_mask.png. Provinces snap to it: land pixels outside every
 polygon join the nearest province and sea pixels belong to the single Ocean province. Lakes of at
@@ -37,6 +38,7 @@ from scipy.ndimage import distance_transform_edt, gaussian_filter
 import bake_map_fields
 import ne_adjacency
 import ne_regions
+import ne_smooth
 import ne_water
 from map_common import (PROVINCES_PNG, ROOT, SEA_LEVEL, clean, load_heights, rasterize_polygons)
 
@@ -192,9 +194,14 @@ def main():
         admin_names.setdefault(clean(r["adm0_a3"]).upper(), clean(r["admin"]))
     for filename, spec in ne_regions.load():
         print(f"applying {filename}")
-        regions, extra = ne_regions.apply(spec, regions, tags, land, water, len(metas) + 1, admin_names)
+        names = np.array([""] + [clean(m["name"]) for m in metas])
+        regions, extra = ne_regions.apply(spec, regions, tags, names, land, water, len(metas) + 1, admin_names)
         metas += extra
         tags = np.concatenate([tags, [m["adm0_a3"] for m in extra]])
+
+    # ruler-straight modern borders get a natural course (see ne_smooth.py)
+    regions, straight_px, moved_px = ne_smooth.smooth_straight_borders(regions, land)
+    print(f"smoothed straight borders: {straight_px} straight border px, {moved_px} px reassigned")
     counts = np.bincount(regions.ravel(), minlength=len(metas) + 1)
 
     ids = np.full(regions.shape, OCEAN_ID, dtype=np.int32)
