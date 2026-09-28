@@ -71,6 +71,9 @@ uniform vec3  selection_tint_color      = vec3(1.0, 0.85, 0.35);
 uniform float selection_tint_strength   : hint_range(0.0, 1.0) = 0.25;
 uniform float selection_border_strength : hint_range(0.0, 1.0) = 0.9;
 uniform float selection_border_px       = 2.0; // outline width in screen pixels
+uniform vec3  province_border_color     = vec3(0.08, 0.07, 0.06);
+uniform float province_border_strength  : hint_range(0.0, 1.0) = 0.45; // 0 hides borders
+uniform float province_border_fade_px   = 0.9; // borders fade out once a map texel is smaller than this on screen
 
 bool is_selected_province(vec2 p) {
     vec3 diff = abs(texture(province_map, p).rgb - selected_province_color);
@@ -318,6 +321,18 @@ void fragment() {
     // compose color
     vec3 shore_mix = mix(sea_animated, land_col, land_mix);
     ALBEDO = mix(shore_mix, foam_color, foam_strength * foam_mask);
+
+    // province borders on land: one texel wide, faded when zoomed out so they don't shimmer
+    if (province_border_strength > 0.0) {
+        vec2 texel = 1.0 / vec2(textureSize(province_map, 0));
+        vec3 pc = texture(province_map, uv).rgb;
+        vec3 px = texture(province_map, uv + vec2(texel.x, 0.0)).rgb;
+        vec3 py = texture(province_map, uv + vec2(0.0, texel.y)).rgb;
+        float edge = step(0.5 / 255.0, max(dot(abs(pc - px), vec3(1.0)), dot(abs(pc - py), vec3(1.0))));
+        float texel_on_screen = texel.x / max(fwidth(uv.x), 1e-7);  // screen pixels per map texel
+        float fade = smoothstep(0.5 * province_border_fade_px, province_border_fade_px, texel_on_screen);
+        ALBEDO = mix(ALBEDO, province_border_color, edge * fade * province_border_strength * land_mix);
+    }
 
     // selected province: light tint inside, outline along its edge
     if (selected_province_color.r >= 0.0 && is_selected_province(uv)) {
