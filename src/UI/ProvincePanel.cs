@@ -195,10 +195,10 @@ public partial class ProvincePanel : PanelContainer
 			{
 				int nomads = p.Pops.Where(g => g.Occupation.Nomadic).Sum(g => g.Units);
 				string note = nomads > 0 ? $" (its {nomads * PopGroup.PeoplePerUnit:N0} tribesmen pay none)" : "";
-				double separatism = ControlRules.Separatism(p, GameState.Instance.Date);
+				double separatism = ControlRules.Separatism(p, GameState.Instance.Date, GameState.Instance.GetCountry(p.OwnerTag));
 				if (separatism > 0)
 					note += $", {separatism:P0} lost to separatism";
-				Row(grid, "Tax", $"{EconomyRules.Tax(p, GameState.Instance.Date):0.0} gold a month{note}");
+				Row(grid, "Tax", $"{EconomyRules.Tax(p, GameState.Instance.Date, GameState.Instance.GetCountry(p.OwnerTag)):0.0} gold a month{note}");
 			}
 			Row(grid, "Pasture", $"{PopulationRules.PastureQuality(p):F2}");
 		}
@@ -253,8 +253,8 @@ public partial class ProvincePanel : PanelContainer
 			Line($"{how} of {owner?.Name}", HudStyle.Text, 15);
 			if (!p.IsCore)
 			{
-				double separatism = ControlRules.Separatism(p, gs.Date);
-				Line($"Separatism {separatism:P0}: a core in {ControlRules.YearsUntilCore(p, gs.Date)} years, if held in rein", HudStyle.Muted, 13);
+				double separatism = ControlRules.Separatism(p, gs.Date, owner);
+				Line($"Separatism {separatism:P0}: a core in {ControlRules.YearsUntilCore(p, gs.Date, owner)} years, if held in rein", HudStyle.Muted, 13);
 				int warriors = ControlRules.Warriors(p);
 				Line($"Garrison {p.Control.Garrison} regiments · {warriors} regiments of possible rebels · uprising risk {ControlRules.UprisingChance(p, owner, gs.Date):P1} a month",
 					ControlRules.UprisingChance(p, owner, gs.Date) > 0.01 ? HudStyle.Bad : HudStyle.Muted, 13);
@@ -347,8 +347,8 @@ public partial class ProvincePanel : PanelContainer
 		if (t.AlliedTag != player.Tag)
 		{
 			bool can = TribeRules.CanProposeAlliance(t, player, provinces, gs.Date, out string why);
-			string tip = can ? $"{TribeRules.AllianceChance(t, player.Tag):P0} chance they accept" : why;
-			box.AddChild(ActionRow($"Propose alliance{(can ? $" ({TribeRules.AllianceChance(t, player.Tag):P0})" : "")}", can, tip, () => gs.ProposeAlliance(t.Id)));
+			string tip = can ? $"{TribeRules.AllianceChance(t, player):P0} chance they accept" : why;
+			box.AddChild(ActionRow($"Propose alliance{(can ? $" ({TribeRules.AllianceChance(t, player):P0})" : "")}", can, tip, () => gs.ProposeAlliance(t.Id)));
 		}
 		else
 		{
@@ -362,7 +362,7 @@ public partial class ProvincePanel : PanelContainer
 			var hire = HudStyle.Button("Hire", BodyFont, 13);
 			hire.Disabled = hireable < 1;
 			hire.TooltipText = hireable < 1 ? "They will lend no more warriors"
-				: $"They fight {ControlRules.FierceMultiplier}x as hard as our regiments; up to {hireable} more.\nPay: {EconomyRules.MercenaryPay} gold a month each, which they barter for food.";
+				: $"They fight {ControlRules.FierceMultiplier}x as hard as our regiments; up to {hireable} more.\nPay: {EconomyRules.MercenaryPayOf(player):0.##} gold a month each, which they barter for food.";
 			hire.Pressed += () => gs.HireMercenaries(t.Id, (int)count.Value);
 			hireRow.AddChild(hire);
 			if (t.HiredRegiments > 0)
@@ -620,7 +620,7 @@ public partial class ProvincePanel : PanelContainer
 		GameState gs = GameState.Instance;
 		string reason = p.OwnerTag == null ? "Nobody governs this province"
 			: $"Only the government of {gs.GetCountry(p.OwnerTag)?.Name} can build here";
-		double cost = EconomyRules.BuildCost(p, t);
+		double cost = EconomyRules.BuildCost(p, t, gs.GetCountry(p.OwnerTag));
 		button.Text = $"{text} ({cost:0} gold)";
 		bool can = p.OwnerTag != null && p.OwnerTag == gs.PlayerTag && BuildingRules.CanBuild(p, t, Builder.Government, out reason);
 		if (can && gs.PlayerCountry.Gold < cost)

@@ -55,17 +55,18 @@ public static class EconomyRules
 	/// A province's tax to its controller: its settled people, less its separatism (unrest keeps the
 	/// tax collectors out).
 	/// </summary>
-	public static double Tax(Province p, GameDate today)
+	public static double Tax(Province p, GameDate today, Country owner)
 	{
 		if (p.Control == null)
 			return 0;
-		int settled = 0;
+		double noncitizens = 1 + LawRules.Mod(owner, "noncitizen_tax");
+		double tax = 0;
 		foreach (PopGroup pop in p.Pops)
 		{
 			if (!pop.Occupation.Nomadic)
-				settled += pop.Units;
+				tax += pop.Units * TaxPerUnit * (LawRules.IsCitizen(owner, pop) ? 1 : noncitizens);
 		}
-		return settled * TaxPerUnit * (1 - ControlRules.Separatism(p, today));
+		return Math.Max(0, tax * (1 + LawRules.Mod(owner, "tax")) * (1 - ControlRules.Separatism(p, today, owner)));
 	}
 
 	public static Ledger MonthlyLedger(Country c, IEnumerable<Province> owned, IEnumerable<Tribe> tribes, GameDate today)
@@ -73,15 +74,18 @@ public static class EconomyRules
 		double tax = 0, garrisons = 0;
 		foreach (Province p in owned)
 		{
-			tax += Tax(p, today);
+			tax += Tax(p, today, c);
 			garrisons += (p.Control?.Garrison ?? 0) * GarrisonUpkeep;
 		}
-		return new Ledger(tax, garrisons, TribeRules.Mercenaries(tribes, c.Tag) * MercenaryPay);
+		return new Ledger(tax, garrisons, TribeRules.Mercenaries(tribes, c.Tag) * MercenaryPayOf(c));
 	}
 
+	/// <summary>Gold a month a country pays each regiment of mercenaries (its laws may make them cheaper).</summary>
+	public static double MercenaryPayOf(Country c) => MercenaryPay * Math.Max(0, 1 + LawRules.Mod(c, "mercenary_pay"));
+
 	/// <summary>Gold for the government to build a building, or its next level.</summary>
-	public static double BuildCost(Province p, BuildingType type) =>
-		BuildCostPerLevel * ((p.GetBuilding(type)?.Level ?? 0) + 1);
+	public static double BuildCost(Province p, BuildingType type, Country owner) =>
+		BuildCostPerLevel * ((p.GetBuilding(type)?.Level ?? 0) + 1) * Math.Max(0.2, 1 + LawRules.Mod(owner, "building_cost"));
 
 	// ------------------------------------------------------------------------------------------ food
 

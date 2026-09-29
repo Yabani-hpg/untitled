@@ -52,6 +52,18 @@ public partial class GameState
 			if (c.Ruler != null) w.WriteNumber("ruler", c.Ruler.Id);
 			w.WriteNumber("manpower", c.Manpower);
 			w.WriteNumber("gold", c.Gold);
+			w.WriteStartObject("laws");
+			foreach (var (law, option) in c.Laws)
+				w.WriteString(law, option);
+			w.WriteEndObject();
+			w.WriteStartObject("laws_changed");
+			foreach (var (law, date) in c.LawChanged)
+				w.WriteNumber(law, date.Day);
+			w.WriteEndObject();
+			w.WriteStartObject("ruler_names");
+			foreach (var (name, n) in c.RulerNameCounts)
+				w.WriteNumber(name, n);
+			w.WriteEndObject();
 			w.WriteStartArray("improving_relations");
 			foreach (int id in c.ImprovingRelations)
 				w.WriteNumberValue(id);
@@ -203,6 +215,28 @@ public partial class GameState
 			c.Ruler = e.TryGetProperty("ruler", out JsonElement r) && _characters.TryGetValue(r.GetInt32(), out Character ruler) ? ruler : null;
 			c.Manpower = e.TryGetProperty("manpower", out JsonElement mp) ? mp.GetInt32() : 0;
 			c.Gold = e.TryGetProperty("gold", out JsonElement gd) ? gd.GetDouble() : c.StartingGold;
+			if (e.TryGetProperty("laws", out JsonElement laws))
+			{
+				foreach (JsonProperty l in laws.EnumerateObject())
+				{
+					if (Definitions.GetLaw(l.Name)?.GetOption(l.Value.GetString()) != null)
+						c.Laws[l.Name] = l.Value.GetString();
+					else
+						warnings.Add($"unknown law {l.Name}: {l.Value.GetString()}");
+				}
+			}
+			c.LawChanged.Clear();
+			if (e.TryGetProperty("laws_changed", out JsonElement changed))
+			{
+				foreach (JsonProperty l in changed.EnumerateObject())
+					c.LawChanged[l.Name] = new GameDate(l.Value.GetInt64());
+			}
+			if (e.TryGetProperty("ruler_names", out JsonElement rn))
+			{
+				c.RulerNameCounts.Clear();
+				foreach (JsonProperty n in rn.EnumerateObject())
+					c.RulerNameCounts[n.Name] = n.Value.GetInt32();
+			}
 			c.ImprovingRelations.Clear();
 			if (e.TryGetProperty("improving_relations", out JsonElement ir))
 			{
@@ -310,7 +344,7 @@ public partial class GameState
 		foreach (Country c in _countries.Values)
 		{
 			c.CurrentFlag = null;
-			c.MaxManpower = ControlRules.MaxManpower(ProvincesOf(c.Tag));
+			c.MaxManpower = ControlRules.MaxManpower(c, ProvincesOf(c.Tag));
 			c.LastLedger = EconomyRules.MonthlyLedger(c, ProvincesOf(c.Tag), _tribes.Values, Date);
 		}
 		foreach (Tribe t in _tribes.Values)

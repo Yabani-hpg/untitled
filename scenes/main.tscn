@@ -34,6 +34,7 @@
 [ext_resource type="Script" path="res://src/UI/GameMenu.cs" id="37_gamemenu"]
 [ext_resource type="Script" path="res://src/UI/MessageFeed.cs" id="38_messagefeed"]
 [ext_resource type="Script" path="res://src/Map/TribeMarkers.cs" id="39_tribemarkers"]
+[ext_resource type="Script" path="res://src/UI/CountryPanel.cs" id="40_countrypanel"]
 [ext_resource type="Script" path="res://src/Map/ProvinceBorders.cs" id="23_borders"]
 [ext_resource type="Shader" path="res://shaders/province_border.gdshader" id="24_bordershader"]
 
@@ -366,6 +367,7 @@ script = ExtResource("36_playerbar")
 TitleFont = ExtResource("29_cinzel")
 BodyFont = ExtResource("30_manrope")
 CameraRigPath = NodePath("../../CameraRig")
+CountryPanelPath = NodePath("../CountryPanel")
 
 [node name="ProvincePanel" type="PanelContainer" parent="HudLayer"]
 visible = false
@@ -415,6 +417,24 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 script = ExtResource("35_countryselect")
+TitleFont = ExtResource("29_cinzel")
+BodyFont = ExtResource("30_manrope")
+CameraRigPath = NodePath("../../CameraRig")
+
+[node name="CountryPanel" type="PanelContainer" parent="HudLayer"]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -330.0
+offset_top = -300.0
+offset_right = 330.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("40_countrypanel")
 TitleFont = ExtResource("29_cinzel")
 BodyFont = ExtResource("30_manrope")
 CameraRigPath = NodePath("../../CameraRig")

@@ -51,6 +51,7 @@ public abstract class Condition
 				"ruler_culture" => RulerCulture(v.GetString()),
 				"ruler_religion" => RulerReligion(v.GetString()),
 				"world_flag" => new WorldFlag(v.GetString()),
+				"law" => HasLaw(v.GetString(), w),
 				"date_from" => new DateTest(ParseDate(v.GetString(), w), from: true),
 				"date_before" => new DateTest(ParseDate(v.GetString(), w), from: false),
 				_ => throw new DataException($"{w}: unknown condition '{p.Name}'"),
@@ -70,6 +71,16 @@ public abstract class Condition
 	}
 
 	// the parsed JSON is gone by the time conditions are tested, so values are read out here
+	/// <summary>"slavery:outlawed": the country has that law option in force.</summary>
+	static Condition HasLaw(string text, string where)
+	{
+		string[] parts = (text ?? "").Split(':');
+		if (parts.Length != 2)
+			throw new DataException($"{where}: write a law condition as \"law:option\"");
+		string law = parts[0], option = parts[1];
+		return new Test(c => c.Laws.TryGetValue(law, out string o) && o == option);
+	}
+
 	static Condition RulerCulture(string id) => new Test(c => c.Ruler?.Culture?.Id == id);
 	static Condition RulerReligion(string id) => new Test(c => c.Ruler?.Religion?.Id == id);
 

@@ -35,17 +35,20 @@ public static class ControlRules
 
 	static double YearsBetween(GameDate from, GameDate to) => (to.Day - from.Day) / 365.2425;
 
-	/// <summary>0 for a core; for newly held land 1, fading to 0 over <see cref="YearsToCore"/> years.</summary>
-	public static double Separatism(Province p, GameDate today)
+	/// <summary>Years a country must hold land before it is a core: <see cref="YearsToCore"/>, changed by its laws.</summary>
+	public static double CoringYears(Country owner) => Math.Max(10, YearsToCore + LawRules.Mod(owner, "years_to_core"));
+
+	/// <summary>0 for a core; for newly held land 1, fading to 0 over the owner's coring years.</summary>
+	public static double Separatism(Province p, GameDate today, Country owner)
 	{
 		if (p.Control == null || p.Control.Kind == ControlKind.Core)
 			return 0;
-		return Math.Clamp(1 - YearsBetween(p.Control.Since, today) / YearsToCore, 0, 1);
+		return Math.Clamp(1 - YearsBetween(p.Control.Since, today) / CoringYears(owner), 0, 1);
 	}
 
 	/// <summary>Whole years left until the province becomes a core.</summary>
-	public static int YearsUntilCore(Province p, GameDate today) =>
-		p.Control == null || p.IsCore ? 0 : (int)Math.Ceiling(YearsToCore - YearsBetween(p.Control.Since, today));
+	public static int YearsUntilCore(Province p, GameDate today, Country owner) =>
+		p.Control == null || p.IsCore ? 0 : (int)Math.Ceiling(CoringYears(owner) - YearsBetween(p.Control.Since, today));
 
 	/// <summary>Regiments the province's people can put in the field against a country.</summary>
 	public static int Warriors(Province p)
@@ -69,16 +72,21 @@ public static class ControlRules
 
 	// ------------------------------------------------------------------------------------- manpower
 
-	/// <summary>The most regiments the country can have, from the people of its core provinces.</summary>
-	public static int MaxManpower(IEnumerable<Province> owned)
+	/// <summary>
+	/// The most regiments the country can have, from the people of its core provinces: citizens serve in
+	/// full, non-citizens as far as the law on non-citizens makes them.
+	/// </summary>
+	public static int MaxManpower(Country c, IEnumerable<Province> owned)
 	{
+		double noncitizens = Math.Clamp(LawRules.Mod(c, "noncitizen_manpower"), 0, 1);
 		double m = 0;
 		foreach (Province p in owned)
 		{
 			if (!p.IsCore)
 				continue;
 			foreach (PopGroup pop in p.Pops)
-				m += pop.Units * (pop.Occupation.Nomadic ? TribesmenManpowerShare : PeasantManpowerShare);
+				m += pop.Units * (pop.Occupation.Nomadic ? TribesmenManpowerShare : PeasantManpowerShare)
+					* (LawRules.IsCitizen(c, pop) ? 1 : noncitizens);
 		}
 		return (int)m;
 	}
@@ -190,17 +198,18 @@ public static class ControlRules
 	/// <summary>Monthly chance that a held province rises up.</summary>
 	public static double UprisingChance(Province p, Country owner, GameDate today)
 	{
-		double separatism = Separatism(p, today);
+		double separatism = Separatism(p, today, owner);
 		if (separatism <= 0)
 			return 0;
+		double laws = Math.Max(0, 1 + LawRules.Mod(owner, "uprising"));
 		if (p.Control.Kind == ControlKind.Subjugated)
 		{
 			// nomads rise when they feel strong against the garrison holding them down
 			double odds = Warriors(p) / (p.Control.Garrison + 0.5);
-			return separatism * NomadUprisingChance * Math.Min(odds, 2.0);
+			return separatism * NomadUprisingChance * Math.Min(odds, 2.0) * laws;
 		}
 		// absorbed tribes break away the less kinship they feel with their overlord
-		return separatism * TribalRevoltChance * (1 - 0.6 * PopulationRules.Affinity(owner?.Ruler?.Culture, p.MainCulture));
+		return separatism * TribalRevoltChance * (1 - 0.6 * PopulationRules.Affinity(owner?.Ruler?.Culture, p.MainCulture)) * laws;
 	}
 
 	public enum EventKind { Cored, UprisingCrushed, ProvinceLost }
@@ -219,7 +228,7 @@ public static class ControlRules
 		{
 			if (p == null || p.Control == null || p.IsCore || !countries.TryGetValue(p.OwnerTag, out Country owner))
 				continue;
-			if (YearsBetween(p.Control.Since, today) >= YearsToCore)
+			if (YearsBetween(p.Control.Since, today) >= CoringYears(owner))
 			{
 				owner.Manpower += p.Control.Garrison;
 				p.Control = new ProvinceControl { Kind = ControlKind.Core, Since = p.Control.Since };
@@ -258,7 +267,7 @@ public static class ControlRules
 		foreach (var (tag, list) in owned)
 		{
 			Country c = countries[tag];
-			int max = MaxManpower(list);
+			int max = MaxManpower(c, list);
 			c.MaxManpower = max;
 			if (c.Manpower < max)
 				c.Manpower = Math.Min(max, c.Manpower + Math.Max(1, max / ManpowerRefillMonths));

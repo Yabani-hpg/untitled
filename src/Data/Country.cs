@@ -44,6 +44,16 @@ public sealed class Country
 	/// <summary>Gold at the start of a game (the "gold" of its country file).</summary>
 	public double StartingGold { get; set; } = Untitled.Rules.EconomyRules.StartingGold;
 
+	/// <summary>The country's laws: the option in force for each law id.</summary>
+	public Dictionary<string, string> Laws { get; } = new();
+	/// <summary>When each law was last changed (laws can't change again for a while).</summary>
+	public Dictionary<string, GameDate> LawChanged { get; } = new();
+	/// <summary>Regnal names its rulers take, and how many rulers have had each ("Ramesses" 2: the next is Ramesses III).</summary>
+	public List<string> RulerNames { get; } = new();
+	public Dictionary<string, int> RulerNameCounts { get; } = new();
+	/// <summary>The counts at the start of a game (the country file's "ruler_name_counts").</summary>
+	public Dictionary<string, int> StartRulerNameCounts { get; } = new();
+
 	/// <summary>Tribes the country's diplomats are courting (improving relations with).</summary>
 	public HashSet<int> ImprovingRelations { get; } = new();
 
@@ -73,6 +83,8 @@ public sealed class CountryDefinition
 	/// <summary>Tribes (by data/tribes.json key) allied with the country at the start, since when, and their relations.</summary>
 	public List<(string Tribe, GameDate Since, int Relation)> AlliedTribes { get; } = new();
 	public RulerDefinition Ruler { get; init; }
+	/// <summary>Law options the country starts with, where they differ from the defaults.</summary>
+	public Dictionary<string, string> Laws { get; } = new();
 }
 
 /// <summary>A province a country controls at the start. <c>Since</c> null means long before the start.</summary>

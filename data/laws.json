@@ -1,0 +1,91 @@
+{
+	"_comment": "A settled country's laws and code: for each law, one option is in force. default: the option countries start with unless their country file says otherwise. requires: a condition (see data/countries/EGY.json flags) the country must meet to adopt the option, described by requires_text. modifiers change the country's numbers: tax (share more), noncitizen_tax (share more from non-citizens), noncitizen_manpower (share of their manpower raised; citizens give it all), uprising (share more likely), years_to_core (years added), tribe_relations (added to tribes' opinion), alliance_chance (added), building_cost (share more), mercenary_pay (share more), change_cost (share more to change laws). effects are ongoing: assimilation (units per core province a year turning to the ruler's culture), conversion (to the ruler's religion), succession (how the next ruler is chosen), citizens (who is a citizen).",
+	"change_cost_gold": 50,
+	"change_cooldown_years": 5,
+	"laws": [
+		{
+			"id": "succession", "name": "Succession", "group": "Crown",
+			"description": "Who takes the throne when the ruler dies.",
+			"default": "primogeniture",
+			"options": [
+				{ "id": "primogeniture", "name": "Primogeniture", "description": "The ruler's eldest son inherits. The dynasty goes on; the heir may be young.", "effects": { "succession": "eldest_child" } },
+				{ "id": "seniority", "name": "Agnatic seniority", "description": "The ruler's eldest brother inherits: older, seasoned rulers, and the dynasty goes on.", "effects": { "succession": "brother" } },
+				{ "id": "elective", "name": "Elective council", "description": "The great men of the realm choose the ablest among them. A new dynasty may rise.", "effects": { "succession": "elected" }, "modifiers": { "uprising": -0.1 } },
+				{ "id": "divine", "name": "Divine selection", "description": "The priests read the will of the gods and name the next ruler. Temples grow powerful.", "effects": { "succession": "chosen_by_priests", "conversion": 0.5 }, "modifiers": { "tax": -0.05 } }
+			]
+		},
+		{
+			"id": "citizenship", "name": "Citizenship", "group": "People",
+			"description": "Who is a citizen: citizens pay the full tax and serve in the army.",
+			"default": "ruling_culture",
+			"options": [
+				{ "id": "ruling_culture", "name": "Only the ruling people", "description": "Only those of the ruler's culture are citizens.", "effects": { "citizens": "culture" } },
+				{ "id": "kindred", "name": "Kindred peoples", "description": "Those who speak a language of the ruler's language family are citizens too.", "effects": { "citizens": "language_family" }, "modifiers": { "uprising": -0.1 } },
+				{ "id": "settled", "name": "All settled subjects", "description": "Every settled subject is a citizen; tribesmen and nomads are not.", "effects": { "citizens": "settled" }, "modifiers": { "uprising": -0.2, "tribe_relations": -5 } },
+				{ "id": "universal", "name": "All subjects", "description": "Everyone under the ruler's protection is a citizen, settled or not.", "effects": { "citizens": "all" }, "modifiers": { "uprising": -0.3, "tribe_relations": 5 },
+				  "requires": { "province_count": { "min": 40 } }, "requires_text": "A realm of at least 40 provinces" }
+			]
+		},
+		{
+			"id": "noncitizens", "name": "Treatment of non-citizens", "group": "People",
+			"description": "How those who are not citizens are treated.",
+			"default": "tributaries",
+			"options": [
+				{ "id": "protected", "name": "Protected subjects", "description": "Non-citizens live under the ruler's protection: taxed lightly, they give some soldiers.", "modifiers": { "noncitizen_tax": -0.25, "noncitizen_manpower": 0.5, "uprising": -0.2 } },
+				{ "id": "tributaries", "name": "Tributaries", "description": "Non-citizens pay tribute, and give few soldiers.", "modifiers": { "noncitizen_tax": 0.25, "noncitizen_manpower": 0.25, "uprising": 0.1 } },
+				{ "id": "bonded", "name": "Bonded labour", "description": "Non-citizens are bound to work the land and the quarries for the state: they pay much, fight not, and seethe.", "modifiers": { "noncitizen_tax": 0.75, "noncitizen_manpower": 0, "uprising": 0.5, "tribe_relations": -10 },
+				  "requires": { "not": { "law": "slavery:outlawed" } }, "requires_text": "Slavery must not be outlawed" }
+			]
+		},
+		{
+			"id": "culture_policy", "name": "Other cultures", "group": "People",
+			"description": "How the state treats the cultures other than the ruler's.",
+			"default": "tolerance",
+			"options": [
+				{ "id": "tolerance", "name": "Tolerance", "description": "Every people keeps its ways.", "modifiers": { "uprising": -0.1, "alliance_chance": 0.05 } },
+				{ "id": "assimilation", "name": "Assimilation", "description": "Other peoples are drawn into the ruler's culture: a unit a year in each core province.", "effects": { "assimilation": 1 }, "modifiers": { "uprising": 0.15, "years_to_core": -10 } },
+				{ "id": "segregation", "name": "Segregation", "description": "Other peoples are kept apart: less unrest among the ruling people, more among the rest, and new lands take longer to become ours.", "modifiers": { "uprising": 0.25, "years_to_core": 10, "tribe_relations": -10 } }
+			]
+		},
+		{
+			"id": "religion", "name": "Religious law", "group": "Faith",
+			"description": "The place of the gods in the state.",
+			"default": "state_cult",
+			"options": [
+				{ "id": "free_worship", "name": "Free worship", "description": "Every people worships its own gods; the state takes no side.", "modifiers": { "uprising": -0.1, "tax": -0.05 } },
+				{ "id": "state_cult", "name": "State cult", "description": "The ruler's gods are the state's gods; their temples collect offerings for the crown.", "modifiers": { "tax": 0.05 } },
+				{ "id": "enforced_worship", "name": "Enforced worship", "description": "All must worship the ruler's gods: other faiths convert, a unit a year in each core province.", "effects": { "conversion": 1 }, "modifiers": { "uprising": 0.2, "tribe_relations": -5 } }
+			]
+		},
+		{
+			"id": "legal_code", "name": "Legal code", "group": "Justice",
+			"description": "How justice is done.",
+			"default": "customary",
+			"options": [
+				{ "id": "customary", "name": "Customary law", "description": "Each village judges by its old customs." },
+				{ "id": "codified", "name": "Codified law", "description": "The ruler's scribes write down the law and appoint judges: order, and a steadier hand in building.", "modifiers": { "tax": 0.05, "building_cost": -0.1, "years_to_core": -5 } },
+				{ "id": "harsh", "name": "Harsh code", "description": "Swift and brutal punishment keeps the provinces quiet, and frightens the tribes.", "modifiers": { "uprising": -0.3, "tribe_relations": -10, "alliance_chance": -0.1 } }
+			]
+		},
+		{
+			"id": "slavery", "name": "Slavery", "group": "Justice",
+			"description": "Whether men may own other men.",
+			"default": "legal",
+			"options": [
+				{ "id": "legal", "name": "Legal", "description": "Captives and debtors may be enslaved: cheap labour, but the tribes fear being taken.", "modifiers": { "tax": 0.05, "building_cost": -0.1, "tribe_relations": -5 } },
+				{ "id": "outlawed", "name": "Outlawed", "description": "No one may be owned. The tribes trust us more.", "modifiers": { "tribe_relations": 5, "uprising": -0.05 },
+				  "requires": { "not": { "law": "noncitizens:bonded" } }, "requires_text": "Non-citizens must not be held in bonded labour" }
+			]
+		},
+		{
+			"id": "frontier", "name": "The frontier", "group": "Tribes",
+			"description": "How the tribes and nomads beyond our borders are dealt with.",
+			"default": "open",
+			"options": [
+				{ "id": "open", "name": "Open frontier", "description": "Tribesmen come and go to trade: they think better of us.", "modifiers": { "tribe_relations": 10, "alliance_chance": 0.1 } },
+				{ "id": "guarded", "name": "Guarded frontier", "description": "Forts watch the desert roads: fewer raids and uprisings, cooler tribes.", "modifiers": { "uprising": -0.15, "tribe_relations": -5 } },
+				{ "id": "mercenary_pacts", "name": "Mercenary pacts", "description": "Tribal warriors are hired on standing terms: cheaper mercenaries.", "modifiers": { "mercenary_pay": -0.3, "tribe_relations": 5 } }
+			]
+		}
+	]
+}

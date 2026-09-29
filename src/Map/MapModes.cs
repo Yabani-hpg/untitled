@@ -147,7 +147,7 @@ public partial class MapModes : Node
 	{
 		if (p.Control != null && !p.IsCore)
 		{
-			double separatism = Untitled.Rules.ControlRules.Separatism(p, gs.Date);
+			double separatism = Untitled.Rules.ControlRules.Separatism(p, gs.Date, gs.GetCountry(p.OwnerTag));
 			Color land = p.Control.Kind == ControlKind.Subjugated ? NomadLand : TribalLand;
 			return new Color(land.Lightened(0.15f), 0.25f + 0.6f * (float)separatism);
 		}

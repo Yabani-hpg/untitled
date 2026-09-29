@@ -103,6 +103,13 @@ public sealed class Definitions
 	/// <summary>Portraits for rulers without one of their own, by culture id (data/portraits.json).</summary>
 	public Dictionary<string, List<string>> GenericPortraits { get; } = new();
 
+	/// <summary>Laws of settled countries (data/laws.json), in file order.</summary>
+	public List<LawDefinition> Laws { get; } = new();
+	public double LawChangeCost { get; set; } = 50;
+	public double LawChangeCooldownYears { get; set; } = 5;
+
+	public LawDefinition GetLaw(string id) => Laws.Find(l => l.Id == id);
+
 	/// <summary>Tribes placed by hand (data/tribes.json), in file order.</summary>
 	public List<TribeDefinition> Tribes { get; } = new();
 	/// <summary>Syllables for generated tribe names, by culture id: start, middle, end.</summary>

@@ -52,6 +52,66 @@ public static partial class DataLoader
 	}
 
 	public const string TribesPath = "res://data/tribes.json";
+	public const string LawsPath = "res://data/laws.json";
+
+	public static void LoadLaws(Definitions defs, Dictionary<string, int> names)
+	{
+		using JsonDocument doc = ParseJson(LawsPath);
+		defs.LawChangeCost = GetFloat(doc.RootElement, "change_cost_gold", 50f);
+		defs.LawChangeCooldownYears = GetFloat(doc.RootElement, "change_cooldown_years", 5f);
+		var pending = new List<(LawOption, JsonElement, string)>();
+		foreach (var (where, e) in ReadJsonArray(LawsPath, "laws"))
+		{
+			var law = new LawDefinition
+			{
+				Id = GetString(e, "id", where),
+				Name = GetString(e, "name", where),
+				Group = GetString(e, "group", where),
+				Description = GetString(e, "description", where),
+			};
+			if (defs.GetLaw(law.Id) != null)
+				throw new DataException($"{where}: duplicate law '{law.Id}'");
+			int i = 0;
+			foreach (JsonElement o in e.GetProperty("options").EnumerateArray())
+			{
+				string w = $"{where}.options[{i++}]";
+				var option = new LawOption
+				{
+					Law = law,
+					Id = GetString(o, "id", w),
+					Name = GetString(o, "name", w),
+					Description = GetString(o, "description", w),
+				};
+				if (o.TryGetProperty("modifiers", out JsonElement mods))
+				{
+					foreach (JsonProperty m in mods.EnumerateObject())
+						option.Modifiers[m.Name] = m.Value.GetDouble();
+				}
+				if (o.TryGetProperty("effects", out JsonElement effects))
+				{
+					foreach (JsonProperty m in effects.EnumerateObject())
+					{
+						if (m.Value.ValueKind == JsonValueKind.Number)
+							option.Effects[m.Name] = m.Value.GetDouble();
+						else
+							option.Choices[m.Name] = m.Value.GetString();
+					}
+				}
+				if (o.TryGetProperty("requires", out JsonElement req))
+					pending.Add((option, req.Clone(), $"{w}.requires"));
+				if (o.TryGetProperty("requires_text", out JsonElement rt))
+					option.RequiresText = rt.GetString();
+				law.Options.Add(option);
+			}
+			law.Default = law.GetOption(GetString(e, "default", where))
+				?? throw new DataException($"{where}: default is not one of its options");
+			defs.Laws.Add(law);
+		}
+		// requirements may name other laws, so they are read once all laws are known
+		foreach (var (option, req, w) in pending)
+			option.Requires = Condition.Parse(req, w, id => defs.Areas.TryGetValue(id, out List<int> a) ? a : null,
+				name => names.TryGetValue(name, out int pid) ? pid : 0);
+	}
 
 	public static void LoadTribes(Definitions defs, Dictionary<string, int> names)
 	{
@@ -183,6 +243,22 @@ public static partial class DataLoader
 					def.StartProvinces.Add(new StartProvince(id, control, since, garrison));
 				}
 			}
+		}
+		if (e.TryGetProperty("laws", out JsonElement laws))
+		{
+			foreach (JsonProperty l in laws.EnumerateObject())
+			{
+				LawDefinition law = defs.GetLaw(l.Name) ?? throw new DataException($"{path}:laws: unknown law '{l.Name}'");
+				if (law.GetOption(l.Value.GetString()) == null)
+					throw new DataException($"{path}:laws: '{l.Value.GetString()}' is not an option of {l.Name}");
+				def.Laws[l.Name] = l.Value.GetString();
+			}
+		}
+		country.RulerNames.AddRange(GetStringList(e, "ruler_names", path));
+		if (e.TryGetProperty("ruler_name_counts", out JsonElement counts))
+		{
+			foreach (JsonProperty n in counts.EnumerateObject())
+				country.StartRulerNameCounts[n.Name] = n.Value.GetInt32();
 		}
 		if (e.TryGetProperty("allied_tribes", out JsonElement allied))
 		{

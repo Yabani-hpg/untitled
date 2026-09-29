@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using Godot;
 using Untitled.Data;
 using Untitled.Map;
@@ -105,6 +106,13 @@ public partial class GameState : IWorld
 		var longAgo = StartDate.AddDays(-(long)(ControlRules.YearsToCore * 365.2425) - 1);
 		foreach (Country c in _countries.Values)
 		{
+			c.Laws.Clear();
+			c.LawChanged.Clear();
+			foreach (LawDefinition law in Definitions.Laws)
+				c.Laws[law.Id] = c.Definition?.Laws.GetValueOrDefault(law.Id) ?? law.Default.Id;
+			c.RulerNameCounts.Clear();
+			foreach (var (name, n) in c.StartRulerNameCounts)
+				c.RulerNameCounts[name] = n;
 			c.Manpower = c.MaxManpower = 0;
 			if (c.Definition == null)
 				continue;
@@ -128,7 +136,7 @@ public partial class GameState : IWorld
 			c.CurrentFlag = null;
 			// a full manpower pool, less the regiments already standing in garrisons
 			var owned = ProvincesOf(c.Tag).ToList();
-			c.MaxManpower = ControlRules.MaxManpower(owned);
+			c.MaxManpower = ControlRules.MaxManpower(c, owned);
 			c.Manpower = Math.Max(0, c.MaxManpower - owned.Sum(p => p.Control?.Garrison ?? 0));
 			c.Gold = owned.Count > 0 ? c.StartingGold : 0;
 			c.LastLedger = EconomyRules.MonthlyLedger(c, owned, Array.Empty<Tribe>(), Date);

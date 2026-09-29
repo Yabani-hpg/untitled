@@ -106,6 +106,8 @@ public partial class GameState : Node
 		DataLoader.LoadAreas(Definitions, _provinceNames);
 		DataLoader.LoadNamesAndPortraits(Definitions);
 		DataLoader.LoadTribes(Definitions, _provinceNames);
+		DataLoader.LoadLaws(Definitions, _provinceNames);
+		LawRules.Defs = Definitions;
 		int countryFiles = DataLoader.LoadCountryFiles(_countries, Definitions, _provinceNames);
 
 		ProvinceMapTexture = GD.Load<Texture2D>(ProvinceMapPath)
@@ -248,7 +250,7 @@ public partial class GameState : Node
 			return false;
 		}
 		Country owner = GetCountry(p.OwnerTag);
-		double cost = EconomyRules.BuildCost(p, type);
+		double cost = EconomyRules.BuildCost(p, type, GetCountry(p.OwnerTag));
 		if (owner.Gold < cost)
 		{
 			reason = $"Costs {cost:0} gold; we have {owner.Gold:0}";
@@ -269,6 +271,7 @@ public partial class GameState : Node
 		int built = BuildingRules.PopulationBuildStep(_provinces, Definitions.Buildings);
 		RunControlStep();
 		RunTribeStep();
+		RunLawStep();
 		foreach (Country c in EconomyRules.MonthlyStep(_countries, _provinces, _tribes.Values, Definitions, Date))
 		{
 			if (c.Tag == PlayerTag)

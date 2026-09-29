@@ -44,7 +44,7 @@ public static class TribeRules
 
 	/// <summary>Where relations settle without diplomacy: kin like each other, strangers are wary.</summary>
 	public static int BaseRelation(Tribe t, Country c) =>
-		(int)Math.Round(40 * PopulationRules.Affinity(t.Culture, c?.Ruler?.Culture) - 20);
+		(int)Math.Round(40 * PopulationRules.Affinity(t.Culture, c?.Ruler?.Culture) - 20 + LawRules.Mod(c, "tribe_relations"));
 
 	public static void ChangeRelation(Tribe t, string tag, int delta) =>
 		t.Relations[tag] = Math.Clamp(t.RelationWith(tag) + delta, MinRelation, MaxRelation);
@@ -70,8 +70,8 @@ public static class TribeRules
 
 	// ------------------------------------------------------------------------------------- alliance
 
-	public static double AllianceChance(Tribe t, string tag) =>
-		Math.Clamp(0.35 + t.RelationWith(tag) / 200.0, 0, 0.95);
+	public static double AllianceChance(Tribe t, Country c) =>
+		Math.Clamp(0.35 + t.RelationWith(c.Tag) / 200.0 + LawRules.Mod(c, "alliance_chance"), 0, 0.95);
 
 	public static bool CanProposeAlliance(Tribe t, Country c, IReadOnlyList<Province> provinces, GameDate today, out string reason)
 	{
@@ -93,7 +93,7 @@ public static class TribeRules
 	{
 		if (!CanProposeAlliance(t, c, provinces, today, out _))
 			return false;
-		if (rng.NextDouble() < AllianceChance(t, c.Tag))
+		if (rng.NextDouble() < AllianceChance(t, c))
 		{
 			t.AlliedTag = c.Tag;
 			t.AlliedSince = today;
@@ -126,7 +126,7 @@ public static class TribeRules
 		reason = null;
 		if (t.AlliedTag != c.Tag)
 			reason = "Only our allies fight for us";
-		else if (c.Gold < regiments * EconomyRules.MercenaryPay)
+		else if (c.Gold < regiments * EconomyRules.MercenaryPayOf(c))
 			reason = "We can't pay them";
 		else if (regiments < 1)
 			reason = "Hire at least one regiment";

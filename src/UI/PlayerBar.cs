@@ -10,6 +10,7 @@ public partial class PlayerBar : PanelContainer
 	[Export] public Font TitleFont { get; set; }
 	[Export] public Font BodyFont { get; set; }
 	[Export] public NodePath CameraRigPath { get; set; }
+	[Export] public NodePath CountryPanelPath { get; set; }
 
 	TextureRect _flag;
 	TextureRect _portrait;
@@ -67,12 +68,12 @@ public partial class PlayerBar : PanelContainer
 
 	void OnProvinceChanged(int id) => Refresh();
 
-	/// <summary>Click the bar to go to the capital.</summary>
+	/// <summary>Click the bar to open the country window (its overview and laws).</summary>
 	public override void _GuiInput(InputEvent e)
 	{
 		if (e is InputEventMouseButton { Pressed: true, ButtonIndex: MouseButton.Left })
 		{
-			FocusCapital();
+			GetNodeOrNull<CountryPanel>(CountryPanelPath ?? new NodePath())?.Toggle();
 			AcceptEvent();
 		}
 	}
@@ -104,6 +105,7 @@ public partial class PlayerBar : PanelContainer
 			+ $"\n-{ledger.Garrisons:0.0} garrisons\n-{ledger.Mercenaries:0.0} mercenaries\n\n"
 			+ "Manpower: regiments of 1000 soldiers raised from the people of our core provinces.\nArmies and garrisons are drawn from them; they refill over ten years.";
 		_ruler.MouseFilter = MouseFilterEnum.Pass;
+		TooltipText = "Our country: its ruler, finances and laws";
 		_portrait.TooltipText = r?.FullName ?? r?.Name;
 	}
 }
