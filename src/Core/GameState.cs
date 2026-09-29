@@ -102,7 +102,10 @@ public partial class GameState : Node
 		_provinces = DataLoader.LoadProvinces(DataLoader.ProvincesPath, _countries);
 		int adjacencies = DataLoader.LoadAdjacencies(DataLoader.AdjacenciesPath, _provinces);
 		Definitions = DataLoader.LoadDefinitions();
-		int setups = DataLoader.LoadProvinceSetup(DataLoader.ProvinceSetupPath, _provinces, Definitions);
+		_provinceNames = DataLoader.ProvinceNames(_provinces);
+		DataLoader.LoadAreas(Definitions, _provinceNames);
+		DataLoader.LoadNamesAndPortraits(Definitions);
+		int countryFiles = DataLoader.LoadCountryFiles(_countries, Definitions, _provinceNames);
 
 		ProvinceMapTexture = GD.Load<Texture2D>(ProvinceMapPath)
 			?? throw new DataException($"{ProvinceMapPath}: cannot load");
@@ -114,9 +117,9 @@ public partial class GameState : Node
 			GD.PushWarning($"{ProvinceMapPath}: {unknownColors.Count - 20} more unlisted colors; run tools/sync_provinces.py");
 
 		int count = _provinces.Count(p => p != null);
-		long units = _provinces.Where(p => p != null).Sum(p => (long)p.TotalUnits);
-		GD.Print($"GameState: {count} provinces ({setups} populated, {units * PopGroup.PeoplePerUnit / 1e6:F1}M people), "
-			+ $"{_countries.Count} countries, {adjacencies} adjacencies loaded in {Time.GetTicksMsec() - start} ms");
+		GD.Print($"GameState: {count} provinces, {_countries.Count} countries ({countryFiles} with a country file), "
+			+ $"{adjacencies} adjacencies loaded in {Time.GetTicksMsec() - start} ms");
+		NewGame();
 	}
 
 	public Province GetProvince(int id) =>
@@ -255,6 +258,9 @@ public partial class GameState : Node
 		ulong start = Time.GetTicksMsec();
 		var moves = PopulationRules.MigrateNomads(_provinces);
 		int built = BuildingRules.PopulationBuildStep(_provinces, Definitions.Buildings);
+		RefreshFlags();
+		if (Date.Holocene.Month == 1 && Phase == GamePhase.Playing)
+			SaveGames.Autosave(this);
 		GD.Print($"{DateText}: {moves.Count} nomad migrations, {built} buildings built by populations ({Time.GetTicksMsec() - start} ms)");
 		EmitSignal(SignalName.MonthAdvanced);
 	}

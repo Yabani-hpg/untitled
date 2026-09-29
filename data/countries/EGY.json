@@ -1,0 +1,52 @@
+{
+	"_comment": "Egypt at the start, 1 January 1200 BC (8801 HE): the Ramesside New Kingdom under Seti II, ruling Nubia to Napata and southern Canaan while the Bronze Age world collapses around it. Dates are Holocene 'year.month.day'. flags: the first flag whose condition holds is flown; the last one, without a condition, is the default.",
+	"tag": "EGY",
+	"name": "Egypt",
+	"adjective": "Egyptian",
+	"government": "Pharaonic monarchy",
+	"ruler_title": "Pharaoh",
+	"capital": "Imet-Pehet (Djanet)",
+	"capital_name": "Pi-Ramesses",
+	"start_provinces": { "areas": ["nubia", "canaan"], "except": ["Kurgus"] },
+	"ruler": {
+		"name": "Seti II",
+		"full_name": "Userkheperure Setepenre Seti Merenptah",
+		"dynasty": "Ramesside (19th Dynasty)",
+		"birth": "8761.1.1",
+		"portrait": "res://gfx/portraits/EGY_seti_ii.png",
+		"population": { "province": "Imet-Pehet (Djanet)", "culture": "african", "religion": "pagan", "occupation": "peasants" }
+	},
+	"flags": [
+		{
+			"id": "islamic", "name": "Misr", "image": "res://gfx/flags/EGY_islamic.png",
+			"condition": { "ruler_religion": "islam" }
+		},
+		{
+			"id": "empire", "name": "The Empire of the Two Lands", "image": "res://gfx/flags/EGY_empire.png",
+			"condition": { "all": [
+				{ "owns_area": { "area": "upper_egypt", "min_share": 0.5 } },
+				{ "owns_area": { "area": "lower_egypt", "min_share": 0.5 } },
+				{ "owns_area": { "area": "nubia", "min_share": 0.6 } },
+				{ "owns_area": { "area": "canaan", "min_share": 0.75 } },
+				{ "owns_area": { "area": "retjenu", "min_share": 0.5 } }
+			] }
+		},
+		{
+			"id": "upper", "name": "Upper Egypt", "image": "res://gfx/flags/EGY_upper.png",
+			"condition": { "all": [
+				{ "owns_area": { "area": "upper_egypt", "min_share": 0.5 } },
+				{ "not": { "owns_area": { "area": "lower_egypt", "min_share": 0.01 } } }
+			] }
+		},
+		{
+			"id": "lower", "name": "Lower Egypt", "image": "res://gfx/flags/EGY_lower.png",
+			"condition": { "all": [
+				{ "owns_area": { "area": "lower_egypt", "min_share": 0.5 } },
+				{ "not": { "owns_area": { "area": "upper_egypt", "min_share": 0.01 } } }
+			] }
+		},
+		{
+			"id": "default", "name": "The Two Lands", "image": "res://gfx/flags/EGY.png"
+		}
+	]
+}

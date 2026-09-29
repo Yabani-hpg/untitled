@@ -50,13 +50,14 @@ func _on_btn_hover_exit(b: Control) -> void:
 # --- Button actions ---
 
 func _on_new_game() -> void:
+	# a fresh world on 1 January 1200 BC; the map scene opens on the country selection screen
+	GameState.NewGame()
 	_transition_to(first_scene)
 
 func _on_load_game() -> void:
 	var overlay := get_node_or_null("Overlay/LoadOverlay")
 	if overlay:
-		overlay.set("game_scene", first_scene)
-		overlay.call("open")
+		overlay.call("Open")
 	elif load_scene:
 		_transition_to(load_scene)
 	else:

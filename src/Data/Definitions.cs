@@ -95,6 +95,14 @@ public sealed class Definitions
 	/// <summary>In file order.</summary>
 	public List<Calendar> Calendars { get; } = new();
 
+	/// <summary>Named groups of province ids (data/areas.json).</summary>
+	public Dictionary<string, List<int>> Areas { get; } = new();
+	/// <summary>Names for generated rulers and their dynasties, by culture id (data/names.json).</summary>
+	public Dictionary<string, List<string>> RulerNames { get; } = new();
+	public Dictionary<string, List<string>> DynastyNames { get; } = new();
+	/// <summary>Portraits for rulers without one of their own, by culture id (data/portraits.json).</summary>
+	public Dictionary<string, List<string>> GenericPortraits { get; } = new();
+
 	/// <summary>The calendar used when no other applies.</summary>
 	public Calendar DefaultCalendar => Calendars.Find(c => c.IsDefault);
 

@@ -1,0 +1,17 @@
+{
+	"_comment": "Names for generated rulers, by culture. A country without a ruler of its own gets one of these, deterministically from its tag.",
+	"rulers": {
+		"european": ["Agamemnon", "Atreus", "Nestor", "Idomeneus", "Tarkondemos", "Lars", "Ambiorix", "Brennos", "Teutobod", "Arnth", "Velthur", "Madytes", "Seuthes", "Kotys", "Rhesos", "Dumnorix", "Orgetorix", "Minos", "Lykaon", "Tyndareos", "Kadmos", "Teres", "Arganthonios", "Hyllos"],
+		"asian": ["Tukulti-Ninurta", "Ashur-dan", "Suppiluliuma", "Ammurapi", "Hattusili", "Shutruk-Nakhunte", "Kurigalzu", "Marduk-apla-iddina", "Wu Ding", "Zu Geng", "Di Yi", "Kang Ding", "Tiglath", "Adad-shuma-usur", "Niqmaddu", "Ibiranu", "Talmi-Teshub", "Kurunta", "Enlil-nadin-ahi", "Hurbatila", "Kashtiliash", "Zimredda", "Arnuwanda", "Pan Geng"],
+		"african": ["Kashta", "Alara", "Irike-Amanote", "Kobina", "Nana", "Sundiata", "Mansa", "Oduduwa", "Ewuare", "Shaka", "Makeda", "Ezana", "Kaleb", "Akil", "Tenkamenin", "Wagadu", "Dinga", "Obatala", "Oranmiyan", "Kaya", "Nyakang", "Sonni", "Tunka", "Ajagbo"],
+		"north_american": ["Ahanu", "Chayton", "Hiawatha", "Dekanawida", "Enapay", "Hotah", "Kohana", "Mato", "Nashoba", "Ohitekah", "Takoda", "Wapasha", "Yahto", "Tecumtha", "Kitchi", "Anoki", "Honovi", "Mikasi", "Sahkyo", "Tawa", "Wahkan", "Istaqa", "Kuruk", "Nodin"],
+		"south_american": ["Manco", "Sinchi", "Lloque", "Mayta", "Capac", "Yupanqui", "Roca", "Huaman", "Tupac", "Atoq", "Cusi", "Pachakuti", "Amaru", "Wiraqocha", "Illapa", "Kuntur", "Sayri", "Titu", "Waman", "Qhapaq", "Chimu", "Tacaynamo", "Naymlap", "Cium"]
+	},
+	"dynasties": {
+		"european": ["Atreid", "Pelopid", "Aeacid", "Heraclid", "Rasennid", "Teutonid"],
+		"asian": ["Assyrian", "Hattian", "Kassite", "Shang", "Elamite", "Ugaritic"],
+		"african": ["Kushite", "Nubian", "Aksumite", "Yoruba", "Wagadu", "Sahelian"],
+		"north_american": ["Turtle clan", "Wolf clan", "Bear clan", "Hawk clan", "Heron clan", "Deer clan"],
+		"south_american": ["Hurin", "Hanan", "Chavin", "Moche", "Paracas", "Chimu"]
+	}
+}

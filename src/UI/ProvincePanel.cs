@@ -27,6 +27,8 @@ public partial class ProvincePanel : PanelContainer
 	VBoxContainer _population;
 	VBoxContainer _production;
 	Button _cityButton;
+	TextureRect _ownerFlag;
+	PanelContainer _ownerFlagFrame;
 	VBoxContainer _filling;     // the tab being filled; sections are added to it
 	int _provinceId = -1;
 
@@ -42,7 +44,13 @@ public partial class ProvincePanel : PanelContainer
 		AddChild(root);
 
 		var header = new HBoxContainer();
+		header.AddThemeConstantOverride("separation", 10);
 		root.AddChild(header);
+		_ownerFlag = new TextureRect();
+		_ownerFlagFrame = HudStyle.Framed(_ownerFlag);
+		_ownerFlagFrame.CustomMinimumSize = new Vector2(54, 36);
+		_ownerFlagFrame.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+		header.AddChild(_ownerFlagFrame);
 		var titles = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
 		header.AddChild(titles);
 		_name = HudStyle.Title("", TitleFont, 24);
@@ -87,6 +95,8 @@ public partial class ProvincePanel : PanelContainer
 		GameState.Instance.SelectedProvinceChanged += OnSelected;
 		GameState.Instance.ProvinceChanged += OnProvinceChanged;
 		GameState.Instance.MonthAdvanced += Refresh;
+		GameState.Instance.PhaseChanged += Refresh;
+		GameState.Instance.FlagsChanged += Refresh;
 		OnSelected(GameState.Instance.SelectedProvinceId);
 	}
 
@@ -97,6 +107,8 @@ public partial class ProvincePanel : PanelContainer
 		GameState.Instance.SelectedProvinceChanged -= OnSelected;
 		GameState.Instance.ProvinceChanged -= OnProvinceChanged;
 		GameState.Instance.MonthAdvanced -= Refresh;
+		GameState.Instance.PhaseChanged -= Refresh;
+		GameState.Instance.FlagsChanged -= Refresh;
 	}
 
 	VBoxContainer AddTab(string title)
@@ -126,12 +138,17 @@ public partial class ProvincePanel : PanelContainer
 	void Refresh()
 	{
 		Province p = GameState.Instance?.GetProvince(_provinceId);
-		Visible = p != null;
-		if (p == null)
+		// the country selection screen has its own panel
+		Visible = p != null && GameState.Instance.Phase == GamePhase.Playing;
+		if (!Visible)
 			return;
 
 		_name.Text = p.Name;
-		string owner = GameState.Instance.GetCountry(p.OwnerTag)?.Name ?? "Unowned";
+		Country ownerCountry = GameState.Instance.GetCountry(p.OwnerTag);
+		string owner = ownerCountry?.Name ?? "Unowned";
+		_ownerFlagFrame.Visible = ownerCountry != null;
+		_ownerFlag.Texture = HudStyle.Texture(ownerCountry?.CurrentFlag?.ImagePath);
+		_ownerFlag.TooltipText = ownerCountry?.CurrentFlag?.Name;
 		_subtitle.Text = p.IsWater ? (p.IsLake ? "Lake" : "Sea") : $"{owner} · {Capitalize(p.Terrain)}";
 		_tabs.SetTabHidden(1, p.IsWater);
 		_tabs.SetTabHidden(2, p.IsWater);
@@ -359,8 +376,10 @@ public partial class ProvincePanel : PanelContainer
 	{
 		var button = HudStyle.Button(text, BodyFont, 13);
 		button.SizeFlagsVertical = SizeFlags.ShrinkCenter;
-		string reason = "Nobody governs this province";
-		bool can = p.OwnerTag != null && BuildingRules.CanBuild(p, t, Builder.Government, out reason);
+		GameState gs = GameState.Instance;
+		string reason = p.OwnerTag == null ? "Nobody governs this province"
+			: $"Only the government of {gs.GetCountry(p.OwnerTag)?.Name} can build here";
+		bool can = p.OwnerTag != null && p.OwnerTag == gs.PlayerTag && BuildingRules.CanBuild(p, t, Builder.Government, out reason);
 		button.Disabled = !can;
 		button.TooltipText = can ? $"The government builds a {t.Name.ToLowerInvariant()} level" : reason;
 		int id = p.Id;

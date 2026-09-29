@@ -92,5 +92,46 @@ public sealed class ProvinceMap
 		return GetIdAtPixel((int)MathF.Floor(uv.X * Width), (int)MathF.Floor(uv.Y * Height));
 	}
 
+	Vector2[] _centroids;
+
+	/// <summary>
+	/// Centre of a province's pixels, in pixels, or null if it has none. Computed for all provinces on first
+	/// use. Provinces across the date line average around their first pixel's side of the map.
+	/// </summary>
+	public Vector2? GetCentroid(int id)
+	{
+		if (_centroids == null)
+		{
+			int max = 0;
+			foreach (int i in _ids)
+				max = Math.Max(max, i);
+			var sx = new double[max + 1];
+			var sy = new double[max + 1];
+			var n = new int[max + 1];
+			var firstX = new int[max + 1];
+			for (int y = 0; y < Height; y++)
+			{
+				for (int x = 0; x < Width; x++)
+				{
+					int i = _ids[y * Width + x];
+					if (n[i] == 0)
+						firstX[i] = x;
+					int dx = x - firstX[i];
+					int ux = dx > Width / 2 ? x - Width : dx < -Width / 2 ? x + Width : x;
+					sx[i] += ux + 0.5;
+					sy[i] += y + 0.5;
+					n[i]++;
+				}
+			}
+			var centroids = new Vector2[max + 1];
+			for (int i = 0; i <= max; i++)
+				centroids[i] = n[i] > 0 ? new Vector2((float)(sx[i] / n[i]), (float)(sy[i] / n[i])) : new Vector2(float.NaN, float.NaN);
+			_centroids = centroids;
+		}
+		if (id <= 0 || id >= _centroids.Length || float.IsNaN(_centroids[id].X))
+			return null;
+		return _centroids[id];
+	}
+
 	static uint Pack(byte r, byte g, byte b) => ((uint)r << 16) | ((uint)g << 8) | b;
 }

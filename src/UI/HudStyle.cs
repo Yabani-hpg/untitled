@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Godot;
 
 namespace Untitled.UI;
@@ -74,6 +75,35 @@ public static class HudStyle
 			b.AddThemeStyleboxOverride(state, s);
 		}
 		return b;
+	}
+
+	static readonly Dictionary<string, Texture2D> Textures = new();
+
+	/// <summary>An imported image (flag, portrait) by res:// path, cached; null if missing.</summary>
+	public static Texture2D Texture(string path)
+	{
+		if (string.IsNullOrEmpty(path))
+			return null;
+		if (!Textures.TryGetValue(path, out Texture2D texture))
+		{
+			texture = ResourceLoader.Exists(path) ? GD.Load<Texture2D>(path) : null;
+			Textures[path] = texture;
+		}
+		return texture;
+	}
+
+	/// <summary>A picture in a thin dark frame: a flag or a portrait.</summary>
+	public static PanelContainer Framed(TextureRect picture, float border = 2)
+	{
+		var frame = new PanelContainer { MouseFilter = Control.MouseFilterEnum.Pass };
+		var s = new StyleBoxFlat { BgColor = new Color(0.05f, 0.04f, 0.03f), BorderColor = new Color(0.75f, 0.6f, 0.32f, 0.9f) };
+		s.SetBorderWidthAll((int)border);
+		s.SetContentMarginAll(border);
+		frame.AddThemeStyleboxOverride("panel", s);
+		picture.ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize;
+		picture.StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered;
+		frame.AddChild(picture);
+		return frame;
 	}
 
 	/// <summary>A small square of colour, e.g. a culture's colour next to its name.</summary>

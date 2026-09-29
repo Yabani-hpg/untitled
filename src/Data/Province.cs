@@ -102,6 +102,21 @@ public sealed class Province
 		Name = name;
 		Terrain = terrain;
 		OwnerTag = ownerTag;
+		MapOwnerTag = ownerTag;
+	}
+
+	/// <summary>Owner as painted on the map (data/provinces.csv), before any start-of-game changes.</summary>
+	public string MapOwnerTag { get; }
+
+	/// <summary>Back to the map's state, with no people or production, before a new game's setup is applied.</summary>
+	internal void ClearForNewGame()
+	{
+		OwnerTag = MapOwnerTag;
+		Pops.Clear();
+		Buildings.Clear();
+		Features.Clear();
+		NonRenewable = null;
+		Food = null;
 	}
 
 	internal void AddNeighbor(Adjacency adjacency) => _neighbors.Add(adjacency);

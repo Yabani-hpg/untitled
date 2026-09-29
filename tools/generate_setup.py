@@ -111,6 +111,9 @@ def culture_of(tag, lon, lat):
 
 # grasslands that modern farmland hides on the satellite colours: (lon0, lat0, lon1, lat1)
 STEPPE_BOXES = [(28, 44, 60, 52.5), (-104, 33, -96, 50)]   # the Pontic-Caspian steppe, the Great Plains
+# river deltas and flood plains that were the most crowded farmland of the ancient world, whatever their
+# colour from space: the Nile Delta and Faiyum, Lower Mesopotamia (lon0, lat0, lon1, lat1)
+FLOODPLAIN_BOXES = [(29.8, 29.0, 32.4, 31.7), (44.0, 30.5, 48.5, 33.6)]
 
 
 def vegetation(rgb, lon, lat):
@@ -276,12 +279,16 @@ def main():
         tag = row["owner"]
         p = {"id": pid, "lon": float(lon[pid]), "lat": float(lat[pid])}
         p["veg"] = vegetation(tuple(color[pid]), p["lon"], p["lat"])
+        floodplain = any(x0 <= p["lon"] <= x1 and y0 <= p["lat"] <= y1 for x0, y0, x1, y1 in FLOODPLAIN_BOXES)
+        if floodplain:
+            p["veg"] = "farmland"
+        p["floodplain"] = floodplain
         features = []
         if p["veg"] != "farmland":
             features.append(p["veg"])
         if row["terrain"] in ("mountains", "hills"):
             features.append(row["terrain"])
-        if pid in river_link or river_count[pid] >= 3:
+        if pid in river_link or river_count[pid] >= 3 or floodplain:
             features.append("river")
         if pid in coast:
             features.append("coast")
@@ -291,7 +298,7 @@ def main():
         p["deposit"] = deposit_for(p)
 
         density = DENSITY[p["veg"]]
-        if p["veg"] == "desert" and "river" in features:
+        if p["floodplain"] or p["veg"] == "desert" and "river" in features:
             density = DENSITY["farmland"] * 5.0     # a flood plain in the desert (the Nile, the Euphrates) packs
                                                     # its people along the river, far above the desert average
         weight = density * DENSITY_TERRAIN.get(row["terrain"], 1.0) * CONTINENT_DENSITY[p["culture"]]

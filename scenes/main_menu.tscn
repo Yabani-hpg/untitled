@@ -14,6 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://dkindui63gkuy" path="res://gfx/interface/btn_normal.png" id="10_5dd4i"]
 [ext_resource type="Texture2D" uid="uid://bgs3h8jyumgus" path="res://gfx/interface/btn_hover.png" id="10_lgwnu"]
 [ext_resource type="Texture2D" uid="uid://dkqtdkc6hifd5" path="res://gfx/interface/btn_pressed.png" id="11_flqon"]
+[ext_resource type="Script" path="res://src/UI/MainMenuLoadOverlay.cs" id="12_loadoverlay"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_lgwnu"]
 render_priority = 10
@@ -218,6 +219,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+script = ExtResource("12_loadoverlay")
 
 [node name="Dim" type="ColorRect" parent="Overlay/LoadOverlay"]
 visible = false

@@ -58,6 +58,8 @@ public partial class TimeControls : PanelContainer
 			return;
 		GameState.Instance.DayAdvanced += RefreshDate;
 		GameState.Instance.ClockChanged += RefreshClock;
+		GameState.Instance.PhaseChanged += RefreshPhase;
+		RefreshPhase();
 		RefreshDate();
 		RefreshClock();
 	}
@@ -68,12 +70,16 @@ public partial class TimeControls : PanelContainer
 			return;
 		GameState.Instance.DayAdvanced -= RefreshDate;
 		GameState.Instance.ClockChanged -= RefreshClock;
+		GameState.Instance.PhaseChanged -= RefreshPhase;
 	}
+
+	/// <summary>Time stands still while the player picks a country.</summary>
+	void RefreshPhase() => Visible = GameState.Instance.Phase == GamePhase.Playing;
 
 	public override void _UnhandledKeyInput(InputEvent e)
 	{
 		GameState gs = GameState.Instance;
-		if (gs == null || e is not InputEventKey { Pressed: true, Echo: false } key)
+		if (gs == null || gs.Phase != GamePhase.Playing || e is not InputEventKey { Pressed: true, Echo: false } key)
 			return;
 		switch (key.Keycode)
 		{

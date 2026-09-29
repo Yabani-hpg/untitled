@@ -77,6 +77,18 @@ bool is_selected_province(vec2 p) {
     return all(lessThan(diff, vec3(0.5 / 255.0)));
 }
 
+// ===== Map modes (driven by src/Map/MapModes.cs) =====
+// province id under each pixel (low byte in R, high byte in G), and a colour per province id laid over the land
+uniform sampler2D province_ids : filter_nearest, repeat_enable;
+uniform sampler2D province_palette : source_color, filter_nearest, repeat_disable;
+uniform bool map_mode_enabled = false;
+
+vec4 province_palette_at(vec2 p) {
+    vec2 rg = floor(texture(province_ids, p).rg * 255.0 + 0.5);
+    int id = int(rg.r + rg.g * 256.0);
+    return texelFetch(province_palette, ivec2(id % 256, id / 256), 0);
+}
+
 // ===== Rivers (mask & materials) =====
 // IMPORTANT: import rivers.png with Filter=Nearest and Mipmaps=Off.
 uniform sampler2D river_mask_tex : source_color, filter_nearest, repeat_disable;
@@ -328,6 +340,19 @@ void fragment() {
     // compose color
     vec3 shore_mix = mix(sea_animated, land_col, land_mix);
     ALBEDO = mix(shore_mix, foam_color, foam_strength * foam_mask);
+
+    // map mode colours: blend the 4 nearest map texels' colours so province edges stay smooth up close
+    if (map_mode_enabled) {
+        vec2 size = vec2(textureSize(province_ids, 0));
+        vec2 st = uv * size - 0.5;
+        vec2 f = fract(st);
+        vec2 c = (floor(st) + 0.5) / size;
+        vec2 t = 1.0 / size;
+        vec4 col = mix(mix(province_palette_at(c), province_palette_at(c + vec2(t.x, 0.0)), f.x),
+                       mix(province_palette_at(c + vec2(0.0, t.y)), province_palette_at(c + t), f.x), f.y);
+        float a = col.a * land_mix * (1.0 - 0.6 * river_cov);
+        ALBEDO = mix(ALBEDO, col.rgb / max(col.a, 1e-3), a);
+    }
 
     // selected province: soft tint with a smooth edge (bilinear blend of the 4 nearest map texels);
     // the crisp outline comes from the border ribbons

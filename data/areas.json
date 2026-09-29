@@ -1,0 +1,22 @@
+{
+	"_comment": "Named groups of provinces, by province name (ids change when the map is regenerated; names don't). Conditions such as owns_area refer to them.",
+	"areas": {
+		"upper_egypt": [
+			"Ta-Seti (Abu)", "Wetjes-Hor (Behdet)", "Nekhen (Nekheb)", "Waset (Thebes)", "Harawi (Gebtu)", "Iqer (Iunet)",
+			"Bat (Hut-Sekhem)", "Ta-Wer (Tjeni)", "Min (Ipu)", "Wadjet (Tjebu)", "Set (Shashotep)", "Atfet (Per-Nemty)",
+			"Nedjfet-Khentet (Zawty)", "Nedjfet-Pehet (Qis)", "Wenet (Khemenu)", "Ma-Hedj (Hebenu)", "Input (Hardai)",
+			"Nemty (Hut-Nesut)", "Wabwy (Per-Medjed)", "Naret-Khentet (Henen-Nesut)", "Naret-Pehet (Shedet)", "Maten (Tepihu)"
+		],
+		"lower_egypt": [
+			"Ineb-Hedj (Memphis)", "Khensu (Khem)", "Imentet (Hut-Ihyt)", "Sap-Res (Djeqa)", "Sap-Meh (Sau)", "Khasu (Khasuu)",
+			"Ha-Imentet (Behdet-West)", "Ha-Iabet (Tjeku)", "Ati (Djedu)", "Ka-Kem (Hut-Heryib)", "Ka-Heseb (Taremu)",
+			"Theb-Ka (Tjebnutjer)", "Heqa-Andj (Iunu)", "Khent-Iabet (Tjaru)", "Tehut (Ba'h)", "Kha (Djedet)",
+			"Sema-Behdet (Paiuenamun)", "Imet-Khentet (Per-Bast)", "Imet-Pehet (Djanet)", "Sopdu (Per-Sopdu)"
+		],
+		"nubia": ["Wawat", "Kush (Batn el-Hajar)", "Kerma", "Napata", "Kurgus"],
+		"canaan": ["Gaza Strip", "HaDarom", "HaMerkaz", "HaZafon"],
+		"retjenu": [
+			"South Lebanon", "Beqaa", "North Lebanon", "Mount Lebanon", "Homs (Hims)", "Tartus", "Rif Dimashq", "Hamah", "Lattakia"
+		]
+	}
+}
