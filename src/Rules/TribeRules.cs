@@ -49,13 +49,17 @@ public static class TribeRules
 	public static void ChangeRelation(Tribe t, string tag, int delta) =>
 		t.Relations[tag] = Math.Clamp(t.RelationWith(tag) + delta, MinRelation, MaxRelation);
 
-	/// <summary>Regiments the tribe can put in the field (those hired out are away).</summary>
+	/// <summary>
+	/// Regiments the tribe can put in the field (those hired out are away). With no food left to keep
+	/// its war bands, only half of them turn out.
+	/// </summary>
 	public static int Warriors(Tribe t, IReadOnlyList<Province> provinces)
 	{
 		int w = 0;
 		foreach (int id in t.Provinces)
 			w += ControlRules.Warriors(provinces[id]);
-		return Math.Max(0, w - t.HiredRegiments);
+		w = Math.Max(0, w - t.HiredRegiments);
+		return EconomyRules.Starving(t) ? w / 2 : w;
 	}
 
 	public static int People(Tribe t, IReadOnlyList<Province> provinces) => t.Provinces.Sum(id => provinces[id].TotalUnits);
@@ -122,6 +126,8 @@ public static class TribeRules
 		reason = null;
 		if (t.AlliedTag != c.Tag)
 			reason = "Only our allies fight for us";
+		else if (c.Gold < regiments * EconomyRules.MercenaryPay)
+			reason = "We can't pay them";
 		else if (regiments < 1)
 			reason = "Hire at least one regiment";
 		else if (regiments > Hireable(t, provinces))
@@ -195,6 +201,8 @@ public static class TribeRules
 			p.TribeId = 0;
 		}
 		c.Manpower += t.HiredRegiments;
+		c.Gold += t.Food / EconomyRules.FoodPerGold;     // their stores, bartered into the treasury
+		t.Food = 0;
 		t.HiredRegiments = 0;
 		t.AlliedTag = null;
 		t.Provinces.Clear();

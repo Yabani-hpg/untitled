@@ -221,6 +221,20 @@ public partial class GameState
 		return accepted;
 	}
 
+	/// <summary>Sends a tribe gifts of gold, which they barter for food; they think better of us.</summary>
+	public bool SendGifts(int tribeId)
+	{
+		Country c = PlayerCountry;
+		Tribe t = GetTribe(tribeId);
+		if (c == null || t == null || c.Gold < EconomyRules.GiftGold)
+			return false;
+		c.Gold -= EconomyRules.GiftGold;
+		t.Food += EconomyRules.GiftGold * EconomyRules.FoodPerGold;
+		TribeRules.ChangeRelation(t, c.Tag, EconomyRules.GiftRelations);
+		EmitSignal(SignalName.TribesChanged);
+		return true;
+	}
+
 	public bool HireMercenaries(int tribeId, int regiments)
 	{
 		Country c = PlayerCountry;

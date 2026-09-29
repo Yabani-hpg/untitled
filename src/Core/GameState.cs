@@ -247,8 +247,16 @@ public partial class GameState : Node
 			reason = "Nobody governs this province";
 			return false;
 		}
+		Country owner = GetCountry(p.OwnerTag);
+		double cost = EconomyRules.BuildCost(p, type);
+		if (owner.Gold < cost)
+		{
+			reason = $"Costs {cost:0} gold; we have {owner.Gold:0}";
+			return false;
+		}
 		if (!BuildingRules.Build(p, type, Builder.Government, out reason))
 			return false;
+		owner.Gold -= cost;
 		EmitSignal(SignalName.ProvinceChanged, provinceId);
 		return true;
 	}
@@ -261,6 +269,11 @@ public partial class GameState : Node
 		int built = BuildingRules.PopulationBuildStep(_provinces, Definitions.Buildings);
 		RunControlStep();
 		RunTribeStep();
+		foreach (Country c in EconomyRules.MonthlyStep(_countries, _provinces, _tribes.Values, Definitions, Date))
+		{
+			if (c.Tag == PlayerTag)
+				Notify("Our treasury is empty: the mercenaries we could not pay have gone home.");
+		}
 		RefreshFlags();
 		if (Date.Holocene.Month == 1 && Phase == GamePhase.Playing)
 			SaveGames.Autosave(this);

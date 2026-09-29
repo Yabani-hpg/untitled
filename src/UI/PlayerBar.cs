@@ -97,8 +97,12 @@ public partial class PlayerBar : PanelContainer
 		_portrait.Texture = HudStyle.Texture(r?.Portrait);
 		string ruler = r == null ? c.Government : $"{c.RulerTitle} {r.Name}, age {r.AgeOn(gs.Date)}";
 		int mercs = Untitled.Rules.TribeRules.Mercenaries(gs.Tribes.Values, c.Tag);
-		_ruler.Text = $"{ruler}\nCapital: {gs.CapitalText(c)}\nManpower: {c.Manpower} of {c.MaxManpower} regiments" + (mercs > 0 ? $" · {mercs} mercenaries" : "");
-		_ruler.TooltipText = "Regiments of 1000 soldiers, raised from the people of our core provinces.\nArmies and garrisons are drawn from them; they refill over ten years.";
+		var ledger = Untitled.Rules.EconomyRules.MonthlyLedger(c, gs.ProvincesOf(c.Tag), gs.Tribes.Values, gs.Date);
+		_ruler.Text = $"{ruler}\nTreasury: {c.Gold:0} gold ({ledger.Balance:+0.0;-0.0} a month)"
+			+ $"\nManpower: {c.Manpower} of {c.MaxManpower} regiments" + (mercs > 0 ? $" · {mercs} mercenaries" : "");
+		_ruler.TooltipText = $"Capital: {gs.CapitalText(c)}\n\nGold a month:\n+{ledger.Tax:0.0} tax from our settled people (tribesmen and nomads pay none)"
+			+ $"\n-{ledger.Garrisons:0.0} garrisons\n-{ledger.Mercenaries:0.0} mercenaries\n\n"
+			+ "Manpower: regiments of 1000 soldiers raised from the people of our core provinces.\nArmies and garrisons are drawn from them; they refill over ten years.";
 		_ruler.MouseFilter = MouseFilterEnum.Pass;
 		_portrait.TooltipText = r?.FullName ?? r?.Name;
 	}

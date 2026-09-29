@@ -191,6 +191,15 @@ public partial class ProvincePanel : PanelContainer
 				Row(grid, "Features", string.Join(", ", p.Features.Select(Capitalize)));
 			Row(grid, "Food", p.Food?.Name ?? "None");
 			Row(grid, "Deposit", p.NonRenewable?.Name ?? "None");
+			if (p.Control != null)
+			{
+				int nomads = p.Pops.Where(g => g.Occupation.Nomadic).Sum(g => g.Units);
+				string note = nomads > 0 ? $" (its {nomads * PopGroup.PeoplePerUnit:N0} tribesmen pay none)" : "";
+				double separatism = ControlRules.Separatism(p, GameState.Instance.Date);
+				if (separatism > 0)
+					note += $", {separatism:P0} lost to separatism";
+				Row(grid, "Tax", $"{EconomyRules.Tax(p, GameState.Instance.Date):0.0} gold a month{note}");
+			}
 			Row(grid, "Pasture", $"{PopulationRules.PastureQuality(p):F2}");
 		}
 
@@ -297,6 +306,15 @@ public partial class ProvincePanel : PanelContainer
 		Fact($"{t.Provinces.Count} provinces · {TribeRules.People(t, provinces) * PopGroup.PeoplePerUnit:N0} people", HudStyle.Muted);
 		Fact($"{TribeRules.Warriors(t, provinces)} regiments of fierce warriors" + (t.HiredRegiments > 0 ? $" ({t.HiredRegiments} away as mercenaries)" : ""), HudStyle.Muted);
 		Fact($"Camp: {gs.GetProvince(t.CampProvinceId)?.Name}", HudStyle.Muted);
+		FoodLedger food = EconomyRules.MonthlyFood(t, provinces, gs.Definitions);
+		var stores = HudStyle.Body($"Food stores: {t.Food:0} ({food.Balance:+0.0;-0.0} a month)", BodyFont, 13,
+			EconomyRules.Starving(t) ? HudStyle.Bad : HudStyle.Text);
+		stores.TooltipText = $"Their treasury: food they barter with others and keep their war bands with.\n"
+			+ $"+{food.Surplus:0.0} surplus of their herds and fields\n-{food.WarBands:0.0} war bands at home"
+			+ (food.Barter > 0 ? $"\n+{food.Barter:0.0} bartered for their mercenaries' pay" : "")
+			+ (EconomyRules.Starving(t) ? "\nStarving: only half their warriors turn out" : "");
+		stores.MouseFilter = MouseFilterEnum.Pass;
+		facts.AddChild(stores);
 		if (gs.GetCountry(t.AlliedTag) is Country ally)
 			Fact($"Allied with {ally.Name} since {gs.Definitions.DefaultCalendar.Format(t.AlliedSince)}", HudStyle.Good);
 
@@ -319,6 +337,12 @@ public partial class ProvincePanel : PanelContainer
 			: court.Disabled ? $"All our {TribeRules.Diplomats} diplomats are busy" : $"Send a diplomat: +{TribeRules.ImproveRelationsPerMonth} relations a month ({TribeRules.Diplomats - player.ImprovingRelations.Count} free)";
 		court.Pressed += () => gs.SetImprovingRelations(t.Id, !courting);
 		relRow.AddChild(court);
+		var gifts = HudStyle.Button($"Gifts ({EconomyRules.GiftGold:0} gold)", BodyFont, 13);
+		gifts.Disabled = player.Gold < EconomyRules.GiftGold;
+		gifts.TooltipText = gifts.Disabled ? "We can't afford it"
+			: $"Gold they barter for {EconomyRules.GiftGold * EconomyRules.FoodPerGold:0} food: +{EconomyRules.GiftRelations} relations";
+		gifts.Pressed += () => gs.SendGifts(t.Id);
+		relRow.AddChild(gifts);
 
 		if (t.AlliedTag != player.Tag)
 		{
@@ -337,7 +361,8 @@ public partial class ProvincePanel : PanelContainer
 			hireRow.AddChild(count);
 			var hire = HudStyle.Button("Hire", BodyFont, 13);
 			hire.Disabled = hireable < 1;
-			hire.TooltipText = hireable < 1 ? "They will lend no more warriors" : $"They fight {ControlRules.FierceMultiplier}x as hard as our regiments; up to {hireable} more";
+			hire.TooltipText = hireable < 1 ? "They will lend no more warriors"
+				: $"They fight {ControlRules.FierceMultiplier}x as hard as our regiments; up to {hireable} more.\nPay: {EconomyRules.MercenaryPay} gold a month each, which they barter for food.";
 			hire.Pressed += () => gs.HireMercenaries(t.Id, (int)count.Value);
 			hireRow.AddChild(hire);
 			if (t.HiredRegiments > 0)
@@ -595,9 +620,16 @@ public partial class ProvincePanel : PanelContainer
 		GameState gs = GameState.Instance;
 		string reason = p.OwnerTag == null ? "Nobody governs this province"
 			: $"Only the government of {gs.GetCountry(p.OwnerTag)?.Name} can build here";
+		double cost = EconomyRules.BuildCost(p, t);
+		button.Text = $"{text} ({cost:0} gold)";
 		bool can = p.OwnerTag != null && p.OwnerTag == gs.PlayerTag && BuildingRules.CanBuild(p, t, Builder.Government, out reason);
+		if (can && gs.PlayerCountry.Gold < cost)
+		{
+			can = false;
+			reason = $"Costs {cost:0} gold; we have {gs.PlayerCountry.Gold:0}";
+		}
 		button.Disabled = !can;
-		button.TooltipText = can ? $"The government builds a {t.Name.ToLowerInvariant()} level" : reason;
+		button.TooltipText = can ? $"The government builds a {t.Name.ToLowerInvariant()} level for {cost:0} gold" : reason;
 		int id = p.Id;
 		string type = t.Id;
 		button.Pressed += () => GameState.Instance.GovernmentBuild(id, type, out _);

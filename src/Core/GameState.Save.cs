@@ -51,6 +51,7 @@ public partial class GameState
 			if (c.CapitalName != null) w.WriteString("capital_name", c.CapitalName);
 			if (c.Ruler != null) w.WriteNumber("ruler", c.Ruler.Id);
 			w.WriteNumber("manpower", c.Manpower);
+			w.WriteNumber("gold", c.Gold);
 			w.WriteStartArray("improving_relations");
 			foreach (int id in c.ImprovingRelations)
 				w.WriteNumberValue(id);
@@ -91,6 +92,7 @@ public partial class GameState
 				w.WriteNumber("refused_until", t.RefusedUntil.Day);
 			}
 			w.WriteNumber("hired", t.HiredRegiments);
+			w.WriteNumber("food", t.Food);
 			w.WriteEndObject();
 		}
 		w.WriteEndArray();
@@ -200,6 +202,7 @@ public partial class GameState
 			c.CapitalName = e.TryGetProperty("capital_name", out JsonElement cn) ? cn.GetString() : null;
 			c.Ruler = e.TryGetProperty("ruler", out JsonElement r) && _characters.TryGetValue(r.GetInt32(), out Character ruler) ? ruler : null;
 			c.Manpower = e.TryGetProperty("manpower", out JsonElement mp) ? mp.GetInt32() : 0;
+			c.Gold = e.TryGetProperty("gold", out JsonElement gd) ? gd.GetDouble() : c.StartingGold;
 			c.ImprovingRelations.Clear();
 			if (e.TryGetProperty("improving_relations", out JsonElement ir))
 			{
@@ -282,6 +285,7 @@ public partial class GameState
 					RefusedTag = e.TryGetProperty("refused", out JsonElement rf) ? rf.GetString() : null,
 					RefusedUntil = e.TryGetProperty("refused_until", out JsonElement rfu) ? new GameDate(rfu.GetInt64()) : default,
 					HiredRegiments = e.GetProperty("hired").GetInt32(),
+					Food = e.TryGetProperty("food", out JsonElement fd) ? fd.GetDouble() : 0,
 				};
 				foreach (JsonElement id in e.GetProperty("provinces").EnumerateArray())
 					t.Provinces.Add(id.GetInt32());
@@ -307,7 +311,10 @@ public partial class GameState
 		{
 			c.CurrentFlag = null;
 			c.MaxManpower = ControlRules.MaxManpower(ProvincesOf(c.Tag));
+			c.LastLedger = EconomyRules.MonthlyLedger(c, ProvincesOf(c.Tag), _tribes.Values, Date);
 		}
+		foreach (Tribe t in _tribes.Values)
+			t.LastFood = EconomyRules.MonthlyFood(t, _provinces, Definitions);
 		RefreshFlags(emit: false);
 		PlayerTag = save.GetProperty("player").GetString();
 		FocusedCountryTag = PlayerTag;

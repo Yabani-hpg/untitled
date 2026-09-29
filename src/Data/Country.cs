@@ -37,6 +37,13 @@ public sealed class Country
 	public int Manpower { get; set; }
 	/// <summary>The most regiments its core provinces can raise (updated monthly).</summary>
 	public int MaxManpower { get; set; }
+	/// <summary>The treasury, in gold (taxed from settled people).</summary>
+	public double Gold { get; set; }
+	/// <summary>Last month's accounts (tax, garrisons, mercenaries).</summary>
+	public Untitled.Rules.Ledger LastLedger { get; set; }
+	/// <summary>Gold at the start of a game (the "gold" of its country file).</summary>
+	public double StartingGold { get; set; } = Untitled.Rules.EconomyRules.StartingGold;
+
 	/// <summary>Tribes the country's diplomats are courting (improving relations with).</summary>
 	public HashSet<int> ImprovingRelations { get; } = new();
 

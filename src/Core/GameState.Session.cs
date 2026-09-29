@@ -130,9 +130,16 @@ public partial class GameState : IWorld
 			var owned = ProvincesOf(c.Tag).ToList();
 			c.MaxManpower = ControlRules.MaxManpower(owned);
 			c.Manpower = Math.Max(0, c.MaxManpower - owned.Sum(p => p.Control?.Garrison ?? 0));
+			c.Gold = owned.Count > 0 ? c.StartingGold : 0;
+			c.LastLedger = EconomyRules.MonthlyLedger(c, owned, Array.Empty<Tribe>(), Date);
 		}
 		CreateTribes();
 		SetUpTribeRelations();
+		foreach (Tribe t in _tribes.Values)
+		{
+			t.LastFood = EconomyRules.MonthlyFood(t, _provinces, Definitions);
+			t.Food = Math.Round(EconomyRules.FoodSurplus(t, _provinces, Definitions) * EconomyRules.StartingStoreMonths);
+		}
 		RefreshFlags(emit: false);
 		_rng = new Random(StableHash("new game"));
 

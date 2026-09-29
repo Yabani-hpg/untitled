@@ -140,6 +140,8 @@ public static partial class DataLoader
 
 		string Optional(string key) => e.TryGetProperty(key, out JsonElement v) ? v.GetString() : null;
 		country.Name = Optional("name") ?? country.Name;
+		if (e.TryGetProperty("gold", out JsonElement gold))
+			country.StartingGold = gold.GetDouble();
 		if (e.TryGetProperty("color", out _))
 			country.MapColor = ParseRgb(e, "color", path);
 		country.Adjective = Optional("adjective") ?? country.Name;

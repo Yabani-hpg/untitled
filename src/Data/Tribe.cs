@@ -44,6 +44,11 @@ public sealed class Tribe
 	/// <summary>Regiments of its warriors fighting for its ally as mercenaries.</summary>
 	public int HiredRegiments { get; set; }
 
+	/// <summary>The treasury of an unsettled people: stored food, which feeds its war bands and is bartered with others.</summary>
+	public double Food { get; set; }
+	/// <summary>Last month's food accounts.</summary>
+	public Untitled.Rules.FoodLedger LastFood { get; set; }
+
 	public bool IsNomadic => Kind == TribeKind.Nomadic;
 
 	/// <summary>"the Libu"</summary>
