@@ -21,8 +21,8 @@ public sealed record Occupation(string Id, string Name, bool Nomadic, Color Colo
 	public bool Taxed { get; init; } = true;
 	/// <summary>Answers the levy.</summary>
 	public bool Levied { get; init; } = true;
-	/// <summary>Research points a month per unit, for each kind of research.</summary>
-	public IReadOnlyDictionary<TechCategory, double> Research { get; init; } = new Dictionary<TechCategory, double>();
+	/// <summary>Research points a month per unit.</summary>
+	public double Research { get; init; }
 	/// <summary>Share of settled countries' settled people who have this occupation at the start.</summary>
 	public double StartShare { get; init; }
 }

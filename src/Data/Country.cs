@@ -58,12 +58,15 @@ public sealed class Country
 	public HashSet<string> Techs { get; } = new();
 	/// <summary>Points put into each technology not yet known (kept when research moves elsewhere).</summary>
 	public Dictionary<string, double> ResearchProgress { get; } = new();
-	/// <summary>The technology each kind of research flows into, if any.</summary>
-	public Dictionary<TechCategory, string> Researching { get; } = new();
-	/// <summary>Points of each kind stockpiled while nothing was being researched.</summary>
-	public Dictionary<TechCategory, double> ResearchStockpile { get; } = new();
-	/// <summary>Last month's research points of each kind.</summary>
-	public Dictionary<TechCategory, double> LastResearch { get; } = new();
+	/// <summary>
+	/// The technologies the country means to research, in order of priority. All research points flow
+	/// into the first one whose requirements are met.
+	/// </summary>
+	public List<string> ResearchQueue { get; } = new();
+	/// <summary>Research points stockpiled while nothing in the queue could be researched.</summary>
+	public double ResearchStockpile { get; set; }
+	/// <summary>Last month's research points.</summary>
+	public double LastResearch { get; set; }
 
 	/// <summary>Tribes the country's diplomats are courting (improving relations with).</summary>
 	public HashSet<int> ImprovingRelations { get; } = new();

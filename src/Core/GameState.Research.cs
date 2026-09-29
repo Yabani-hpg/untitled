@@ -7,44 +7,59 @@ using Untitled.Rules;
 
 namespace Untitled.Core;
 
-// Research: the three trees of technologies, the educated classes whose points drive them, and the
-// player's choices of what to research.
+// Research: the three trees of technologies, the educated classes whose points drive them all, and the
+// player's queue of what to research first.
 public partial class GameState
 {
-	/// <summary>A technology was discovered, or research was started or stopped.</summary>
+	/// <summary>A technology was discovered, or the research queue changed.</summary>
 	[Signal]
 	public delegate void ResearchChangedEventHandler();
 
-	/// <summary>The player puts a kind of research into a technology; the stockpile pours into it.</summary>
-	public bool SelectResearch(string techId, out string reason)
+	/// <summary>
+	/// The player queues a technology (with what it builds on): at the end of the queue, or at its front
+	/// to research it before anything else. A stockpile of research pours into it at once if it can.
+	/// </summary>
+	public bool QueueResearch(string techId, bool first, out string reason)
 	{
 		Country c = PlayerCountry;
 		Tech t = Definitions.GetTech(techId);
 		reason = null;
 		if (c == null || t == null)
-		{
 			reason = "Unknown technology";
+		else if (TechRules.Knows(c, t))
+			reason = $"We know {t.Name} already";
+		if (reason != null)
 			return false;
-		}
-		if (!TechRules.Select(c, t, this, out bool learned, out reason))
-			return false;
-		if (learned)
-			Discovered(c, t, fromStockpile: true);
+		TechRules.Queue(c, t, first);
+		PourStockpile(c);
 		EmitSignal(SignalName.ResearchChanged);
 		return true;
 	}
 
-	/// <summary>The player stops a kind of research: its points go to the stockpile, and the progress made is kept.</summary>
-	public void StopResearch(TechCategory category)
+	/// <summary>The player takes a technology (and what builds on it) out of the queue; its progress is kept.</summary>
+	public void DequeueResearch(string techId)
 	{
 		Country c = PlayerCountry;
-		if (c == null || !c.Researching.Remove(category))
+		Tech t = Definitions.GetTech(techId);
+		if (c == null || t == null || !c.ResearchQueue.Contains(t.Id))
 			return;
+		TechRules.Dequeue(c, t);
 		EmitSignal(SignalName.ResearchChanged);
 	}
 
+	/// <summary>The stockpile flows into the queue, as far as it can.</summary>
+	void PourStockpile(Country c)
+	{
+		double stock = c.ResearchStockpile;
+		if (stock <= 0)
+			return;
+		c.ResearchStockpile = 0;
+		foreach (Tech t in TechRules.Spend(c, stock, TechRules.AtWar(c, _armies.Values), this))
+			Discovered(c, t, fromStockpile: true);
+	}
+
 	/// <summary>A month's research points of the country (for the top bar and the research window).</summary>
-	public (Dictionary<TechCategory, double> Points, List<TechRules.Source> Sources) ResearchPoints(Country c) =>
+	public (double Points, List<TechRules.Source> Sources) ResearchPoints(Country c) =>
 		TechRules.MonthlyPoints(c, ProvincesOf(c.Tag).ToList(), _armies.Values);
 
 	void Discovered(Country c, Tech t, bool fromStockpile = false)
@@ -84,9 +99,9 @@ public partial class GameState
 	{
 		c.Techs.Clear();
 		c.ResearchProgress.Clear();
-		c.Researching.Clear();
-		c.ResearchStockpile.Clear();
-		c.LastResearch.Clear();
+		c.ResearchQueue.Clear();
+		c.ResearchStockpile = 0;
+		c.LastResearch = 0;
 		void Know(Tech t)
 		{
 			if (!c.Techs.Add(t.Id))

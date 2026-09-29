@@ -139,8 +139,7 @@ public partial class GameState : IWorld
 			var owned = ProvincesOf(c.Tag).ToList();
 			c.Gold = owned.Count > 0 ? c.StartingGold : 0;
 			c.LastLedger = EconomyRules.MonthlyLedger(c, owned, Array.Empty<Tribe>(), Array.Empty<Army>(), Date);
-			foreach (var (cat, points) in TechRules.MonthlyPoints(c, owned, Array.Empty<Army>()).Points)
-				c.LastResearch[cat] = points;
+			c.LastResearch = TechRules.MonthlyPoints(c, owned, Array.Empty<Army>()).Points;
 		}
 		CreateTribes();
 		SetUpTribeRelations();

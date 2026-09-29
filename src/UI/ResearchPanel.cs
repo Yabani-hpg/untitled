@@ -44,7 +44,7 @@ public partial class ResearchPanel : PanelContainer
 		var title = HudStyle.Title("Research", TitleFont, 26);
 		header.AddChild(title);
 		var intro = HudStyle.Body("  Our scribes, priests and scholars carry research; artisans, peasants and soldiers add a little. "
-			+ "Points flow into the technology chosen once its requirements are met; with nothing chosen, they are stockpiled for the next.",
+			+ "All technologies share the points: they flow into the first in our queue whose requirements are met; with none, they are stockpiled for the next.",
 			BodyFont, 12, HudStyle.Muted);
 		intro.AutowrapMode = TextServer.AutowrapMode.WordSmart;
 		intro.SizeFlagsHorizontal = SizeFlags.ExpandFill;
@@ -88,7 +88,7 @@ public partial class ResearchPanel : PanelContainer
 		var legend = new HBoxContainer();
 		legend.AddThemeConstantOverride("separation", 14);
 		root.AddChild(legend);
-		foreach (var (state, text) in new[] { (TechTree.State.Known, "Known"), (TechTree.State.Researching, "Researching"), (TechTree.State.Available, "Can be researched: click"), (TechTree.State.Locked, "Requirements not met") })
+		foreach (var (state, text) in new[] { (TechTree.State.Known, "Known"), (TechTree.State.Researching, "Researching"), (TechTree.State.Queued, "Queued"), (TechTree.State.Available, "Can be researched"), (TechTree.State.Locked, "Requirements not met") })
 		{
 			var swatch = new Panel { CustomMinimumSize = new Vector2(18, 12), SizeFlagsVertical = SizeFlags.ShrinkCenter };
 			swatch.AddThemeStyleboxOverride("panel", TechTree.Style(state, CategoryColors[TechCategory.Admin]));
@@ -118,23 +118,47 @@ public partial class ResearchPanel : PanelContainer
 		gs.PhaseChanged -= Hide;
 	}
 
-	/// <summary>Opens the window on a kind of research, or closes it if it is already showing that one.</summary>
-	public void Toggle(TechCategory category)
+	/// <summary>
+	/// Opens the window (on a kind of research, or on the one being researched), or closes it if it is
+	/// already showing that.
+	/// </summary>
+	public void Toggle(TechCategory? category = null)
 	{
-		int index = Array.IndexOf(TechRules.Categories, category);
-		Visible = !Visible || _tabs.CurrentTab != index;
+		GameState gs = GameState.Instance;
+		TechCategory cat = category ?? (gs?.PlayerCountry is Country c && TechRules.Current(c, gs) is Tech t ? t.Category : TechRules.Categories[_tabs.CurrentTab]);
+		int index = Array.IndexOf(TechRules.Categories, cat);
+		Visible = !Visible || category != null && _tabs.CurrentTab != index;
 		_tabs.CurrentTab = index;
 		_status.Text = "";
 		Refresh();
 	}
 
-	void OnChosen(string techId)
+	/// <summary>A click on a technology: left adds it to the queue, or if it is queued, makes it the priority; right takes it out.</summary>
+	void OnChosen(string techId, bool remove)
 	{
 		GameState gs = GameState.Instance;
+		Country c = gs.PlayerCountry;
 		Tech t = gs.Definitions.GetTech(techId);
-		_status.Text = gs.SelectResearch(techId, out string reason)
-			? TechRules.Knows(gs.PlayerCountry, t) ? $"{t.Name} discovered with the stockpiled research!" : $"Researching {t.Name}"
-			: reason;
+		if (remove)
+		{
+			if (c.ResearchQueue.Contains(techId))
+			{
+				gs.DequeueResearch(techId);
+				_status.Text = $"{t.Name} taken out of the queue (its progress is kept)";
+			}
+			return;
+		}
+		bool queued = c.ResearchQueue.Contains(techId);
+		int before = c.ResearchQueue.Count;
+		if (!gs.QueueResearch(techId, first: queued, out string reason))
+		{
+			_status.Text = reason;
+			return;
+		}
+		_status.Text = TechRules.Knows(c, t) ? $"{t.Name} discovered with the stockpiled research!"
+			: queued ? $"{t.Name} is now our first priority"
+			: c.ResearchQueue.Count - before > 1 ? $"{t.Name} queued, after {c.ResearchQueue.Count - before - 1} technologies it builds on"
+			: $"{t.Name} queued";
 	}
 
 	void Refresh()
@@ -150,22 +174,28 @@ public partial class ResearchPanel : PanelContainer
 		}
 		var (points, sources) = gs.ResearchPoints(c);
 		bool war = TechRules.AtWar(c, gs.Armies.Values);
+		_cards.AddChild(Summary(gs, c, points, sources, war));
+		_cards.AddChild(QueueCard(gs, c, points, war));
 		foreach (TechCategory cat in TechRules.Categories)
-		{
-			_cards.AddChild(Card(gs, c, cat, points[cat], sources, war));
 			_trees[cat].Build(gs, c);
-		}
 	}
 
-	/// <summary>A kind of research: its points, its stockpile and what it flows into.</summary>
-	Control Card(GameState gs, Country c, TechCategory cat, double points, List<TechRules.Source> sources, bool war)
+	static PanelContainer Card(Color accent, float width = 0)
 	{
-		var panel = new PanelContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+		var panel = new PanelContainer { SizeFlagsHorizontal = width > 0 ? SizeFlags.Fill : SizeFlags.ExpandFill, CustomMinimumSize = new Vector2(width, 0) };
 		var style = HudStyle.Section();
-		style.BorderColor = CategoryColors[cat];
+		style.BorderColor = accent;
 		style.SetBorderWidthAll(1);
 		style.BorderWidthTop = 3;
 		panel.AddThemeStyleboxOverride("panel", style);
+		return panel;
+	}
+
+	/// <summary>The research points, where they come from, the stockpile, and what they flow into now.</summary>
+	Control Summary(GameState gs, Country c, double points, List<TechRules.Source> sources, bool war)
+	{
+		Tech t = TechRules.Current(c, gs);
+		var panel = Card(t != null ? CategoryColors[t.Category] : HudStyle.Gold, 420);
 		var box = new VBoxContainer();
 		box.AddThemeConstantOverride("separation", 3);
 		panel.AddChild(box);
@@ -174,46 +204,111 @@ public partial class ResearchPanel : PanelContainer
 		box.AddChild(head);
 		head.AddChild(new TextureRect
 		{
-			Texture = HudStyle.Texture($"res://gfx/icons/{cat.ToString().ToLowerInvariant()}.png"),
+			Texture = HudStyle.Texture("res://gfx/icons/science.png"),
 			ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize,
 			StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered,
 			CustomMinimumSize = new Vector2(26, 26),
 		});
-		head.AddChild(HudStyle.Title($"{cat}", TitleFont, 17));
-		var rate = HudStyle.Body($"+{points:0.0} a month" + (cat == TechCategory.Military && war ? " (war +50%)" : ""), BodyFont, 14, HudStyle.Good);
+		head.AddChild(HudStyle.Title("Research points", TitleFont, 17));
+		var rate = HudStyle.Body($"+{points:0.0} a month", BodyFont, 14, HudStyle.Good);
 		rate.SizeFlagsHorizontal = SizeFlags.ExpandFill;
 		rate.HorizontalAlignment = HorizontalAlignment.Right;
 		rate.MouseFilter = MouseFilterEnum.Pass;
-		rate.TooltipText = "From:\n" + string.Join("\n", sources.Where(s => s.Points[cat] > 0.005)
-			.Select(s => $"  {s.Name} ({s.Units:0} {(s.Name.StartsWith("Soldiers") ? "regiments" : "units")}): +{s.Points[cat]:0.00}"))
+		rate.TooltipText = "From:\n" + string.Join("\n", sources.Where(s => s.Points > 0.005)
+			.Select(s => $"  {s.Name} ({s.Units:0} {(s.Name.StartsWith("Soldiers") ? "regiments" : "units")}): +{s.Points:0.00}"))
 			+ $"\nResearch modifiers: {LawRules.Mod(c, "research"):+0%;-0%;+0%}"
-			+ (cat == TechCategory.Military ? $"\nAt war (an army in the field): +{TechRules.WarMilitaryBoost:P0}{(war ? " now" : "")}" : "");
+			+ $"\nAt war (an army in the field), military technology is researched {TechRules.WarMilitaryBoost:P0} faster{(war ? ": we are at war" : "")}.";
 		head.AddChild(rate);
+		box.AddChild(HudStyle.Body("All technologies, military, admin and science, share these points.", BodyFont, 12, HudStyle.Muted));
 
-		Tech t = TechRules.Current(c, cat);
-		double stock = c.ResearchStockpile.GetValueOrDefault(cat);
 		if (t == null)
-			box.AddChild(HudStyle.Body("Researching nothing: the points are stockpiled", BodyFont, 13, HudStyle.Bad));
+			box.AddChild(HudStyle.Body(c.ResearchQueue.Count > 0 ? "Nothing in the queue can be researched yet: the points are stockpiled"
+				: "Researching nothing: the points are stockpiled", BodyFont, 13, HudStyle.Bad));
 		else
 		{
 			var row = new HBoxContainer();
 			box.AddChild(row);
-			var name = HudStyle.Body(t.Name, BodyFont, 14);
+			var name = HudStyle.Body($"{t.Name} ({t.Category.ToString().ToLowerInvariant()})", BodyFont, 14);
 			name.SizeFlagsHorizontal = SizeFlags.ExpandFill;
 			row.AddChild(name);
-			int? months = TechRules.MonthsLeft(c, t);
-			row.AddChild(HudStyle.Body($"{TechRules.Progress(c, t):0} / {t.Cost:0}" + (months is int m ? $" · {Duration(m)}" : ""), BodyFont, 12, HudStyle.Muted));
-			var stop = HudStyle.Button("Stop", BodyFont, 11);
-			stop.TooltipText = "Stop researching it: the points go to the stockpile, and the progress is kept";
-			stop.Pressed += () => gs.StopResearch(cat);
-			row.AddChild(stop);
+			int? months = TechRules.MonthsLeft(c, t, war);
+			row.AddChild(HudStyle.Body($"{TechRules.Progress(c, t):0} / {t.Cost:0}" + (months is int m ? $" · {Duration(m)}" : "")
+				+ (t.Category == TechCategory.Military && war ? " (war +50%)" : ""), BodyFont, 12, HudStyle.Muted));
 			box.AddChild(new ProgressBar
 			{
 				MinValue = 0, MaxValue = t.Cost, Value = TechRules.Progress(c, t), ShowPercentage = false,
 				CustomMinimumSize = new Vector2(0, 8),
 			});
 		}
-		box.AddChild(HudStyle.Body($"Stockpile: {stock:0} points", BodyFont, 12, stock >= 1 ? HudStyle.Gold : HudStyle.Muted));
+		box.AddChild(HudStyle.Body($"Stockpile: {c.ResearchStockpile:0} points", BodyFont, 12, c.ResearchStockpile >= 1 ? HudStyle.Gold : HudStyle.Muted));
+		return panel;
+	}
+
+	/// <summary>The queue in order of priority, with when each should be done at this pace.</summary>
+	Control QueueCard(GameState gs, Country c, double points, bool war)
+	{
+		var panel = Card(HudStyle.Gold);
+		var box = new VBoxContainer();
+		box.AddThemeConstantOverride("separation", 2);
+		panel.AddChild(box);
+		var head = new HBoxContainer();
+		box.AddChild(head);
+		head.AddChild(HudStyle.Title("Priorities", TitleFont, 17));
+		var hint = HudStyle.Body("  Click a technology to queue it (with what it builds on); click a queued one to put it first; right-click to take it out.",
+			BodyFont, 11, HudStyle.Muted);
+		hint.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+		hint.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+		head.AddChild(hint);
+		if (c.ResearchQueue.Count == 0)
+		{
+			box.AddChild(HudStyle.Body("The queue is empty.", BodyFont, 13, HudStyle.Bad));
+			return panel;
+		}
+		var flow = new HFlowContainer();
+		flow.AddThemeConstantOverride("h_separation", 4);
+		flow.AddThemeConstantOverride("v_separation", 4);
+		box.AddChild(flow);
+		double months = 0;
+		int n = 0;
+		Tech current = TechRules.Current(c, gs);
+		foreach (string id in c.ResearchQueue.ToList())
+		{
+			Tech t = gs.Definitions.GetTech(id);
+			if (t == null)
+				continue;
+			n++;
+			double rate = TechRules.Rate(c, t, points, war);
+			months += rate > 0 ? (t.Cost - TechRules.Progress(c, t)) / rate : double.PositiveInfinity;
+			var item = new PanelContainer { MouseFilter = MouseFilterEnum.Stop };
+			var style = new StyleBoxFlat { BgColor = new Color(0.16f, 0.12f, 0.08f, 0.95f), BorderColor = CategoryColors[t.Category] };
+			style.SetBorderWidthAll(t == current ? 2 : 1);
+			style.SetCornerRadiusAll(4);
+			style.ContentMarginLeft = style.ContentMarginRight = 6;
+			style.ContentMarginTop = style.ContentMarginBottom = 2;
+			item.AddThemeStyleboxOverride("panel", style);
+			var row = new HBoxContainer { MouseFilter = MouseFilterEnum.Ignore };
+			row.AddThemeConstantOverride("separation", 5);
+			item.AddChild(row);
+			bool ready = TechRules.CanResearch(c, t, gs, out string why);
+			var label = HudStyle.Body($"{n}. {t.Name}", BodyFont, 13, ready ? HudStyle.Text : HudStyle.Muted);
+			label.MouseFilter = MouseFilterEnum.Ignore;
+			row.AddChild(label);
+			var when = HudStyle.Body(double.IsInfinity(months) ? "" : Duration((int)Math.Ceiling(months)), BodyFont, 11, HudStyle.Muted);
+			when.MouseFilter = MouseFilterEnum.Ignore;
+			row.AddChild(when);
+			var up = HudStyle.Button("▲", BodyFont, 10);
+			up.TooltipText = "Research it first";
+			up.Disabled = n == 1;
+			up.Pressed += () => OnChosen(id, false);
+			row.AddChild(up);
+			var x = HudStyle.Button("✕", BodyFont, 10);
+			x.TooltipText = "Take it out of the queue (with what is queued after it that builds on it); its progress is kept";
+			x.Pressed += () => OnChosen(id, true);
+			row.AddChild(x);
+			item.TooltipText = $"{t.Name} ({t.Category}): {TechRules.Progress(c, t):0} of {t.Cost:0} points"
+				+ (t == current ? "\nOur research flows into it now." : ready ? "" : $"\nWaiting: {why}. The points go to the first technology after it that can take them.");
+			flow.AddChild(item);
+		}
 		return panel;
 	}
 
@@ -226,13 +321,13 @@ public partial class ResearchPanel : PanelContainer
 /// </summary>
 public partial class TechTree : Control
 {
-	public enum State { Known, Researching, Available, Locked }
+	public enum State { Known, Researching, Queued, Available, Locked }
 
 	public TechCategory Category { get; set; }
 	public Font BodyFont { get; set; }
 
-	/// <summary>A technology was clicked (by id).</summary>
-	public event Action<string> Chosen;
+	/// <summary>A technology was clicked (by id): left click, or right click (true).</summary>
+	public event Action<string, bool> Chosen;
 
 	const float NodeWidth = 188, NodeHeight = 66, ColumnGap = 64, RowGap = 12, Margin = 10;
 
@@ -255,6 +350,12 @@ public partial class TechTree : Control
 				s.BgColor = new Color(0.16f, 0.24f, 0.12f, 0.97f);
 				s.BorderColor = new Color(0.7f, 0.95f, 0.5f);
 				s.SetBorderWidthAll(3);
+				break;
+			case State.Queued:
+				s.BgColor = new Color(0.24f, 0.2f, 0.12f, 0.97f);
+				s.BorderColor = new Color(1f, 0.9f, 0.6f);
+				s.SetBorderWidthAll(2);
+				s.BorderWidthLeft = 6;
 				break;
 			case State.Available:
 				s.BgColor = new Color(0.22f, 0.17f, 0.1f, 0.97f);
@@ -308,12 +409,13 @@ public partial class TechTree : Control
 			}
 		}
 		Color accent = ResearchPanel.CategoryColors[Category];
-		Tech current = TechRules.Current(c, Category);
+		Tech current = TechRules.Current(c, gs);
 		foreach (Tech t in techs)
 		{
 			var rect = new Rect2(Margin + depth[t] * (NodeWidth + ColumnGap), Margin + rows[t] * (NodeHeight + RowGap), NodeWidth, NodeHeight);
 			_rects[t] = rect;
 			State state = TechRules.Knows(c, t) ? State.Known : t == current ? State.Researching
+				: c.ResearchQueue.Contains(t.Id) ? State.Queued
 				: TechRules.CanResearch(c, t, gs, out _) ? State.Available : State.Locked;
 			_states[t] = state;
 			AddChild(Node(gs, c, t, state, rect, accent));
@@ -338,7 +440,8 @@ public partial class TechTree : Control
 		string line = state switch
 		{
 			State.Known => "Known",
-			State.Researching => $"{progress:0} / {t.Cost:0}" + (TechRules.MonthsLeft(c, t) is int m ? $" · {(m < 24 ? $"{m} months" : $"{m / 12} years")}" : ""),
+			State.Researching => $"{progress:0} / {t.Cost:0}" + (TechRules.MonthsLeft(c, t, TechRules.AtWar(c, gs.Armies.Values)) is int m ? $" · {(m < 24 ? $"{m} months" : $"{m / 12} years")}" : ""),
+			State.Queued => $"#{c.ResearchQueue.IndexOf(t.Id) + 1} in the queue · {t.Cost:0} points" + (progress > 0 ? $" ({progress:0} done)" : ""),
 			_ => $"{t.Cost:0} points" + (progress > 0 ? $" ({progress:0} done)" : ""),
 		};
 		var status = HudStyle.Body(line, BodyFont, 11, state == State.Known ? accent.Lightened(0.45f) : HudStyle.Muted);
@@ -367,8 +470,8 @@ public partial class TechTree : Control
 		string id = t.Id;
 		node.GuiInput += e =>
 		{
-			if (e is InputEventMouseButton { Pressed: true, ButtonIndex: MouseButton.Left })
-				Chosen?.Invoke(id);
+			if (e is InputEventMouseButton { Pressed: true } mb && mb.ButtonIndex is MouseButton.Left or MouseButton.Right)
+				Chosen?.Invoke(id, mb.ButtonIndex == MouseButton.Right);
 		};
 		return node;
 	}
@@ -388,9 +491,10 @@ public partial class TechTree : Control
 		lines.Add(state switch
 		{
 			State.Known => "We know it.",
-			State.Researching => "Our research of this kind flows into it.",
-			State.Available => "Click to research it" + (c.ResearchStockpile.GetValueOrDefault(t.Category) >= 1 ? $": our stockpile of {c.ResearchStockpile[t.Category]:0} points pours into it." : "."),
-			_ => TechRules.CanResearch(c, t, gs, out string why) ? "" : why,
+			State.Researching => "Our research flows into it now. Right-click to take it out of the queue.",
+			State.Queued => "Queued. Click to research it first; right-click to take it out.",
+			State.Available => "Click to queue it" + (c.ResearchStockpile >= 1 ? $": our stockpile of {c.ResearchStockpile:0} points pours into the queue." : "."),
+			_ => (TechRules.CanResearch(c, t, gs, out string why) ? "" : why + ". ") + "Click to queue it with the technologies it builds on.",
 		});
 		return string.Join("\n", lines);
 	}

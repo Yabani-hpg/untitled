@@ -1,16 +1,16 @@
 [
 	{ "id": "peasants", "name": "Peasants", "nomadic": false, "color": "#b08a4e",
-	  "research": { "military": 0.003, "admin": 0.003, "science": 0.004 },
-	  "_comment": "Occupations. nomadic: roams with the herds. taxed (default: not nomadic): pays tax. levied (default true): answers the levy. research: points a month per unit (1000 people) for each kind of research (military, admin, science): the educated class carries research, artisans and peasants add a little. start_share: share of the settled people of settled countries' core provinces who have this occupation at the start (taken from the peasants, the largest provinces first)." },
+	  "research": 0.01,
+	  "_comment": "Occupations. nomadic: roams with the herds. taxed (default: not nomadic): pays tax. levied (default true): answers the levy. research: research points a month per unit (1000 people); all technologies draw on the same points. The educated class carries research, artisans and peasants add a little. start_share: share of the settled people of settled countries' core provinces who have this occupation at the start (taken from the peasants, the largest provinces first)." },
 	{ "id": "tribesmen", "name": "Tribesmen", "nomadic": true, "color": "#7a5a3a",
-	  "research": { "military": 0.003, "admin": 0.0005, "science": 0.0015 } },
+	  "research": 0.005 },
 	{ "id": "artisans", "name": "Artisans", "nomadic": false, "color": "#c0703a", "start_share": 0.05,
-	  "research": { "military": 0.02, "admin": 0.005, "science": 0.03 },
+	  "research": 0.055,
 	  "description": "Smiths, potters, carpenters and weavers of the towns. Their workshops now and then turn up a better way of doing things." },
 	{ "id": "scribes", "name": "Scribes", "nomadic": false, "color": "#d8c690", "levied": false, "start_share": 0.012,
-	  "research": { "military": 0.1, "admin": 0.6, "science": 0.3 },
+	  "research": 1.0,
 	  "description": "The educated class of the state: scribes, scholars and officials who keep the records, the law and the accounts." },
 	{ "id": "priests", "name": "Priests", "nomadic": false, "color": "#e8e2d0", "levied": false, "taxed": false, "start_share": 0.012,
-	  "research": { "military": 0.05, "admin": 0.25, "science": 0.55 },
+	  "research": 0.85,
 	  "description": "Servants of the gods and keepers of learning: they watch the stars, heal the sick and teach. Temples pay no tax." }
 ]

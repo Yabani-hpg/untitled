@@ -60,14 +60,11 @@ public partial class GameState
 			foreach (var (t, points) in c.ResearchProgress)
 				w.WriteNumber(t, Math.Round(points, 3));
 			w.WriteEndObject();
-			w.WriteStartObject("researching");
-			foreach (var (cat, t) in c.Researching)
-				w.WriteString(cat.ToString().ToLowerInvariant(), t);
-			w.WriteEndObject();
-			w.WriteStartObject("research_stockpile");
-			foreach (var (cat, points) in c.ResearchStockpile)
-				w.WriteNumber(cat.ToString().ToLowerInvariant(), Math.Round(points, 3));
-			w.WriteEndObject();
+			w.WriteStartArray("research_queue");
+			foreach (string t in c.ResearchQueue)
+				w.WriteStringValue(t);
+			w.WriteEndArray();
+			w.WriteNumber("research_stockpile", Math.Round(c.ResearchStockpile, 3));
 			w.WriteNumber("next_army", c.NextArmyNumber);
 			w.WriteStartObject("levy_template");
 			foreach (var (unit, share) in c.LevyTemplate)
@@ -264,8 +261,8 @@ public partial class GameState
 				// saves from before research keep the new game's knowledge
 				c.Techs.Clear();
 				c.ResearchProgress.Clear();
-				c.Researching.Clear();
-				c.ResearchStockpile.Clear();
+				c.ResearchQueue.Clear();
+				c.ResearchStockpile = 0;
 				foreach (JsonElement t in techs.EnumerateArray())
 				{
 					if (Definitions.GetTech(t.GetString()) != null)
@@ -278,13 +275,26 @@ public partial class GameState
 					if (Definitions.GetTech(t.Name) != null)
 						c.ResearchProgress[t.Name] = t.Value.GetDouble();
 				}
-				foreach (JsonProperty rs in e.GetProperty("researching").EnumerateObject())
+				if (e.TryGetProperty("research_queue", out JsonElement queue))
 				{
-					if (Definitions.GetTech(rs.Value.GetString()) != null)
-						c.Researching[Tech.ParseCategory(rs.Name, "save")] = rs.Value.GetString();
+					foreach (JsonElement t in queue.EnumerateArray())
+					{
+						if (Definitions.GetTech(t.GetString()) != null && !c.Techs.Contains(t.GetString()))
+							c.ResearchQueue.Add(t.GetString());
+					}
 				}
-				foreach (JsonProperty st in e.GetProperty("research_stockpile").EnumerateObject())
-					c.ResearchStockpile[Tech.ParseCategory(st.Name, "save")] = st.Value.GetDouble();
+				else if (e.TryGetProperty("researching", out JsonElement researching))
+				{
+					// saves from when each kind of research ran on its own: what each was researching, queued
+					foreach (JsonProperty rs in researching.EnumerateObject())
+					{
+						if (Definitions.GetTech(rs.Value.GetString()) != null)
+							c.ResearchQueue.Add(rs.Value.GetString());
+					}
+				}
+				if (e.TryGetProperty("research_stockpile", out JsonElement stock))
+					c.ResearchStockpile = stock.ValueKind == JsonValueKind.Number ? stock.GetDouble()
+						: stock.EnumerateObject().Sum(st => st.Value.GetDouble());
 			}
 			c.LevyTemplate.Clear();
 			if (e.TryGetProperty("levy_template", out JsonElement lt))
@@ -473,8 +483,7 @@ public partial class GameState
 		{
 			c.CurrentFlag = null;
 			c.LastLedger = EconomyRules.MonthlyLedger(c, ProvincesOf(c.Tag), _tribes.Values, _armies.Values, Date);
-			foreach (var (cat, points) in TechRules.MonthlyPoints(c, ProvincesOf(c.Tag).ToList(), _armies.Values).Points)
-				c.LastResearch[cat] = points;
+			c.LastResearch = TechRules.MonthlyPoints(c, ProvincesOf(c.Tag).ToList(), _armies.Values).Points;
 		}
 		foreach (Tribe t in _tribes.Values)
 			t.LastFood = EconomyRules.MonthlyFood(t, _provinces, Definitions);

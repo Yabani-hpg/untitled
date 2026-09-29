@@ -7,18 +7,19 @@ using Untitled.Data;
 namespace Untitled.Rules;
 
 /// <summary>
-/// Research. A settled country's people produce research points of three kinds (military, admin,
-/// science) each month: its educated class (scribes, priests) most of them, artisans, peasants and
-/// soldiers under arms a little. Points of a kind flow into the technology the country researches in it,
-/// once it meets that technology's requirements; with nothing to research, they pile up in a stockpile,
-/// without limit, and pour into the next technology chosen. At war (with levies in the field), military
-/// research runs faster.
+/// Research. A settled country's people produce research points each month: its educated class
+/// (scribes, priests) most of them, artisans, peasants and soldiers under arms a little. All technologies,
+/// military, admin and science alike, draw on the same points, so the country must choose what comes
+/// first: it keeps a queue of technologies in order of priority, and the points flow into the first one
+/// whose requirements are met. With nothing to research, they pile up in a stockpile, without limit, and
+/// pour into the next technology that can take them. At war (with levies in the field), research into
+/// military technology runs faster.
 /// </summary>
 public static class TechRules
 {
-	/// <summary>Military research points a month for each regiment under arms: soldiers learn their trade.</summary>
+	/// <summary>Research points a month for each regiment under arms: soldiers learn their trade.</summary>
 	public const double SoldierResearch = 0.02;
-	/// <summary>Military research at war (with an army in the field) is this much faster.</summary>
+	/// <summary>At war (with an army in the field), research into a military technology is this much faster.</summary>
 	public const double WarMilitaryBoost = 0.5;
 
 	public static TechCategory[] Categories { get; } = Enum.GetValues<TechCategory>();
@@ -46,41 +47,35 @@ public static class TechRules
 	public static bool AtWar(Country c, IEnumerable<Army> armies) => armies.Any(a => a.OwnerTag == c.Tag && a.Regiments.Count > 0);
 
 	/// <summary>One source of a month's research points, for the tooltips.</summary>
-	public readonly record struct Source(string Name, double Units, Dictionary<TechCategory, double> Points);
+	public readonly record struct Source(string Name, double Units, double Points);
 
 	/// <summary>
-	/// A month's research points of each kind, and where they come from: the occupations of the country's
-	/// people, its soldiers, times its research modifiers, and the war boost to military research.
+	/// A month's research points and where they come from: the occupations of the country's people and
+	/// its soldiers, times its research modifiers. (The war boost applies only to military technology.)
 	/// </summary>
-	public static (Dictionary<TechCategory, double> Points, List<Source> Sources) MonthlyPoints(Country c, IEnumerable<Province> owned, IEnumerable<Army> armies)
+	public static (double Points, List<Source> Sources) MonthlyPoints(Country c, IEnumerable<Province> owned, IEnumerable<Army> armies)
 	{
-		var sources = new Dictionary<Occupation, (double Units, Dictionary<TechCategory, double> Points)>();
+		var units = new Dictionary<Occupation, double>();
 		foreach (Province p in owned)
 		{
 			foreach (PopGroup pop in p.Pops)
 			{
-				if (pop.Occupation.Research.Count == 0)
-					continue;
-				if (!sources.TryGetValue(pop.Occupation, out var s))
-					sources[pop.Occupation] = s = (0, Categories.ToDictionary(k => k, _ => 0.0));
-				foreach (var (cat, perUnit) in pop.Occupation.Research)
-					s.Points[cat] += pop.Units * perUnit;
-				sources[pop.Occupation] = (s.Units + pop.Units, s.Points);
+				if (pop.Occupation.Research > 0)
+					units[pop.Occupation] = units.GetValueOrDefault(pop.Occupation) + pop.Units;
 			}
 		}
-		var list = sources.OrderByDescending(kv => kv.Value.Points.Values.Sum())
-			.Select(kv => new Source(kv.Key.Name, kv.Value.Units, kv.Value.Points)).ToList();
-		var armyList = armies.Where(a => a.OwnerTag == c.Tag).ToList();
-		int soldiers = armyList.Sum(a => a.Regiments.Count) + owned.Sum(p => p.Control?.Garrison.Count ?? 0);
+		var sources = units.Select(kv => new Source(kv.Key.Name, kv.Value, kv.Value * kv.Key.Research))
+			.OrderByDescending(s => s.Points).ToList();
+		int soldiers = armies.Where(a => a.OwnerTag == c.Tag).Sum(a => a.Regiments.Count) + owned.Sum(p => p.Control?.Garrison.Count ?? 0);
 		if (soldiers > 0)
-			list.Add(new Source("Soldiers under arms", soldiers, Categories.ToDictionary(k => k, k => k == TechCategory.Military ? soldiers * SoldierResearch : 0)));
-
+			sources.Add(new Source("Soldiers under arms", soldiers, soldiers * SoldierResearch));
 		double bonus = 1 + Math.Max(-0.9, LawRules.Mod(c, "research"));
-		bool war = AtWar(c, armyList);
-		var points = Categories.ToDictionary(k => k,
-			k => list.Sum(s => s.Points[k]) * bonus * (k == TechCategory.Military && war ? 1 + WarMilitaryBoost : 1));
-		return (points, list);
+		return (sources.Sum(s => s.Points) * bonus, sources);
 	}
+
+	/// <summary>How fast points flow into a technology: military technology faster at war.</summary>
+	public static double Rate(Country c, Tech t, double points, bool atWar) =>
+		points * (t.Category == TechCategory.Military && atWar ? 1 + WarMilitaryBoost : 1);
 
 	/// <summary>Whether research points can flow into the technology: not known yet, its requirements met.</summary>
 	public static bool CanResearch(Country c, Tech t, IWorld world, out string reason)
@@ -88,7 +83,7 @@ public static class TechRules
 		reason = null;
 		if (Knows(c, t))
 			reason = "Already known";
-		else if (t.Requires.FirstOrDefault(r => !Knows(c, r)) is Tech missing)
+		else if (t.Requires.Any(r => !Knows(c, r)))
 			reason = $"Requires {string.Join(", ", t.Requires.Where(r => !Knows(c, r)).Select(r => r.Name))}";
 		else if (t.Condition != null && !t.Condition.Holds(world, c))
 			reason = $"Requires: {t.ConditionText ?? "conditions we don't meet"}";
@@ -97,29 +92,52 @@ public static class TechRules
 
 	public static double Progress(Country c, Tech t) => c.ResearchProgress.GetValueOrDefault(t.Id);
 
-	public static Tech Current(Country c, TechCategory cat) =>
-		c.Researching.TryGetValue(cat, out string id) ? Defs?.GetTech(id) : null;
+	/// <summary>The technology research points flow into now: the first in the queue that can take them.</summary>
+	public static Tech Current(Country c, IWorld world) =>
+		c.ResearchQueue.Select(id => Defs?.GetTech(id)).FirstOrDefault(t => t != null && CanResearch(c, t, world, out _));
 
 	/// <summary>
-	/// Research of a kind now flows into <paramref name="t"/>; the stockpile of that kind pours into it at
-	/// once (what it doesn't need stays). <paramref name="learned"/>: the stockpile was enough to finish it.
+	/// Puts a technology in the queue, after the technologies it builds on that are not known or queued
+	/// yet (so a far technology can be aimed at). <paramref name="first"/>: at the front, before
+	/// everything else. Returns the technologies added.
 	/// </summary>
-	public static bool Select(Country c, Tech t, IWorld world, out bool learned, out string reason)
+	public static List<Tech> Queue(Country c, Tech t, bool first)
 	{
-		learned = false;
-		if (!CanResearch(c, t, world, out reason))
-			return false;
-		c.Researching[t.Category] = t.Id;
-		double stock = c.ResearchStockpile.GetValueOrDefault(t.Category);
-		double used = Math.Min(stock, t.Cost - Progress(c, t));
-		c.ResearchStockpile[t.Category] = stock - used;
-		c.ResearchProgress[t.Id] = Progress(c, t) + used;
-		if (Progress(c, t) >= t.Cost - 1e-6)
+		var chain = new List<Tech>();
+		void Add(Tech x)
 		{
-			Learn(c, t);
-			learned = true;
+			if (Knows(c, x) || chain.Contains(x))
+				return;
+			x.Requires.ForEach(Add);
+			chain.Add(x);
 		}
-		return true;
+		Add(t);
+		if (first)
+		{
+			c.ResearchQueue.RemoveAll(id => chain.Exists(x => x.Id == id));
+			c.ResearchQueue.InsertRange(0, chain.Select(x => x.Id));
+			return chain;
+		}
+		var added = chain.Where(x => !c.ResearchQueue.Contains(x.Id)).ToList();
+		c.ResearchQueue.AddRange(added.Select(x => x.Id));
+		return added;
+	}
+
+	/// <summary>Takes a technology out of the queue, with those queued that build on it. Its progress is kept.</summary>
+	public static void Dequeue(Country c, Tech t)
+	{
+		var gone = new HashSet<string> { t.Id };
+		bool more = true;
+		while (more)
+		{
+			more = false;
+			foreach (string id in c.ResearchQueue)
+			{
+				if (!gone.Contains(id) && Defs.GetTech(id)?.Requires.Any(r => gone.Contains(r.Id)) == true)
+					more = gone.Add(id);
+			}
+		}
+		c.ResearchQueue.RemoveAll(gone.Contains);
 	}
 
 	/// <summary>The country knows the technology now.</summary>
@@ -127,59 +145,59 @@ public static class TechRules
 	{
 		c.Techs.Add(t.Id);
 		c.ResearchProgress.Remove(t.Id);
-		if (c.Researching.TryGetValue(t.Category, out string id) && id == t.Id)
-			c.Researching.Remove(t.Category);
+		c.ResearchQueue.Remove(t.Id);
 	}
 
 	/// <summary>The technologies a country could put points into now, cheapest first.</summary>
-	public static List<Tech> Available(Country c, IWorld world, TechCategory? cat = null) =>
-		Defs.Techs.Where(t => (cat == null || t.Category == cat) && CanResearch(c, t, world, out _)).OrderBy(t => t.Cost - Progress(c, t)).ToList();
+	public static List<Tech> Available(Country c, IWorld world) =>
+		Defs.Techs.Where(t => CanResearch(c, t, world, out _)).OrderBy(t => t.Cost - Progress(c, t)).ToList();
 
 	/// <summary>
-	/// One month for a country: its points of each kind flow into its research, or into the stockpile if
-	/// it researches nothing it can. Countries run by the game pick the cheapest technology.
-	/// Returns the technologies it discovered.
+	/// Spends points on the queue: they flow into the first technology that can take them; one finished,
+	/// what is left flows on to the next. Points nothing can take go to the stockpile. Returns the
+	/// technologies discovered.
 	/// </summary>
-	public static List<Tech> MonthlyStep(Country c, IReadOnlyCollection<Province> owned, IEnumerable<Army> armies, IWorld world, bool player)
+	public static List<Tech> Spend(Country c, double points, bool atWar, IWorld world)
 	{
 		var learned = new List<Tech>();
-		var (points, _) = MonthlyPoints(c, owned, armies);
-		foreach (TechCategory cat in Categories)
+		while (points > 1e-9 && Current(c, world) is Tech t)
 		{
-			c.LastResearch[cat] = points[cat];
-			Tech t = Current(c, cat);
-			if (t != null && !CanResearch(c, t, world, out _))
+			// a military technology at war takes in points faster: work out how many of ours it needs
+			double factor = Rate(c, t, 1, atWar);
+			double need = (t.Cost - Progress(c, t)) / factor;
+			if (points < need)
 			{
-				c.Researching.Remove(cat);        // it no longer qualifies (or is known): points go to the stockpile
-				t = null;
+				c.ResearchProgress[t.Id] = Progress(c, t) + points * factor;
+				return learned;
 			}
-			if (t == null && !player && Available(c, world, cat).FirstOrDefault() is Tech pick)
-			{
-				c.Researching[cat] = pick.Id;
-				t = pick;
-			}
-			if (t == null)
-			{
-				c.ResearchStockpile[cat] = c.ResearchStockpile.GetValueOrDefault(cat) + points[cat];
-				continue;
-			}
-			// a month's points; any beyond what it needs are kept in the stockpile
-			double need = t.Cost - Progress(c, t);
-			c.ResearchProgress[t.Id] = Progress(c, t) + Math.Min(points[cat], need);
-			if (points[cat] >= need)
-			{
-				c.ResearchStockpile[cat] = c.ResearchStockpile.GetValueOrDefault(cat) + points[cat] - need;
-				Learn(c, t);
-				learned.Add(t);
-			}
+			points -= need;
+			Learn(c, t);
+			learned.Add(t);
 		}
+		c.ResearchStockpile += points;
 		return learned;
 	}
 
-	/// <summary>Months until the technology is known at this month's pace, or null if no points come.</summary>
-	public static int? MonthsLeft(Country c, Tech t)
+	/// <summary>
+	/// One month for a country: its points, and its stockpile if it has one, flow into its queue.
+	/// Countries run by the game queue the cheapest technology when theirs is empty.
+	/// </summary>
+	public static List<Tech> MonthlyStep(Country c, IReadOnlyCollection<Province> owned, IEnumerable<Army> armies, IWorld world, bool player)
 	{
-		double rate = c.LastResearch.GetValueOrDefault(t.Category);
+		var armyList = armies.ToList();
+		var (points, _) = MonthlyPoints(c, owned, armyList);
+		c.LastResearch = points;
+		if (!player && Current(c, world) == null && Available(c, world).FirstOrDefault() is Tech pick)
+			Queue(c, pick, first: false);
+		double stock = c.ResearchStockpile;
+		c.ResearchStockpile = 0;
+		return Spend(c, points + stock, AtWar(c, armyList), world);
+	}
+
+	/// <summary>Months until the technology is known at last month's pace, if all points went to it; null if none come.</summary>
+	public static int? MonthsLeft(Country c, Tech t, bool atWar)
+	{
+		double rate = Rate(c, t, c.LastResearch, atWar);
 		return rate <= 0 ? null : (int)Math.Ceiling((t.Cost - Progress(c, t)) / rate);
 	}
 

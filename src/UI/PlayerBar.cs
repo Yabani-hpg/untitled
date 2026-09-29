@@ -10,7 +10,7 @@ namespace Untitled.UI;
 
 /// <summary>
 /// The bar across the top of the screen: the player's country (flag, name, ruler's portrait) and its
-/// resources: gold, population, the three kinds of research, and its soldiers. Clicking the country opens
+/// resources: gold, population, research, and its soldiers. Clicking the country opens
 /// the country window; clicking research opens the research trees.
 /// </summary>
 public partial class PlayerBar : PanelContainer
@@ -26,13 +26,6 @@ public partial class PlayerBar : PanelContainer
 	Label _name;
 	Label _ruler;
 	readonly Dictionary<string, (Control Box, Label Value, Label Detail)> _chips = new();
-
-	static readonly Dictionary<TechCategory, string> ResearchIcons = new()
-	{
-		[TechCategory.Military] = "military",
-		[TechCategory.Admin] = "admin",
-		[TechCategory.Science] = "science",
-	};
 
 	public override void _Ready()
 	{
@@ -73,11 +66,7 @@ public partial class PlayerBar : PanelContainer
 		row.AddChild(chips);
 		Chip(chips, "gold", "gold", () => CountryPanel()?.Toggle(0), 88);
 		Chip(chips, "population", "population", () => CountryPanel()?.Toggle(0), 88);
-		foreach (var (cat, icon) in ResearchIcons)
-		{
-			TechCategory c = cat;
-			Chip(chips, icon, icon, () => ResearchPanel()?.Toggle(c), 106);
-		}
+		Chip(chips, "research", "science", () => ResearchPanel()?.Toggle(), 190);
 		Chip(chips, "army", "army", () => CountryPanel()?.Toggle(2), 84);
 
 		GameState gs = GameState.Instance;
@@ -210,17 +199,17 @@ public partial class PlayerBar : PanelContainer
 
 		var (points, sources) = gs.ResearchPoints(c);
 		bool war = TechRules.AtWar(c, gs.Armies.Values);
-		foreach (var (cat, icon) in ResearchIcons)
-		{
-			Tech t = TechRules.Current(c, cat);
-			double stock = c.ResearchStockpile.GetValueOrDefault(cat);
-			string detail = t != null ? $"{TechRules.Progress(c, t) / t.Cost:P0} {t.Name}" : stock >= 1 ? $"{stock:0} stored" : "nothing chosen";
-			string tip = $"{cat} research: +{points[cat]:0.0} points a month" + (cat == TechCategory.Military && war ? " (at war: +50%)" : "")
-				+ "\n" + string.Join("\n", sources.Where(s => s.Points[cat] > 0.005).Select(s => $"  {s.Name}: +{s.Points[cat]:0.00}"))
-				+ (t != null ? $"\n\nResearching {t.Name}: {TechRules.Progress(c, t):0} of {t.Cost:0}" : "\n\nNothing is being researched: the points are stockpiled.")
-				+ (stock >= 1 ? $"\nStockpile: {stock:0} points" : "") + "\n\nClick to open the research trees.";
-			Set(icon, $"+{points[cat]:0.0}", detail, tip, t == null ? HudStyle.Bad : HudStyle.Muted);
-		}
+		Tech t = TechRules.Current(c, gs);
+		double stock = c.ResearchStockpile;
+		string detail = t != null ? $"{TechRules.Progress(c, t) / t.Cost:P0} {t.Name}" : stock >= 1 ? $"{stock:0} stored" : "nothing chosen";
+		string tip = $"Research: +{points:0.0} points a month, shared by all technologies"
+			+ "\n" + string.Join("\n", sources.Where(s => s.Points > 0.005).Select(s => $"  {s.Name}: +{s.Points:0.00}"))
+			+ (t != null ? $"\n\nResearching {t.Name} ({t.Category}): {TechRules.Progress(c, t):0} of {t.Cost:0}"
+				+ (t.Category == TechCategory.Military && war ? "\nAt war: military research +50%" : "")
+				: "\n\nNothing is being researched: the points are stockpiled.")
+			+ (c.ResearchQueue.Count > 1 ? $"\nThen: {string.Join(", ", c.ResearchQueue.Skip(1).Take(4).Select(id => gs.Definitions.GetTech(id)?.Name))}" : "")
+			+ (stock >= 1 ? $"\nStockpile: {stock:0} points" : "") + "\n\nClick to open the research trees.";
+		Set("research", $"+{points:0.0}", detail, tip, t == null ? HudStyle.Bad : HudStyle.Muted);
 
 		int under = MilitaryRules.UnderArms(c, gs.Armies.Values, owned);
 		int mercs = TribeRules.Mercenaries(gs.Tribes.Values, c.Tag);
