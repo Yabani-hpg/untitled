@@ -1,0 +1,4 @@
+[
+	{ "id": "peasants", "name": "Peasants", "nomadic": false, "color": "#b08a4e" },
+	{ "id": "tribesmen", "name": "Tribesmen", "nomadic": true, "color": "#7a5a3a" }
+]

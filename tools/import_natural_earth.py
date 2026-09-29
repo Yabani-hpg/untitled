@@ -9,7 +9,8 @@ Inputs (the .zip downloads from https://www.naturalearthdata.com, or the .shp in
 
 Outputs (all regenerated; hand edits are overwritten):
   map/rivers.png, map/heightmapps.png (G/B fields via bake_map_fields.py), map/provinces.png,
-  data/provinces.csv, data/countries.json, data/adjacencies.csv
+  data/provinces.csv, data/countries.json, data/adjacencies.csv,
+  data/province_setup.json (populations, resources, buildings; via generate_setup.py)
 
 Region overrides in tools/data/regions/*.json (see ne_regions.py) then replace the provinces in
 their area with hand-authored regions, e.g. the nomes of Ancient Egypt. Finally, ruler-straight
@@ -36,6 +37,7 @@ from PIL import Image
 from scipy.ndimage import distance_transform_edt, gaussian_filter
 
 import bake_map_fields
+import generate_setup
 import ne_adjacency
 import ne_regions
 import ne_smooth
@@ -274,7 +276,9 @@ def main():
           f"{int((sizes < MIN_PROVINCE_PX).sum())} under {MIN_PROVINCE_PX} px (islands and microstates)")
     print(f"{len(adjacency)} adjacencies: {sum(1 for r in adjacency if r[3])} river crossings, "
           f"{sum(1 for r in adjacency if r[4])} navigable river links")
-    return 0
+
+    # province ids changed: regenerate the starting populations and resources
+    return generate_setup.main()
 
 
 if __name__ == "__main__":

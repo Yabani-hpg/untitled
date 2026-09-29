@@ -1,0 +1,65 @@
+{
+	"_comment": "Production buildings. produces/consumes: per level per month (\"$non_renewable\" = the province's non-renewable resource). jobs: population units of an occupation employed per level. requires: province features (any of), food resources (any of), non-renewable resources (any of). builders: who may build it. population_builds: the population builds it by itself once it has at least min_units of the occupation. model: city view model.",
+	"buildings": [
+		{
+			"id": "woodcutter", "name": "Woodcutter's Camp", "model": "woodcutter",
+			"produces": { "wood": 2.0 }, "jobs": { "occupation": "peasants", "units": 1 },
+			"requires": { "features": ["forest"] },
+			"builders": ["government", "population"], "population_builds": { "occupation": "peasants", "min_units": 3 }
+		},
+		{
+			"id": "trapper", "name": "Trapper's Lodge", "model": "trapper",
+			"produces": { "fur": 1.0 }, "jobs": { "occupation": "tribesmen", "units": 1 },
+			"requires": { "features": ["forest", "tundra"] },
+			"builders": ["government", "population"], "population_builds": { "occupation": "tribesmen", "min_units": 2 }
+		},
+		{
+			"id": "tannery", "name": "Tannery", "model": "tannery",
+			"produces": { "leather": 1.0 }, "jobs": { "occupation": "peasants", "units": 1 },
+			"requires": { "food": ["cattle", "sheep", "horses"] },
+			"builders": ["government", "population"], "population_builds": { "occupation": "peasants", "min_units": 4 }
+		},
+		{
+			"id": "weaver", "name": "Weaver's Hall", "model": "weaver",
+			"produces": { "cloth": 1.0 }, "jobs": { "occupation": "peasants", "units": 1 },
+			"requires": { "food": ["sheep"] },
+			"builders": ["government", "population"], "population_builds": { "occupation": "peasants", "min_units": 4 }
+		},
+		{
+			"id": "potter", "name": "Potter's Kiln", "model": "kiln",
+			"produces": { "pottery": 1.0 }, "jobs": { "occupation": "peasants", "units": 1 },
+			"requires": { "features": ["river"] },
+			"builders": ["government", "population"], "population_builds": { "occupation": "peasants", "min_units": 5 }
+		},
+		{
+			"id": "smithy", "name": "Smithy", "model": "smithy",
+			"produces": { "tools": 1.0 }, "consumes": { "iron": 1.0, "wood": 1.0 }, "jobs": { "occupation": "peasants", "units": 1 },
+			"requires": { "non_renewable": ["iron"] },
+			"builders": ["government"]
+		},
+		{
+			"id": "foundry", "name": "Bronze Foundry", "model": "smithy",
+			"produces": { "bronze": 1.0 }, "consumes": { "copper": 1.0, "wood": 1.0 }, "jobs": { "occupation": "peasants", "units": 1 },
+			"requires": { "non_renewable": ["copper"] },
+			"builders": ["government"]
+		},
+		{
+			"id": "mine", "name": "Mine", "model": "mine",
+			"produces": { "$non_renewable": 1.0 }, "jobs": { "occupation": "peasants", "units": 1 },
+			"requires": { "non_renewable": ["gold", "silver", "copper", "tin", "iron", "salt"] },
+			"builders": ["government"]
+		},
+		{
+			"id": "quarry", "name": "Quarry", "model": "quarry",
+			"produces": { "stone": 2.0 }, "jobs": { "occupation": "peasants", "units": 1 },
+			"requires": { "non_renewable": ["stone"] },
+			"builders": ["government", "population"], "population_builds": { "occupation": "peasants", "min_units": 6 }
+		},
+		{
+			"id": "bitumen_pit", "name": "Bitumen Pit", "model": "pit",
+			"produces": { "crude_oil": 0.5 }, "jobs": { "occupation": "peasants", "units": 1 },
+			"requires": { "non_renewable": ["crude_oil"] },
+			"builders": ["government"]
+		}
+	]
+}

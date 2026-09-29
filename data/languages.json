@@ -1,0 +1,16 @@
+{
+	"families": [
+		{ "id": "indo_european", "name": "Indo-European" },
+		{ "id": "sino_tibetan", "name": "Sino-Tibetan" },
+		{ "id": "niger_congo", "name": "Niger-Congo" },
+		{ "id": "algic", "name": "Algic" },
+		{ "id": "quechuan", "name": "Quechuan" }
+	],
+	"languages": [
+		{ "id": "old_european", "name": "Old European", "family": "indo_european" },
+		{ "id": "old_asian", "name": "Old Asian", "family": "sino_tibetan" },
+		{ "id": "old_african", "name": "Old African", "family": "niger_congo" },
+		{ "id": "old_north_american", "name": "Old North American", "family": "algic" },
+		{ "id": "old_south_american", "name": "Old South American", "family": "quechuan" }
+	]
+}

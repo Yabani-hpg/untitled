@@ -1,0 +1,32 @@
+{
+	"_comment": "category: non_renewable (deposits in the ground), food (farmed or herded), produced (made by buildings; origin natural or manufactured). food_yield: food per working population unit per month; worked_by: occupations that work the food slot.",
+	"resources": [
+		{ "id": "gold", "name": "Gold", "category": "non_renewable", "color": "#e3b52b" },
+		{ "id": "silver", "name": "Silver", "category": "non_renewable", "color": "#c8ccd2" },
+		{ "id": "copper", "name": "Copper", "category": "non_renewable", "color": "#c26b35" },
+		{ "id": "tin", "name": "Tin", "category": "non_renewable", "color": "#8f9aa3" },
+		{ "id": "iron", "name": "Iron", "category": "non_renewable", "color": "#6b5549" },
+		{ "id": "stone", "name": "Stone", "category": "non_renewable", "color": "#9b958a" },
+		{ "id": "salt", "name": "Salt", "category": "non_renewable", "color": "#e8e4dc" },
+		{ "id": "crude_oil", "name": "Crude Oil", "category": "non_renewable", "color": "#1d1a18" },
+
+		{ "id": "wheat", "name": "Wheat", "category": "food", "food_yield": 1.2, "worked_by": ["peasants"], "color": "#d8b653" },
+		{ "id": "rice", "name": "Rice", "category": "food", "food_yield": 1.5, "worked_by": ["peasants"], "color": "#e9e2c4" },
+		{ "id": "corn", "name": "Corn", "category": "food", "food_yield": 1.3, "worked_by": ["peasants"], "color": "#e8c33a" },
+		{ "id": "millet", "name": "Millet", "category": "food", "food_yield": 1.0, "worked_by": ["peasants"], "color": "#c9a86a" },
+		{ "id": "potatoes", "name": "Potatoes", "category": "food", "food_yield": 1.3, "worked_by": ["peasants"], "color": "#a8844f" },
+		{ "id": "dates", "name": "Dates", "category": "food", "food_yield": 0.9, "worked_by": ["peasants", "tribesmen"], "color": "#7b4a25" },
+		{ "id": "fish", "name": "Fish", "category": "food", "food_yield": 1.0, "worked_by": ["peasants", "tribesmen"], "color": "#5f8fb0" },
+		{ "id": "cattle", "name": "Cattle", "category": "food", "food_yield": 1.0, "worked_by": ["tribesmen", "peasants"], "color": "#8b5e3c" },
+		{ "id": "sheep", "name": "Sheep", "category": "food", "food_yield": 0.8, "worked_by": ["tribesmen", "peasants"], "color": "#ece7da" },
+		{ "id": "horses", "name": "Horses", "category": "food", "food_yield": 0.7, "worked_by": ["tribesmen"], "color": "#6e4b30" },
+
+		{ "id": "wood", "name": "Wood", "category": "produced", "origin": "natural", "color": "#7a5230" },
+		{ "id": "fur", "name": "Fur", "category": "produced", "origin": "natural", "color": "#5b4636" },
+		{ "id": "leather", "name": "Leather", "category": "produced", "origin": "manufactured", "color": "#96602f" },
+		{ "id": "cloth", "name": "Cloth", "category": "produced", "origin": "manufactured", "color": "#d9cdb4" },
+		{ "id": "pottery", "name": "Pottery", "category": "produced", "origin": "manufactured", "color": "#b5643a" },
+		{ "id": "tools", "name": "Tools", "category": "produced", "origin": "manufactured", "color": "#5d6670" },
+		{ "id": "bronze", "name": "Bronze", "category": "produced", "origin": "manufactured", "color": "#b07b3c" }
+	]
+}

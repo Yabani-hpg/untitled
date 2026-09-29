@@ -1,0 +1,7 @@
+[
+	{ "id": "european", "name": "European", "color": "#4f7cc1", "language": "old_european", "art_style": "european" },
+	{ "id": "asian", "name": "Asian", "color": "#c9463d", "language": "old_asian", "art_style": "asian" },
+	{ "id": "african", "name": "African", "color": "#d19a2e", "language": "old_african", "art_style": "african" },
+	{ "id": "north_american", "name": "North American", "color": "#3f9a5b", "language": "old_north_american", "art_style": "north_american" },
+	{ "id": "south_american", "name": "South American", "color": "#8e4fb8", "language": "old_south_american", "art_style": "south_american" }
+]

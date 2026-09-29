@@ -11,7 +11,7 @@ public sealed class DataException : Exception
 }
 
 /// <summary>Parses the definition files in res://data. Throws <see cref="DataException"/> with file and line on bad input.</summary>
-public static class DataLoader
+public static partial class DataLoader
 {
 	public const string ProvincesPath = "res://data/provinces.csv";
 	public const string CountriesPath = "res://data/countries.json";
