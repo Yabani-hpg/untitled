@@ -44,7 +44,8 @@ void vertex() {
 
     vec3 world = (MODEL_MATRIX * vec4(center, 1.0)).xyz;
     float dist = length(CAMERA_POSITION_WORLD - world);
-    float world_per_px = 2.0 * dist / (PROJECTION_MATRIX[1][1] * VIEWPORT_SIZE.y);
+    // abs: the Compatibility renderer flips Y, which makes this projection term negative
+    float world_per_px = 2.0 * dist / (abs(PROJECTION_MATRIX[1][1]) * VIEWPORT_SIZE.y);
 
     bool selected = selected_province >= 0.0
         && (abs(UV2.x - selected_province) < 0.5 || abs(UV2.y - selected_province) < 0.5);

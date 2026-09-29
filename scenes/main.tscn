@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://cyfurr3kc6nlw"]
+[gd_scene load_steps=42 format=3 uid="uid://cyfurr3kc6nlw"]
 
 [ext_resource type="Script" uid="uid://2unnrnjnrqwe" path="res://scenes/camera_rig.gd" id="1_ig7tw"]
 [ext_resource type="Texture2D" uid="uid://cd4qk132laylx" path="res://map/landmap.png" id="3_jkv2x"]
@@ -8,6 +8,10 @@
 [ext_resource type="Texture2D" uid="uid://b6bjrqvhbc0x2" path="res://map/normalmap.png" id="5_5vw27"]
 [ext_resource type="Shader" path="res://shaders/globe.gdshader" id="25_globeshader"]
 [ext_resource type="Shader" path="res://shaders/space.gdshader" id="26_spaceshader"]
+[ext_resource type="Script" path="res://src/Map/MapLabels.cs" id="27_labels"]
+[ext_resource type="Shader" path="res://shaders/map_label.gdshader" id="28_labelshader"]
+[ext_resource type="FontFile" path="res://ui/Cinzel.ttf" id="29_cinzel"]
+[ext_resource type="FontFile" path="res://ui/Manrope.ttf" id="30_manrope"]
 [ext_resource type="Texture2D" uid="uid://7nal0a0dhm2u" path="res://map/terrain/detail_sand_grain.png" id="5_efxa6"]
 [ext_resource type="Script" uid="uid://cw55i23cpdk5r" path="res://script/minimap.gd" id="6_7mycd"]
 [ext_resource type="Texture2D" uid="uid://bofvl6t4udo1v" path="res://map/minimap.png" id="6_272bh"]
@@ -321,6 +325,13 @@ FlatWorldPath = NodePath("../Earth/FlatWorld")
 script = ExtResource("23_borders")
 FlatWorldPath = NodePath("../Earth/FlatWorld")
 BorderShader = ExtResource("24_bordershader")
+
+[node name="MapLabels" type="Node3D" parent="."]
+script = ExtResource("27_labels")
+FlatWorldPath = NodePath("../Earth/FlatWorld")
+LabelShader = ExtResource("28_labelshader")
+LabelFont = ExtResource("29_cinzel")
+FallbackFont = ExtResource("30_manrope")
 
 [node name="ProvinceHighlight" type="Node" parent="."]
 script = ExtResource("21_highlight")
