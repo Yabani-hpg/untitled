@@ -15,6 +15,7 @@ public static partial class DataLoader
 	public const string ResourcesPath = "res://data/resources.json";
 	public const string BuildingsPath = "res://data/buildings.json";
 	public const string ProvinceSetupPath = "res://data/province_setup.json";
+	public const string CalendarsPath = "res://data/calendars.json";
 
 	public static Definitions LoadDefinitions()
 	{
@@ -83,7 +84,43 @@ public static partial class DataLoader
 		foreach (var (where, e) in ReadJsonArray(BuildingsPath, "buildings"))
 			defs.Buildings.Add(ParseBuilding(e, where, defs, buildingIds));
 
+		foreach (var (where, e) in ReadJsonArray(CalendarsPath, "calendars"))
+			defs.Calendars.Add(ParseCalendar(e, where, defs.Calendars));
+		int defaults = defs.Calendars.FindAll(c => c.IsDefault).Count;
+		if (defaults != 1 || defs.DefaultCalendar.RequiresFlag != null)
+			throw new DataException($"{CalendarsPath}: exactly one calendar must be the default, and it must need no flag");
+
 		return defs;
+	}
+
+	static Calendar ParseCalendar(JsonElement e, string where, List<Calendar> existing)
+	{
+		string id = GetString(e, "id", where);
+		if (existing.Exists(c => c.Id == id))
+			throw new DataException($"{where}: duplicate calendar '{id}'");
+		string kind = GetString(e, "kind", where);
+		var months = GetStringList(e, "months", where);
+		if (months.Count != 0 && months.Count != 12)
+			throw new DataException($"{where}: 'months' must list 12 names");
+		e.TryGetProperty("adopted_by", out JsonElement adopted);
+		return new Calendar
+		{
+			Id = id,
+			Name = GetString(e, "name", where),
+			Kind = kind switch
+			{
+				"solar" => CalendarKind.Solar,
+				"hijri" => CalendarKind.Hijri,
+				_ => throw new DataException($"{where}: unknown calendar kind '{kind}'"),
+			},
+			YearOffset = (long)GetFloat(e, "year_offset", 0f),
+			Era = GetString(e, "era", where),
+			EraBefore = e.TryGetProperty("era_before", out JsonElement before) ? before.GetString() : null,
+			Months = months.Count == 12 ? months : Calendar.GregorianMonths,
+			RequiresFlag = e.TryGetProperty("requires_flag", out JsonElement flag) ? flag.GetString() : null,
+			AdoptedByReligions = GetStringList(adopted, "religions", where),
+			IsDefault = e.TryGetProperty("default", out JsonElement def) && def.ValueKind == JsonValueKind.True,
+		};
 	}
 
 	static BuildingType ParseBuilding(JsonElement e, string where, Definitions defs, HashSet<string> ids)

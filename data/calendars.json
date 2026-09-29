@@ -1,0 +1,26 @@
+{
+	"_comment": "Calendars the date can be shown in. The game clock counts days in the Holocene calendar (holocene year = astronomical year + 10000, so 8801 HE = 1200 BC and 10001 HE = 1 AD); every other calendar is a conversion of it. kind: solar (Gregorian months and leap years, year = astronomical year + year_offset; no year 0) or hijri (the tabular Islamic lunar calendar). era_before: era for years before 1, counted backwards with no year 0 (BC, before the founding of Rome, before the Hijra). requires_flag: the calendar stays disabled until this world flag is set by an event. adopted_by: countries whose main religion is listed use it. default: the calendar used when no other applies.",
+	"calendars": [
+		{
+			"id": "gregorian", "name": "Gregorian", "kind": "solar", "default": true,
+			"year_offset": 0, "era": "AD", "era_before": "BC"
+		},
+		{
+			"id": "holocene", "name": "Holocene", "kind": "solar",
+			"year_offset": 10000, "era": "HE"
+		},
+		{
+			"id": "auc", "name": "Ab Urbe Condita", "kind": "solar",
+			"year_offset": 753, "era": "AUC", "era_before": "BUC",
+			"months": ["Ianuarius", "Februarius", "Martius", "Aprilis", "Maius", "Iunius", "Iulius", "Augustus", "September", "October", "November", "December"],
+			"requires_flag": "founding_of_rome"
+		},
+		{
+			"id": "hijri", "name": "Hijri", "kind": "hijri",
+			"era": "AH", "era_before": "BH",
+			"months": ["Muharram", "Safar", "Rabi' al-Awwal", "Rabi' al-Thani", "Jumada al-Ula", "Jumada al-Akhirah", "Rajab", "Sha'ban", "Ramadan", "Shawwal", "Dhu al-Qa'dah", "Dhu al-Hijjah"],
+			"requires_flag": "hijra",
+			"adopted_by": { "religions": ["islam"] }
+		}
+	]
+}

@@ -204,6 +204,9 @@ public partial class CityView : Control
 		// the map camera listens to keys too; keep them for the city while it is open
 		if (e is InputEventKey key)
 		{
+			// time controls keep working while the city is shown
+			if (key.Keycode is Key.Space or Key.Plus or Key.Equal or Key.KpAdd or Key.Minus or Key.KpSubtract)
+				return;
 			if (key.Pressed && key.Keycode == Key.Escape)
 				Close();
 			GetViewport().SetInputAsHandled();

@@ -92,6 +92,11 @@ public sealed class Definitions
 	public Dictionary<string, ResourceType> Resources { get; } = new();
 	/// <summary>In file order, which is also the order they are listed and produced in.</summary>
 	public List<BuildingType> Buildings { get; } = new();
+	/// <summary>In file order.</summary>
+	public List<Calendar> Calendars { get; } = new();
+
+	/// <summary>The calendar used when no other applies.</summary>
+	public Calendar DefaultCalendar => Calendars.Find(c => c.IsDefault);
 
 	public BuildingType GetBuilding(string id) => Buildings.Find(b => b.Id == id);
 }

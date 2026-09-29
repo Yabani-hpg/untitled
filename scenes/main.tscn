@@ -25,7 +25,7 @@
 [ext_resource type="Script" path="res://src/Map/ProvincePicker.cs" id="20_picker"]
 [ext_resource type="Script" path="res://src/Map/ProvinceHighlight.cs" id="21_highlight"]
 [ext_resource type="Script" path="res://src/UI/ProvincePanel.cs" id="22_provpanel"]
-[ext_resource type="Script" path="res://src/UI/DateBar.cs" id="31_datebar"]
+[ext_resource type="Script" path="res://src/UI/TimeControls.cs" id="31_timecontrols"]
 [ext_resource type="Script" path="res://src/UI/CityView.cs" id="32_cityview"]
 [ext_resource type="Script" path="res://src/Map/ProvinceBorders.cs" id="23_borders"]
 [ext_resource type="Shader" path="res://shaders/province_border.gdshader" id="24_bordershader"]
@@ -352,16 +352,16 @@ TitleFont = ExtResource("29_cinzel")
 BodyFont = ExtResource("30_manrope")
 CityViewPath = NodePath("../CityView")
 
-[node name="DateBar" type="PanelContainer" parent="HudLayer"]
+[node name="TimeControls" type="PanelContainer" parent="HudLayer"]
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -300.0
+offset_left = -380.0
 offset_top = 16.0
 offset_right = -16.0
 offset_bottom = 60.0
 grow_horizontal = 0
-script = ExtResource("31_datebar")
+script = ExtResource("31_timecontrols")
 TitleFont = ExtResource("29_cinzel")
 BodyFont = ExtResource("30_manrope")
 

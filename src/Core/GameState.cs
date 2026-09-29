@@ -25,12 +25,26 @@ public partial class GameState : Node
 	[Signal]
 	public delegate void ProvinceChangedEventHandler(int provinceId);
 
-	/// <summary>A month passed: nomads migrated and populations built; any province may have changed.</summary>
+	/// <summary>A day passed (one tick).</summary>
+	[Signal]
+	public delegate void DayAdvancedEventHandler();
+
+	/// <summary>A new month began: nomads migrated and populations built; any province may have changed.</summary>
 	[Signal]
 	public delegate void MonthAdvancedEventHandler();
 
-	/// <summary>The game starts in 1000 BC; years before Christ are negative, with no year 0.</summary>
-	public const int StartYear = -1000;
+	/// <summary>The clock was paused or resumed, or its speed changed.</summary>
+	[Signal]
+	public delegate void ClockChangedEventHandler();
+
+	/// <summary>1 January 8801 HE, i.e. 1 January 1200 BC: the Bronze Age collapse.</summary>
+	public static readonly GameDate StartDate = GameDate.FromHolocene(8801, 1, 1);
+
+	public const int MinSpeed = 1;
+	public const int MaxSpeed = 5;
+	/// <summary>Real seconds per game day at each speed, as in Paradox games: speed 1 ticks a day a second,
+	/// speed 5 ticks as fast as the game can (a day every frame).</summary>
+	static readonly double[] SecondsPerDay = { 0, 1.0, 0.5, 0.2, 0.1, 0.0 };
 
 	/// <summary>Indexed by province id. Slot 0 and any unused ids are null.</summary>
 	public IReadOnlyList<Province> Provinces => _provinces;
@@ -39,9 +53,17 @@ public partial class GameState : Node
 	public Texture2D ProvinceMapTexture { get; private set; }
 	public Definitions Definitions { get; private set; } = new();
 
-	public int Year { get; private set; } = StartYear;
-	/// <summary>1..12</summary>
-	public int Month { get; private set; } = 1;
+	/// <summary>Today. Counted in days; the Holocene calendar governs, other calendars convert from it.</summary>
+	public GameDate Date { get; private set; } = StartDate;
+	public bool Paused { get; private set; } = true;
+	/// <summary><see cref="MinSpeed"/>..<see cref="MaxSpeed"/></summary>
+	public int Speed { get; private set; } = MinSpeed;
+
+	/// <summary>World flags set by events, e.g. "hijra", which enables the Hijri calendar.</summary>
+	public IReadOnlySet<string> WorldFlags => _worldFlags;
+
+	readonly HashSet<string> _worldFlags = new();
+	double _sinceTick;
 
 	/// <summary><see cref="ProvinceMap.NoProvince"/> when nothing is selected.</summary>
 	public int SelectedProvinceId { get; private set; } = ProvinceMap.NoProvince;
@@ -118,9 +140,86 @@ public partial class GameState : Node
 		EmitSignal(SignalName.SelectedProvinceChanged, id);
 	}
 
-	/// <summary>"January 1000 BC"</summary>
-	public string DateText =>
-		$"{System.Globalization.CultureInfo.InvariantCulture.DateTimeFormat.GetMonthName(Month)} {(Year < 0 ? $"{-Year} BC" : $"{Year} AD")}";
+	// ------------------------------------------------------------------------------ time and calendars
+
+	/// <summary>Today in the default (Gregorian) calendar: "1 January 1200 BC".</summary>
+	public string DateText => Definitions.DefaultCalendar?.Format(Date) ?? Date.Holocene.ToString();
+
+	public void SetPaused(bool paused)
+	{
+		if (paused == Paused)
+			return;
+		Paused = paused;
+		_sinceTick = 0;
+		EmitSignal(SignalName.ClockChanged);
+	}
+
+	public void SetSpeed(int speed)
+	{
+		speed = Math.Clamp(speed, MinSpeed, MaxSpeed);
+		if (speed == Speed)
+			return;
+		Speed = speed;
+		EmitSignal(SignalName.ClockChanged);
+	}
+
+	public override void _Process(double delta)
+	{
+		if (Paused)
+			return;
+		_sinceTick += delta;
+		double interval = SecondsPerDay[Speed];
+		if (interval <= 0)
+		{
+			AdvanceDay();          // fastest: a day every frame
+			return;
+		}
+		// catch up at most a few days, so a slow frame doesn't turn into a burst of ticks
+		for (int i = 0; i < 4 && _sinceTick >= interval; i++)
+		{
+			_sinceTick -= interval;
+			AdvanceDay();
+		}
+		_sinceTick = Math.Min(_sinceTick, interval);
+	}
+
+	/// <summary>One tick: the next day. On the first of a month the monthly rules run.</summary>
+	public void AdvanceDay()
+	{
+		Date = Date.AddDays(1);
+		EmitSignal(SignalName.DayAdvanced);
+		if (Date.Holocene.Day == 1)
+			RunMonthlyRules();
+	}
+
+	/// <summary>Sets a world flag, which may enable calendars (and later, other content).</summary>
+	public void SetWorldFlag(string flag)
+	{
+		if (_worldFlags.Add(flag))
+			GD.Print($"{DateText}: world flag '{flag}' set");
+	}
+
+	/// <summary>Calendars in use: those needing no flag, and those whose flag an event has set.</summary>
+	public IEnumerable<Calendar> EnabledCalendars => Definitions.Calendars.Where(c => c.IsEnabled(_worldFlags));
+
+	/// <summary>
+	/// The calendar a country writes its dates in: the first enabled calendar adopted by the religion of
+	/// most of its people (the Hijri calendar for Islamic countries), otherwise the default.
+	/// </summary>
+	public Calendar CalendarOf(string countryTag)
+	{
+		var people = new Dictionary<string, long>();
+		foreach (Province p in _provinces)
+		{
+			if (p == null || p.OwnerTag != countryTag)
+				continue;
+			foreach (PopGroup pop in p.Pops)
+				people[pop.Religion.Id] = people.GetValueOrDefault(pop.Religion.Id) + pop.Units;
+		}
+		string religion = people.Count > 0 ? people.MaxBy(kv => kv.Value).Key : null;
+		return EnabledCalendars.FirstOrDefault(c => religion != null && c.AdoptedByReligions.Contains(religion))
+			?? Definitions.DefaultCalendar;
+	}
 
 	/// <summary>Monthly production of a province (computed on demand; nothing is stockpiled yet).</summary>
 	public ProductionReport GetProduction(int provinceId)
@@ -150,17 +249,12 @@ public partial class GameState : Node
 		return true;
 	}
 
-	/// <summary>Advances the calendar a month: nomads migrate, then populations build for themselves.</summary>
-	public void AdvanceMonth()
+	/// <summary>The start of a month: nomads migrate, then populations build for themselves.</summary>
+	void RunMonthlyRules()
 	{
 		ulong start = Time.GetTicksMsec();
 		var moves = PopulationRules.MigrateNomads(_provinces);
 		int built = BuildingRules.PopulationBuildStep(_provinces, Definitions.Buildings);
-		if (++Month > 12)
-		{
-			Month = 1;
-			Year = Year == -1 ? 1 : Year + 1;
-		}
 		GD.Print($"{DateText}: {moves.Count} nomad migrations, {built} buildings built by populations ({Time.GetTicksMsec() - start} ms)");
 		EmitSignal(SignalName.MonthAdvanced);
 	}
