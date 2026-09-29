@@ -14,7 +14,6 @@ var _did_start_focus: bool = false
 @export var tile_width_override: float = 0     # 0 = auto-measure; else exact visual width in world units
 @export var wrap_tiles_each_side: int = 5       # how many tiles to spawn to left/right (increase if you still see gaps)
 @export var extra_cull_margin: float = 4.0       # helps hide tiny culling gaps at long distances
-const SEAM_EPS := 0.02                           # tiny overlap to hide FP seams
 
 # --- Optional explicit edge markers (stronger than auto-measure) ---
 @export var wrap_edge_west_path: NodePath        # OPTIONAL: Node3D at the far WEST edge of the map
@@ -72,16 +71,13 @@ const SEAM_EPS := 0.02                           # tiny overlap to hide FP seams
 
 # --- Globe switch ---
 @export var globe_enable: bool = true
-@export var globe_radius: float = 1200.0
+@export var globe_radius: float = 896.4           # map width / 2pi: the globe's equator matches the flat map's scale
+@export var map_top_lat: float = 86.6             # latitude of the flat map's north and south edges
+@export var map_bottom_lat: float = -61.6
 @export var globe_zoom_threshold: float = 0.85
 @export var globe_blend_time: float = 0.2
 
-var active_tween: Tween = null
-var velocity: Vector3 = Vector3.ZERO
-var edge_pan_velocity: Vector2 = Vector2.ZERO
 
-var _pan_target: Vector3 = Vector3.ZERO
-var _pan_active := false
 
 var _wrap_axis: Vector3 = Vector3(1, 0, 0)   # world-space east–west axis
 var _wrap_anchor: Vector3 = Vector3.ZERO     # midpoint on that axis
@@ -217,7 +213,7 @@ func _layout_wrap_row() -> void:
 	if !is_instance_valid(_flat_world) or _tile_width <= 0.0 or !_flat_world.is_inside_tree():
 		return
 
-	var span := _tile_width - SEAM_EPS
+	var span := _tile_width   # exact: province picking and borders assume the same period
 	var base_origin := _flat_world.global_transform.origin
 
 	for k_obj in _wrap_tiles.keys():
@@ -267,7 +263,7 @@ func _set_extra_cull_margin(root: Node3D, margin: float) -> void:
 			vi.extra_cull_margin = margin
 
 func _normalize_rig_x() -> void:
-	if _tile_width <= 0.0 or _globe_blend >= 0.5:
+	if _tile_width <= 0.0:
 		return
 
 	var axis: Vector3 = _wrap_axis
@@ -297,10 +293,6 @@ func _physics_process(delta: float) -> void:
 	if enable_edge_pan:
 		edge_input = _collect_edge_pan()
 
-	if _globe_on:
-		move_input = Vector3.ZERO
-		edge_input = Vector3.ZERO
-
 	var zoom_scale: float = _curr_zoom / 1000.0
 	if move_input != Vector3.ZERO:
 		_zoom_anchor_active = false
@@ -320,19 +312,13 @@ func _physics_process(delta: float) -> void:
 	_apply_zoom_and_pitch(_curr_zoom)
 	_hold_zoom_anchor()
 
-	# Wrap rig + keep the row lined up to the base every frame
-	if not _globe_on:
-		_normalize_rig_x()
+	# Wrap rig + keep the row lined up to the base every frame (in globe view too: panning spins the globe)
+	_normalize_rig_x()
 	if tile_flat_x and _wrap_ready:
 		_layout_wrap_row()
 
-	# Globe alignment (same as before)
-	var center_hit: Array = _center_ground_hit()
-	if bool(center_hit[0]):
-		var p: Vector3 = center_hit[1] as Vector3
-		var uv: Vector2 = _flat_xz_to_uv(p.x, p.z)
-		var lonlat: Vector2 = _uv_to_lonlat(uv)
-		_align_globe_to_lonlat(lonlat.x, lonlat.y)
+	# The globe sits under the rig with the rig's map point on top, so zooming out shows the same place
+	_align_globe_to_rig()
 
 	# Smooth yaw
 	var current_yaw: float = rotation_degrees.y
@@ -350,29 +336,7 @@ func _physics_process(delta: float) -> void:
 	_globe_on = (_globe_blend >= 0.5)
 	_update_wrap_visibility()
 	
-	if _pan_active:
-		var d := _pan_target - global_position
-		if d.length() <= 0.05:
-			global_position = _pan_target
-			_pan_active = false
-			_cancel_motion_state()
-		else:
-			var step := d.normalized() * pan_speed * delta
-			if step.length() > d.length():
-				step = d
-			global_position += step
-		return  # <-- important: don't let other logic run this frame
 
-func _cancel_motion_state() -> void:
-	# Stop any running tween that could yank the rig back
-	if active_tween != null and is_instance_valid(active_tween):
-		if active_tween.is_running():
-			active_tween.kill()
-		active_tween = null
-
-	# Clear any motion you use (keep these if you reference them elsewhere)
-	velocity = Vector3.ZERO
-	edge_pan_velocity = Vector2.ZERO
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
 		var mb: InputEventMouseButton = event as InputEventMouseButton
@@ -493,7 +457,6 @@ func _shift_rig(offset: Vector3) -> void:
 		pos = _apply_bounds(pos)
 	global_transform.origin = pos
 	_target_pos = pos
-	_pan_active = false
 
 # While the zoom eases toward its target, keep the anchored map point under the cursor.
 func _hold_zoom_anchor() -> void:
@@ -508,14 +471,9 @@ func _hold_zoom_anchor() -> void:
 	if absf(_curr_zoom - _target_zoom) <= 0.002 * _target_zoom:
 		_zoom_anchor_active = false
 
-# Clamp Z always; clamp X only when globe is on (no flat-mode X clamp).
+# Clamp Z (north-south); X wraps around the world instead.
 func _apply_bounds(p: Vector3) -> Vector3:
-	var px: float = p.x
-	var pz: float = p.z
-	if _globe_blend >= 0.5:
-		px = clampf(px, bounds_min_x, bounds_max_x)
-	pz = clampf(pz, bounds_min_z, bounds_max_z)
-	return Vector3(px, p.y, pz)
+	return Vector3(p.x, p.y, clampf(p.z, bounds_min_z, bounds_max_z))
 
 # --- Measuring the visible tile width/center (world X) ----------------------
 
@@ -572,32 +530,46 @@ func _screen_ground_hit(mpos: Vector2) -> Array:
 		return [false, Vector3.ZERO]
 	return [true, origin + dir * t]
 
-func _center_ground_hit() -> Array:
-	var vp: Viewport = get_viewport()
-	if vp == null:
-		return [false, Vector3.ZERO]
-	return _screen_ground_hit(vp.get_visible_rect().size * 0.5)
+# Longitude/latitude (degrees) of a flat-map point. The map spans lon -180..180 and map_top_lat..map_bottom_lat.
+func flat_xz_to_lonlat(x: float, z: float) -> Vector2:
+	var u: float = fposmod((x - bounds_min_x) / max(0.0001, bounds_max_x - bounds_min_x), 1.0)
+	var v: float = (z - bounds_min_z) / max(0.0001, bounds_max_z - bounds_min_z)
+	return Vector2(u * 360.0 - 180.0, lerpf(map_top_lat, map_bottom_lat, v))
 
-func _flat_xz_to_uv(x: float, z: float) -> Vector2:
-	var w: float = max(0.0001, bounds_max_x - bounds_min_x)
-	var h: float = max(0.0001, bounds_max_z - bounds_min_z)
-	var u: float = (x - bounds_min_x) / w
-	var v: float = (z - bounds_min_z) / h
-	v = 1.0 - v
-	return Vector2(clampf(u, 0.0, 1.0), clampf(v, 0.0, 1.0))
+func is_globe_view() -> bool:
+	return _globe_on
 
-func _uv_to_lonlat(uv: Vector2) -> Vector2:
-	return Vector2(uv.x * 360.0 - 180.0, uv.y * 180.0 - 90.0)
+# Globe point under a screen position as [hit, lon/lat degrees]. Matches shaders/globe.gdshader.
+func globe_screen_lonlat(screen_pt: Vector2) -> Array:
+	if not is_instance_valid(_globe_world):
+		return [false, Vector2.ZERO]
+	var origin: Vector3 = cam.project_ray_origin(screen_pt)
+	var dir: Vector3 = cam.project_ray_normal(screen_pt)
+	var center: Vector3 = _globe_world.global_position
+	var oc: Vector3 = origin - center
+	var b: float = oc.dot(dir)
+	var disc: float = b * b - (oc.length_squared() - globe_radius * globe_radius)
+	if disc < 0.0:
+		return [false, Vector2.ZERO]
+	var hit: Vector3 = origin + dir * (-b - sqrt(disc))
+	var n: Vector3 = _globe_world.global_transform.basis.inverse() * (hit - center).normalized()
+	return [true, Vector2(rad_to_deg(atan2(n.x, n.z)), rad_to_deg(asin(clampf(n.y, -1.0, 1.0))))]
 
-func _align_globe_to_lonlat(lon_deg: float, lat_deg: float) -> void:
-	if _globe_world == null:
+# Rotate the globe so the rig's map point faces up (+Y) with north toward -Z (up the screen), and put it
+# right under the rig so the camera orbits it exactly as it orbits the flat map.
+func _align_globe_to_rig() -> void:
+	if not is_instance_valid(_globe_world):
 		return
-	var yaw_y: float = -deg_to_rad(lon_deg)
-	var pitch_x: float =  deg_to_rad(lat_deg)
-	var b: Basis = Basis().rotated(Vector3(0, 1, 0), yaw_y).rotated(Vector3(1, 0, 0), pitch_x)
-	var t: Transform3D = _globe_world.transform
-	t.basis = b
-	_globe_world.transform = t
+	var ll: Vector2 = flat_xz_to_lonlat(global_position.x, global_position.z)
+	var lon: float = deg_to_rad(ll.x)
+	var lat: float = deg_to_rad(ll.y)
+	# sphere directions follow the shader: p(lon, lat) = (sin lon cos lat, sin lat, cos lon cos lat)
+	var up := Vector3(sin(lon) * cos(lat), sin(lat), cos(lon) * cos(lat))
+	var east := Vector3(cos(lon), 0.0, -sin(lon))
+	var north := Vector3(-sin(lon) * sin(lat), cos(lat), -cos(lon) * sin(lat))
+	# rows east / up / -north map those directions onto +X / +Y / +Z
+	var b := Basis(east, up, -north).transposed()
+	_globe_world.global_transform = Transform3D(b, Vector3(global_position.x, ground_y - globe_radius, global_position.z))
 
 # --- Smoothing ---------------------------------------------------------------
 
@@ -700,14 +672,8 @@ func pan_to_world_xz(xz: Vector2, smooth: bool = true) -> void:
 	# ❗ Update the rig's authoritative target so it won't snap back
 	_target_pos = target
 
-	# Stop any motion/tweens that could pull us back
-	_cancel_motion_state()
-
-	if smooth:
-		_pan_target = target
-		_pan_active = true
-	else:
-		_pan_active = false
+	_zoom_anchor_active = false
+	if not smooth:
 		global_transform.origin = target
 
 func _start_focus_default() -> void:

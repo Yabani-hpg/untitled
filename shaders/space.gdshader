@@ -69,9 +69,10 @@ mat3 rot_y(float a) {
 
 // Sparse multi-scale star field with twinkle and stable distribution.
 // Uses a single density knob; twinkle applies only where a star exists.
-float stars(vec3 dir) {
+// time is passed in: built-ins like TIME only exist inside sky() in the Compatibility renderer
+float stars(vec3 dir, float time) {
     dir = normalize(dir);
-    dir = rot_y(TIME * rotation_speed) * dir;
+    dir = rot_y(time * rotation_speed) * dir;
 
     // Three layers for variety
     vec3 c1 = floor(dir * 256.0 + seed);
@@ -87,7 +88,7 @@ float stars(vec3 dir) {
 
     // Twinkle only where stars are present
     float tw_seed = hash13(c1 + c2 + c3);
-    float tw = 1.0 + twinkle_amount * sin(TIME * twinkle_speed + tw_seed * 6.28318);
+    float tw = 1.0 + twinkle_amount * sin(time * twinkle_speed + tw_seed * 6.28318);
 
     return s * tw;
 }
@@ -104,7 +105,7 @@ vec3 nebula(vec3 dir) {
 void sky() {
     vec3 dir = normalize(EYEDIR);
 
-    float s = stars(dir);
+    float s = stars(dir, TIME);
     vec3  n = nebula(dir);
 
     vec3 base = space_tint + n;

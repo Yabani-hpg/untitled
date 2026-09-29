@@ -1,275 +1,171 @@
 extends TextureRect
+## Minimap: shows the camera's view on the map texture and pans the camera on click / drag.
+## The view box is the camera's real footprint on the ground (a trapezoid when the camera tilts), drawn
+## once per world copy so it continues across the date line; in globe view it outlines the visible globe.
 
-@export var fallback_teleport_if_no_receiver: bool = true
-
-# --- World mapping (set these to your flat map bounds) --------------------
-@export var world_origin_xz: Vector2 = Vector2(-2816.0, -1158.0) # bottom-left
-@export var world_size_xz:  Vector2 = Vector2(5632.0, 2316.0)    # width,height
+# --- World mapping (the flat map's bounds) -------------------------------
+@export var world_origin_xz: Vector2 = Vector2(-2816.0, -1158.0) # north-west corner
+@export var world_size_xz:  Vector2 = Vector2(5632.0, 2316.0)    # width, height
 @export var ground_y: float = 0.0
-@export var wrap_horizontally: bool = true
-
-# If rectangle is mirrored/rotated, flip these until it matches:
-@export var invert_u: bool = false
-@export var invert_v: bool = false
-@export var swap_xz:  bool = false
 
 # --- Nodes ----------------------------------------------------------------
 @export var camera_path: NodePath
-@export var pan_receiver_path: NodePath
+@export var pan_receiver_path: NodePath          # the camera rig (pan_to_world_xz, globe helpers)
 @onready var _camera: Camera3D = get_node_or_null(camera_path)
-var _pan_receiver: Node = null    # set in _ready
+@onready var _rig: Node3D = get_node_or_null(pan_receiver_path) as Node3D
 
-# --- View-rect rendering --------------------------------------------------
-@export var rect_color: Color = Color(1, 1, 1, 1)  # outline color
-@export var rect_thickness: float = 2.0           # outline thickness px
-var _rects: Array[Rect2] = []                     # computed each frame
+# --- View box -------------------------------------------------------------
+@export var rect_color: Color = Color(1, 1, 1, 0.95)
+@export var rect_fill: Color = Color(1, 1, 1, 0.12)
+@export var rect_shadow: Color = Color(0, 0, 0, 0.55)
+@export var rect_thickness: float = 1.5
+@export var edge_samples: int = 6                 # points per screen edge for the footprint
 
 # --- Interaction ----------------------------------------------------------
-@export var center_on_click: bool = true          # center camera on click
-@export var drag_to_pan: bool = true              # hold LMB and drag to pan
-@export var smooth_pan: bool = true               # pass 'true' to pan_to_world_xz
+@export var drag_to_pan: bool = true
+@export var smooth_pan: bool = true
 
+var _footprint: PackedVector2Array = PackedVector2Array()   # in map uv, u unwrapped around the view
 var _dragging: bool = false
-var _drag_prefer_x: float = 0.0                   # keeps wrap continuity
-
-# -------------------------------------------------------------------------
 
 func _ready() -> void:
-	if not pan_receiver_path.is_empty():
-		_pan_receiver = get_node_or_null(pan_receiver_path)
-	elif _camera != null and _camera.get_parent() != null:
-		_pan_receiver = _camera.get_parent()
-	# Make sure this control receives input and sits on top
 	mouse_filter = Control.MOUSE_FILTER_STOP
-	z_index = 1000
-
-	# Ensure the parent Panel doesn't swallow events
-	var p := get_parent()
-	if p is Control:
-		(p as Control).mouse_filter = Control.MOUSE_FILTER_PASS
-		# or Control.MOUSE_FILTER_IGNORE also works
-
-	# Optional: visibility of hover is a quick sanity check
-
 
 func _process(_delta: float) -> void:
 	if _camera == null:
 		return
-	_update_view_rects()
+	_footprint = _globe_footprint() if _in_globe_view() else _flat_footprint()
 	queue_redraw()
 
 func _draw() -> void:
-	for r in _rects:
-		draw_rect(r, rect_color, false, rect_thickness)  # outline only
+	if _footprint.size() < 3:
+		return
+	var img: Rect2 = _image_rect()
+	# one copy per world repeat; clip_contents trims whatever falls outside the minimap
+	for shift in [-1.0, 0.0, 1.0]:
+		var poly := PackedVector2Array()
+		for uv in _footprint:
+			poly.append(img.position + Vector2(uv.x + shift, uv.y) * img.size)
+		if Geometry2D.triangulate_polygon(poly).size() > 0:
+			draw_colored_polygon(poly, rect_fill)
+		var loop := poly.duplicate()
+		loop.append(poly[0])
+		draw_polyline(loop, rect_shadow, rect_thickness + 2.0, true)
+		draw_polyline(loop, rect_color, rect_thickness, true)
 
-# -------------------------------------------------------------------------
+# --- Footprints -------------------------------------------------------------
 
-func _world_xz_to_uv(xz: Vector2) -> Vector2:
-	var X: float = xz.x
-	var Z: float = xz.y
-	if swap_xz:
-		var tmp := X
-		X = Z
-		Z = tmp
+func _in_globe_view() -> bool:
+	return _rig != null and _rig.has_method("is_globe_view") and bool(_rig.call("is_globe_view"))
 
-	var u: float = (X - world_origin_xz.x) / world_size_xz.x
-	var v: float = (Z - world_origin_xz.y) / world_size_xz.y
+# Ground points along the screen border, in map uv, unwrapped so the polygon doesn't jump at the seam.
+func _flat_footprint() -> PackedVector2Array:
+	var vp: Vector2 = _camera.get_viewport().get_visible_rect().size
+	var pts := PackedVector2Array()
+	var ref_u: float = NAN
+	for p in _screen_border(vp, edge_samples):
+		var hit: Variant = _ground_hit(p)
+		if hit == null:
+			continue
+		var uv: Vector2 = _world_to_uv(hit as Vector2)
+		if is_nan(ref_u):
+			ref_u = uv.x
+		uv.x = ref_u + wrapf(uv.x - ref_u, -0.5, 0.5)
+		uv.y = clampf(uv.y, 0.0, 1.0)
+		pts.append(uv)
+	return _normalize_u(pts)
 
-	if wrap_horizontally:
-		u = fposmod(u, 1.0)
+# Globe view: bounding box of the globe points visible on screen.
+func _globe_footprint() -> PackedVector2Array:
+	var vp: Vector2 = _camera.get_viewport().get_visible_rect().size
+	var top: float = float(_rig.get("map_top_lat"))
+	var bottom: float = float(_rig.get("map_bottom_lat"))
+	var center: Vector2 = _rig.call("flat_xz_to_lonlat", _rig.global_position.x, _rig.global_position.z)
+	var umin := INF
+	var umax := -INF
+	var vmin := INF
+	var vmax := -INF
+	for iy in range(10):
+		for ix in range(16):
+			var sp := Vector2((ix + 0.5) / 16.0 * vp.x, (iy + 0.5) / 10.0 * vp.y)
+			var res: Array = _rig.call("globe_screen_lonlat", sp)
+			if not bool(res[0]):
+				continue
+			var ll: Vector2 = res[1]
+			var u: float = (center.x + wrapf(ll.x - center.x, -180.0, 180.0) + 180.0) / 360.0
+			var v: float = clampf((top - ll.y) / (top - bottom), 0.0, 1.0)
+			umin = min(umin, u); umax = max(umax, u)
+			vmin = min(vmin, v); vmax = max(vmax, v)
+	if umin == INF:
+		return PackedVector2Array()
+	return _normalize_u(PackedVector2Array([Vector2(umin, vmin), Vector2(umax, vmin), Vector2(umax, vmax), Vector2(umin, vmax)]))
 
-	if invert_u:
-		u = 1.0 - u
-	v = clampf(v, 0.0, 1.0)
-	if invert_v:
-		v = 1.0 - v
+static func _screen_border(vp: Vector2, n: int) -> PackedVector2Array:
+	var pts := PackedVector2Array()
+	for i in range(n):
+		pts.append(Vector2(vp.x * i / n, 0.0))
+	for i in range(n):
+		pts.append(Vector2(vp.x, vp.y * i / n))
+	for i in range(n):
+		pts.append(Vector2(vp.x * (n - i) / n, vp.y))
+	for i in range(n):
+		pts.append(Vector2(0.0, vp.y * (n - i) / n))
+	return pts
 
-	return Vector2(u, v)
+# Shift the whole polygon by whole map widths so its centre lies on the map (0..1).
+static func _normalize_u(pts: PackedVector2Array) -> PackedVector2Array:
+	if pts.is_empty():
+		return pts
+	var cu := 0.0
+	for p in pts:
+		cu += p.x
+	var shift: float = floor(cu / pts.size())
+	for i in range(pts.size()):
+		pts[i].x -= shift
+	return pts
 
-func _uv_to_world_xz(uv_in: Vector2, prefer_near_x: float = INF) -> Vector2:
-	var u: float = uv_in.x
-	var v: float = uv_in.y
-	if invert_u:
-		u = 1.0 - u
-	if invert_v:
-		v = 1.0 - v
+# --- Mapping ----------------------------------------------------------------
 
-	var X: float = world_origin_xz.x + u * world_size_xz.x
-	var Z: float = world_origin_xz.y + v * world_size_xz.y
+# Where the texture is drawn inside the control (stretch modes may letterbox it).
+func _image_rect() -> Rect2:
+	if texture == null:
+		return Rect2(Vector2.ZERO, size)
+	var ts: Vector2 = texture.get_size()
+	if stretch_mode == TextureRect.STRETCH_KEEP_ASPECT_CENTERED:
+		var s: float = min(size.x / ts.x, size.y / ts.y)
+		return Rect2((size - ts * s) * 0.5, ts * s)
+	return Rect2(Vector2.ZERO, size)
 
-	if wrap_horizontally and is_finite(prefer_near_x):
-		var period: float = world_size_xz.x
-		var k: float = round((prefer_near_x - X) / period)
-		X += k * period
+func _world_to_uv(xz: Vector2) -> Vector2:
+	return (xz - world_origin_xz) / world_size_xz
 
-	if swap_xz:
-		return Vector2(Z, X)
-	return Vector2(X, Z)
-
-func _intersect_screen_to_ground(screen_pt: Vector2) -> Vector2:
+func _ground_hit(screen_pt: Vector2) -> Variant:
 	var from: Vector3 = _camera.project_ray_origin(screen_pt)
-	var dir:  Vector3 = _camera.project_ray_normal(screen_pt)
-	if is_zero_approx(dir.y):
-		return Vector2(from.x, from.z)
-	var t: float = (ground_y - from.y) / dir.y
-	var hit: Vector3 = from + dir * t
+	var dir: Vector3 = _camera.project_ray_normal(screen_pt)
+	if dir.y > -1e-4:
+		return null    # looking at or above the horizon
+	var hit: Vector3 = from + dir * ((ground_y - from.y) / dir.y)
 	return Vector2(hit.x, hit.z)
 
-# --- build view rect(s) in minimap pixels --------------------------------
-func _update_view_rects() -> void:
-	_rects.clear()
+# --- Input ------------------------------------------------------------------
 
-	var vp_size: Vector2 = Vector2(_camera.get_viewport().get_visible_rect().size)
-	var p0: Vector2 = _intersect_screen_to_ground(Vector2(0.0,       0.0))
-	var p1: Vector2 = _intersect_screen_to_ground(Vector2(vp_size.x, 0.0))
-	var p2: Vector2 = _intersect_screen_to_ground(Vector2(vp_size.x, vp_size.y))
-	var p3: Vector2 = _intersect_screen_to_ground(Vector2(0.0,       vp_size.y))
-
-	var uv0: Vector2 = _world_xz_to_uv(p0)
-	var uv1: Vector2 = _world_xz_to_uv(p1)
-	var uv2: Vector2 = _world_xz_to_uv(p2)
-	var uv3: Vector2 = _world_xz_to_uv(p3)
-
-	var us: Array[float] = [uv0.x, uv1.x, uv2.x, uv3.x]
-	var vs: Array[float] = [uv0.y, uv1.y, uv2.y, uv3.y]
-
-	var us_plain: Array[float] = (us.duplicate() as Array[float]); us_plain.sort()
-	var span_plain: float = us_plain[3] - us_plain[0]
-
-	var us_shifted: Array[float] = []
-	for u in us:
-		us_shifted.append(u + 1.0 if u < 0.5 else u)
-	var us_shifted_sorted: Array[float] = (us_shifted.duplicate() as Array[float]); us_shifted_sorted.sort()
-	var span_shift: float = us_shifted_sorted[3] - us_shifted_sorted[0]
-
-	var use_shift: bool = wrap_horizontally and (span_shift < span_plain)
-
-	var umin: float
-	var umax: float
-	if use_shift:
-		umin = min(us_shifted[0], us_shifted[1], us_shifted[2], us_shifted[3])
-		umax = max(us_shifted[0], us_shifted[1], us_shifted[2], us_shifted[3])
-	else:
-		umin = min(us[0], us[1], us[2], us[3])
-		umax = max(us[0], us[1], us[2], us[3])
-
-	var vmin: float = clampf(min(vs[0], vs[1], vs[2], vs[3]), 0.0, 1.0)
-	var vmax: float = clampf(max(vs[0], vs[1], vs[2], vs[3]), 0.0, 1.0)
-
-	var s: Vector2 = size
-
-	if not use_shift:
-		var r := Rect2(Vector2(umin * s.x, vmin * s.y),
-					   Vector2(max(1.0, (umax - umin) * s.x), max(1.0, (vmax - vmin) * s.y)))
-		_rects.append(r)
-	else:
-		var rA := Rect2(Vector2(0.0, vmin * s.y),
-						Vector2((umax - 1.0) * s.x, max(1.0, (vmax - vmin) * s.y)))
-		var rB := Rect2(Vector2(umin * s.x, vmin * s.y),
-						Vector2((1.0 - umin) * s.x, max(1.0, (vmax - vmin) * s.y)))
-		_rects.append(rA)
-		_rects.append(rB)
-
-# --- input: click + drag to pan ------------------------------------------
 func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton:
+	if event is InputEventMouseButton and (event as InputEventMouseButton).button_index == MOUSE_BUTTON_LEFT:
 		var mb := event as InputEventMouseButton
-		if mb.button_index == MOUSE_BUTTON_LEFT:
-			if mb.pressed:
-				_dragging = true
-				_drag_prefer_x = _camera.global_position.x if _camera != null else 0.0
-				if center_on_click:
-					_pan_to_local_pos(mb.position)
-					accept_event()
-			else:
-				_dragging = false
+		_dragging = mb.pressed
+		if mb.pressed:
+			_pan_to(mb.position)
+		accept_event()
 	elif event is InputEventMouseMotion and _dragging and drag_to_pan:
-		var mm := event as InputEventMouseMotion
-		_pan_to_local_pos(mm.position)
+		_pan_to((event as InputEventMouseMotion).position)
 		accept_event()
 
-func _pan_to_local_pos(local_pos: Vector2) -> void:
-	var uv: Vector2 = Vector2(
-		clampf(local_pos.x / max(1.0, size.x), 0.0, 1.0),
-		clampf(local_pos.y / max(1.0, size.y), 0.0, 1.0)
-	)
-
-	# 1) Desired ground center from the minimap click
-	var desired_center: Vector2 = _uv_to_world_xz(uv, _drag_prefer_x)
-
-	# 2) Current ground center under the screen center
-	var current_center: Vector2 = _get_camera_ground_center_xz()
-
-	# 3) Delta needed on ground to bring current -> desired
-	var delta: Vector2 = desired_center - current_center
-
-	# Wrap-aware horizontal delta (choose the shortest X translation)
-	if wrap_horizontally:
-		var period: float = world_size_xz.x
-		delta.x -= round(delta.x / period) * period
-
-	# 4) Convert ground delta to a rig XZ target (translate the rig by the same delta)
-	var rig: Node3D = _get_rig_node()
-	if rig:
-		var target_rig_xz := Vector2(rig.global_position.x + delta.x,
-									 rig.global_position.z + delta.y)
-		_drag_prefer_x = target_rig_xz.x
-		_request_pan(target_rig_xz)
-	else:
-		push_warning("No rig node found to pan.")
-
-
-func _request_pan(xz: Vector2) -> void:
-	# Debug: see what we’re trying to do
-	# (You can comment these out once confirmed)
-
-	if _pan_receiver != null and _pan_receiver.has_method("pan_to_world_xz"):
-		_pan_receiver.call("pan_to_world_xz", xz, smooth_pan)
+# Centre the camera on the map point under a minimap position, taking the shortest way around the world.
+func _pan_to(local_pos: Vector2) -> void:
+	if _rig == null or not _rig.has_method("pan_to_world_xz"):
 		return
-
-	if fallback_teleport_if_no_receiver:
-		# Fallback: move the camera rig (parent of camera) or the camera itself.
-		if _camera != null:
-			var rig := _camera.get_parent()
-			if rig is Node3D:
-				var y := (rig as Node3D).global_position.y
-				(rig as Node3D).global_position = Vector3(xz.x, y, xz.y)
-				return
-			# If your camera has no Node3D parent that moves, move the camera.
-			_camera.global_position = Vector3(xz.x, _camera.global_position.y, xz.y)
-			return
-
-	push_warning("No pan receiver with 'pan_to_world_xz' and fallback disabled; cannot pan.")
-
-func _input(event: InputEvent) -> void:
-	# This runs before GUI dispatch; use it to capture clicks over the minimap
-	if event is InputEventMouseButton:
-		var mb := event as InputEventMouseButton
-		if mb.button_index == MOUSE_BUTTON_LEFT:
-			var gp: Vector2 = get_viewport().get_mouse_position()
-			if get_global_rect().has_point(gp):
-				if mb.pressed:
-					_dragging = true
-					_drag_prefer_x = _camera.global_position.x if _camera != null else 0.0
-					if center_on_click:
-						_pan_to_local_pos(get_local_mouse_position())
-				else:
-					_dragging = false
-				accept_event()  # stop propagation so nothing above eats it
-	elif event is InputEventMouseMotion and _dragging and drag_to_pan:
-		var gp2: Vector2 = get_viewport().get_mouse_position()
-		if get_global_rect().has_point(gp2):
-			var local := get_local_mouse_position()
-			_pan_to_local_pos(local)
-			accept_event()
-
-func _get_camera_ground_center_xz() -> Vector2:
-	var vp: Vector2 = _camera.get_viewport().get_visible_rect().size
-	return _intersect_screen_to_ground(vp * 0.5)
-
-func _get_rig_node() -> Node3D:
-	if _pan_receiver is Node3D:
-		return _pan_receiver as Node3D
-	if _camera and _camera.get_parent() is Node3D:
-		return _camera.get_parent() as Node3D
-	return null
+	var img: Rect2 = _image_rect()
+	var uv: Vector2 = ((local_pos - img.position) / img.size).clamp(Vector2.ZERO, Vector2.ONE)
+	var target: Vector2 = world_origin_xz + uv * world_size_xz
+	target.x = _rig.global_position.x + wrapf(target.x - _rig.global_position.x, -0.5 * world_size_xz.x, 0.5 * world_size_xz.x)
+	_rig.call("pan_to_world_xz", target, smooth_pan)
