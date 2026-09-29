@@ -82,11 +82,22 @@ bool is_selected_province(vec2 p) {
 uniform sampler2D province_ids : filter_nearest, repeat_enable;
 uniform sampler2D province_palette : source_color, filter_nearest, repeat_disable;
 uniform bool map_mode_enabled = false;
+// a second colour per province, laid over in diagonal stripes (non-core land, allied tribes)
+uniform sampler2D province_stripes : source_color, filter_nearest, repeat_disable;
+uniform float stripe_period_texels = 6.0;
 
-vec4 province_palette_at(vec2 p) {
+ivec2 province_slot(vec2 p) {
     vec2 rg = floor(texture(province_ids, p).rg * 255.0 + 0.5);
     int id = int(rg.r + rg.g * 256.0);
-    return texelFetch(province_palette, ivec2(id % 256, id / 256), 0);
+    return ivec2(id % 256, id / 256);
+}
+
+vec4 province_palette_at(vec2 p) {
+    return texelFetch(province_palette, province_slot(p), 0);
+}
+
+vec4 province_stripes_at(vec2 p) {
+    return texelFetch(province_stripes, province_slot(p), 0);
 }
 
 // ===== Rivers (mask & materials) =====
@@ -352,6 +363,15 @@ void fragment() {
                        mix(province_palette_at(c + vec2(0.0, t.y)), province_palette_at(c + t), f.x), f.y);
         float a = col.a * land_mix * (1.0 - 0.6 * river_cov);
         ALBEDO = mix(ALBEDO, col.rgb / max(col.a, 1e-3), a);
+
+        vec4 stripe = mix(mix(province_stripes_at(c), province_stripes_at(c + vec2(t.x, 0.0)), f.x),
+                          mix(province_stripes_at(c + vec2(0.0, t.y)), province_stripes_at(c + t), f.x), f.y);
+        if (stripe.a > 0.001) {
+            float s = fract((uv.x * size.x + uv.y * size.y) / stripe_period_texels);
+            float aa = max(fwidth(s), 1e-3);
+            float band = smoothstep(0.5 - aa, 0.5 + aa, s) * (1.0 - smoothstep(1.0 - aa, 1.0, s));
+            ALBEDO = mix(ALBEDO, stripe.rgb / stripe.a, stripe.a * band * land_mix);
+        }
     }
 
     // selected province: soft tint with a smooth edge (bilinear blend of the 4 nearest map texels);

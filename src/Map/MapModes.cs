@@ -19,6 +19,11 @@ public partial class MapModes : Node
 	static readonly StringName IdsParam = "province_ids";
 	static readonly StringName PaletteParam = "province_palette";
 	static readonly StringName EnabledParam = "map_mode_enabled";
+	static readonly StringName StripesParam = "province_stripes";
+
+	/// <summary>Land no organized country controls: settled tribes, and nomads.</summary>
+	static readonly Color TribalLand = new(0.64f, 0.60f, 0.50f);
+	static readonly Color NomadLand = new(0.78f, 0.68f, 0.46f);
 
 	static readonly Color Unowned = new(0.55f, 0.53f, 0.50f);
 	const float Opacity = 0.72f;
@@ -26,6 +31,9 @@ public partial class MapModes : Node
 	ShaderMaterial _material;
 	Image _palette;
 	ImageTexture _paletteTexture;
+	/// <summary>Second colour per province, laid in diagonal stripes: held but not yet a core, or allied tribes.</summary>
+	Image _stripes;
+	ImageTexture _stripesTexture;
 
 	public override void _Ready()
 	{
@@ -40,6 +48,9 @@ public partial class MapModes : Node
 
 		_palette = Image.CreateEmpty(PaletteSide, PaletteSide, false, Image.Format.Rgba8);
 		_paletteTexture = ImageTexture.CreateFromImage(_palette);
+		_stripes = Image.CreateEmpty(PaletteSide, PaletteSide, false, Image.Format.Rgba8);
+		_stripesTexture = ImageTexture.CreateFromImage(_stripes);
+		_material.SetShaderParameter(StripesParam, _stripesTexture);
 		_material.SetShaderParameter(PaletteParam, _paletteTexture);
 		BuildIdTexture(gs.ProvinceMap);
 
@@ -48,6 +59,7 @@ public partial class MapModes : Node
 		gs.PhaseChanged += Refresh;
 		gs.MonthAdvanced += Refresh;
 		gs.ProvinceChanged += OnProvinceChanged;
+		gs.OwnershipChanged += Refresh;
 		Refresh();
 	}
 
@@ -61,6 +73,7 @@ public partial class MapModes : Node
 		gs.PhaseChanged -= Refresh;
 		gs.MonthAdvanced -= Refresh;
 		gs.ProvinceChanged -= OnProvinceChanged;
+		gs.OwnershipChanged -= Refresh;
 	}
 
 	void OnFocusChanged(string tag) => Refresh();
@@ -97,6 +110,7 @@ public partial class MapModes : Node
 		MapMode mode = gs.MapMode;
 		string focus = gs.Phase == GamePhase.CountrySelection ? gs.FocusedCountryTag : null;
 		_palette.Fill(new Color(0, 0, 0, 0));
+		_stripes.Fill(new Color(0, 0, 0, 0));
 		foreach (Province p in gs.Provinces)
 		{
 			if (p == null || p.IsWater || p.Id >= PaletteSide * PaletteSide)
@@ -112,9 +126,29 @@ public partial class MapModes : Node
 			}
 			// premultiplied, so the shader's blend across province edges doesn't darken toward uncoloured neighbours
 			_palette.SetPixel(p.Id % PaletteSide, p.Id / PaletteSide, new Color(c.R * c.A, c.G * c.A, c.B * c.A, c.A));
+			if (mode == MapMode.Political && StripeFor(p, gs) is Color s)
+				_stripes.SetPixel(p.Id % PaletteSide, p.Id / PaletteSide, new Color(s.R * s.A, s.G * s.A, s.B * s.A, s.A));
 		}
 		_paletteTexture.Update(_palette);
+		_stripesTexture.Update(_stripes);
 		_material.SetShaderParameter(EnabledParam, mode != MapMode.Natural || focus != null);
+	}
+
+	/// <summary>
+	/// Political stripes: a province held but not yet a core shows its tribes' or nomads' colour in stripes
+	/// that fade as its separatism does; tribes allied with a country show that country's colour.
+	/// </summary>
+	static Color? StripeFor(Province p, GameState gs)
+	{
+		if (p.Control != null && !p.IsCore)
+		{
+			double separatism = Untitled.Rules.ControlRules.Separatism(p, gs.Date);
+			Color land = p.Control.Kind == ControlKind.Subjugated ? NomadLand : TribalLand;
+			return new Color(land.Lightened(0.15f), 0.25f + 0.6f * (float)separatism);
+		}
+		if (p.OwnerTag == null && gs.GetCountry(p.AlliedTag) is Country ally)
+			return new Color(ally.MapColor, 0.7f);
+		return null;
 	}
 
 	static Color ColorFor(Province p, MapMode mode, GameState gs)
@@ -123,7 +157,14 @@ public partial class MapModes : Node
 		{
 			case MapMode.Political:
 				Country owner = gs.GetCountry(p.OwnerTag);
-				return owner == null ? new Color(Unowned, 0.5f) : new Color(owner.MapColor, Opacity);
+				if (owner != null)
+					return new Color(owner.MapColor, Opacity);
+				return p.Inhabitants switch
+				{
+					Inhabitants.Tribes => new Color(TribalLand, 0.42f),
+					Inhabitants.Nomads => new Color(NomadLand, 0.42f),
+					_ => new Color(0, 0, 0, 0),
+				};
 			case MapMode.Culture:
 				Culture culture = p.MainCulture;
 				return culture == null ? new Color(Unowned, 0.35f) : new Color(culture.Color, Opacity);

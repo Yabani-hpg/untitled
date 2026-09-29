@@ -40,3 +40,34 @@ public sealed class Building
 		BuiltByPopulation = builtByPopulation;
 	}
 }
+
+/// <summary>Who lives in a province that no country controls.</summary>
+public enum Inhabitants
+{
+	/// <summary>Nobody: land for settlers, later.</summary>
+	Empty,
+	/// <summary>Settled but unorganized tribes. A country allies with them, then makes them its vassals.</summary>
+	Tribes,
+	/// <summary>Nomads. A country subjugates them with an army and keeps a garrison to hold them down.</summary>
+	Nomads,
+}
+
+public enum ControlKind
+{
+	/// <summary>A core province: fully part of the country, with no separatism.</summary>
+	Core,
+	/// <summary>Tribes that allied with the country and became its vassals.</summary>
+	Vassal,
+	/// <summary>Nomads subjugated by force and held by a garrison.</summary>
+	Subjugated,
+}
+
+/// <summary>How a country holds a province. Held in rein for 50 years, a province becomes a core.</summary>
+public sealed class ProvinceControl
+{
+	public ControlKind Kind { get; set; }
+	/// <summary>When the country took control; separatism fades over the years after it.</summary>
+	public Untitled.Core.GameDate Since { get; set; }
+	/// <summary>Regiments (of 1000 soldiers) stationed in the province.</summary>
+	public int Garrison { get; set; }
+}

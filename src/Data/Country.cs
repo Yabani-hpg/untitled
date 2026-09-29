@@ -13,7 +13,8 @@ public sealed class Country
 {
 	public string Tag { get; }
 	public string Name { get; set; }
-	public Color MapColor { get; }
+	/// <summary>Political map colour: the "color" RGB triple of countries.json, or of the country's own file.</summary>
+	public Color MapColor { get; set; }
 
 	public string Adjective { get; set; }
 	public string Government { get; set; } = "Tribal chiefdom";
@@ -32,6 +33,11 @@ public sealed class Country
 	/// <summary>Name of the capital city, if it differs from the province's ("Pi-Ramesses").</summary>
 	public string CapitalName { get; set; }
 	public Character Ruler { get; set; }
+	/// <summary>Regiments (1000 soldiers each) free to be sent out; garrisons are drawn from it.</summary>
+	public int Manpower { get; set; }
+	/// <summary>The most regiments its core provinces can raise (updated monthly).</summary>
+	public int MaxManpower { get; set; }
+
 	/// <summary>The flag flown now (see <see cref="Flags"/>).</summary>
 	public FlagDefinition CurrentFlag { get; set; }
 
@@ -53,10 +59,15 @@ public sealed class CountryDefinition
 	public string Tag { get; init; }
 	public string CapitalProvince { get; init; }
 	public string CapitalName { get; init; }
-	/// <summary>Provinces the country owns at the start besides those it owns on the map (by area or name).</summary>
-	public List<int> StartProvinces { get; } = new();
+	/// <summary>The provinces the country controls at the start, and how.</summary>
+	public List<StartProvince> StartProvinces { get; } = new();
+	/// <summary>Uncontrolled tribal provinces allied with the country at the start, and since when.</summary>
+	public List<(int ProvinceId, GameDate Since)> AlliedTribes { get; } = new();
 	public RulerDefinition Ruler { get; init; }
 }
+
+/// <summary>A province a country controls at the start. <c>Since</c> null means long before the start.</summary>
+public sealed record StartProvince(int ProvinceId, ControlKind Control, GameDate? Since, int Garrison);
 
 public sealed class RulerDefinition
 {

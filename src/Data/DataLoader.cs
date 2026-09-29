@@ -108,7 +108,7 @@ public static partial class DataLoader
 				string where = $"{path}[{index++}]";
 				string tag = GetString(entry, "tag", where);
 				string name = GetString(entry, "name", where);
-				Color color = ParseHexColor(GetString(entry, "color", where), where);
+				Color color = ParseRgb(entry, "color", where);
 				if (!countries.TryAdd(tag, new Country(tag, name, color)))
 					throw new DataException($"{where}: duplicate tag '{tag}'");
 			}
@@ -171,6 +171,28 @@ public static partial class DataLoader
 			|| string.IsNullOrWhiteSpace(value.GetString()))
 			throw new DataException($"{where}: missing string field '{key}'");
 		return value.GetString().Trim();
+	}
+
+	/// <summary>A colour written as an RGB triple of 0-255, e.g. <c>"color": [255, 0, 0]</c> (or as "#rrggbb").</summary>
+	static Color ParseRgb(JsonElement obj, string key, string where)
+	{
+		if (obj.ValueKind != JsonValueKind.Object || !obj.TryGetProperty(key, out JsonElement v))
+			throw new DataException($"{where}: missing colour '{key}'");
+		if (v.ValueKind == JsonValueKind.String)
+			return ParseHexColor(v.GetString(), where);
+		if (v.ValueKind == JsonValueKind.Array && v.GetArrayLength() == 3)
+		{
+			var rgb = new int[3];
+			int i = 0;
+			foreach (JsonElement c in v.EnumerateArray())
+			{
+				if (!c.TryGetInt32(out rgb[i]) || rgb[i] < 0 || rgb[i] > 255)
+					throw new DataException($"{where}: '{key}' values must be whole numbers 0-255");
+				i++;
+			}
+			return Color.Color8((byte)rgb[0], (byte)rgb[1], (byte)rgb[2]);
+		}
+		throw new DataException($"{where}: '{key}' must be an RGB triple like [255, 0, 0]");
 	}
 
 	static Color ParseHexColor(string text, string where)

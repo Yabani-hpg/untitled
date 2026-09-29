@@ -32,6 +32,7 @@
 [ext_resource type="Script" path="res://src/UI/CountrySelectScreen.cs" id="35_countryselect"]
 [ext_resource type="Script" path="res://src/UI/PlayerBar.cs" id="36_playerbar"]
 [ext_resource type="Script" path="res://src/UI/GameMenu.cs" id="37_gamemenu"]
+[ext_resource type="Script" path="res://src/UI/MessageFeed.cs" id="38_messagefeed"]
 [ext_resource type="Script" path="res://src/Map/ProvinceBorders.cs" id="23_borders"]
 [ext_resource type="Shader" path="res://shaders/province_border.gdshader" id="24_bordershader"]
 
@@ -355,7 +356,7 @@ visible = false
 offset_left = 16.0
 offset_top = 16.0
 offset_right = 452.0
-offset_bottom = 96.0
+offset_bottom = 110.0
 script = ExtResource("36_playerbar")
 TitleFont = ExtResource("29_cinzel")
 BodyFont = ExtResource("30_manrope")
@@ -364,9 +365,9 @@ CameraRigPath = NodePath("../../CameraRig")
 [node name="ProvincePanel" type="PanelContainer" parent="HudLayer"]
 visible = false
 offset_left = 16.0
-offset_top = 112.0
+offset_top = 128.0
 offset_right = 452.0
-offset_bottom = 656.0
+offset_bottom = 672.0
 script = ExtResource("22_provpanel")
 TitleFont = ExtResource("29_cinzel")
 BodyFont = ExtResource("30_manrope")
@@ -412,6 +413,19 @@ script = ExtResource("35_countryselect")
 TitleFont = ExtResource("29_cinzel")
 BodyFont = ExtResource("30_manrope")
 CameraRigPath = NodePath("../../CameraRig")
+
+[node name="MessageFeed" type="VBoxContainer" parent="HudLayer"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -240.0
+offset_top = 90.0
+offset_right = 240.0
+offset_bottom = 400.0
+grow_horizontal = 2
+mouse_filter = 2
+script = ExtResource("38_messagefeed")
+BodyFont = ExtResource("30_manrope")
 
 [node name="CityView" type="Control" parent="HudLayer"]
 visible = false

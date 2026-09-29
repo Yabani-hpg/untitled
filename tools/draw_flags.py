@@ -204,9 +204,9 @@ def luminance(hex_color):
     return 0.2126 * r + 0.7152 * g + 0.0722 * b
 
 
-def deepen(hex_color):
-    """Country map colours are pale; flags want deeper dyes."""
-    r, g, b = (int(hex_color[i:i + 2], 16) for i in (1, 3, 5))
+def deepen(color):
+    """Country map colours (RGB triples) are pale; flags want deeper dyes."""
+    r, g, b = color if isinstance(color, list) else (int(color[i:i + 2], 16) for i in (1, 3, 5))
     return "#%02x%02x%02x" % (int(r * 0.72), int(g * 0.72), int(b * 0.72))
 
 

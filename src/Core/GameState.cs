@@ -258,6 +258,7 @@ public partial class GameState : Node
 		ulong start = Time.GetTicksMsec();
 		var moves = PopulationRules.MigrateNomads(_provinces);
 		int built = BuildingRules.PopulationBuildStep(_provinces, Definitions.Buildings);
+		RunControlStep();
 		RefreshFlags();
 		if (Date.Holocene.Month == 1 && Phase == GamePhase.Playing)
 			SaveGames.Autosave(this);

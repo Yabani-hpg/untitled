@@ -4,6 +4,7 @@ using System.Linq;
 using Godot;
 using Untitled.Data;
 using Untitled.Map;
+using Untitled.Rules;
 
 namespace Untitled.Core;
 
@@ -44,6 +45,14 @@ public partial class GameState : IWorld
 	[Signal]
 	public delegate void MapModeChangedEventHandler();
 
+	/// <summary>Provinces changed hands (control was taken or lost): borders and country names need redrawing.</summary>
+	[Signal]
+	public delegate void OwnershipChangedEventHandler();
+
+	/// <summary>Something happened the player should hear about.</summary>
+	[Signal]
+	public delegate void MessagePostedEventHandler(string text);
+
 	public GamePhase Phase { get; private set; } = GamePhase.CountrySelection;
 	/// <summary>The player's country, or null before one is chosen.</summary>
 	public string PlayerTag { get; private set; }
@@ -54,6 +63,7 @@ public partial class GameState : IWorld
 	public IReadOnlyDictionary<int, Character> Characters => _characters;
 
 	readonly Dictionary<int, Character> _characters = new();
+	Random _rng = new(1);
 	int _nextCharacterId = 1;
 	Dictionary<string, int> _provinceNames = new();
 
@@ -87,10 +97,29 @@ public partial class GameState : IWorld
 		_nextCharacterId = 1;
 		SelectedProvinceId = ProvinceMap.NoProvince;
 
+		// every province starts uncontrolled; country files say which ones their country holds, and how
+		var longAgo = StartDate.AddDays(-(long)(ControlRules.YearsToCore * 365.2425) - 1);
 		foreach (Country c in _countries.Values)
 		{
-			foreach (int id in c.Definition?.StartProvinces ?? new List<int>())
-				_provinces[id].OwnerTag = c.Tag;
+			c.Manpower = c.MaxManpower = 0;
+			if (c.Definition == null)
+				continue;
+			foreach (StartProvince sp in c.Definition.StartProvinces)
+			{
+				Province p = _provinces[sp.ProvinceId];
+				p.OwnerTag = c.Tag;
+				p.Control = new ProvinceControl
+				{
+					Kind = sp.Control,
+					Since = sp.Since ?? longAgo,
+					Garrison = sp.Control == ControlKind.Core ? 0 : sp.Garrison,
+				};
+			}
+			foreach (var (id, since) in c.Definition.AlliedTribes)
+			{
+				_provinces[id].AlliedTag = c.Tag;
+				_provinces[id].AlliedSince = since;
+			}
 		}
 		foreach (Country c in _countries.Values)
 		{
@@ -98,8 +127,13 @@ public partial class GameState : IWorld
 			c.CapitalName = c.Definition?.CapitalName;
 			c.Ruler = c.Definition?.Ruler != null ? CreateRuler(c, c.Definition.Ruler) : GenerateRuler(c);
 			c.CurrentFlag = null;
+			// a full manpower pool, less the regiments already standing in garrisons
+			var owned = ProvincesOf(c.Tag).ToList();
+			c.MaxManpower = ControlRules.MaxManpower(owned);
+			c.Manpower = Math.Max(0, c.MaxManpower - owned.Sum(p => p.Control?.Garrison ?? 0));
 		}
 		RefreshFlags(emit: false);
+		_rng = new Random(StableHash("new game"));
 
 		Phase = GamePhase.CountrySelection;
 		PlayerTag = null;
@@ -229,6 +263,104 @@ public partial class GameState : IWorld
 			return;
 		MapMode = mode;
 		EmitSignal(SignalName.MapModeChanged);
+	}
+
+	// ---------------------------------------------------------------------- taking and holding land
+
+	/// <summary>Tells the player something (shown in the message feed).</summary>
+	public void Notify(string text) => EmitSignal(SignalName.MessagePosted, text);
+
+	/// <summary>The player asks the tribes of a province for an alliance. Returns whether they accepted.</summary>
+	public bool AllyTribes(int provinceId)
+	{
+		Province p = GetProvince(provinceId);
+		Country c = PlayerCountry;
+		if (c == null || !ControlRules.CanAlly(c, p, Date, out _))
+			return false;
+		bool accepted = ControlRules.Ally(c, p, Date, _rng);
+		Notify(accepted
+			? $"The tribes of {p.Name} accept an alliance with {c.Name}. In {ControlRules.YearsAlliedToVassalize} years they may become our vassals."
+			: $"The tribes of {p.Name} turn our envoys away. We may ask again in {ControlRules.YearsBeforeAskingAgain} years.");
+		EmitSignal(SignalName.ProvinceChanged, provinceId);
+		return accepted;
+	}
+
+	/// <summary>The player makes allied tribes vassals: the province comes under control.</summary>
+	public bool VassalizeTribes(int provinceId)
+	{
+		Province p = GetProvince(provinceId);
+		Country c = PlayerCountry;
+		if (c == null || !ControlRules.Vassalize(c, p, Date))
+			return false;
+		Notify($"The tribes of {p.Name} bow to {c.Name} as vassals. Held for {ControlRules.YearsToCore} years, it will be ours for good.");
+		AfterOwnershipChange(provinceId);
+		return true;
+	}
+
+	/// <summary>The player sends regiments to subjugate a province's nomads.</summary>
+	public bool SubjugateNomads(int provinceId, int regiments)
+	{
+		Province p = GetProvince(provinceId);
+		Country c = PlayerCountry;
+		if (c == null || !ControlRules.CanSubjugate(c, p, regiments, out _))
+			return false;
+		var r = ControlRules.Subjugate(c, p, regiments, Date, _rng);
+		Notify(r.AttackerWon
+			? $"Our army subjugates the nomads of {p.Name}, losing {r.AttackerLosses} of {regiments} regiments. The survivors stay as its garrison."
+			: $"The nomads of {p.Name} beat our army: {r.AttackerLosses} of {regiments} regiments lost.");
+		if (r.AttackerWon)
+			AfterOwnershipChange(provinceId);
+		else
+			EmitSignal(SignalName.ProvinceChanged, provinceId);
+		return r.AttackerWon;
+	}
+
+	/// <summary>The player sets a province's garrison, drawing on or returning to the manpower pool.</summary>
+	public bool SetGarrison(int provinceId, int regiments)
+	{
+		if (!ControlRules.SetGarrison(PlayerCountry, GetProvince(provinceId), regiments, out _))
+			return false;
+		EmitSignal(SignalName.ProvinceChanged, provinceId);
+		return true;
+	}
+
+	void AfterOwnershipChange(int provinceId)
+	{
+		RefreshFlags();
+		EmitSignal(SignalName.ProvinceChanged, provinceId);
+		EmitSignal(SignalName.OwnershipChanged);
+	}
+
+	/// <summary>The monthly control step: coring, uprisings, alliances and manpower. Tells the player about theirs.</summary>
+	void RunControlStep()
+	{
+		bool ownership = false;
+		foreach (var e in ControlRules.MonthlyStep(_provinces, _countries, Date, _rng))
+		{
+			ownership |= e.Kind is ControlRules.EventKind.ProvinceLost;
+			if (e.Tag != PlayerTag)
+				continue;
+			Country c = GetCountry(e.Tag);
+			Notify(e.Kind switch
+			{
+				ControlRules.EventKind.Cored => $"{e.Province.Name} is now a core province of {c.Name}: its separatism is gone.",
+				ControlRules.EventKind.UprisingCrushed => $"An uprising in {e.Province.Name} is crushed. The garrison lost {e.Battle.DefenderLosses} regiments.",
+				ControlRules.EventKind.ProvinceLost when e.Battle.DefenderLosses == 0 && e.Held == ControlKind.Vassal =>
+					$"The tribes of {e.Province.Name} break away from {c.Adjective} rule. We must win them over again.",
+				ControlRules.EventKind.ProvinceLost =>
+					$"{e.Province.Name} rises up! The rebels defeat the garrison and throw off {c.Adjective} rule. We must subdue it again.",
+				_ => $"The tribes of {e.Province.Name} end their alliance with {c.Name}.",
+			});
+		}
+		if (ownership)
+		{
+			foreach (Country c in _countries.Values)
+			{
+				if (c.CapitalId > 0 && GetProvince(c.CapitalId)?.OwnerTag != c.Tag)
+					c.CapitalId = PickCapital(c);
+			}
+			EmitSignal(SignalName.OwnershipChanged);
+		}
 	}
 
 	/// <summary>Provinces a country owns.</summary>

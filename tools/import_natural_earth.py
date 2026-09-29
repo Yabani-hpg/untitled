@@ -254,7 +254,7 @@ def main():
         for pid, rgb, name, terrain, tag in rows:
             f.write(f"{pid};#{'%02x%02x%02x' % rgb};{name};{terrain};{tag}\n")
 
-    countries = [{"tag": t, "name": n, "color": country_color(t)} for t, n in sorted(owners.items())]
+    countries = [{"tag": t, "name": n, "color": list(bytes.fromhex(country_color(t)[1:]))} for t, n in sorted(owners.items())]
     with COUNTRIES_JSON.open("w", encoding="utf-8", newline="\n") as f:
         f.write("[\n" + ",\n".join("\t" + json.dumps(c, ensure_ascii=False) for c in countries) + "\n]\n")
 

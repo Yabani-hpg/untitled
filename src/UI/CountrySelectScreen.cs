@@ -27,6 +27,7 @@ public partial class CountrySelectScreen : Control
 	Label _rulerDetails;
 	GridContainer _facts;
 	Button _play;
+	Label _hint;
 
 	/// <summary>Featured nations, shown as buttons; the first is the one the screen opens on.</summary>
 	static readonly string[] Featured = { "EGY" };
@@ -86,6 +87,9 @@ public partial class CountrySelectScreen : Control
 		var sub = HudStyle.Body($"{date} · The Bronze Age collapses. Click a province to pick its nation.", BodyFont, 14, HudStyle.Muted);
 		sub.HorizontalAlignment = HorizontalAlignment.Center;
 		box.AddChild(sub);
+		_hint = HudStyle.Body("Beyond the few organized states, the world belongs to tribes and nomads.", BodyFont, 13, HudStyle.Muted);
+		_hint.HorizontalAlignment = HorizontalAlignment.Center;
+		box.AddChild(_hint);
 	}
 
 	void BuildNationPanel()
@@ -198,8 +202,21 @@ public partial class CountrySelectScreen : Control
 		if (gs.Phase != GamePhase.CountrySelection)
 			return;
 		Province p = gs.GetProvince(id);
-		if (p?.OwnerTag != null)
+		if (p == null || p.IsWater)
+			return;
+		if (p.OwnerTag != null)
+		{
 			gs.FocusCountry(p.OwnerTag);
+			_hint.Text = $"{p.Name}: part of {gs.GetCountry(p.OwnerTag)?.Name}.";
+			return;
+		}
+		string who = p.Inhabitants switch
+		{
+			Inhabitants.Tribes => "settled tribes, with no state of their own",
+			Inhabitants.Nomads => "nomads, answering to no state",
+			_ => "nobody",
+		};
+		_hint.Text = $"{p.Name} is uncontrolled: home to {who}. No nation to play here.";
 	}
 
 	void OnFocusChanged(string tag) => Refresh();

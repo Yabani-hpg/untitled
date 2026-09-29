@@ -101,6 +101,18 @@ public partial class MapLabels : Node3D
 			Visible = _flatWorld.IsVisibleInTree();
 	}
 
+	public override void _EnterTree()
+	{
+		if (GameState.Instance != null)
+			GameState.Instance.OwnershipChanged += RefreshCountryLabels;
+	}
+
+	public override void _ExitTree()
+	{
+		if (GameState.Instance != null)
+			GameState.Instance.OwnershipChanged -= RefreshCountryLabels;
+	}
+
 	/// <summary>Recompute country names from current ownership (after conquests, unions, ...).</summary>
 	public void RefreshCountryLabels()
 	{

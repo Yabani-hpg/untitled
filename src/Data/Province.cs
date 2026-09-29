@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Godot;
+using Untitled.Core;
 
 namespace Untitled.Data;
 
@@ -11,8 +12,39 @@ public sealed class Province
 	public string Name { get; }
 	public string Terrain { get; }
 
-	/// <summary>Tag of the owning country, or null when unowned.</summary>
+	/// <summary>
+	/// Tag of the country controlling the province, or null when it is uncontrolled: land of tribes and
+	/// nomads that no organized country rules (see <see cref="Inhabitants"/>).
+	/// </summary>
 	public string OwnerTag { get; set; }
+
+	/// <summary>How the controlling country holds the province; null when uncontrolled.</summary>
+	public ProvinceControl Control { get; set; }
+
+	/// <summary>Uncontrolled tribal land: the country the tribes are allied with, and since when.</summary>
+	public string AlliedTag { get; set; }
+	public GameDate AlliedSince { get; set; }
+	/// <summary>The tribes turned down an alliance with this country; it may ask again after <see cref="RefusedUntil"/>.</summary>
+	public string RefusedTag { get; set; }
+	public GameDate RefusedUntil { get; set; }
+
+	public bool IsCore => Control?.Kind == ControlKind.Core;
+
+	/// <summary>Who lives in the province, which decides how a country can take control of it.</summary>
+	public Inhabitants Inhabitants
+	{
+		get
+		{
+			int total = 0, nomads = 0;
+			foreach (PopGroup pop in Pops)
+			{
+				total += pop.Units;
+				if (pop.Occupation.Nomadic)
+					nomads += pop.Units;
+			}
+			return total == 0 ? Inhabitants.Empty : 2 * nomads >= total ? Inhabitants.Nomads : Inhabitants.Tribes;
+		}
+	}
 
 	public bool IsSea => Terrain == "sea";
 	public bool IsLake => Terrain == "lake";
@@ -105,13 +137,15 @@ public sealed class Province
 		MapOwnerTag = ownerTag;
 	}
 
-	/// <summary>Owner as painted on the map (data/provinces.csv), before any start-of-game changes.</summary>
+	/// <summary>The modern country the province belongs to on the map (data/provinces.csv). Not used in play.</summary>
 	public string MapOwnerTag { get; }
 
 	/// <summary>Back to the map's state, with no people or production, before a new game's setup is applied.</summary>
 	internal void ClearForNewGame()
 	{
-		OwnerTag = MapOwnerTag;
+		OwnerTag = null;                 // every province starts uncontrolled; country files take theirs
+		Control = null;
+		AlliedTag = RefusedTag = null;
 		Pops.Clear();
 		Buildings.Clear();
 		Features.Clear();

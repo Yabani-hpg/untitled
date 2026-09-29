@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using Godot;
 using Untitled.Data;
+using Untitled.Rules;
 
 namespace Untitled.Core;
 
@@ -49,6 +50,7 @@ public partial class GameState
 			w.WriteNumber("capital", c.CapitalId);
 			if (c.CapitalName != null) w.WriteString("capital_name", c.CapitalName);
 			if (c.Ruler != null) w.WriteNumber("ruler", c.Ruler.Id);
+			w.WriteNumber("manpower", c.Manpower);
 			w.WriteEndObject();
 		}
 		w.WriteEndArray();
@@ -61,6 +63,24 @@ public partial class GameState
 			w.WriteStartObject();
 			w.WriteNumber("id", p.Id);
 			if (p.OwnerTag != null) w.WriteString("owner", p.OwnerTag);
+			if (p.Control != null)
+			{
+				w.WriteStartObject("control");
+				w.WriteString("kind", p.Control.Kind.ToString().ToLowerInvariant());
+				w.WriteNumber("since", p.Control.Since.Day);
+				w.WriteNumber("garrison", p.Control.Garrison);
+				w.WriteEndObject();
+			}
+			if (p.AlliedTag != null)
+			{
+				w.WriteString("allied", p.AlliedTag);
+				w.WriteNumber("allied_since", p.AlliedSince.Day);
+			}
+			if (p.RefusedTag != null)
+			{
+				w.WriteString("refused", p.RefusedTag);
+				w.WriteNumber("refused_until", p.RefusedUntil.Day);
+			}
 			w.WriteStartArray("features");
 			foreach (string f in p.Features)
 				w.WriteStringValue(f);
@@ -148,6 +168,7 @@ public partial class GameState
 			c.CapitalId = e.GetProperty("capital").GetInt32();
 			c.CapitalName = e.TryGetProperty("capital_name", out JsonElement cn) ? cn.GetString() : null;
 			c.Ruler = e.TryGetProperty("ruler", out JsonElement r) && _characters.TryGetValue(r.GetInt32(), out Character ruler) ? ruler : null;
+			c.Manpower = e.TryGetProperty("manpower", out JsonElement mp) ? mp.GetInt32() : 0;
 		}
 
 		foreach (JsonElement e in save.GetProperty("provinces").EnumerateArray())
@@ -160,6 +181,22 @@ public partial class GameState
 			}
 			string owner = e.TryGetProperty("owner", out JsonElement o) ? o.GetString() : null;
 			p.OwnerTag = owner != null && _countries.ContainsKey(owner) ? owner : null;
+			p.Control = null;
+			if (p.OwnerTag != null)
+			{
+				// saves from before control existed: what a country held was its core
+				p.Control = new ProvinceControl { Kind = ControlKind.Core, Since = StartDate };
+				if (e.TryGetProperty("control", out JsonElement ctl))
+				{
+					p.Control.Kind = Enum.TryParse(ctl.GetProperty("kind").GetString(), true, out ControlKind kind) ? kind : ControlKind.Core;
+					p.Control.Since = new GameDate(ctl.GetProperty("since").GetInt64());
+					p.Control.Garrison = ctl.GetProperty("garrison").GetInt32();
+				}
+			}
+			p.AlliedTag = e.TryGetProperty("allied", out JsonElement al) ? al.GetString() : null;
+			p.AlliedSince = e.TryGetProperty("allied_since", out JsonElement als) ? new GameDate(als.GetInt64()) : default;
+			p.RefusedTag = e.TryGetProperty("refused", out JsonElement rf) ? rf.GetString() : null;
+			p.RefusedUntil = e.TryGetProperty("refused_until", out JsonElement rfu) ? new GameDate(rfu.GetInt64()) : default;
 			p.Features.Clear();
 			foreach (JsonElement f in e.GetProperty("features").EnumerateArray())
 				p.Features.Add(f.GetString());
@@ -191,7 +228,10 @@ public partial class GameState
 		}
 
 		foreach (Country c in _countries.Values)
+		{
 			c.CurrentFlag = null;
+			c.MaxManpower = ControlRules.MaxManpower(ProvincesOf(c.Tag));
+		}
 		RefreshFlags(emit: false);
 		PlayerTag = save.GetProperty("player").GetString();
 		FocusedCountryTag = PlayerTag;

@@ -1,13 +1,21 @@
 {
-	"_comment": "Egypt at the start, 1 January 1200 BC (8801 HE): the Ramesside New Kingdom under Seti II, ruling Nubia to Napata and southern Canaan while the Bronze Age world collapses around it. Dates are Holocene 'year.month.day'. flags: the first flag whose condition holds is flown; the last one, without a condition, is the default.",
+	"_comment": "Egypt at the start, 1 January 1200 BC (8801 HE): the Ramesside New Kingdom under Seti II, ruling Nubia to Napata and southern Canaan while the Bronze Age world collapses around it. Dates are Holocene 'year.month.day'. color: political map colour, RGB 0-255. start_provinces: groups of provinces (areas and/or province names) the country controls at the start; control is core, vassal (tribes that allied and became vassals) or subjugated (nomads held down by a garrison of regiments), since the given date (none: long ago, already a core). allied_tribes: uncontrolled tribal provinces allied with the country at the start. flags: the first flag whose condition holds is flown; the last one, without a condition, is the default.",
 	"tag": "EGY",
 	"name": "Egypt",
 	"adjective": "Egyptian",
+	"color": [255, 0, 0],
 	"government": "Pharaonic monarchy",
 	"ruler_title": "Pharaoh",
 	"capital": "Imet-Pehet (Djanet)",
 	"capital_name": "Pi-Ramesses",
-	"start_provinces": { "areas": ["nubia", "canaan"], "except": ["Kurgus"] },
+	"start_provinces": [
+		{ "areas": ["upper_egypt", "lower_egypt", "egyptian_oases", "nubia"], "except": ["Kurgus"], "control": "core" },
+		{ "areas": ["canaan"], "control": "vassal", "since": "8793.1.1", "_comment": "reasserted by Merneptah's campaign, c. 1208 BC" },
+		{ "areas": ["egyptian_deserts"], "control": "subjugated", "since": "8765.1.1", "garrison": 2, "_comment": "the mining deserts, held against the Medjay and Shasu nomads" }
+	],
+	"allied_tribes": [
+		{ "provinces": ["Medjay (Red Sea Hills)"], "since": "8790.1.1", "_comment": "the Medjay, Egypt's desert scouts and police" }
+	],
 	"ruler": {
 		"name": "Seti II",
 		"full_name": "Userkheperure Setepenre Seti Merenptah",

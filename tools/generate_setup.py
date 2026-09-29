@@ -193,7 +193,7 @@ def deposit_for(p):
 
 
 def pops_for(p, units):
-    floodplain = p["veg"] == "desert" and "river" in p["features"]
+    floodplain = p["valley"] > 0.5      # settled farmers of a river valley, not desert nomads
     tribal = TRIBAL_SHARE["farmland" if floodplain else p["veg"]] + TRIBAL_CONTINENT_BONUS.get(p["culture"], 0.0)
     if p["oceania"]:
         tribal += 0.6
@@ -298,9 +298,15 @@ def main():
         p["deposit"] = deposit_for(p)
 
         density = DENSITY[p["veg"]]
-        if p["floodplain"] or p["veg"] == "desert" and "river" in features:
-            density = DENSITY["farmland"] * 5.0     # a flood plain in the desert (the Nile, the Euphrates) packs
-                                                    # its people along the river, far above the desert average
+        # a flood plain in the desert (the Nile, the Euphrates) packs its people along the river: the bonus
+        # scales with how much of the province is river valley, so a vast desert that merely touches the
+        # Nile stays empty
+        valley = min(1.0, 12.0 * river_count[pid] / max(count[pid], 1))
+        if p["floodplain"]:
+            density = DENSITY["farmland"] * 5.0
+        elif p["veg"] == "desert" and "river" in features:
+            density = DENSITY["desert"] + DENSITY["farmland"] * 5.0 * valley
+        p["valley"] = 1.0 if p["floodplain"] else valley
         weight = density * DENSITY_TERRAIN.get(row["terrain"], 1.0) * CONTINENT_DENSITY[p["culture"]]
         if "river" in features:
             weight *= RIVER_BONUS

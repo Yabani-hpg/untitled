@@ -45,6 +45,7 @@ public partial class PlayerBar : PanelContainer
 		gs.PhaseChanged += Refresh;
 		gs.FlagsChanged += Refresh;
 		gs.MonthAdvanced += Refresh;
+		gs.ProvinceChanged += OnProvinceChanged;
 		Refresh();
 		// a loaded game opens on the player's capital
 		if (gs.Phase == GamePhase.Playing)
@@ -59,7 +60,10 @@ public partial class PlayerBar : PanelContainer
 		gs.PhaseChanged -= Refresh;
 		gs.FlagsChanged -= Refresh;
 		gs.MonthAdvanced -= Refresh;
+		gs.ProvinceChanged -= OnProvinceChanged;
 	}
+
+	void OnProvinceChanged(int id) => Refresh();
 
 	/// <summary>Click the bar to go to the capital.</summary>
 	public override void _GuiInput(InputEvent e)
@@ -89,7 +93,10 @@ public partial class PlayerBar : PanelContainer
 		_name.Text = c.Name;
 		Character r = c.Ruler;
 		_portrait.Texture = HudStyle.Texture(r?.Portrait);
-		_ruler.Text = r == null ? c.Government : $"{c.RulerTitle} {r.Name}, age {r.AgeOn(gs.Date)}\nCapital: {gs.CapitalText(c)}";
+		string ruler = r == null ? c.Government : $"{c.RulerTitle} {r.Name}, age {r.AgeOn(gs.Date)}";
+		_ruler.Text = $"{ruler}\nCapital: {gs.CapitalText(c)}\nManpower: {c.Manpower} of {c.MaxManpower} regiments";
+		_ruler.TooltipText = "Regiments of 1000 soldiers, raised from the people of our core provinces.\nArmies and garrisons are drawn from them; they refill over ten years.";
+		_ruler.MouseFilter = MouseFilterEnum.Pass;
 		_portrait.TooltipText = r?.FullName ?? r?.Name;
 	}
 }

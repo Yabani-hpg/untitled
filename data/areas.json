@@ -14,6 +14,8 @@
 			"Sema-Behdet (Paiuenamun)", "Imet-Khentet (Per-Bast)", "Imet-Pehet (Djanet)", "Sopdu (Per-Sopdu)"
 		],
 		"nubia": ["Wawat", "Kush (Batn el-Hajar)", "Kerma", "Napata", "Kurgus"],
+		"egyptian_oases": ["Kharga Oasis (Kenem)", "Dakhla Oasis (Djesdjes-Res)", "Bahariya Oasis (Djesdjes)", "Farafra Oasis (Ta-Iht)"],
+		"egyptian_deserts": ["Eastern Desert", "Sinai (Mefkat)"],
 		"canaan": ["Gaza Strip", "HaDarom", "HaMerkaz", "HaZafon"],
 		"retjenu": [
 			"South Lebanon", "Beqaa", "North Lebanon", "Mount Lebanon", "Homs (Hims)", "Tartus", "Rif Dimashq", "Hamah", "Lattakia"

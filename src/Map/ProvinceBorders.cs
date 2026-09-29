@@ -58,6 +58,7 @@ public partial class ProvinceBorders : Node3D
 		}
 		_material.SetShaderParameter("map_size", plane.Size);
 		BuildOwnerMap(state);
+		state.OwnershipChanged += RefreshOwners;
 		_material.SetShaderParameter("owner_map", _ownerTexture);
 
 		state.SelectedProvinceChanged += OnSelectedProvinceChanged;
@@ -90,7 +91,10 @@ public partial class ProvinceBorders : Node3D
 	public override void _ExitTree()
 	{
 		if (GameState.Instance != null && _material != null)
+		{
 			GameState.Instance.SelectedProvinceChanged -= OnSelectedProvinceChanged;
+			GameState.Instance.OwnershipChanged -= RefreshOwners;
+		}
 	}
 
 	public override void _Process(double delta)

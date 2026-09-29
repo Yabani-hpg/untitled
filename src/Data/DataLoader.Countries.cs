@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using Godot;
+using Untitled.Core;
 
 namespace Untitled.Data;
 
@@ -105,6 +106,8 @@ public static partial class DataLoader
 
 		string Optional(string key) => e.TryGetProperty(key, out JsonElement v) ? v.GetString() : null;
 		country.Name = Optional("name") ?? country.Name;
+		if (e.TryGetProperty("color", out _))
+			country.MapColor = ParseRgb(e, "color", path);
 		country.Adjective = Optional("adjective") ?? country.Name;
 		country.Government = Optional("government") ?? country.Government;
 		country.RulerTitle = Optional("ruler_title") ?? country.RulerTitle;
@@ -121,17 +124,40 @@ public static partial class DataLoader
 
 		if (e.TryGetProperty("start_provinces", out JsonElement start))
 		{
-			var except = new HashSet<int>();
-			foreach (string name in GetStringList(start, "except", path))
-				except.Add(ProvinceByName(names, name, $"{path}:start_provinces.except"));
-			foreach (string area in GetStringList(start, "areas", path))
+			if (start.ValueKind != JsonValueKind.Array)
+				throw new DataException($"{path}: 'start_provinces' must be a list of groups");
+			int i = 0;
+			foreach (JsonElement group in start.EnumerateArray())
 			{
-				if (!defs.Areas.TryGetValue(area, out List<int> ids))
-					throw new DataException($"{path}:start_provinces: unknown area '{area}'");
-				def.StartProvinces.AddRange(ids.FindAll(id => !except.Contains(id)));
+				string w = $"{path}:start_provinces[{i++}]";
+				string kind = group.TryGetProperty("control", out JsonElement k) ? k.GetString() : "core";
+				var control = kind switch
+				{
+					"core" => ControlKind.Core,
+					"vassal" => ControlKind.Vassal,
+					"subjugated" => ControlKind.Subjugated,
+					_ => throw new DataException($"{w}: control must be core, vassal or subjugated"),
+				};
+				GameDate? since = group.TryGetProperty("since", out JsonElement s) ? Condition.ParseDate(s.GetString(), $"{w}.since") : null;
+				int garrison = (int)GetFloat(group, "garrison", 0f);
+				foreach (int id in GroupProvinces(group, w, defs, names))
+				{
+					if (def.StartProvinces.Exists(sp => sp.ProvinceId == id))
+						throw new DataException($"{w}: province {id} is listed twice");
+					def.StartProvinces.Add(new StartProvince(id, control, since, garrison));
+				}
 			}
-			foreach (string name in GetStringList(start, "provinces", path))
-				def.StartProvinces.Add(ProvinceByName(names, name, $"{path}:start_provinces"));
+		}
+		if (e.TryGetProperty("allied_tribes", out JsonElement allied))
+		{
+			int i = 0;
+			foreach (JsonElement group in allied.EnumerateArray())
+			{
+				string w = $"{path}:allied_tribes[{i++}]";
+				GameDate since = Condition.ParseDate(GetString(group, "since", w), $"{w}.since");
+				foreach (int id in GroupProvinces(group, w, defs, names))
+					def.AlliedTribes.Add((id, since));
+			}
 		}
 
 		if (e.TryGetProperty("flags", out JsonElement flags))
@@ -153,6 +179,24 @@ public static partial class DataLoader
 				throw new DataException($"{path}: the last flag must have no condition, so there is always one to fly");
 		}
 		country.Definition = def;
+	}
+
+	/// <summary>The provinces of a group written as "areas" and/or "provinces" (names), minus "except".</summary>
+	static List<int> GroupProvinces(JsonElement group, string where, Definitions defs, Dictionary<string, int> names)
+	{
+		var except = new HashSet<int>();
+		foreach (string name in GetStringList(group, "except", where))
+			except.Add(ProvinceByName(names, name, $"{where}.except"));
+		var ids = new List<int>();
+		foreach (string area in GetStringList(group, "areas", where))
+		{
+			if (!defs.Areas.TryGetValue(area, out List<int> areaIds))
+				throw new DataException($"{where}: unknown area '{area}'");
+			ids.AddRange(areaIds.FindAll(id => !except.Contains(id)));
+		}
+		foreach (string name in GetStringList(group, "provinces", where))
+			ids.Add(ProvinceByName(names, name, where));
+		return ids;
 	}
 
 	static RulerDefinition ParseRuler(JsonElement e, string where, Definitions defs)

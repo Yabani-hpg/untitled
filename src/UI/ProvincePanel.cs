@@ -145,7 +145,7 @@ public partial class ProvincePanel : PanelContainer
 
 		_name.Text = p.Name;
 		Country ownerCountry = GameState.Instance.GetCountry(p.OwnerTag);
-		string owner = ownerCountry?.Name ?? "Unowned";
+		string owner = ownerCountry?.Name ?? "Uncontrolled";
 		_ownerFlagFrame.Visible = ownerCountry != null;
 		_ownerFlag.Texture = HudStyle.Texture(ownerCountry?.CurrentFlag?.ImagePath);
 		_ownerFlag.TooltipText = ownerCountry?.CurrentFlag?.Name;
@@ -168,6 +168,8 @@ public partial class ProvincePanel : PanelContainer
 	{
 		Clear(_overview);
 		_filling = _overview;
+		if (!p.IsWater)
+			FillControl(p);
 		if (!p.IsWater)
 		{
 			var grid = Grid(2);
@@ -209,6 +211,144 @@ public partial class ProvincePanel : PanelContainer
 				Row(grid, "Navigable", string.Join(", ", navigable));
 		}
 		_overview.AddChild(HudStyle.Body($"Province #{p.Id}", BodyFont, 12, HudStyle.Muted));
+	}
+
+	// ---------------------------------------------------------------------------------- Control
+
+	/// <summary>Who holds the province and how; for uncontrolled land, what the player can do to take it.</summary>
+	void FillControl(Province p)
+	{
+		GameState gs = GameState.Instance;
+		Country player = gs.PlayerCountry;
+		var box = Section("Control");
+		Label Line(string text, Color? color = null, int size = 14)
+		{
+			var l = HudStyle.Body(text, BodyFont, size, color);
+			l.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			l.CustomMinimumSize = new Vector2(360, 0);
+			box.AddChild(l);
+			return l;
+		}
+
+		if (p.Control != null)
+		{
+			Country owner = gs.GetCountry(p.OwnerTag);
+			string how = p.Control.Kind switch
+			{
+				ControlKind.Core => "Core province",
+				ControlKind.Vassal => "Vassal tribes",
+				_ => "Subjugated nomads",
+			};
+			Line($"{how} of {owner?.Name}", HudStyle.Text, 15);
+			if (!p.IsCore)
+			{
+				double separatism = ControlRules.Separatism(p, gs.Date);
+				Line($"Separatism {separatism:P0}: a core in {ControlRules.YearsUntilCore(p, gs.Date)} years, if held in rein", HudStyle.Muted, 13);
+				int warriors = ControlRules.Warriors(p);
+				Line($"Garrison {p.Control.Garrison} regiments · {warriors} regiments of possible rebels · uprising risk {ControlRules.UprisingChance(p, owner, gs.Date):P1} a month",
+					ControlRules.UprisingChance(p, owner, gs.Date) > 0.01 ? HudStyle.Bad : HudStyle.Muted, 13);
+				if (owner != null && owner == player)
+					box.AddChild(GarrisonRow(p, player));
+			}
+			return;
+		}
+
+		string who = p.Inhabitants switch
+		{
+			Inhabitants.Tribes => "Uncontrolled: settled tribes live here",
+			Inhabitants.Nomads => "Uncontrolled: nomads roam here",
+			_ => "Uncontrolled and empty",
+		};
+		Line(who, HudStyle.Text, 15);
+		if (gs.GetCountry(p.AlliedTag) is Country ally)
+			Line($"Allied with {ally.Name} since {gs.Definitions.DefaultCalendar.Format(p.AlliedSince)}", HudStyle.Muted, 13);
+		if (player == null || gs.Phase != GamePhase.Playing)
+			return;
+
+		if (p.Inhabitants == Inhabitants.Tribes)
+		{
+			if (p.AlliedTag == player.Tag)
+			{
+				bool can = ControlRules.CanVassalize(player, p, gs.Date, out string why);
+				box.AddChild(ActionRow("Make them vassals", can, why ?? "The province comes under our control, with separatism for 50 years",
+					() => gs.VassalizeTribes(p.Id)));
+			}
+			else
+			{
+				bool can = ControlRules.CanAlly(player, p, gs.Date, out string why);
+				string tip = can ? $"{ControlRules.AllianceChance(player, p):P0} chance they accept. After {ControlRules.YearsAlliedToVassalize} years of alliance they can become vassals." : why;
+				box.AddChild(ActionRow("Ally with the tribes", can, tip, () => gs.AllyTribes(p.Id)));
+				if (can)
+					Line($"Chance they accept: {ControlRules.AllianceChance(player, p):P0} (kinship with {player.Adjective} people helps)", HudStyle.Muted, 13);
+			}
+		}
+		else if (p.Inhabitants == Inhabitants.Nomads)
+		{
+			int warriors = ControlRules.Warriors(p);
+			Line($"About {warriors} regiments of nomad warriors · we have {player.Manpower} regiments free", HudStyle.Muted, 13);
+			var row = new HBoxContainer();
+			row.AddThemeConstantOverride("separation", 8);
+			var count = new SpinBox { MinValue = 1, MaxValue = Math.Max(1, player.Manpower), Value = Math.Clamp(warriors * 2, 1, Math.Max(1, player.Manpower)), Suffix = "reg." };
+			count.GetLineEdit().AddThemeFontSizeOverride("font_size", 13);
+			row.AddChild(count);
+			var odds = HudStyle.Body("", BodyFont, 13, HudStyle.Muted);
+			odds.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+			var go = HudStyle.Button("Subjugate", BodyFont, 13);
+			void UpdateOdds()
+			{
+				int n = (int)count.Value;
+				bool can = ControlRules.CanSubjugate(player, p, n, out string why);
+				go.Disabled = !can;
+				go.TooltipText = can ? "Send the army. If it wins, the survivors stay as the garrison." : why;
+				odds.Text = can ? $"{ControlRules.SubjugationChance(player, p, n):P0} to win" : why;
+			}
+			count.ValueChanged += _ => UpdateOdds();
+			go.Pressed += () => gs.SubjugateNomads(p.Id, (int)count.Value);
+			UpdateOdds();
+			row.AddChild(odds);
+			row.AddChild(go);
+			box.AddChild(row);
+		}
+	}
+
+	Control ActionRow(string text, bool enabled, string tooltip, Action action)
+	{
+		var b = HudStyle.Button(text, BodyFont, 13);
+		b.Disabled = !enabled;
+		b.TooltipText = tooltip;
+		b.Pressed += action;
+		b.SizeFlagsHorizontal = SizeFlags.ShrinkBegin;
+		if (!enabled && tooltip != null)
+		{
+			var box = new VBoxContainer();
+			box.AddChild(b);
+			var why = HudStyle.Body(tooltip, BodyFont, 12, HudStyle.Muted);
+			why.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			why.CustomMinimumSize = new Vector2(360, 0);
+			box.AddChild(why);
+			return box;
+		}
+		return b;
+	}
+
+	Control GarrisonRow(Province p, Country player)
+	{
+		var row = new HBoxContainer();
+		row.AddThemeConstantOverride("separation", 8);
+		row.AddChild(HudStyle.Body("Garrison", BodyFont, 13, HudStyle.Muted));
+		var minus = HudStyle.Button("−", BodyFont, 13);
+		minus.Disabled = p.Control.Garrison <= 0;
+		minus.TooltipText = "Send a regiment home";
+		minus.Pressed += () => GameState.Instance.SetGarrison(p.Id, p.Control.Garrison - 1);
+		var plus = HudStyle.Button("+", BodyFont, 13);
+		plus.Disabled = player.Manpower <= 0;
+		plus.TooltipText = player.Manpower > 0 ? "Station another regiment" : "No regiments to spare";
+		plus.Pressed += () => GameState.Instance.SetGarrison(p.Id, p.Control.Garrison + 1);
+		row.AddChild(minus);
+		row.AddChild(HudStyle.Body($"{p.Control.Garrison}", BodyFont, 14));
+		row.AddChild(plus);
+		row.AddChild(HudStyle.Body($"({player.Manpower} free)", BodyFont, 13, HudStyle.Muted));
+		return row;
 	}
 
 	// -------------------------------------------------------------------------------- Population
