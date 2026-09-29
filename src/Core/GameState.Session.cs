@@ -49,6 +49,10 @@ public partial class GameState : IWorld
 	[Signal]
 	public delegate void OwnershipChangedEventHandler();
 
+	/// <summary>Tribes changed: relations, alliances, mercenaries, camps, or a tribe gone.</summary>
+	[Signal]
+	public delegate void TribesChangedEventHandler();
+
 	/// <summary>Something happened the player should hear about.</summary>
 	[Signal]
 	public delegate void MessagePostedEventHandler(string text);
@@ -115,11 +119,6 @@ public partial class GameState : IWorld
 					Garrison = sp.Control == ControlKind.Core ? 0 : sp.Garrison,
 				};
 			}
-			foreach (var (id, since) in c.Definition.AlliedTribes)
-			{
-				_provinces[id].AlliedTag = c.Tag;
-				_provinces[id].AlliedSince = since;
-			}
 		}
 		foreach (Country c in _countries.Values)
 		{
@@ -132,6 +131,8 @@ public partial class GameState : IWorld
 			c.MaxManpower = ControlRules.MaxManpower(owned);
 			c.Manpower = Math.Max(0, c.MaxManpower - owned.Sum(p => p.Control?.Garrison ?? 0));
 		}
+		CreateTribes();
+		SetUpTribeRelations();
 		RefreshFlags(emit: false);
 		_rng = new Random(StableHash("new game"));
 
@@ -270,51 +271,6 @@ public partial class GameState : IWorld
 	/// <summary>Tells the player something (shown in the message feed).</summary>
 	public void Notify(string text) => EmitSignal(SignalName.MessagePosted, text);
 
-	/// <summary>The player asks the tribes of a province for an alliance. Returns whether they accepted.</summary>
-	public bool AllyTribes(int provinceId)
-	{
-		Province p = GetProvince(provinceId);
-		Country c = PlayerCountry;
-		if (c == null || !ControlRules.CanAlly(c, p, Date, out _))
-			return false;
-		bool accepted = ControlRules.Ally(c, p, Date, _rng);
-		Notify(accepted
-			? $"The tribes of {p.Name} accept an alliance with {c.Name}. In {ControlRules.YearsAlliedToVassalize} years they may become our vassals."
-			: $"The tribes of {p.Name} turn our envoys away. We may ask again in {ControlRules.YearsBeforeAskingAgain} years.");
-		EmitSignal(SignalName.ProvinceChanged, provinceId);
-		return accepted;
-	}
-
-	/// <summary>The player makes allied tribes vassals: the province comes under control.</summary>
-	public bool VassalizeTribes(int provinceId)
-	{
-		Province p = GetProvince(provinceId);
-		Country c = PlayerCountry;
-		if (c == null || !ControlRules.Vassalize(c, p, Date))
-			return false;
-		Notify($"The tribes of {p.Name} bow to {c.Name} as vassals. Held for {ControlRules.YearsToCore} years, it will be ours for good.");
-		AfterOwnershipChange(provinceId);
-		return true;
-	}
-
-	/// <summary>The player sends regiments to subjugate a province's nomads.</summary>
-	public bool SubjugateNomads(int provinceId, int regiments)
-	{
-		Province p = GetProvince(provinceId);
-		Country c = PlayerCountry;
-		if (c == null || !ControlRules.CanSubjugate(c, p, regiments, out _))
-			return false;
-		var r = ControlRules.Subjugate(c, p, regiments, Date, _rng);
-		Notify(r.AttackerWon
-			? $"Our army subjugates the nomads of {p.Name}, losing {r.AttackerLosses} of {regiments} regiments. The survivors stay as its garrison."
-			: $"The nomads of {p.Name} beat our army: {r.AttackerLosses} of {regiments} regiments lost.");
-		if (r.AttackerWon)
-			AfterOwnershipChange(provinceId);
-		else
-			EmitSignal(SignalName.ProvinceChanged, provinceId);
-		return r.AttackerWon;
-	}
-
 	/// <summary>The player sets a province's garrison, drawing on or returning to the manpower pool.</summary>
 	public bool SetGarrison(int provinceId, int regiments)
 	{
@@ -338,6 +294,8 @@ public partial class GameState : IWorld
 		foreach (var e in ControlRules.MonthlyStep(_provinces, _countries, Date, _rng))
 		{
 			ownership |= e.Kind is ControlRules.EventKind.ProvinceLost;
+			if (e.Kind is ControlRules.EventKind.ProvinceLost)
+				FormRebelTribe(e.Province, e.Tag);
 			if (e.Tag != PlayerTag)
 				continue;
 			Country c = GetCountry(e.Tag);
@@ -345,11 +303,9 @@ public partial class GameState : IWorld
 			{
 				ControlRules.EventKind.Cored => $"{e.Province.Name} is now a core province of {c.Name}: its separatism is gone.",
 				ControlRules.EventKind.UprisingCrushed => $"An uprising in {e.Province.Name} is crushed. The garrison lost {e.Battle.DefenderLosses} regiments.",
-				ControlRules.EventKind.ProvinceLost when e.Battle.DefenderLosses == 0 && e.Held == ControlKind.Vassal =>
-					$"The tribes of {e.Province.Name} break away from {c.Adjective} rule. We must win them over again.",
-				ControlRules.EventKind.ProvinceLost =>
-					$"{e.Province.Name} rises up! The rebels defeat the garrison and throw off {c.Adjective} rule. We must subdue it again.",
-				_ => $"The tribes of {e.Province.Name} end their alliance with {c.Name}.",
+				ControlRules.EventKind.ProvinceLost when e.Battle.DefenderLosses == 0 && e.Held == ControlKind.Absorbed =>
+					$"The tribes of {e.Province.Name} break away from {c.Adjective} rule and join {TribeOf(e.Province)?.TheName}. We must win them over again.",
+				_ => $"{e.Province.Name} rises up! The rebels defeat the garrison, throw off {c.Adjective} rule and join {TribeOf(e.Province)?.TheName}. We must subdue it again.",
 			});
 		}
 		if (ownership)

@@ -6,20 +6,14 @@ using Untitled.Data;
 namespace Untitled.Rules;
 
 /// <summary>
-/// How organized countries take and keep land from the tribes and nomads living outside them.
-///
-/// Every province starts uncontrolled. A country bordering it can bring it under control:
-/// - settled tribes: ally with them (they may refuse), and after some years of alliance make them vassals;
-/// - nomads: subjugate them with an army, which then stays as the province's garrison.
-/// A controlled province has separatism, fading over <see cref="YearsToCore"/> years of rule until it
-/// becomes a core. Until then it can rise up: nomads who beat their garrison (or find none) throw the
-/// country out, and the province is uncontrolled again.
+/// How settled countries hold land. A province taken from unsettled peoples (see TribeRules) has
+/// separatism, fading over <see cref="YearsToCore"/> years of rule until it becomes a core. Until then
+/// it can rise up: rebels who beat the garrison (or find none) throw the country out, and the province
+/// is uncontrolled again. Also: manpower, garrisons and the battle rules.
 /// </summary>
 public static class ControlRules
 {
 	public const int YearsToCore = 50;
-	public const int YearsAlliedToVassalize = 5;
-	public const int YearsBeforeAskingAgain = 2;
 
 	/// <summary>Fighters per population unit: most nomad men ride to war, fewer settled villagers do.</summary>
 	public const double NomadWarriorShare = 0.3;
@@ -31,9 +25,12 @@ public static class ControlRules
 	/// <summary>Months for an empty manpower pool to refill.</summary>
 	public const int ManpowerRefillMonths = 120;
 
+	/// <summary>Unsettled warriors (tribes, nomads, rebels, mercenaries) fight this much harder than regular regiments.</summary>
+	public const double FierceMultiplier = 1.5;
+
 	/// <summary>Monthly chance of an uprising at full separatism, for nomads matching their garrison in strength.</summary>
 	public const double NomadUprisingChance = 0.03;
-	/// <summary>Monthly chance of vassal tribes breaking away at full separatism, if they feel no kinship.</summary>
+	/// <summary>Monthly chance of absorbed tribes breaking away at full separatism, if they feel no kinship.</summary>
 	public const double TribalRevoltChance = 0.006;
 
 	static double YearsBetween(GameDate from, GameDate to) => (to.Day - from.Day) / 365.2425;
@@ -86,94 +83,62 @@ public static class ControlRules
 		return (int)m;
 	}
 
-	// ------------------------------------------------------------------------------ tribes: alliance
+	// ------------------------------------------------------------------------------------- battles
 
-	static bool CheckUncontrolled(Province p, Country c, Inhabitants who, out string reason)
+	/// <summary>A side in battle: regular regiments, and fierce unsettled ones (tribal warriors, mercenaries).</summary>
+	public readonly record struct Force(int Regular, int Fierce, int DiceModifier)
 	{
-		reason = null;
-		if (p == null || p.IsWater)
-			reason = "Not a land province";
-		else if (p.OwnerTag != null)
-			reason = p.OwnerTag == c?.Tag ? "Already yours" : "Another country controls it";
-		else if (p.Inhabitants != who)
-			reason = who == Inhabitants.Tribes ? "No settled tribes live here" : "No nomads live here";
-		else if (!Borders(p, c.Tag))
-			reason = "It must border a province you control";
-		return reason == null;
+		public int Regiments => Regular + Fierce;
+		public double Strength => Regular + Fierce * FierceMultiplier;
 	}
 
-	/// <summary>Chance the tribes accept an alliance: kinship with the ruler's people helps.</summary>
-	public static double AllianceChance(Country c, Province p) =>
-		0.3 + 0.5 * PopulationRules.Affinity(c.Ruler?.Culture, p.MainCulture);
+	public readonly record struct BattleResult(bool AttackerWon, int AttackerLosses, int DefenderLosses);
 
-	public static bool CanAlly(Country c, Province p, GameDate today, out string reason)
+	/// <summary>
+	/// A battle, Paradox style: each side rolls a die (0-9) plus its modifier; its power is its strength
+	/// times (5 + roll), unsettled warriors counting <see cref="FierceMultiplier"/> times. The stronger side
+	/// wins; the loser loses 40-70% of its regiments and the winner a share in proportion to how close it was.
+	/// </summary>
+	public static BattleResult Battle(Force attacker, Force defender, Random rng)
 	{
-		if (!CheckUncontrolled(p, c, Inhabitants.Tribes, out reason))
-			return false;
-		if (p.AlliedTag == c.Tag)
-			reason = "Already your allies";
-		else if (p.AlliedTag != null)
-			reason = "The tribes are allied with another country";
-		else if (p.RefusedTag == c.Tag && today < p.RefusedUntil)
-			reason = "The tribes refused you; they will listen again in time";
-		return reason == null;
+		if (defender.Regiments <= 0)
+			return new BattleResult(true, 0, 0);
+		if (attacker.Regiments <= 0)
+			return new BattleResult(false, 0, 0);
+		int ra = rng.Next(10), rd = rng.Next(10);
+		double pa = attacker.Strength * Math.Max(1, 5 + ra + attacker.DiceModifier);
+		double pd = defender.Strength * Math.Max(1, 5 + rd + defender.DiceModifier);
+		bool attackerWon = pa > pd;
+		double loserShare = 0.4 + 0.3 * rng.NextDouble();
+		double winnerShare = 0.25 * Math.Min(pa, pd) / Math.Max(pa, pd);
+		int aLoss = (int)Math.Round(attacker.Regiments * (attackerWon ? winnerShare : loserShare));
+		int dLoss = (int)Math.Round(defender.Regiments * (attackerWon ? loserShare : winnerShare));
+		return new BattleResult(attackerWon, Math.Min(aLoss, attacker.Regiments), Math.Min(dLoss, defender.Regiments));
 	}
 
-	/// <summary>Asks the tribes for an alliance. They accept with <see cref="AllianceChance"/>.</summary>
-	public static bool Ally(Country c, Province p, GameDate today, Random rng)
+	/// <summary>Chance the attacker wins, over all 100 die rolls.</summary>
+	public static double WinChance(Force attacker, Force defender)
 	{
-		if (!CanAlly(c, p, today, out _))
-			return false;
-		if (rng.NextDouble() < AllianceChance(c, p))
+		if (defender.Regiments <= 0)
+			return 1;
+		int wins = 0;
+		for (int ra = 0; ra < 10; ra++)
 		{
-			p.AlliedTag = c.Tag;
-			p.AlliedSince = today;
-			return true;
+			for (int rd = 0; rd < 10; rd++)
+			{
+				if (attacker.Strength * Math.Max(1, 5 + ra + attacker.DiceModifier) > defender.Strength * Math.Max(1, 5 + rd + defender.DiceModifier))
+					wins++;
+			}
 		}
-		p.RefusedTag = c.Tag;
-		p.RefusedUntil = today.AddDays((long)(YearsBeforeAskingAgain * 365.2425));
-		return false;
+		return wins / 100.0;
 	}
 
-	public static bool CanVassalize(Country c, Province p, GameDate today, out string reason)
-	{
-		reason = null;
-		if (p?.AlliedTag != c?.Tag || p?.OwnerTag != null)
-			reason = "The tribes must be your allies first";
-		else if (YearsBetween(p.AlliedSince, today) < YearsAlliedToVassalize)
-			reason = $"They must be your allies for {YearsAlliedToVassalize} years";
-		return reason == null;
-	}
-
-	public static bool Vassalize(Country c, Province p, GameDate today)
-	{
-		if (!CanVassalize(c, p, today, out _))
-			return false;
-		p.OwnerTag = c.Tag;
-		p.Control = new ProvinceControl { Kind = ControlKind.Vassal, Since = today };
-		p.AlliedTag = null;
-		return true;
-	}
-
-	// ------------------------------------------------------------------------- nomads: subjugation
-
-	public static bool CanSubjugate(Country c, Province p, int regiments, out string reason)
-	{
-		if (!CheckUncontrolled(p, c, Inhabitants.Nomads, out reason))
-			return false;
-		if (regiments < 1)
-			reason = "Send at least one regiment";
-		else if (regiments > c.Manpower)
-			reason = $"You have only {c.Manpower} regiments to spare";
-		return reason == null;
-	}
-
-	/// <summary>Dice modifiers of the nomads defending their land: hills and mountains, and deserts they know.</summary>
-	static int DefenderModifier(Province p) =>
+	/// <summary>Dice modifier of people defending their own land: hills and mountains, and deserts or steppe they know.</summary>
+	public static int HomeGroundModifier(Province p) =>
 		(p.HasFeature("mountains") ? 2 : p.HasFeature("hills") ? 1 : 0) + (p.HasFeature("desert") || p.HasFeature("steppe") ? 1 : 0);
 
-	/// <summary>The attacker's modifier, marching in from the best of its bordering provinces (a river crossing costs 1).</summary>
-	static int AttackerModifier(Province p, string tag)
+	/// <summary>An army's modifier marching into <paramref name="p"/> from the best of the country's bordering provinces (a river crossing costs 1).</summary>
+	public static int AttackerModifier(Province p, string tag)
 	{
 		int best = int.MinValue;
 		foreach (Adjacency link in p.Neighbors)
@@ -182,72 +147,6 @@ public static class ControlRules
 				best = Math.Max(best, CombatRules.AttackerDiceModifier(link.To, p));
 		}
 		return best == int.MinValue ? 0 : best;
-	}
-
-	public readonly record struct BattleResult(bool AttackerWon, int AttackerLosses, int DefenderLosses);
-
-	/// <summary>
-	/// A battle, Paradox style: each side rolls a die (0-9) plus its modifiers; its strength is its
-	/// regiments times (5 + roll). The stronger side wins; the loser loses 40-70% of its regiments and the
-	/// winner a share in proportion to how close it was.
-	/// </summary>
-	public static BattleResult Battle(int attackers, int defenders, int attackerMod, int defenderMod, Random rng)
-	{
-		if (defenders <= 0)
-			return new BattleResult(true, 0, 0);
-		if (attackers <= 0)
-			return new BattleResult(false, 0, 0);
-		int ra = rng.Next(10), rd = rng.Next(10);
-		double pa = attackers * Math.Max(1, 5 + ra + attackerMod);
-		double pd = defenders * Math.Max(1, 5 + rd + defenderMod);
-		bool attackerWon = pa > pd;
-		double loserShare = 0.4 + 0.3 * rng.NextDouble();
-		double winnerShare = 0.25 * Math.Min(pa, pd) / Math.Max(pa, pd);
-		int aLoss = (int)Math.Round(attackers * (attackerWon ? winnerShare : loserShare));
-		int dLoss = (int)Math.Round(defenders * (attackerWon ? loserShare : winnerShare));
-		return new BattleResult(attackerWon, Math.Min(aLoss, attackers), Math.Min(dLoss, defenders));
-	}
-
-	/// <summary>Chance the attacker wins, over all 100 die rolls.</summary>
-	public static double WinChance(int attackers, int defenders, int attackerMod, int defenderMod)
-	{
-		if (defenders <= 0)
-			return 1;
-		int wins = 0;
-		for (int ra = 0; ra < 10; ra++)
-		{
-			for (int rd = 0; rd < 10; rd++)
-			{
-				if (attackers * Math.Max(1, 5 + ra + attackerMod) > defenders * Math.Max(1, 5 + rd + defenderMod))
-					wins++;
-			}
-		}
-		return wins / 100.0;
-	}
-
-	public static double SubjugationChance(Country c, Province p, int regiments) =>
-		WinChance(regiments, Warriors(p), AttackerModifier(p, c.Tag), DefenderModifier(p));
-
-	/// <summary>
-	/// Marches <paramref name="regiments"/> into the nomads' land. Winning brings the province under
-	/// control, with the survivors as its garrison; losing sends the survivors home. Nomads who fall are
-	/// gone from the province's population.
-	/// </summary>
-	public static BattleResult Subjugate(Country c, Province p, int regiments, GameDate today, Random rng)
-	{
-		c.Manpower -= regiments;
-		BattleResult r = Battle(regiments, Warriors(p), AttackerModifier(p, c.Tag), DefenderModifier(p), rng);
-		KillNomads(p, r.DefenderLosses);
-		int survivors = regiments - r.AttackerLosses;
-		if (r.AttackerWon)
-		{
-			p.OwnerTag = c.Tag;
-			p.Control = new ProvinceControl { Kind = ControlKind.Subjugated, Since = today, Garrison = survivors };
-			p.AlliedTag = null;
-		}
-		else
-			c.Manpower += survivors;
-		return r;
 	}
 
 	/// <summary>Moves regiments between the manpower pool and a province's garrison.</summary>
@@ -267,7 +166,8 @@ public static class ControlRules
 		return true;
 	}
 
-	static void KillNomads(Province p, int regiments)
+	/// <summary>Removes fallen warriors from a province's people: a unit of people per regiment, nomads first.</summary>
+	public static void KillWarriors(Province p, int regiments)
 	{
 		// each fallen regiment is a unit of people, taken from the warriors' groups (nomads first)
 		int left = regiments;
@@ -299,11 +199,11 @@ public static class ControlRules
 			double odds = Warriors(p) / (p.Control.Garrison + 0.5);
 			return separatism * NomadUprisingChance * Math.Min(odds, 2.0);
 		}
-		// vassal tribes break away the less kinship they feel with their overlord
+		// absorbed tribes break away the less kinship they feel with their overlord
 		return separatism * TribalRevoltChance * (1 - 0.6 * PopulationRules.Affinity(owner?.Ruler?.Culture, p.MainCulture));
 	}
 
-	public enum EventKind { Cored, UprisingCrushed, ProvinceLost, AllianceEnded }
+	public enum EventKind { Cored, UprisingCrushed, ProvinceLost }
 
 	/// <param name="Held">How the country held the province (for a lost province: before it was lost).</param>
 	public readonly record struct ControlEvent(EventKind Kind, Province Province, string Tag, BattleResult Battle, ControlKind Held = ControlKind.Core);
@@ -329,8 +229,8 @@ public static class ControlRules
 			if (rng.NextDouble() >= UprisingChance(p, owner, today))
 				continue;
 
-			// the uprising: the rebels attack the garrison; the fort gives the defenders +1
-			BattleResult r = Battle(Warriors(p), p.Control.Garrison, p.HasFeature("desert") || p.HasFeature("steppe") ? 1 : 0, 1, rng);
+			// the uprising: the rebels (fierce, on home ground) attack the garrison; its fort gives it +1
+			BattleResult r = Battle(new Force(0, Warriors(p), HomeGroundModifier(p)), new Force(p.Control.Garrison, 0, 1), rng);
 			ControlKind held = p.Control.Kind;
 			if (r.AttackerWon)
 			{
@@ -341,18 +241,8 @@ public static class ControlRules
 			else
 			{
 				p.Control.Garrison -= r.DefenderLosses;
-				KillNomads(p, r.AttackerLosses);
+				KillWarriors(p, r.AttackerLosses);
 				events.Add(new ControlEvent(EventKind.UprisingCrushed, p, owner.Tag, r, held));
-			}
-		}
-
-		// allies whose country no longer borders them drift away
-		foreach (Province p in provinces)
-		{
-			if (p?.AlliedTag != null && (p.OwnerTag != null || !Borders(p, p.AlliedTag)))
-			{
-				events.Add(new ControlEvent(EventKind.AllianceEnded, p, p.AlliedTag, default));
-				p.AlliedTag = null;
 			}
 		}
 

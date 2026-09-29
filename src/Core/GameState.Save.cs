@@ -51,6 +51,46 @@ public partial class GameState
 			if (c.CapitalName != null) w.WriteString("capital_name", c.CapitalName);
 			if (c.Ruler != null) w.WriteNumber("ruler", c.Ruler.Id);
 			w.WriteNumber("manpower", c.Manpower);
+			w.WriteStartArray("improving_relations");
+			foreach (int id in c.ImprovingRelations)
+				w.WriteNumberValue(id);
+			w.WriteEndArray();
+			w.WriteEndObject();
+		}
+		w.WriteEndArray();
+
+		w.WriteNumber("next_tribe", _nextTribeId);
+		w.WriteStartArray("tribes");
+		foreach (Tribe t in _tribes.Values)
+		{
+			w.WriteStartObject();
+			w.WriteNumber("id", t.Id);
+			if (t.Key != null) w.WriteString("key", t.Key);
+			w.WriteString("name", t.Name);
+			w.WriteString("kind", t.Kind == TribeKind.Nomadic ? "nomadic" : "tribal");
+			w.WriteString("culture", t.Culture?.Id);
+			w.WriteString("religion", t.Religion?.Id);
+			if (t.Chief != null) w.WriteNumber("chief", t.Chief.Id);
+			w.WriteNumber("camp", t.CampProvinceId);
+			w.WriteStartArray("provinces");
+			foreach (int id in t.Provinces)
+				w.WriteNumberValue(id);
+			w.WriteEndArray();
+			w.WriteStartObject("relations");
+			foreach (var (tag, r) in t.Relations)
+				w.WriteNumber(tag, r);
+			w.WriteEndObject();
+			if (t.AlliedTag != null)
+			{
+				w.WriteString("allied", t.AlliedTag);
+				w.WriteNumber("allied_since", t.AlliedSince.Day);
+			}
+			if (t.RefusedTag != null)
+			{
+				w.WriteString("refused", t.RefusedTag);
+				w.WriteNumber("refused_until", t.RefusedUntil.Day);
+			}
+			w.WriteNumber("hired", t.HiredRegiments);
 			w.WriteEndObject();
 		}
 		w.WriteEndArray();
@@ -71,16 +111,7 @@ public partial class GameState
 				w.WriteNumber("garrison", p.Control.Garrison);
 				w.WriteEndObject();
 			}
-			if (p.AlliedTag != null)
-			{
-				w.WriteString("allied", p.AlliedTag);
-				w.WriteNumber("allied_since", p.AlliedSince.Day);
-			}
-			if (p.RefusedTag != null)
-			{
-				w.WriteString("refused", p.RefusedTag);
-				w.WriteNumber("refused_until", p.RefusedUntil.Day);
-			}
+			if (p.TribeId != 0) w.WriteNumber("tribe", p.TribeId);
 			w.WriteStartArray("features");
 			foreach (string f in p.Features)
 				w.WriteStringValue(f);
@@ -169,6 +200,12 @@ public partial class GameState
 			c.CapitalName = e.TryGetProperty("capital_name", out JsonElement cn) ? cn.GetString() : null;
 			c.Ruler = e.TryGetProperty("ruler", out JsonElement r) && _characters.TryGetValue(r.GetInt32(), out Character ruler) ? ruler : null;
 			c.Manpower = e.TryGetProperty("manpower", out JsonElement mp) ? mp.GetInt32() : 0;
+			c.ImprovingRelations.Clear();
+			if (e.TryGetProperty("improving_relations", out JsonElement ir))
+			{
+				foreach (JsonElement id in ir.EnumerateArray())
+					c.ImprovingRelations.Add(id.GetInt32());
+			}
 		}
 
 		foreach (JsonElement e in save.GetProperty("provinces").EnumerateArray())
@@ -193,10 +230,8 @@ public partial class GameState
 					p.Control.Garrison = ctl.GetProperty("garrison").GetInt32();
 				}
 			}
-			p.AlliedTag = e.TryGetProperty("allied", out JsonElement al) ? al.GetString() : null;
-			p.AlliedSince = e.TryGetProperty("allied_since", out JsonElement als) ? new GameDate(als.GetInt64()) : default;
-			p.RefusedTag = e.TryGetProperty("refused", out JsonElement rf) ? rf.GetString() : null;
-			p.RefusedUntil = e.TryGetProperty("refused_until", out JsonElement rfu) ? new GameDate(rfu.GetInt64()) : default;
+			if (save.TryGetProperty("tribes", out _))
+				p.TribeId = e.TryGetProperty("tribe", out JsonElement tr) ? tr.GetInt32() : 0;
 			p.Features.Clear();
 			foreach (JsonElement f in e.GetProperty("features").EnumerateArray())
 				p.Features.Add(f.GetString());
@@ -224,6 +259,47 @@ public partial class GameState
 					continue;
 				}
 				p.Buildings.Add(new Building(type, b[1].GetInt32(), b[2].GetBoolean()));
+			}
+		}
+
+		if (save.TryGetProperty("tribes", out JsonElement tribes))
+		{
+			_tribes.Clear();
+			foreach (JsonElement e in tribes.EnumerateArray())
+			{
+				var t = new Tribe
+				{
+					Id = e.GetProperty("id").GetInt32(),
+					Key = e.TryGetProperty("key", out JsonElement k) ? k.GetString() : null,
+					Name = e.GetProperty("name").GetString(),
+					Kind = e.GetProperty("kind").GetString() == "nomadic" ? TribeKind.Nomadic : TribeKind.Tribal,
+					Culture = Def(Definitions.Cultures, e, "culture"),
+					Religion = Def(Definitions.Religions, e, "religion"),
+					Chief = e.TryGetProperty("chief", out JsonElement ch) && _characters.TryGetValue(ch.GetInt32(), out Character chief) ? chief : null,
+					CampProvinceId = e.GetProperty("camp").GetInt32(),
+					AlliedTag = e.TryGetProperty("allied", out JsonElement al) ? al.GetString() : null,
+					AlliedSince = e.TryGetProperty("allied_since", out JsonElement als) ? new GameDate(als.GetInt64()) : default,
+					RefusedTag = e.TryGetProperty("refused", out JsonElement rf) ? rf.GetString() : null,
+					RefusedUntil = e.TryGetProperty("refused_until", out JsonElement rfu) ? new GameDate(rfu.GetInt64()) : default,
+					HiredRegiments = e.GetProperty("hired").GetInt32(),
+				};
+				foreach (JsonElement id in e.GetProperty("provinces").EnumerateArray())
+					t.Provinces.Add(id.GetInt32());
+				foreach (JsonProperty r in e.GetProperty("relations").EnumerateObject())
+					t.Relations[r.Name] = r.Value.GetInt32();
+				_tribes[t.Id] = t;
+			}
+			_nextTribeId = save.GetProperty("next_tribe").GetInt32();
+		}
+		else
+		{
+			// a save from before tribes: keep the new game's tribes, minus land a country holds
+			foreach (Tribe t in _tribes.Values)
+				t.Provinces.RemoveAll(id => _provinces[id].OwnerTag != null);
+			foreach (Province p in _provinces)
+			{
+				if (p != null && p.OwnerTag != null)
+					p.TribeId = 0;
 			}
 		}
 

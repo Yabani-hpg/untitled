@@ -210,13 +210,10 @@ public partial class CountrySelectScreen : Control
 			_hint.Text = $"{p.Name}: part of {gs.GetCountry(p.OwnerTag)?.Name}.";
 			return;
 		}
-		string who = p.Inhabitants switch
-		{
-			Inhabitants.Tribes => "settled tribes, with no state of their own",
-			Inhabitants.Nomads => "nomads, answering to no state",
-			_ => "nobody",
-		};
-		_hint.Text = $"{p.Name} is uncontrolled: home to {who}. No nation to play here.";
+		Tribe t = gs.TribeOf(p);
+		_hint.Text = t == null
+			? $"{p.Name} is uncontrolled and empty."
+			: $"{p.Name} is the land of {t.TheName}, {(t.IsNomadic ? "a nomadic horde" : "settled tribes")} with no state: an unsettled country, not playable.";
 	}
 
 	void OnFocusChanged(string tag) => Refresh();

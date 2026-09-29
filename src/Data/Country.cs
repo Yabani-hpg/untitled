@@ -37,6 +37,8 @@ public sealed class Country
 	public int Manpower { get; set; }
 	/// <summary>The most regiments its core provinces can raise (updated monthly).</summary>
 	public int MaxManpower { get; set; }
+	/// <summary>Tribes the country's diplomats are courting (improving relations with).</summary>
+	public HashSet<int> ImprovingRelations { get; } = new();
 
 	/// <summary>The flag flown now (see <see cref="Flags"/>).</summary>
 	public FlagDefinition CurrentFlag { get; set; }
@@ -61,8 +63,8 @@ public sealed class CountryDefinition
 	public string CapitalName { get; init; }
 	/// <summary>The provinces the country controls at the start, and how.</summary>
 	public List<StartProvince> StartProvinces { get; } = new();
-	/// <summary>Uncontrolled tribal provinces allied with the country at the start, and since when.</summary>
-	public List<(int ProvinceId, GameDate Since)> AlliedTribes { get; } = new();
+	/// <summary>Tribes (by data/tribes.json key) allied with the country at the start, since when, and their relations.</summary>
+	public List<(string Tribe, GameDate Since, int Relation)> AlliedTribes { get; } = new();
 	public RulerDefinition Ruler { get; init; }
 }
 

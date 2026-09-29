@@ -97,6 +97,7 @@ public partial class ProvincePanel : PanelContainer
 		GameState.Instance.MonthAdvanced += Refresh;
 		GameState.Instance.PhaseChanged += Refresh;
 		GameState.Instance.FlagsChanged += Refresh;
+		GameState.Instance.TribesChanged += Refresh;
 		OnSelected(GameState.Instance.SelectedProvinceId);
 	}
 
@@ -109,6 +110,7 @@ public partial class ProvincePanel : PanelContainer
 		GameState.Instance.MonthAdvanced -= Refresh;
 		GameState.Instance.PhaseChanged -= Refresh;
 		GameState.Instance.FlagsChanged -= Refresh;
+		GameState.Instance.TribesChanged -= Refresh;
 	}
 
 	VBoxContainer AddTab(string title)
@@ -236,7 +238,7 @@ public partial class ProvincePanel : PanelContainer
 			string how = p.Control.Kind switch
 			{
 				ControlKind.Core => "Core province",
-				ControlKind.Vassal => "Vassal tribes",
+				ControlKind.Absorbed => "Absorbed tribes",
 				_ => "Subjugated nomads",
 			};
 			Line($"{how} of {owner?.Name}", HudStyle.Text, 15);
@@ -253,61 +255,135 @@ public partial class ProvincePanel : PanelContainer
 			return;
 		}
 
-		string who = p.Inhabitants switch
+		Tribe tribe = gs.TribeOf(p);
+		if (tribe == null)
 		{
-			Inhabitants.Tribes => "Uncontrolled: settled tribes live here",
-			Inhabitants.Nomads => "Uncontrolled: nomads roam here",
-			_ => "Uncontrolled and empty",
-		};
-		Line(who, HudStyle.Text, 15);
-		if (gs.GetCountry(p.AlliedTag) is Country ally)
-			Line($"Allied with {ally.Name} since {gs.Definitions.DefaultCalendar.Format(p.AlliedSince)}", HudStyle.Muted, 13);
+			Line(p.Inhabitants == Inhabitants.Empty ? "Uncontrolled and empty: land for settlers, one day" : "Uncontrolled", HudStyle.Text, 15);
+			return;
+		}
+		Line($"Uncontrolled: the land of {tribe.TheName}", HudStyle.Text, 15);
+		FillTribe(tribe, player);
+	}
+
+	/// <summary>An unsettled country: who they are, how they feel about us, and what we can do with them.</summary>
+	void FillTribe(Tribe t, Country player)
+	{
+		GameState gs = GameState.Instance;
+		var provinces = gs.Provinces;
+		var box = Section(t.Name);
+		Label Line(string text, Color? color = null, int size = 13)
+		{
+			var l = HudStyle.Body(text, BodyFont, size, color ?? HudStyle.Muted);
+			l.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			l.CustomMinimumSize = new Vector2(250, 0);
+			box.AddChild(l);
+			return l;
+		}
+
+		// who they are: chief's portrait beside the facts
+		var head = new HBoxContainer();
+		head.AddThemeConstantOverride("separation", 10);
+		box.AddChild(head);
+		var portrait = new TextureRect { Texture = HudStyle.Texture(t.Chief?.Portrait) };
+		var frame = HudStyle.Framed(portrait);
+		frame.CustomMinimumSize = new Vector2(72, 90);
+		frame.SizeFlagsVertical = SizeFlags.ShrinkBegin;
+		head.AddChild(frame);
+		var facts = new VBoxContainer();
+		head.AddChild(facts);
+		void Fact(string text, Color? color = null) => facts.AddChild(HudStyle.Body(text, BodyFont, 13, color ?? HudStyle.Text));
+		Fact($"{(t.IsNomadic ? "Nomadic horde" : "Settled tribes")} · {t.Culture?.Name} · {t.Religion?.Name}");
+		Fact($"Chief {t.Chief?.Name}, age {t.Chief?.AgeOn(gs.Date)}", HudStyle.Muted);
+		Fact($"{t.Provinces.Count} provinces · {TribeRules.People(t, provinces) * PopGroup.PeoplePerUnit:N0} people", HudStyle.Muted);
+		Fact($"{TribeRules.Warriors(t, provinces)} regiments of fierce warriors" + (t.HiredRegiments > 0 ? $" ({t.HiredRegiments} away as mercenaries)" : ""), HudStyle.Muted);
+		Fact($"Camp: {gs.GetProvince(t.CampProvinceId)?.Name}", HudStyle.Muted);
+		if (gs.GetCountry(t.AlliedTag) is Country ally)
+			Fact($"Allied with {ally.Name} since {gs.Definitions.DefaultCalendar.Format(t.AlliedSince)}", HudStyle.Good);
+
 		if (player == null || gs.Phase != GamePhase.Playing)
 			return;
 
-		if (p.Inhabitants == Inhabitants.Tribes)
+		// relations, and our diplomats
+		int relation = t.RelationWith(player.Tag);
+		var relRow = new HBoxContainer();
+		relRow.AddThemeConstantOverride("separation", 8);
+		box.AddChild(relRow);
+		var relLabel = HudStyle.Body($"Relations with us: {relation:+0;-0;0}", BodyFont, 14, relation >= 0 ? HudStyle.Good : HudStyle.Bad);
+		relLabel.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+		relRow.AddChild(relLabel);
+		bool courting = player.ImprovingRelations.Contains(t.Id);
+		var court = HudStyle.Button(courting ? "Recall diplomat" : "Improve relations", BodyFont, 13);
+		court.Disabled = !courting && player.ImprovingRelations.Count >= TribeRules.Diplomats;
+		court.TooltipText = courting
+			? $"Our diplomat raises relations by {TribeRules.ImproveRelationsPerMonth} a month"
+			: court.Disabled ? $"All our {TribeRules.Diplomats} diplomats are busy" : $"Send a diplomat: +{TribeRules.ImproveRelationsPerMonth} relations a month ({TribeRules.Diplomats - player.ImprovingRelations.Count} free)";
+		court.Pressed += () => gs.SetImprovingRelations(t.Id, !courting);
+		relRow.AddChild(court);
+
+		if (t.AlliedTag != player.Tag)
 		{
-			if (p.AlliedTag == player.Tag)
-			{
-				bool can = ControlRules.CanVassalize(player, p, gs.Date, out string why);
-				box.AddChild(ActionRow("Make them vassals", can, why ?? "The province comes under our control, with separatism for 50 years",
-					() => gs.VassalizeTribes(p.Id)));
-			}
-			else
-			{
-				bool can = ControlRules.CanAlly(player, p, gs.Date, out string why);
-				string tip = can ? $"{ControlRules.AllianceChance(player, p):P0} chance they accept. After {ControlRules.YearsAlliedToVassalize} years of alliance they can become vassals." : why;
-				box.AddChild(ActionRow("Ally with the tribes", can, tip, () => gs.AllyTribes(p.Id)));
-				if (can)
-					Line($"Chance they accept: {ControlRules.AllianceChance(player, p):P0} (kinship with {player.Adjective} people helps)", HudStyle.Muted, 13);
-			}
+			bool can = TribeRules.CanProposeAlliance(t, player, provinces, gs.Date, out string why);
+			string tip = can ? $"{TribeRules.AllianceChance(t, player.Tag):P0} chance they accept" : why;
+			box.AddChild(ActionRow($"Propose alliance{(can ? $" ({TribeRules.AllianceChance(t, player.Tag):P0})" : "")}", can, tip, () => gs.ProposeAlliance(t.Id)));
 		}
-		else if (p.Inhabitants == Inhabitants.Nomads)
+		else
 		{
-			int warriors = ControlRules.Warriors(p);
-			Line($"About {warriors} regiments of nomad warriors · we have {player.Manpower} regiments free", HudStyle.Muted, 13);
+			// mercenaries
+			int hireable = TribeRules.Hireable(t, provinces);
+			var hireRow = new HBoxContainer();
+			hireRow.AddThemeConstantOverride("separation", 8);
+			hireRow.AddChild(HudStyle.Body("Mercenaries", BodyFont, 13, HudStyle.Muted));
+			var count = new SpinBox { MinValue = 1, MaxValue = Math.Max(1, hireable), Value = Math.Max(1, hireable), Suffix = "reg." };
+			hireRow.AddChild(count);
+			var hire = HudStyle.Button("Hire", BodyFont, 13);
+			hire.Disabled = hireable < 1;
+			hire.TooltipText = hireable < 1 ? "They will lend no more warriors" : $"They fight {ControlRules.FierceMultiplier}x as hard as our regiments; up to {hireable} more";
+			hire.Pressed += () => gs.HireMercenaries(t.Id, (int)count.Value);
+			hireRow.AddChild(hire);
+			if (t.HiredRegiments > 0)
+			{
+				var dismiss = HudStyle.Button($"Dismiss {t.HiredRegiments}", BodyFont, 13);
+				dismiss.Pressed += () => gs.DismissMercenaries(t.Id);
+				hireRow.AddChild(dismiss);
+			}
+			box.AddChild(hireRow);
+
+			// absorption
+			var conditions = TribeRules.AbsorbConditions(t, player, provinces, gs.Date);
+			bool canAbsorb = conditions.TrueForAll(c => c.Met);
+			box.AddChild(ActionRow("Absorb them", canAbsorb, canAbsorb ? "Their lands come under our rule, with separatism for 50 years" : null, () => gs.AbsorbTribe(t.Id)));
+			foreach (var (condition, met) in conditions)
+				Line($"{(met ? "✔" : "✘")} {condition}", met ? HudStyle.Good : HudStyle.Bad, 12);
+		}
+
+		if (t.IsNomadic && t.AlliedTag != player.Tag)
+		{
+			int mercs = TribeRules.Mercenaries(gs.Tribes.Values, player.Tag);
+			Line($"Subjugate by force: they have {TribeRules.Warriors(t, provinces)} fierce regiments; we have {player.Manpower} free and {mercs} mercenaries", HudStyle.Muted);
 			var row = new HBoxContainer();
-			row.AddThemeConstantOverride("separation", 8);
-			var count = new SpinBox { MinValue = 1, MaxValue = Math.Max(1, player.Manpower), Value = Math.Clamp(warriors * 2, 1, Math.Max(1, player.Manpower)), Suffix = "reg." };
-			count.GetLineEdit().AddThemeFontSizeOverride("font_size", 13);
-			row.AddChild(count);
-			var odds = HudStyle.Body("", BodyFont, 13, HudStyle.Muted);
+			row.AddThemeConstantOverride("separation", 6);
+			var own = new SpinBox { MinValue = 0, MaxValue = Math.Max(0, player.Manpower), Value = Math.Min(player.Manpower, TribeRules.Warriors(t, provinces) * 2), Suffix = "reg." };
+			var hired = new SpinBox { MinValue = 0, MaxValue = mercs, Value = mercs, Suffix = "merc.", Editable = mercs > 0 };
+			var odds = HudStyle.Body("", BodyFont, 12, HudStyle.Muted);
 			odds.SizeFlagsHorizontal = SizeFlags.ExpandFill;
 			var go = HudStyle.Button("Subjugate", BodyFont, 13);
 			void UpdateOdds()
 			{
-				int n = (int)count.Value;
-				bool can = ControlRules.CanSubjugate(player, p, n, out string why);
+				int n = (int)own.Value, m = (int)hired.Value;
+				bool can = TribeRules.CanSubjugate(t, player, gs.Tribes.Values, provinces, n, m, out string why);
 				go.Disabled = !can;
-				go.TooltipText = can ? "Send the army. If it wins, the survivors stay as the garrison." : why;
-				odds.Text = can ? $"{ControlRules.SubjugationChance(player, p, n):P0} to win" : why;
+				go.TooltipText = can ? "Break the horde: all their lands become ours, held by the survivors" : why;
+				odds.Text = can ? $"{TribeRules.SubjugationChance(t, player, provinces, n, m):P0} to win" : why;
 			}
-			count.ValueChanged += _ => UpdateOdds();
-			go.Pressed += () => gs.SubjugateNomads(p.Id, (int)count.Value);
+			own.ValueChanged += _ => UpdateOdds();
+			hired.ValueChanged += _ => UpdateOdds();
+			go.Pressed += () => gs.SubjugateTribe(t.Id, (int)own.Value, (int)hired.Value);
 			UpdateOdds();
-			row.AddChild(odds);
+			row.AddChild(own);
+			row.AddChild(hired);
 			row.AddChild(go);
 			box.AddChild(row);
+			box.AddChild(odds);
 		}
 	}
 

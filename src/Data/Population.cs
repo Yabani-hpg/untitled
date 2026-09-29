@@ -46,9 +46,9 @@ public enum Inhabitants
 {
 	/// <summary>Nobody: land for settlers, later.</summary>
 	Empty,
-	/// <summary>Settled but unorganized tribes. A country allies with them, then makes them its vassals.</summary>
+	/// <summary>Settled but unorganized tribes.</summary>
 	Tribes,
-	/// <summary>Nomads. A country subjugates them with an army and keeps a garrison to hold them down.</summary>
+	/// <summary>Nomads.</summary>
 	Nomads,
 }
 
@@ -56,8 +56,8 @@ public enum ControlKind
 {
 	/// <summary>A core province: fully part of the country, with no separatism.</summary>
 	Core,
-	/// <summary>Tribes that allied with the country and became its vassals.</summary>
-	Vassal,
+	/// <summary>The land of a tribe that allied with the country and was absorbed into it.</summary>
+	Absorbed,
 	/// <summary>Nomads subjugated by force and held by a garrison.</summary>
 	Subjugated,
 }

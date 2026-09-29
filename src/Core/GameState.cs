@@ -105,6 +105,7 @@ public partial class GameState : Node
 		_provinceNames = DataLoader.ProvinceNames(_provinces);
 		DataLoader.LoadAreas(Definitions, _provinceNames);
 		DataLoader.LoadNamesAndPortraits(Definitions);
+		DataLoader.LoadTribes(Definitions, _provinceNames);
 		int countryFiles = DataLoader.LoadCountryFiles(_countries, Definitions, _provinceNames);
 
 		ProvinceMapTexture = GD.Load<Texture2D>(ProvinceMapPath)
@@ -259,6 +260,7 @@ public partial class GameState : Node
 		var moves = PopulationRules.MigrateNomads(_provinces);
 		int built = BuildingRules.PopulationBuildStep(_provinces, Definitions.Buildings);
 		RunControlStep();
+		RunTribeStep();
 		RefreshFlags();
 		if (Date.Holocene.Month == 1 && Phase == GamePhase.Playing)
 			SaveGames.Autosave(this);

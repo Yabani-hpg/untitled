@@ -21,12 +21,8 @@ public sealed class Province
 	/// <summary>How the controlling country holds the province; null when uncontrolled.</summary>
 	public ProvinceControl Control { get; set; }
 
-	/// <summary>Uncontrolled tribal land: the country the tribes are allied with, and since when.</summary>
-	public string AlliedTag { get; set; }
-	public GameDate AlliedSince { get; set; }
-	/// <summary>The tribes turned down an alliance with this country; it may ask again after <see cref="RefusedUntil"/>.</summary>
-	public string RefusedTag { get; set; }
-	public GameDate RefusedUntil { get; set; }
+	/// <summary>The tribe (unsettled country) whose people live here, or 0. Only uncontrolled land has one.</summary>
+	public int TribeId { get; set; }
 
 	public bool IsCore => Control?.Kind == ControlKind.Core;
 
@@ -145,7 +141,7 @@ public sealed class Province
 	{
 		OwnerTag = null;                 // every province starts uncontrolled; country files take theirs
 		Control = null;
-		AlliedTag = RefusedTag = null;
+		TribeId = 0;
 		Pops.Clear();
 		Buildings.Clear();
 		Features.Clear();

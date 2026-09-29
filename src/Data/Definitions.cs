@@ -103,8 +103,16 @@ public sealed class Definitions
 	/// <summary>Portraits for rulers without one of their own, by culture id (data/portraits.json).</summary>
 	public Dictionary<string, List<string>> GenericPortraits { get; } = new();
 
+	/// <summary>Tribes placed by hand (data/tribes.json), in file order.</summary>
+	public List<TribeDefinition> Tribes { get; } = new();
+	/// <summary>Syllables for generated tribe names, by culture id: start, middle, end.</summary>
+	public Dictionary<string, List<string>[]> TribeSyllables { get; } = new();
+
 	/// <summary>The calendar used when no other applies.</summary>
 	public Calendar DefaultCalendar => Calendars.Find(c => c.IsDefault);
 
 	public BuildingType GetBuilding(string id) => Buildings.Find(b => b.Id == id);
 }
+
+/// <summary>A tribe placed by hand: a name and the provinces its people live in.</summary>
+public sealed record TribeDefinition(string Key, string Name, List<int> Provinces);

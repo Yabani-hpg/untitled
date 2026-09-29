@@ -33,6 +33,7 @@
 [ext_resource type="Script" path="res://src/UI/PlayerBar.cs" id="36_playerbar"]
 [ext_resource type="Script" path="res://src/UI/GameMenu.cs" id="37_gamemenu"]
 [ext_resource type="Script" path="res://src/UI/MessageFeed.cs" id="38_messagefeed"]
+[ext_resource type="Script" path="res://src/Map/TribeMarkers.cs" id="39_tribemarkers"]
 [ext_resource type="Script" path="res://src/Map/ProvinceBorders.cs" id="23_borders"]
 [ext_resource type="Shader" path="res://shaders/province_border.gdshader" id="24_bordershader"]
 
@@ -344,6 +345,10 @@ FallbackFont = ExtResource("30_manrope")
 [node name="ProvinceHighlight" type="Node" parent="."]
 script = ExtResource("21_highlight")
 FlatWorldPath = NodePath("../Earth/FlatWorld")
+
+[node name="TribeMarkers" type="Node3D" parent="."]
+script = ExtResource("39_tribemarkers")
+LabelFont = ExtResource("30_manrope")
 
 [node name="MapModes" type="Node" parent="."]
 script = ExtResource("33_mapmodes")

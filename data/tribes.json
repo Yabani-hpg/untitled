@@ -1,0 +1,17 @@
+{
+	"_comment": "Unsettled countries: tribes and nomads living in land no settled country controls. The tribes listed here are placed on their provinces (by name); the rest of the world's uncontrolled people are grouped into tribes of neighbouring provinces of one culture, named from the syllables below. A tribe is nomadic or tribal (settled) by the majority of its people.",
+	"tribes": [
+		{ "key": "libu", "name": "Libu", "provinces": ["Marmarica", "Western Desert", "Al Butnan", "Al Kufrah"] },
+		{ "key": "meshwesh", "name": "Meshwesh", "provinces": ["Siwa Oasis (Sekhet-Imau)", "Ajdabiya", "Al Qubbah", "Al Jabal al Akhdar", "Al Marj", "Benghazi"] },
+		{ "key": "medjay", "name": "Medjay", "provinces": ["Medjay (Red Sea Hills)", "Nubian Desert"] },
+		{ "key": "shasu", "name": "Shasu", "provinces": ["Aqaba", "Ma`an", "Tafilah", "Karak"] },
+		{ "key": "irem", "name": "Irem", "provinces": ["Kurgus", "Meroë", "Bayuda", "Selima Desert"] }
+	],
+	"name_syllables": {
+		"european": { "start": ["Ar", "Ve", "Nor", "Dal", "Ke", "Tor", "Si", "Mar", "Ul", "Bri", "Gan", "Ter", "Ai", "Lu", "Thra", "Pe"], "middle": ["ve", "ra", "no", "li", "ga", "ter", "mo", "sa", ""], "end": ["i", "ones", "ates", "ii", "oi", "ians", "ae"] },
+		"asian": { "start": ["An", "Shu", "Ta", "Ki", "Ur", "Ha", "Su", "Ba", "Dar", "Ko", "Mi", "Ash", "Lu", "Zha", "Ya"], "middle": ["ru", "sha", "ka", "ta", "na", "mi", "li", ""], "end": ["ni", "an", "ur", "ai", "tu", "ki", "ma", "hu"] },
+		"african": { "start": ["Ka", "Ma", "Ta", "Wa", "Ba", "Ni", "Zu", "Ko", "Se", "Nu", "Ga", "Te", "Mo", "Ya", "Fu"], "middle": ["ma", "la", "ki", "ru", "na", "go", "si", ""], "end": ["wa", "ti", "ra", "ni", "ko", "bu", "shu", "ye"] },
+		"north_american": { "start": ["Wa", "Ka", "Shi", "To", "Na", "Ho", "Ta", "Mi", "Ko", "Sa", "Chi", "O"], "middle": ["ne", "ta", "wa", "ko", "shi", "no", ""], "end": ["kee", "wa", "tah", "chi", "ho", "mi", "nay", "ska"] },
+		"south_american": { "start": ["Qu", "Ay", "Ma", "Ta", "Chi", "Hua", "Pa", "Yu", "Ca", "Ri", "Ti", "Wa"], "middle": ["ni", "ca", "ma", "ru", "ya", "cha", ""], "end": ["ca", "ri", "may", "pa", "chu", "yo", "qui", "tu"] }
+	}
+}

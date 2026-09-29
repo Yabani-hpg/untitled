@@ -60,6 +60,8 @@ public partial class MapModes : Node
 		gs.MonthAdvanced += Refresh;
 		gs.ProvinceChanged += OnProvinceChanged;
 		gs.OwnershipChanged += Refresh;
+		gs.TribesChanged += Refresh;
+		gs.SelectedProvinceChanged += OnProvinceChanged;
 		Refresh();
 	}
 
@@ -74,6 +76,8 @@ public partial class MapModes : Node
 		gs.MonthAdvanced -= Refresh;
 		gs.ProvinceChanged -= OnProvinceChanged;
 		gs.OwnershipChanged -= Refresh;
+		gs.TribesChanged -= Refresh;
+		gs.SelectedProvinceChanged -= OnProvinceChanged;
 	}
 
 	void OnFocusChanged(string tag) => Refresh();
@@ -136,7 +140,8 @@ public partial class MapModes : Node
 
 	/// <summary>
 	/// Political stripes: a province held but not yet a core shows its tribes' or nomads' colour in stripes
-	/// that fade as its separatism does; tribes allied with a country show that country's colour.
+	/// that fade as its separatism does; the selected tribe's lands are picked out, and tribes allied with a
+	/// country show that country's colour.
 	/// </summary>
 	static Color? StripeFor(Province p, GameState gs)
 	{
@@ -146,7 +151,10 @@ public partial class MapModes : Node
 			Color land = p.Control.Kind == ControlKind.Subjugated ? NomadLand : TribalLand;
 			return new Color(land.Lightened(0.15f), 0.25f + 0.6f * (float)separatism);
 		}
-		if (p.OwnerTag == null && gs.GetCountry(p.AlliedTag) is Country ally)
+		Tribe tribe = gs.TribeOf(p);
+		if (tribe != null && tribe.Id == gs.TribeOf(gs.GetProvince(gs.SelectedProvinceId))?.Id)
+			return new Color(1f, 0.95f, 0.8f, 0.55f);        // the selected tribe's lands
+		if (tribe != null && gs.GetCountry(tribe.AlliedTag) is Country ally)
 			return new Color(ally.MapColor, 0.7f);
 		return null;
 	}

@@ -46,6 +46,7 @@ public partial class PlayerBar : PanelContainer
 		gs.FlagsChanged += Refresh;
 		gs.MonthAdvanced += Refresh;
 		gs.ProvinceChanged += OnProvinceChanged;
+		gs.TribesChanged += Refresh;
 		Refresh();
 		// a loaded game opens on the player's capital
 		if (gs.Phase == GamePhase.Playing)
@@ -61,6 +62,7 @@ public partial class PlayerBar : PanelContainer
 		gs.FlagsChanged -= Refresh;
 		gs.MonthAdvanced -= Refresh;
 		gs.ProvinceChanged -= OnProvinceChanged;
+		gs.TribesChanged -= Refresh;
 	}
 
 	void OnProvinceChanged(int id) => Refresh();
@@ -94,7 +96,8 @@ public partial class PlayerBar : PanelContainer
 		Character r = c.Ruler;
 		_portrait.Texture = HudStyle.Texture(r?.Portrait);
 		string ruler = r == null ? c.Government : $"{c.RulerTitle} {r.Name}, age {r.AgeOn(gs.Date)}";
-		_ruler.Text = $"{ruler}\nCapital: {gs.CapitalText(c)}\nManpower: {c.Manpower} of {c.MaxManpower} regiments";
+		int mercs = Untitled.Rules.TribeRules.Mercenaries(gs.Tribes.Values, c.Tag);
+		_ruler.Text = $"{ruler}\nCapital: {gs.CapitalText(c)}\nManpower: {c.Manpower} of {c.MaxManpower} regiments" + (mercs > 0 ? $" · {mercs} mercenaries" : "");
 		_ruler.TooltipText = "Regiments of 1000 soldiers, raised from the people of our core provinces.\nArmies and garrisons are drawn from them; they refill over ten years.";
 		_ruler.MouseFilter = MouseFilterEnum.Pass;
 		_portrait.TooltipText = r?.FullName ?? r?.Name;

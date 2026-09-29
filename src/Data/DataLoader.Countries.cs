@@ -51,6 +51,40 @@ public static partial class DataLoader
 		}
 	}
 
+	public const string TribesPath = "res://data/tribes.json";
+
+	public static void LoadTribes(Definitions defs, Dictionary<string, int> names)
+	{
+		using JsonDocument doc = ParseJson(TribesPath);
+		JsonElement root = doc.RootElement;
+		var taken = new HashSet<int>();
+		foreach (var (where, e) in ReadJsonArray(TribesPath, "tribes"))
+		{
+			var ids = new List<int>();
+			foreach (string name in GetStringList(e, "provinces", where))
+			{
+				int id = ProvinceByName(names, name, where);
+				if (!taken.Add(id))
+					throw new DataException($"{where}: '{name}' already belongs to another tribe");
+				ids.Add(id);
+			}
+			defs.Tribes.Add(new TribeDefinition(GetString(e, "key", where), GetString(e, "name", where), ids));
+		}
+		if (root.TryGetProperty("name_syllables", out JsonElement syllables))
+		{
+			foreach (JsonProperty c in syllables.EnumerateObject())
+			{
+				string w = $"{TribesPath}:name_syllables.{c.Name}";
+				var parts = new[] { GetStringList(c.Value, "start", w), GetStringList(c.Value, "middle", w), GetStringList(c.Value, "end", w) };
+				if (parts[0].Count == 0 || parts[2].Count == 0)
+					throw new DataException($"{w}: needs 'start' and 'end' syllables");
+				if (parts[1].Count == 0)
+					parts[1].Add("");
+				defs.TribeSyllables[c.Name] = parts;
+			}
+		}
+	}
+
 	public static void LoadNamesAndPortraits(Definitions defs)
 	{
 		using (JsonDocument doc = ParseJson(NamesPath))
@@ -134,9 +168,9 @@ public static partial class DataLoader
 				var control = kind switch
 				{
 					"core" => ControlKind.Core,
-					"vassal" => ControlKind.Vassal,
+					"absorbed" or "vassal" => ControlKind.Absorbed,
 					"subjugated" => ControlKind.Subjugated,
-					_ => throw new DataException($"{w}: control must be core, vassal or subjugated"),
+					_ => throw new DataException($"{w}: control must be core, absorbed or subjugated"),
 				};
 				GameDate? since = group.TryGetProperty("since", out JsonElement s) ? Condition.ParseDate(s.GetString(), $"{w}.since") : null;
 				int garrison = (int)GetFloat(group, "garrison", 0f);
@@ -155,8 +189,10 @@ public static partial class DataLoader
 			{
 				string w = $"{path}:allied_tribes[{i++}]";
 				GameDate since = Condition.ParseDate(GetString(group, "since", w), $"{w}.since");
-				foreach (int id in GroupProvinces(group, w, defs, names))
-					def.AlliedTribes.Add((id, since));
+				string key = GetString(group, "tribe", w);
+				if (!defs.Tribes.Exists(t => t.Key == key))
+					throw new DataException($"{w}: no tribe '{key}' in {TribesPath}");
+				def.AlliedTribes.Add((key, since, (int)GetFloat(group, "relation", 50f)));
 			}
 		}
 
