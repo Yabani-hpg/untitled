@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using Godot;
 using Untitled.Data;
@@ -38,6 +39,7 @@ public partial class GameState
 			w.WriteString("culture", c.Culture?.Id);
 			w.WriteString("religion", c.Religion?.Id);
 			w.WriteString("occupation", c.Occupation?.Id);
+			if (c.Sex == Sex.Female) w.WriteString("sex", "female");
 			w.WriteEndObject();
 		}
 		w.WriteEndArray();
@@ -50,7 +52,11 @@ public partial class GameState
 			w.WriteNumber("capital", c.CapitalId);
 			if (c.CapitalName != null) w.WriteString("capital_name", c.CapitalName);
 			if (c.Ruler != null) w.WriteNumber("ruler", c.Ruler.Id);
-			w.WriteNumber("manpower", c.Manpower);
+			w.WriteNumber("next_army", c.NextArmyNumber);
+			w.WriteStartObject("levy_template");
+			foreach (var (unit, share) in c.LevyTemplate)
+				w.WriteNumber(unit, share);
+			w.WriteEndObject();
 			w.WriteNumber("gold", c.Gold);
 			w.WriteStartObject("laws");
 			foreach (var (law, option) in c.Laws)
@@ -68,6 +74,26 @@ public partial class GameState
 			foreach (int id in c.ImprovingRelations)
 				w.WriteNumberValue(id);
 			w.WriteEndArray();
+			w.WriteEndObject();
+		}
+		w.WriteEndArray();
+
+		w.WriteNumber("next_army", _nextArmyId);
+		w.WriteStartArray("armies");
+		foreach (Army a in _armies.Values)
+		{
+			w.WriteStartObject();
+			w.WriteNumber("id", a.Id);
+			w.WriteString("owner", a.OwnerTag);
+			w.WriteString("name", a.Name);
+			w.WriteNumber("province", a.ProvinceId);
+			w.WriteStartArray("path");
+			foreach (int id in a.Path)
+				w.WriteNumberValue(id);
+			w.WriteEndArray();
+			w.WriteNumber("marched", a.DaysMarched);
+			w.WriteNumber("step_days", a.StepDays);
+			WriteRegiments(w, "regiments", a.Regiments);
 			w.WriteEndObject();
 		}
 		w.WriteEndArray();
@@ -122,7 +148,7 @@ public partial class GameState
 				w.WriteStartObject("control");
 				w.WriteString("kind", p.Control.Kind.ToString().ToLowerInvariant());
 				w.WriteNumber("since", p.Control.Since.Day);
-				w.WriteNumber("garrison", p.Control.Garrison);
+				WriteRegiments(w, "garrison", p.Control.Garrison);
 				w.WriteEndObject();
 			}
 			if (p.TribeId != 0) w.WriteNumber("tribe", p.TribeId);
@@ -140,6 +166,7 @@ public partial class GameState
 				w.WriteStringValue(pop.Religion.Id);
 				w.WriteStringValue(pop.Occupation.Id);
 				w.WriteNumberValue(pop.Units);
+				w.WriteStringValue(pop.IsMale ? "m" : "f");
 				w.WriteEndArray();
 			}
 			w.WriteEndArray();
@@ -167,6 +194,7 @@ public partial class GameState
 	{
 		NewGame();
 		var warnings = new List<string>();
+		var pendingGarrisons = new List<(Province, int)>();
 		T Def<T>(Dictionary<string, T> table, JsonElement e, string key) where T : class
 		{
 			if (!e.TryGetProperty(key, out JsonElement v) || v.ValueKind != JsonValueKind.String)
@@ -197,6 +225,7 @@ public partial class GameState
 				Culture = Def(Definitions.Cultures, e, "culture"),
 				Religion = Def(Definitions.Religions, e, "religion"),
 				Occupation = Def(Definitions.Occupations, e, "occupation"),
+				Sex = e.TryGetProperty("sex", out JsonElement sx) && sx.GetString() == "female" ? Sex.Female : Sex.Male,
 			};
 			_characters[c.Id] = c;
 		}
@@ -213,7 +242,16 @@ public partial class GameState
 			c.CapitalId = e.GetProperty("capital").GetInt32();
 			c.CapitalName = e.TryGetProperty("capital_name", out JsonElement cn) ? cn.GetString() : null;
 			c.Ruler = e.TryGetProperty("ruler", out JsonElement r) && _characters.TryGetValue(r.GetInt32(), out Character ruler) ? ruler : null;
-			c.Manpower = e.TryGetProperty("manpower", out JsonElement mp) ? mp.GetInt32() : 0;
+			c.NextArmyNumber = e.TryGetProperty("next_army", out JsonElement na) ? na.GetInt32() : 1;
+			c.LevyTemplate.Clear();
+			if (e.TryGetProperty("levy_template", out JsonElement lt))
+			{
+				foreach (JsonProperty u in lt.EnumerateObject())
+				{
+					if (Definitions.GetUnitType(u.Name) != null)
+						c.LevyTemplate[u.Name] = u.Value.GetInt32();
+				}
+			}
 			c.Gold = e.TryGetProperty("gold", out JsonElement gd) ? gd.GetDouble() : c.StartingGold;
 			if (e.TryGetProperty("laws", out JsonElement laws))
 			{
@@ -264,7 +302,11 @@ public partial class GameState
 				{
 					p.Control.Kind = Enum.TryParse(ctl.GetProperty("kind").GetString(), true, out ControlKind kind) ? kind : ControlKind.Core;
 					p.Control.Since = new GameDate(ctl.GetProperty("since").GetInt64());
-					p.Control.Garrison = ctl.GetProperty("garrison").GetInt32();
+					JsonElement garrison = ctl.GetProperty("garrison");
+					if (garrison.ValueKind == JsonValueKind.Array)
+						p.Control.Garrison.AddRange(ReadRegiments(garrison, warnings));
+					else
+						pendingGarrisons.Add((p, garrison.GetInt32()));   // a save from before regiments: raised again below
 				}
 			}
 			if (save.TryGetProperty("tribes", out _))
@@ -284,7 +326,11 @@ public partial class GameState
 					warnings.Add($"province {p.Id}: unknown population {pop}");
 					continue;
 				}
-				p.AddPops(culture, religion, occupation, pop[3].GetInt32());
+				// saves from before men and women were counted apart: half and half
+				if (pop.GetArrayLength() > 4)
+					p.AddPops(culture, religion, occupation, pop[4].GetString() == "f" ? Sex.Female : Sex.Male, pop[3].GetInt32());
+				else
+					p.AddPeople(culture, religion, occupation, pop[3].GetInt32(), (p.Id + p.Pops.Count) % 2 == 0);
 			}
 			p.Buildings.Clear();
 			foreach (JsonElement b in e.GetProperty("buildings").EnumerateArray())
@@ -341,11 +387,49 @@ public partial class GameState
 			}
 		}
 
+		_armies.Clear();
+		if (save.TryGetProperty("armies", out JsonElement armies))
+		{
+			foreach (JsonElement e in armies.EnumerateArray())
+			{
+				string owner = e.GetProperty("owner").GetString();
+				Province at = GetProvince(e.GetProperty("province").GetInt32());
+				if (GetCountry(owner) == null || at == null)
+				{
+					warnings.Add($"army of unknown country '{owner}' or in an unknown province");
+					continue;
+				}
+				var a = new Army
+				{
+					Id = e.GetProperty("id").GetInt32(),
+					OwnerTag = owner,
+					Name = e.GetProperty("name").GetString(),
+					ProvinceId = at.Id,
+					DaysMarched = e.GetProperty("marched").GetInt32(),
+					StepDays = e.GetProperty("step_days").GetInt32(),
+				};
+				foreach (JsonElement id in e.GetProperty("path").EnumerateArray())
+				{
+					if (GetProvince(id.GetInt32()) is Province step && !step.IsWater)
+						a.Path.Add(step.Id);
+				}
+				a.Regiments.AddRange(ReadRegiments(e.GetProperty("regiments"), warnings));
+				if (a.Regiments.Count > 0)
+					_armies[a.Id] = a;
+			}
+			_nextArmyId = save.GetProperty("next_army").GetInt32();
+		}
+		foreach (var (p, n) in pendingGarrisons)
+		{
+			Country owner = GetCountry(p.OwnerTag);
+			var types = Enumerable.Repeat(MilitaryRules.BasicFoot(Definitions), n).ToList();
+			p.Control.Garrison.AddRange(MilitaryRules.Levy(owner, ProvincesOf(owner.Tag).ToList(), types, Date));
+		}
+
 		foreach (Country c in _countries.Values)
 		{
 			c.CurrentFlag = null;
-			c.MaxManpower = ControlRules.MaxManpower(c, ProvincesOf(c.Tag));
-			c.LastLedger = EconomyRules.MonthlyLedger(c, ProvincesOf(c.Tag), _tribes.Values, Date);
+			c.LastLedger = EconomyRules.MonthlyLedger(c, ProvincesOf(c.Tag), _tribes.Values, _armies.Values, Date);
 		}
 		foreach (Tribe t in _tribes.Values)
 			t.LastFood = EconomyRules.MonthlyFood(t, _provinces, Definitions);
@@ -355,5 +439,49 @@ public partial class GameState
 		Phase = PlayerTag != null ? GamePhase.Playing : GamePhase.CountrySelection;
 		foreach (string warning in warnings.GetRange(0, Math.Min(warnings.Count, 20)))
 			GD.PushWarning($"Loading save: {warning}");
+	}
+
+	static void WriteRegiments(Utf8JsonWriter w, string key, IEnumerable<Regiment> regiments)
+	{
+		w.WriteStartArray(key);
+		foreach (Regiment r in regiments)
+		{
+			w.WriteStartArray();
+			w.WriteStringValue(r.Type.Id);
+			w.WriteNumberValue(Math.Round(r.Strength, 4));
+			w.WriteNumberValue(r.HomeProvinceId);
+			w.WriteStringValue(r.Culture?.Id);
+			w.WriteStringValue(r.Religion?.Id);
+			w.WriteStringValue(r.Occupation?.Id);
+			w.WriteStringValue(r.Sex == Sex.Female ? "f" : "m");
+			w.WriteEndArray();
+		}
+		w.WriteEndArray();
+	}
+
+	/// <summary>Regiments as <see cref="WriteRegiments"/> wrote them; those of a unit type the data no longer has are armed as basic foot.</summary>
+	List<Regiment> ReadRegiments(JsonElement array, List<string> warnings)
+	{
+		var list = new List<Regiment>();
+		foreach (JsonElement e in array.EnumerateArray())
+		{
+			UnitType type = Definitions.GetUnitType(e[0].GetString());
+			if (type == null)
+			{
+				warnings.Add($"unknown unit type '{e[0].GetString()}'");
+				type = MilitaryRules.BasicFoot(Definitions);
+			}
+			list.Add(new Regiment
+			{
+				Type = type,
+				Strength = e[1].GetDouble(),
+				HomeProvinceId = e[2].GetInt32(),
+				Culture = e[3].GetString() is string cu && Definitions.Cultures.TryGetValue(cu, out Culture culture) ? culture : null,
+				Religion = e[4].GetString() is string re && Definitions.Religions.TryGetValue(re, out Religion religion) ? religion : null,
+				Occupation = e[5].GetString() is string oc && Definitions.Occupations.TryGetValue(oc, out Occupation occupation) ? occupation : null,
+				Sex = e[6].GetString() == "f" ? Sex.Female : Sex.Male,
+			});
+		}
+		return list;
 	}
 }

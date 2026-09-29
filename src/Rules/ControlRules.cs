@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Untitled.Core;
 using Untitled.Data;
 
@@ -15,15 +16,9 @@ public static class ControlRules
 {
 	public const int YearsToCore = 50;
 
-	/// <summary>Fighters per population unit: most nomad men ride to war, fewer settled villagers do.</summary>
+	/// <summary>Fighters per population unit (of both sexes; the men fight): most nomad men ride to war, fewer settled villagers do.</summary>
 	public const double NomadWarriorShare = 0.3;
 	public const double SettledWarriorShare = 0.1;
-
-	/// <summary>Regiments (1000 soldiers) a country can raise per population unit of its core provinces.</summary>
-	public const double PeasantManpowerShare = 0.03;
-	public const double TribesmenManpowerShare = 0.05;
-	/// <summary>Months for an empty manpower pool to refill.</summary>
-	public const int ManpowerRefillMonths = 120;
 
 	/// <summary>Unsettled warriors (tribes, nomads, rebels, mercenaries) fight this much harder than regular regiments.</summary>
 	public const double FierceMultiplier = 1.5;
@@ -50,13 +45,16 @@ public static class ControlRules
 	public static int YearsUntilCore(Province p, GameDate today, Country owner) =>
 		p.Control == null || p.IsCore ? 0 : (int)Math.Ceiling(CoringYears(owner) - YearsBetween(p.Control.Since, today));
 
-	/// <summary>Regiments the province's people can put in the field against a country.</summary>
+	/// <summary>Regiments the province's people can put in the field against a country: their men.</summary>
 	public static int Warriors(Province p)
 	{
 		double w = 0;
 		foreach (PopGroup pop in p.Pops)
-			w += pop.Units * (pop.Occupation.Nomadic ? NomadWarriorShare : SettledWarriorShare);
-		return p.TotalUnits > 0 ? Math.Max(1, (int)Math.Round(w)) : 0;
+		{
+			if (pop.IsMale)
+				w += pop.Units * 2 * (pop.Occupation.Nomadic ? NomadWarriorShare : SettledWarriorShare);
+		}
+		return p.UnitsOf(Sex.Male) > 0 ? Math.Max(1, (int)Math.Round(w)) : 0;
 	}
 
 	/// <summary>Whether the country controls a province next to <paramref name="p"/> (by land, or up a navigable river).</summary>
@@ -70,37 +68,25 @@ public static class ControlRules
 		return false;
 	}
 
-	// ------------------------------------------------------------------------------------- manpower
-
-	/// <summary>
-	/// The most regiments the country can have, from the people of its core provinces: citizens serve in
-	/// full, non-citizens as far as the law on non-citizens makes them.
-	/// </summary>
-	public static int MaxManpower(Country c, IEnumerable<Province> owned)
-	{
-		double noncitizens = Math.Clamp(LawRules.Mod(c, "noncitizen_manpower"), 0, 1);
-		double m = 0;
-		foreach (Province p in owned)
-		{
-			if (!p.IsCore)
-				continue;
-			foreach (PopGroup pop in p.Pops)
-				m += pop.Units * (pop.Occupation.Nomadic ? TribesmenManpowerShare : PeasantManpowerShare)
-					* (LawRules.IsCitizen(c, pop) ? 1 : noncitizens);
-		}
-		return (int)m;
-	}
-
 	// ------------------------------------------------------------------------------------- battles
 
-	/// <summary>A side in battle: regular regiments, and fierce unsettled ones (tribal warriors, mercenaries).</summary>
-	public readonly record struct Force(int Regular, int Fierce, int DiceModifier)
+	/// <summary>
+	/// A side in battle: its regiments, their strength (a regiment of spearmen is 1; unsettled warriors
+	/// count <see cref="FierceMultiplier"/> times) and how well they keep their men alive.
+	/// </summary>
+	public readonly record struct Force(int Regiments, double Strength, int DiceModifier, double Defense = 1)
 	{
-		public int Regiments => Regular + Fierce;
-		public double Strength => Regular + Fierce * FierceMultiplier;
+		/// <summary>Regular regiments and fierce unsettled ones (tribal warriors, mercenaries).</summary>
+		public static Force Of(int regular, int fierce, int diceModifier) =>
+			new(regular + fierce, regular + fierce * FierceMultiplier, diceModifier);
+
+		/// <summary>Two forces fighting as one, with the better dice modifier.</summary>
+		public Force Plus(Force other) => new(Regiments + other.Regiments, Strength + other.Strength, Math.Max(DiceModifier, other.DiceModifier),
+			Regiments + other.Regiments == 0 ? 1 : (Defense * Regiments + other.Defense * other.Regiments) / (Regiments + other.Regiments));
 	}
 
-	public readonly record struct BattleResult(bool AttackerWon, int AttackerLosses, int DefenderLosses);
+	/// <param name="AttackerShare">Share of its men the attacker lost (for armies of regiments).</param>
+	public readonly record struct BattleResult(bool AttackerWon, int AttackerLosses, int DefenderLosses, double AttackerShare = 0, double DefenderShare = 0);
 
 	/// <summary>
 	/// A battle, Paradox style: each side rolls a die (0-9) plus its modifier; its power is its strength
@@ -119,9 +105,11 @@ public static class ControlRules
 		bool attackerWon = pa > pd;
 		double loserShare = 0.4 + 0.3 * rng.NextDouble();
 		double winnerShare = 0.25 * Math.Min(pa, pd) / Math.Max(pa, pd);
-		int aLoss = (int)Math.Round(attacker.Regiments * (attackerWon ? winnerShare : loserShare));
-		int dLoss = (int)Math.Round(defender.Regiments * (attackerWon ? loserShare : winnerShare));
-		return new BattleResult(attackerWon, Math.Min(aLoss, attacker.Regiments), Math.Min(dLoss, defender.Regiments));
+		double aShare = Math.Min(1, (attackerWon ? winnerShare : loserShare) / Math.Max(0.1, attacker.Defense));
+		double dShare = Math.Min(1, (attackerWon ? loserShare : winnerShare) / Math.Max(0.1, defender.Defense));
+		int aLoss = (int)Math.Round(attacker.Regiments * aShare);
+		int dLoss = (int)Math.Round(defender.Regiments * dShare);
+		return new BattleResult(attackerWon, Math.Min(aLoss, attacker.Regiments), Math.Min(dLoss, defender.Regiments), aShare, dShare);
 	}
 
 	/// <summary>Chance the attacker wins, over all 100 die rolls.</summary>
@@ -157,33 +145,16 @@ public static class ControlRules
 		return best == int.MinValue ? 0 : best;
 	}
 
-	/// <summary>Moves regiments between the manpower pool and a province's garrison.</summary>
-	public static bool SetGarrison(Country c, Province p, int garrison, out string reason)
-	{
-		reason = null;
-		if (p?.OwnerTag != c?.Tag || p.Control == null)
-			reason = "Not your province";
-		else if (garrison < 0)
-			reason = "A garrison can't be negative";
-		else if (garrison - p.Control.Garrison > c.Manpower)
-			reason = $"You have only {c.Manpower} regiments to spare";
-		if (reason != null)
-			return false;
-		c.Manpower -= garrison - p.Control.Garrison;
-		p.Control.Garrison = garrison;
-		return true;
-	}
-
-	/// <summary>Removes fallen warriors from a province's people: a unit of people per regiment, nomads first.</summary>
+	/// <summary>Removes fallen warriors from a province's people: a unit of people per regiment, men first, nomads first.</summary>
 	public static void KillWarriors(Province p, int regiments)
 	{
-		// each fallen regiment is a unit of people, taken from the warriors' groups (nomads first)
+		// each fallen regiment is a unit of people, taken from the warriors' groups (nomad men first)
 		int left = regiments;
-		foreach (bool nomadic in new[] { true, false })
+		foreach (var (male, nomadic) in new[] { (true, true), (true, false), (false, true), (false, false) })
 		{
 			foreach (PopGroup pop in p.Pops)
 			{
-				if (left <= 0 || pop.Occupation.Nomadic != nomadic)
+				if (left <= 0 || pop.Occupation.Nomadic != nomadic || pop.IsMale != male)
 					continue;
 				int k = Math.Min(left, pop.Units);
 				pop.Units -= k;
@@ -205,7 +176,7 @@ public static class ControlRules
 		if (p.Control.Kind == ControlKind.Subjugated)
 		{
 			// nomads rise when they feel strong against the garrison holding them down
-			double odds = Warriors(p) / (p.Control.Garrison + 0.5);
+			double odds = Warriors(p) / (p.Control.Garrison.Sum(r => r.Strength) + 0.5);
 			return separatism * NomadUprisingChance * Math.Min(odds, 2.0) * laws;
 		}
 		// absorbed tribes break away the less kinship they feel with their overlord
@@ -215,13 +186,16 @@ public static class ControlRules
 	public enum EventKind { Cored, UprisingCrushed, ProvinceLost }
 
 	/// <param name="Held">How the country held the province (for a lost province: before it was lost).</param>
-	public readonly record struct ControlEvent(EventKind Kind, Province Province, string Tag, BattleResult Battle, ControlKind Held = ControlKind.Core);
+	/// <param name="Regiments">Regiments that fought for the country (garrison and armies), and how many of them were lost.</param>
+	public readonly record struct ControlEvent(EventKind Kind, Province Province, string Tag, BattleResult Battle, ControlKind Held = ControlKind.Core,
+		int Regiments = 0, int RegimentsLost = 0);
 
 	/// <summary>
 	/// One month: provinces held for <see cref="YearsToCore"/> years become cores (their garrisons go
-	/// home), others may rise up, and manpower refills.
+	/// home), others may rise up against their garrison and any of the owner's armies standing there.
 	/// </summary>
-	public static List<ControlEvent> MonthlyStep(IReadOnlyList<Province> provinces, IReadOnlyDictionary<string, Country> countries, GameDate today, Random rng)
+	public static List<ControlEvent> MonthlyStep(IReadOnlyList<Province> provinces, IReadOnlyDictionary<string, Country> countries,
+		IReadOnlyCollection<Army> armies, GameDate today, Random rng)
 	{
 		var events = new List<ControlEvent>();
 		foreach (Province p in provinces)
@@ -230,7 +204,7 @@ public static class ControlRules
 				continue;
 			if (YearsBetween(p.Control.Since, today) >= CoringYears(owner))
 			{
-				owner.Manpower += p.Control.Garrison;
+				MilitaryRules.SendHome(p.Control.Garrison, provinces, rng);
 				p.Control = new ProvinceControl { Kind = ControlKind.Core, Since = p.Control.Since };
 				events.Add(new ControlEvent(EventKind.Cored, p, owner.Tag, default));
 				continue;
@@ -238,39 +212,29 @@ public static class ControlRules
 			if (rng.NextDouble() >= UprisingChance(p, owner, today))
 				continue;
 
-			// the uprising: the rebels (fierce, on home ground) attack the garrison; its fort gives it +1
-			BattleResult r = Battle(new Force(0, Warriors(p), HomeGroundModifier(p)), new Force(p.Control.Garrison, 0, 1), rng);
+			// the uprising: the rebels (fierce, on home ground) attack the garrison, its fort giving it +1,
+			// and the owner's armies standing in the province
+			var here = armies.Where(a => a.OwnerTag == owner.Tag && a.ProvinceId == p.Id && !a.Moving).ToList();
+			var defenders = p.Control.Garrison.Concat(here.SelectMany(a => a.Regiments)).ToList();
+			BattleResult r = Battle(Force.Of(0, Warriors(p), HomeGroundModifier(p)), MilitaryRules.ForceOf(defenders, p, 1), rng);
+			var gone = MilitaryRules.TakeLosses(defenders, r.DefenderShare, r.AttackerWon);
+			foreach (Army a in here)
+				a.Regiments.RemoveAll(gone.Contains);
+			KillWarriors(p, r.AttackerLosses);
 			ControlKind held = p.Control.Kind;
 			if (r.AttackerWon)
 			{
+				// the garrison is overrun to the last man; armies that were there fall back, beaten
+				int lost = gone.Count + p.Control.Garrison.Count(x => !gone.Contains(x));
 				p.OwnerTag = null;
 				p.Control = null;
-				events.Add(new ControlEvent(EventKind.ProvinceLost, p, owner.Tag, r, held));
+				events.Add(new ControlEvent(EventKind.ProvinceLost, p, owner.Tag, r, held, defenders.Count, lost));
 			}
 			else
 			{
-				p.Control.Garrison -= r.DefenderLosses;
-				KillWarriors(p, r.AttackerLosses);
-				events.Add(new ControlEvent(EventKind.UprisingCrushed, p, owner.Tag, r, held));
+				p.Control.Garrison.RemoveAll(gone.Contains);
+				events.Add(new ControlEvent(EventKind.UprisingCrushed, p, owner.Tag, r, held, defenders.Count, gone.Count));
 			}
-		}
-
-		var owned = new Dictionary<string, List<Province>>();
-		foreach (Province p in provinces)
-		{
-			if (p?.OwnerTag == null)
-				continue;
-			if (!owned.TryGetValue(p.OwnerTag, out List<Province> list))
-				owned[p.OwnerTag] = list = new List<Province>();
-			list.Add(p);
-		}
-		foreach (var (tag, list) in owned)
-		{
-			Country c = countries[tag];
-			int max = MaxManpower(c, list);
-			c.MaxManpower = max;
-			if (c.Manpower < max)
-				c.Manpower = Math.Min(max, c.Manpower + Math.Max(1, max / ManpowerRefillMonths));
 		}
 		return events;
 	}

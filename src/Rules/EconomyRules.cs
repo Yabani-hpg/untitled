@@ -7,9 +7,9 @@ using Untitled.Data;
 namespace Untitled.Rules;
 
 /// <summary>A settled country's monthly accounts, in gold.</summary>
-public readonly record struct Ledger(double Tax, double Garrisons, double Mercenaries)
+public readonly record struct Ledger(double Tax, double Garrisons, double Mercenaries, double Armies = 0)
 {
-	public double Balance => Tax - Garrisons - Mercenaries;
+	public double Balance => Tax - Garrisons - Mercenaries - Armies;
 }
 
 /// <summary>An unsettled country's monthly food accounts.</summary>
@@ -20,7 +20,8 @@ public readonly record struct FoodLedger(double Surplus, double WarBands, double
 
 /// <summary>
 /// Treasuries. Settled countries keep gold, taxed from their settled people (peasants); tribesmen and
-/// nomads living in their provinces pay no tax. Gold pays garrisons, mercenaries and buildings.
+/// nomads living in their provinces pay no tax, and nor do people away under arms. Gold pays armies,
+/// garrisons, mercenaries and buildings.
 /// Unsettled countries keep food: the surplus of their herds and fields, which feeds their war bands and
 /// is what they barter with others. Gold paid to them (for mercenaries, as gifts) they barter into food.
 /// </summary>
@@ -69,15 +70,16 @@ public static class EconomyRules
 		return Math.Max(0, tax * (1 + LawRules.Mod(owner, "tax")) * (1 - ControlRules.Separatism(p, today, owner)));
 	}
 
-	public static Ledger MonthlyLedger(Country c, IEnumerable<Province> owned, IEnumerable<Tribe> tribes, GameDate today)
+	public static Ledger MonthlyLedger(Country c, IEnumerable<Province> owned, IEnumerable<Tribe> tribes, IEnumerable<Army> armies, GameDate today)
 	{
 		double tax = 0, garrisons = 0;
 		foreach (Province p in owned)
 		{
 			tax += Tax(p, today, c);
-			garrisons += (p.Control?.Garrison ?? 0) * GarrisonUpkeep;
+			garrisons += (p.Control?.Garrison.Count ?? 0) * GarrisonUpkeep;
 		}
-		return new Ledger(tax, garrisons, TribeRules.Mercenaries(tribes, c.Tag) * MercenaryPayOf(c));
+		double upkeep = armies.Where(a => a.OwnerTag == c.Tag).Sum(MilitaryRules.Upkeep);
+		return new Ledger(tax, garrisons, TribeRules.Mercenaries(tribes, c.Tag) * MercenaryPayOf(c), upkeep);
 	}
 
 	/// <summary>Gold a month a country pays each regiment of mercenaries (its laws may make them cheaper).</summary>
@@ -120,7 +122,7 @@ public static class EconomyRules
 	/// Returns the countries whose mercenaries left unpaid.
 	/// </summary>
 	public static List<Country> MonthlyStep(IReadOnlyDictionary<string, Country> countries, IReadOnlyList<Province> provinces,
-		ICollection<Tribe> tribes, Definitions defs, GameDate today)
+		ICollection<Tribe> tribes, IReadOnlyCollection<Army> armies, Definitions defs, GameDate today)
 	{
 		var unpaid = new List<Country>();
 		var owned = provinces.Where(p => p?.OwnerTag != null).GroupBy(p => p.OwnerTag).ToDictionary(g => g.Key, g => g.ToList());
@@ -128,7 +130,7 @@ public static class EconomyRules
 		{
 			if (!owned.TryGetValue(c.Tag, out List<Province> list))
 				continue;
-			Ledger ledger = MonthlyLedger(c, list, tribes, today);
+			Ledger ledger = MonthlyLedger(c, list, tribes, armies, today);
 			c.LastLedger = ledger;
 			c.Gold += ledger.Balance;
 			if (c.Gold < 0 && ledger.Mercenaries > 0)

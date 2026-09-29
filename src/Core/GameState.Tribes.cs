@@ -103,7 +103,7 @@ public partial class GameState
 	Character GenerateChief(Tribe t)
 	{
 		Province camp = GetProvince(t.CampProvinceId);
-		PopGroup pop = camp.Pops.OrderByDescending(g => g.Units).FirstOrDefault();
+		PopGroup pop = camp.Pops.Where(g => g.IsMale).OrderByDescending(g => g.Units).FirstOrDefault();
 		var rng = new Random(StableHash($"chief {t.Key ?? t.CampProvinceId.ToString()}"));
 		string Pick(Dictionary<string, List<string>> table) =>
 			t.Culture != null && table.TryGetValue(t.Culture.Id, out List<string> list) && list.Count > 0 ? list[rng.Next(list.Count)] : null;
@@ -260,7 +260,7 @@ public partial class GameState
 	{
 		Country c = PlayerCountry;
 		Tribe t = GetTribe(tribeId);
-		if (c == null || t == null || !TribeRules.CanAbsorb(t, c, _provinces, Date))
+		if (c == null || t == null || !TribeRules.CanAbsorb(t, c, _provinces, _armies.Values, Date))
 			return false;
 		int lands = t.Provinces.Count;
 		TribeRules.Absorb(t, c, _provinces, Date);
@@ -271,26 +271,31 @@ public partial class GameState
 		return true;
 	}
 
-	public bool SubjugateTribe(int tribeId, int regiments, int mercenaries)
+	/// <summary>The player's army standing in a nomad horde's lands gives them battle, with the mercenaries sent along.</summary>
+	public bool SubjugateTribe(int tribeId, int armyId, int mercenaries)
 	{
 		Country c = PlayerCountry;
 		Tribe t = GetTribe(tribeId);
-		if (c == null || t == null || !TribeRules.CanSubjugate(t, c, _tribes.Values, _provinces, regiments, mercenaries, out _))
+		Army army = GetArmy(armyId);
+		if (c == null || t == null || !TribeRules.CanSubjugate(t, c, army, _tribes.Values, _provinces, mercenaries, out _))
 			return false;
 		int lands = t.Provinces.Count;
-		var r = TribeRules.Subjugate(t, c, _tribes.Values, _provinces, regiments, mercenaries, Date, _rng);
+		var r = TribeRules.Subjugate(t, c, army, _tribes.Values, _provinces, mercenaries, Date, _rng);
 		if (r.AttackerWon)
 		{
 			_tribes.Remove(t.Id);
 			c.ImprovingRelations.Remove(t.Id);
-			Notify($"Our army breaks {t.TheName}, losing {r.AttackerLosses} of {regiments + mercenaries} regiments. Their {lands} provinces are subjugated; the survivors stay as garrisons.");
+			Notify($"The {army.Name} breaks {t.TheName} ({r.AttackerShare:P0} of our men fell). Their {lands} provinces are subjugated, a regiment left in each as its garrison.");
+			RemoveEmptyArmies();
 			AfterTribeLandChange();
 		}
 		else
 		{
-			Notify($"{Capital(t.TheName)} beat our army: {r.AttackerLosses} of {regiments + mercenaries} regiments lost.");
+			Notify($"{Capital(t.TheName)} beat the {army.Name}: {r.AttackerShare:P0} of our men fell.");
+			RemoveEmptyArmies();
 			EmitSignal(SignalName.TribesChanged);
 		}
+		EmitSignal(SignalName.ArmiesChanged);
 		return r.AttackerWon;
 	}
 

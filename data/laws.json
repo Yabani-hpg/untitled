@@ -1,5 +1,5 @@
 {
-	"_comment": "A settled country's laws and code: for each law, one option is in force. default: the option countries start with unless their country file says otherwise. requires: a condition (see data/countries/EGY.json flags) the country must meet to adopt the option, described by requires_text. modifiers change the country's numbers: tax (share more), noncitizen_tax (share more from non-citizens), noncitizen_manpower (share of their manpower raised; citizens give it all), uprising (share more likely), years_to_core (years added), tribe_relations (added to tribes' opinion), alliance_chance (added), building_cost (share more), mercenary_pay (share more), change_cost (share more to change laws). effects are ongoing: assimilation (units per core province a year turning to the ruler's culture), conversion (to the ruler's religion), succession (how the next ruler is chosen), citizens (who is a citizen).",
+	"_comment": "A settled country's laws and code: for each law, one option is in force. default: the option countries start with unless their country file says otherwise. requires: a condition (see data/countries/EGY.json flags) the country must meet to adopt the option, described by requires_text. modifiers change the country's numbers: tax (share more), noncitizen_tax (share more from non-citizens), noncitizen_manpower (share of their manpower raised; citizens give it all), uprising (share more likely), years_to_core (years added), tribe_relations (added to tribes' opinion), alliance_chance (added), building_cost (share more), mercenary_pay (share more), change_cost (share more to change laws). effects are ongoing: assimilation (units per core province a year turning to the ruler's culture), conversion (to the ruler's religion), succession (how the next ruler is chosen), citizens (who is a citizen), levy_share (share of those who can serve that are raised as levies), women_serve (1: women are levied too).",
 	"change_cost_gold": 50,
 	"change_cooldown_years": 5,
 	"laws": [
@@ -75,6 +75,25 @@
 				{ "id": "legal", "name": "Legal", "description": "Captives and debtors may be enslaved: cheap labour, but the tribes fear being taken.", "modifiers": { "tax": 0.05, "building_cost": -0.1, "tribe_relations": -5 } },
 				{ "id": "outlawed", "name": "Outlawed", "description": "No one may be owned. The tribes trust us more.", "modifiers": { "tribe_relations": 5, "uprising": -0.05 },
 				  "requires": { "not": { "law": "noncitizens:bonded" } }, "requires_text": "Non-citizens must not be held in bonded labour" }
+			]
+		},
+		{
+			"id": "levies", "name": "Levy obligation", "group": "Army",
+			"description": "How many of those who can serve are called to arms when the levies are raised. The men (and women) levied leave their fields and pay no tax until they come home.",
+			"default": "light",
+			"options": [
+				{ "id": "light", "name": "Light levy", "description": "One in ten of those who can serve is called up.", "effects": { "levy_share": 0.1 } },
+				{ "id": "heavy", "name": "Heavy levy", "description": "One in four is called up: a big army, and emptier fields.", "effects": { "levy_share": 0.25 }, "modifiers": { "uprising": 0.05 } },
+				{ "id": "total", "name": "Total levy", "description": "All who can bear arms march to war, and nobody is left to work the land or pay the tax.", "effects": { "levy_share": 1.0 }, "modifiers": { "uprising": 0.2 } }
+			]
+		},
+		{
+			"id": "women_in_arms", "name": "Women in arms", "group": "Army",
+			"description": "Whether women may be levied as soldiers.",
+			"default": "men_only",
+			"options": [
+				{ "id": "men_only", "name": "Men only", "description": "Only men are levied; the women keep the fields and the households." },
+				{ "id": "women_serve", "name": "Women may serve", "description": "Women are levied alongside the men: twice the soldiers, and fewer hands at home.", "effects": { "women_serve": 1 } }
 			]
 		},
 		{

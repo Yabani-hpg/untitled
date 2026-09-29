@@ -113,6 +113,45 @@ public static partial class DataLoader
 				name => names.TryGetValue(name, out int pid) ? pid : 0);
 	}
 
+	public const string UnitsPath = "res://data/units.json";
+
+	public static void LoadUnits(Definitions defs, Dictionary<string, int> names)
+	{
+		foreach (var (where, e) in ReadJsonArray(UnitsPath, "units"))
+		{
+			string category = GetString(e, "category", where);
+			var type = new UnitType
+			{
+				Id = GetString(e, "id", where),
+				Name = GetString(e, "name", where),
+				Category = category switch
+				{
+					"foot" => UnitCategory.Foot,
+					"mounted" => UnitCategory.Mounted,
+					"siege" => UnitCategory.Siege,
+					_ => throw new DataException($"{where}: category must be foot, mounted or siege"),
+				},
+				Description = e.TryGetProperty("description", out JsonElement d) ? d.GetString() : "",
+				Attack = GetFloat(e, "attack", 1f),
+				Defense = System.Math.Max(0.1, GetFloat(e, "defense", 1f)),
+				Siege = GetFloat(e, "siege", 0f),
+				Speed = System.Math.Max(1, GetFloat(e, "speed", 20f)),
+				Cost = GetFloat(e, "cost", 0f),
+				Upkeep = GetFloat(e, "upkeep", 0.1f),
+				RequiresText = e.TryGetProperty("requires_text", out JsonElement rt) ? rt.GetString() : null,
+				DefaultShare = (int)GetFloat(e, "share", 0f),
+			};
+			if (defs.GetUnitType(type.Id) != null)
+				throw new DataException($"{where}: duplicate unit '{type.Id}'");
+			if (e.TryGetProperty("requires", out JsonElement req))
+				type.Requires = Condition.Parse(req, $"{where}.requires", id => defs.Areas.TryGetValue(id, out List<int> a) ? a : null,
+					name => names.TryGetValue(name, out int pid) ? pid : 0);
+			defs.UnitTypes.Add(type);
+		}
+		if (!defs.UnitTypes.Exists(u => u.Category == UnitCategory.Foot && u.Requires == null))
+			throw new DataException($"{UnitsPath}: needs a foot unit available from the start");
+	}
+
 	public static void LoadTribes(Definitions defs, Dictionary<string, int> names)
 	{
 		using JsonDocument doc = ParseJson(TribesPath);

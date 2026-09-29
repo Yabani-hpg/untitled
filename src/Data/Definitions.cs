@@ -110,6 +110,11 @@ public sealed class Definitions
 
 	public LawDefinition GetLaw(string id) => Laws.Find(l => l.Id == id);
 
+	/// <summary>Kinds of regiments (data/units.json), in file order.</summary>
+	public List<UnitType> UnitTypes { get; } = new();
+
+	public UnitType GetUnitType(string id) => UnitTypes.Find(u => u.Id == id);
+
 	/// <summary>Tribes placed by hand (data/tribes.json), in file order.</summary>
 	public List<TribeDefinition> Tribes { get; } = new();
 	/// <summary>Syllables for generated tribe names, by culture id: start, middle, end.</summary>

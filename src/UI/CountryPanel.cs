@@ -11,7 +11,8 @@ namespace Untitled.UI;
 /// <summary>
 /// The player's country: an Overview (ruler, succession, finances, people) and the Laws, where the
 /// country sets its own code: succession, who is a citizen, how non-citizens and other cultures are
-/// treated, religious law, what is legal, and how the frontier tribes are dealt with.
+/// treated, religious law, what is legal, and how the frontier tribes are dealt with; and the
+/// Military: raising the levies, how they are armed, and the armies in the field.
 /// </summary>
 public partial class CountryPanel : PanelContainer
 {
@@ -22,6 +23,7 @@ public partial class CountryPanel : PanelContainer
 	TabContainer _tabs;
 	VBoxContainer _overview;
 	VBoxContainer _laws;
+	VBoxContainer _military;
 	Label _title;
 	Label _status;
 
@@ -29,7 +31,7 @@ public partial class CountryPanel : PanelContainer
 	{
 		["tax"] = ("Tax", true, true),
 		["noncitizen_tax"] = ("Tax from non-citizens", true, true),
-		["noncitizen_manpower"] = ("Manpower from non-citizens", true, true),
+		["noncitizen_manpower"] = ("Levies from non-citizens", true, true),
 		["uprising"] = ("Uprising risk", true, false),
 		["years_to_core"] = ("Years for new land to become a core", false, false),
 		["tribe_relations"] = ("Tribes' opinion of us", false, true),
@@ -83,6 +85,7 @@ public partial class CountryPanel : PanelContainer
 		root.AddChild(_tabs);
 		_overview = AddTab("Overview");
 		_laws = AddTab("Laws");
+		_military = AddTab("Military");
 
 		_status = HudStyle.Body("", BodyFont, 13, HudStyle.Muted);
 		root.AddChild(_status);
@@ -94,6 +97,7 @@ public partial class CountryPanel : PanelContainer
 		gs.MonthAdvanced += Refresh;
 		gs.RulerChanged += OnRulerChanged;
 		gs.TribesChanged += Refresh;
+		gs.ArmiesChanged += Refresh;
 	}
 
 	public override void _ExitTree()
@@ -105,6 +109,7 @@ public partial class CountryPanel : PanelContainer
 		gs.MonthAdvanced -= Refresh;
 		gs.RulerChanged -= OnRulerChanged;
 		gs.TribesChanged -= Refresh;
+		gs.ArmiesChanged -= Refresh;
 	}
 
 	void OnRulerChanged(string tag) => Refresh();
@@ -142,6 +147,7 @@ public partial class CountryPanel : PanelContainer
 		_title.Text = c.Name;
 		FillOverview(gs, c);
 		FillLaws(gs, c);
+		FillMilitary(gs, c);
 	}
 
 	// ------------------------------------------------------------------------------------ Overview
@@ -176,7 +182,7 @@ public partial class CountryPanel : PanelContainer
 		ruler.AddChild(HudStyle.Body(c.Government, BodyFont, 13, HudStyle.Muted));
 
 		var owned = gs.ProvincesOf(c.Tag).ToList();
-		Ledger ledger = EconomyRules.MonthlyLedger(c, owned, gs.Tribes.Values, gs.Date);
+		Ledger ledger = EconomyRules.MonthlyLedger(c, owned, gs.Tribes.Values, gs.Armies.Values, gs.Date);
 		long citizens = 0, others = 0;
 		foreach (PopGroup pop in owned.SelectMany(p => p.Pops))
 		{
@@ -200,9 +206,11 @@ public partial class CountryPanel : PanelContainer
 		Row("Citizens", $"{citizens * PopGroup.PeoplePerUnit:N0} ({LawRules.Option(c, gs.Definitions.GetLaw("citizenship"))?.Name})");
 		Row("Non-citizens", $"{others * PopGroup.PeoplePerUnit:N0} ({LawRules.Option(c, gs.Definitions.GetLaw("noncitizens"))?.Name})");
 		Row("Treasury", $"{c.Gold:0} gold");
-		Row("Each month", $"{ledger.Balance:+0.0;-0.0} gold: +{ledger.Tax:0.0} tax, -{ledger.Garrisons:0.0} garrisons, -{ledger.Mercenaries:0.0} mercenaries",
+		Row("Each month", $"{ledger.Balance:+0.0;-0.0} gold: +{ledger.Tax:0.0} tax, -{ledger.Armies:0.0} armies, -{ledger.Garrisons:0.0} garrisons, -{ledger.Mercenaries:0.0} mercenaries",
 			ledger.Balance >= 0 ? HudStyle.Good : HudStyle.Bad);
-		Row("Manpower", $"{c.Manpower} of {c.MaxManpower} regiments · {TribeRules.Mercenaries(gs.Tribes.Values, c.Tag)} mercenaries");
+		long men = owned.Sum(p => p.UnitsOf(Sex.Male)), women = owned.Sum(p => p.UnitsOf(Sex.Female));
+		Row("Men and women", $"{men * PopGroup.PeoplePerUnit:N0} men · {women * PopGroup.PeoplePerUnit:N0} women at home");
+		Row("Under arms", $"{MilitaryRules.UnderArms(c, gs.Armies.Values, owned)} regiments · {gs.AvailableLevies(c)} more to levy · {TribeRules.Mercenaries(gs.Tribes.Values, c.Tag)} mercenaries");
 		Row("Allied tribes", string.Join(", ", gs.Tribes.Values.Where(t => t.AlliedTag == c.Tag).Select(t => t.Name)) is { Length: > 0 } a ? a : "None");
 	}
 
@@ -290,6 +298,150 @@ public partial class CountryPanel : PanelContainer
 		}
 	}
 
+	// ------------------------------------------------------------------------------------ Military
+
+	void FillMilitary(GameState gs, Country c)
+	{
+		Clear(_military);
+		var defs = gs.Definitions;
+		var owned = gs.ProvincesOf(c.Tag).ToList();
+		Label Text(string text, int size = 13, Color? color = null)
+		{
+			var l = HudStyle.Body(text, BodyFont, size, color ?? HudStyle.Muted);
+			l.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			l.CustomMinimumSize = new Vector2(580, 0);
+			return l;
+		}
+		VBoxContainer Section(string title)
+		{
+			var panel = new PanelContainer();
+			panel.AddThemeStyleboxOverride("panel", HudStyle.Section());
+			_military.AddChild(panel);
+			var box = new VBoxContainer();
+			box.AddThemeConstantOverride("separation", 4);
+			panel.AddChild(box);
+			box.AddChild(HudStyle.Title(title, TitleFont, 17));
+			return box;
+		}
+
+		// the levies
+		var levies = Section("The levies");
+		int available = gs.AvailableLevies(c);
+		int under = MilitaryRules.UnderArms(c, gs.Armies.Values, owned);
+		bool women = LawRules.Effect(c, "women_serve") > 0;
+		double canServe = MilitaryRules.CanServeAtHome(c, owned, gs.Date);
+		levies.AddChild(Text($"We have no standing army: in war, the {(women ? "men and women" : "men")} of our provinces are called up as levies, "
+			+ "each unit of 1000 people a regiment. Those levied leave their fields and pay no tax until they come home."));
+		levies.AddChild(Text($"{LawRules.Option(c, defs.GetLaw("levies"))?.Name}: {MilitaryRules.LevyShare(c):P0} of those who can serve. "
+			+ $"{LawRules.Option(c, defs.GetLaw("women_in_arms"))?.Name}. About {(long)canServe * PopGroup.PeoplePerUnit:N0} at home answer the levy "
+			+ "(non-citizens as the law on them says, absorbed tribes less their separatism, subjugated nomads not at all).", 13, HudStyle.Text));
+		levies.AddChild(Text($"Under arms: {under} regiments. We can levy {available} more.", 14, HudStyle.Text));
+		var raiseRow = new HBoxContainer();
+		raiseRow.AddThemeConstantOverride("separation", 8);
+		levies.AddChild(raiseRow);
+		var count = new SpinBox { MinValue = 1, MaxValue = Math.Max(1, available), Value = Math.Max(1, available), Suffix = "reg.", Editable = available > 0, CustomMinimumSize = new Vector2(120, 0) };
+		raiseRow.AddChild(count);
+		var raise = HudStyle.Button("Raise the levies", BodyFont, 14);
+		raise.Disabled = available < 1;
+		raiseRow.AddChild(raise);
+		var preview = HudStyle.Body("", BodyFont, 12, HudStyle.Muted);
+		preview.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+		raiseRow.AddChild(preview);
+		void UpdatePreview()
+		{
+			if (available < 1)
+			{
+				preview.Text = "No one left to levy";
+				return;
+			}
+			var (types, cost) = MilitaryRules.Arm(c, (int)count.Value, defs, gs);
+			preview.Text = string.Join(", ", types.GroupBy(t => t).Select(g => $"{g.Count()} {g.Key.Name.ToLowerInvariant()}"))
+				+ (cost > 0 ? $" · arms cost {cost:0} gold" : "");
+		}
+		count.ValueChanged += _ => UpdatePreview();
+		UpdatePreview();
+		raise.Pressed += () =>
+		{
+			Army army = gs.RaiseLevies((int)count.Value, out string why);
+			_status.Text = army != null ? $"The {army.Name} musters at {gs.CapitalText(c)}. Right-click the map to march it." : why;
+		};
+
+		// how they are armed
+		var arms = Section("How our levies are armed");
+		arms.AddChild(Text("Each kind of troops' share of the levies raised. Horses and engines must be paid for when the levies are raised; "
+			+ "those the treasury can't pay for are raised as spearmen. Siege engines are powerful but need a regiment of foot each to screen them."));
+		var template = MilitaryRules.Template(c, defs, gs).ToDictionary(x => x.Type, x => x.Share);
+		var grid = new GridContainer { Columns = 6 };
+		grid.AddThemeConstantOverride("h_separation", 12);
+		grid.AddThemeConstantOverride("v_separation", 3);
+		arms.AddChild(grid);
+		foreach (string h in new[] { "", "Attack", "Defense", "Speed", "Cost · upkeep", "Share" })
+			grid.AddChild(HudStyle.Body(h, BodyFont, 12, HudStyle.Muted));
+		foreach (var group in MilitaryRules.AvailableTypes(defs, gs, c).GroupBy(t => t.Category))
+		{
+			grid.AddChild(HudStyle.Body(group.Key.ToString(), TitleFont, 15, HudStyle.Gold));
+			for (int i = 0; i < 5; i++)
+				grid.AddChild(new Control());
+			foreach (UnitType t in group)
+			{
+				var name = HudStyle.Body(t.Name, BodyFont, 14);
+				name.TooltipText = t.Description + (t.Siege > 0 ? $"\nSiege power {t.Siege:0.#}" : "");
+				name.MouseFilter = MouseFilterEnum.Pass;
+				grid.AddChild(name);
+				grid.AddChild(HudStyle.Body($"{t.Attack:0.0#}", BodyFont, 13));
+				grid.AddChild(HudStyle.Body($"{t.Defense:0.0#}", BodyFont, 13));
+				grid.AddChild(HudStyle.Body($"{t.Speed:0} km/day", BodyFont, 13));
+				grid.AddChild(HudStyle.Body($"{t.Cost:0} · {t.Upkeep:0.0#}/month", BodyFont, 13));
+				var share = new SpinBox { MinValue = 0, MaxValue = 100, Step = 5, Value = template.GetValueOrDefault(t), Suffix = "%" };
+				string id = t.Id;
+				share.ValueChanged += v =>
+				{
+					gs.SetLevyShare(id, (int)v);
+					UpdatePreview();
+				};
+				grid.AddChild(share);
+			}
+		}
+		var later = defs.UnitTypes.Where(t => !MilitaryRules.IsAvailable(t, gs, c)).Take(4).ToList();
+		if (later.Count > 0)
+			arms.AddChild(Text("Still to come: " + string.Join("; ", later.Select(t => $"{t.Name} ({t.RequiresText})")) + "..."));
+
+		// the armies
+		var field = Section("Armies in the field");
+		var armies = gs.ArmiesOf(c.Tag).ToList();
+		if (armies.Count == 0)
+			field.AddChild(Text("None. Raise the levies to form an army."));
+		foreach (Army a in armies)
+		{
+			var row = new HBoxContainer();
+			row.AddThemeConstantOverride("separation", 8);
+			field.AddChild(row);
+			var info = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+			row.AddChild(info);
+			info.AddChild(HudStyle.Body($"{a.Name}: {a.Regiments.Count} regiments, {a.Men:N0} men", BodyFont, 14));
+			string where = a.Moving
+				? $"Marching to {gs.GetProvince(a.Destination)?.Name}, {gs.DaysToArrive(a)} days"
+				: $"In {gs.GetProvince(a.ProvinceId)?.Name}";
+			info.AddChild(HudStyle.Body($"{where} · {GameState.Describe(a)} · {MilitaryRules.Upkeep(a):0.0} gold a month", BodyFont, 12, HudStyle.Muted));
+			var select = HudStyle.Button("Select", BodyFont, 13);
+			int armyId = a.Id;
+			select.Pressed += () =>
+			{
+				gs.SelectArmy(armyId);
+				MapCamera.FocusProvince(GetNodeOrNull<Node3D>(CameraRigPath ?? new NodePath()), gs.GetArmy(armyId)?.ProvinceId ?? 0);
+				Visible = false;
+			};
+			row.AddChild(select);
+			var disband = HudStyle.Button("Disband", BodyFont, 13);
+			disband.TooltipText = "Send the survivors home to their fields";
+			disband.Pressed += () => gs.DisbandArmy(armyId);
+			row.AddChild(disband);
+		}
+		int garrisons = owned.Sum(p => p.Control?.Garrison.Count ?? 0);
+		if (garrisons > 0)
+			field.AddChild(Text($"Garrisons: {garrisons} regiments holding {owned.Count(p => p.Control?.Garrison.Count > 0)} provinces."));
+	}
+
 	/// <summary>An option's description, effects and requirements, for its tooltip.</summary>
 	static string Describe(LawOption o)
 	{
@@ -308,6 +460,8 @@ public partial class CountryPanel : PanelContainer
 			{
 				"assimilation" => $"  Other peoples take our culture: {value:0.#} units a year in each core province",
 				"conversion" => $"  Other faiths take our gods: {value:0.#} units a year in each core province",
+				"levy_share" => $"  Levies: {value:P0} of those who can serve",
+				"women_serve" => "  Women are levied as well as men",
 				_ => $"  {key}: {value}",
 			});
 		}

@@ -100,6 +100,9 @@ public partial class GameState : IWorld
 		_worldFlags.Clear();
 		_characters.Clear();
 		_nextCharacterId = 1;
+		_armies.Clear();
+		_nextArmyId = 1;
+		SelectedArmyId = 0;
 		SelectedProvinceId = ProvinceMap.NoProvince;
 
 		// every province starts uncontrolled; country files say which ones their country holds, and how
@@ -113,19 +116,15 @@ public partial class GameState : IWorld
 			c.RulerNameCounts.Clear();
 			foreach (var (name, n) in c.StartRulerNameCounts)
 				c.RulerNameCounts[name] = n;
-			c.Manpower = c.MaxManpower = 0;
+			c.LevyTemplate.Clear();
+			c.NextArmyNumber = 1;
 			if (c.Definition == null)
 				continue;
 			foreach (StartProvince sp in c.Definition.StartProvinces)
 			{
 				Province p = _provinces[sp.ProvinceId];
 				p.OwnerTag = c.Tag;
-				p.Control = new ProvinceControl
-				{
-					Kind = sp.Control,
-					Since = sp.Since ?? longAgo,
-					Garrison = sp.Control == ControlKind.Core ? 0 : sp.Garrison,
-				};
+				p.Control = new ProvinceControl { Kind = sp.Control, Since = sp.Since ?? longAgo };
 			}
 		}
 		foreach (Country c in _countries.Values)
@@ -134,15 +133,14 @@ public partial class GameState : IWorld
 			c.CapitalName = c.Definition?.CapitalName;
 			c.Ruler = c.Definition?.Ruler != null ? CreateRuler(c, c.Definition.Ruler) : GenerateRuler(c);
 			c.CurrentFlag = null;
-			// a full manpower pool, less the regiments already standing in garrisons
+			RaiseStartGarrisons(c);
 			var owned = ProvincesOf(c.Tag).ToList();
-			c.MaxManpower = ControlRules.MaxManpower(c, owned);
-			c.Manpower = Math.Max(0, c.MaxManpower - owned.Sum(p => p.Control?.Garrison ?? 0));
 			c.Gold = owned.Count > 0 ? c.StartingGold : 0;
-			c.LastLedger = EconomyRules.MonthlyLedger(c, owned, Array.Empty<Tribe>(), Date);
+			c.LastLedger = EconomyRules.MonthlyLedger(c, owned, Array.Empty<Tribe>(), Array.Empty<Army>(), Date);
 		}
 		CreateTribes();
 		SetUpTribeRelations();
+		EnsureMenAndWomen();
 		foreach (Tribe t in _tribes.Values)
 		{
 			t.LastFood = EconomyRules.MonthlyFood(t, _provinces, Definitions);
@@ -156,6 +154,33 @@ public partial class GameState : IWorld
 		FocusedCountryTag = _countries.ContainsKey("EGY") ? "EGY" : _countries.Keys.FirstOrDefault();
 		MapMode = MapMode.Political;
 		GD.Print($"New game set up in {Time.GetTicksMsec() - start} ms");
+	}
+
+	/// <summary>
+	/// Every country has at least one unit of men and one of women: a settled country in its capital (of
+	/// its ruler's people), a tribe in its camp. Small peoples whose only unit was all one sex get the other.
+	/// </summary>
+	void EnsureMenAndWomen()
+	{
+		void Ensure(IEnumerable<Province> lands, Province home, Culture culture, Religion religion)
+		{
+			if (home == null)
+				return;
+			foreach (Sex sex in new[] { Sex.Male, Sex.Female })
+			{
+				if (lands.Any(p => p.UnitsOf(sex) > 0))
+					continue;
+				PopGroup like = home.Pops.OrderByDescending(g => g.Units).FirstOrDefault();
+				home.AddPops(culture ?? like?.Culture, religion ?? like?.Religion, like?.Occupation ?? Definitions.Occupations.Values.First(), sex, 1);
+			}
+		}
+		foreach (Country c in _countries.Values)
+		{
+			if (c.CapitalId > 0)
+				Ensure(ProvincesOf(c.Tag).ToList(), GetProvince(c.CapitalId), c.Ruler?.Culture, c.Ruler?.Religion);
+		}
+		foreach (Tribe t in _tribes.Values)
+			Ensure(t.Provinces.Select(id => _provinces[id]).ToList(), GetProvince(t.CampProvinceId), t.Culture, t.Religion);
 	}
 
 	int PickCapital(Country c)
@@ -190,7 +215,7 @@ public partial class GameState : IWorld
 		// a ruler always belongs to a population: if the province has none of theirs, their household is one
 		Province home = GetProvince(ruler.ProvinceId);
 		if (home != null && ruler.Population(home) == null)
-			home.AddPops(ruler.Culture, ruler.Religion, ruler.Occupation, 1);
+			home.AddPops(ruler.Culture, ruler.Religion, ruler.Occupation, ruler.Sex, 1);
 		_characters[ruler.Id] = ruler;
 		return ruler;
 	}
@@ -203,7 +228,7 @@ public partial class GameState : IWorld
 	Character GenerateRuler(Country c)
 	{
 		Province capital = GetProvince(c.CapitalId);
-		PopGroup pop = capital?.Pops.OrderByDescending(g => g.Units).FirstOrDefault();
+		PopGroup pop = capital?.Pops.Where(g => g.IsMale).OrderByDescending(g => g.Units).FirstOrDefault();
 		if (pop == null)
 			return null;
 		var rng = new Random(StableHash(c.Tag));
@@ -286,15 +311,6 @@ public partial class GameState : IWorld
 	/// <summary>Tells the player something (shown in the message feed).</summary>
 	public void Notify(string text) => EmitSignal(SignalName.MessagePosted, text);
 
-	/// <summary>The player sets a province's garrison, drawing on or returning to the manpower pool.</summary>
-	public bool SetGarrison(int provinceId, int regiments)
-	{
-		if (!ControlRules.SetGarrison(PlayerCountry, GetProvince(provinceId), regiments, out _))
-			return false;
-		EmitSignal(SignalName.ProvinceChanged, provinceId);
-		return true;
-	}
-
 	void AfterOwnershipChange(int provinceId)
 	{
 		RefreshFlags();
@@ -306,7 +322,7 @@ public partial class GameState : IWorld
 	void RunControlStep()
 	{
 		bool ownership = false;
-		foreach (var e in ControlRules.MonthlyStep(_provinces, _countries, Date, _rng))
+		foreach (var e in ControlRules.MonthlyStep(_provinces, _countries, _armies.Values, Date, _rng))
 		{
 			ownership |= e.Kind is ControlRules.EventKind.ProvinceLost;
 			if (e.Kind is ControlRules.EventKind.ProvinceLost)
@@ -317,12 +333,13 @@ public partial class GameState : IWorld
 			Notify(e.Kind switch
 			{
 				ControlRules.EventKind.Cored => $"{e.Province.Name} is now a core province of {c.Name}: its separatism is gone.",
-				ControlRules.EventKind.UprisingCrushed => $"An uprising in {e.Province.Name} is crushed. The garrison lost {e.Battle.DefenderLosses} regiments.",
+				ControlRules.EventKind.UprisingCrushed => $"An uprising in {e.Province.Name} is crushed. Of our {e.Regiments} regiments there, {e.RegimentsLost} are lost.",
 				ControlRules.EventKind.ProvinceLost when e.Battle.DefenderLosses == 0 && e.Held == ControlKind.Absorbed =>
 					$"The tribes of {e.Province.Name} break away from {c.Adjective} rule and join {TribeOf(e.Province)?.TheName}. We must win them over again.",
 				_ => $"{e.Province.Name} rises up! The rebels defeat the garrison, throw off {c.Adjective} rule and join {TribeOf(e.Province)?.TheName}. We must subdue it again.",
 			});
 		}
+		RemoveEmptyArmies();
 		if (ownership)
 		{
 			foreach (Country c in _countries.Values)

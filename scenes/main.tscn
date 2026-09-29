@@ -1,4 +1,4 @@
-[gd_scene load_steps=42 format=3 uid="uid://cyfurr3kc6nlw"]
+[gd_scene load_steps=44 format=3 uid="uid://cyfurr3kc6nlw"]
 
 [ext_resource type="Script" uid="uid://2unnrnjnrqwe" path="res://scenes/camera_rig.gd" id="1_ig7tw"]
 [ext_resource type="Texture2D" uid="uid://cd4qk132laylx" path="res://map/landmap.png" id="3_jkv2x"]
@@ -35,6 +35,8 @@
 [ext_resource type="Script" path="res://src/UI/MessageFeed.cs" id="38_messagefeed"]
 [ext_resource type="Script" path="res://src/Map/TribeMarkers.cs" id="39_tribemarkers"]
 [ext_resource type="Script" path="res://src/UI/CountryPanel.cs" id="40_countrypanel"]
+[ext_resource type="Script" path="res://src/Map/ArmyMarkers.cs" id="41_armymarkers"]
+[ext_resource type="Script" path="res://src/UI/ArmyPanel.cs" id="42_armypanel"]
 [ext_resource type="Script" path="res://src/Map/ProvinceBorders.cs" id="23_borders"]
 [ext_resource type="Shader" path="res://shaders/province_border.gdshader" id="24_bordershader"]
 
@@ -351,6 +353,12 @@ FlatWorldPath = NodePath("../Earth/FlatWorld")
 script = ExtResource("39_tribemarkers")
 LabelFont = ExtResource("30_manrope")
 
+[node name="ArmyMarkers" type="Node3D" parent="."]
+script = ExtResource("41_armymarkers")
+LabelFont = ExtResource("30_manrope")
+FlatWorldPath = NodePath("../Earth/FlatWorld")
+PickerPath = NodePath("../ProvincePicker")
+
 [node name="MapModes" type="Node" parent="."]
 script = ExtResource("33_mapmodes")
 FlatWorldPath = NodePath("../Earth/FlatWorld")
@@ -420,6 +428,23 @@ script = ExtResource("35_countryselect")
 TitleFont = ExtResource("29_cinzel")
 BodyFont = ExtResource("30_manrope")
 CameraRigPath = NodePath("../../CameraRig")
+
+[node name="ArmyPanel" type="PanelContainer" parent="HudLayer"]
+visible = false
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -260.0
+offset_top = -60.0
+offset_right = 260.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("42_armypanel")
+TitleFont = ExtResource("29_cinzel")
+BodyFont = ExtResource("30_manrope")
 
 [node name="CountryPanel" type="PanelContainer" parent="HudLayer"]
 visible = false

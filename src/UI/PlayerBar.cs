@@ -1,3 +1,4 @@
+using System.Linq;
 using Godot;
 using Untitled.Core;
 using Untitled.Data;
@@ -98,12 +99,14 @@ public partial class PlayerBar : PanelContainer
 		_portrait.Texture = HudStyle.Texture(r?.Portrait);
 		string ruler = r == null ? c.Government : $"{c.RulerTitle} {r.Name}, age {r.AgeOn(gs.Date)}";
 		int mercs = Untitled.Rules.TribeRules.Mercenaries(gs.Tribes.Values, c.Tag);
-		var ledger = Untitled.Rules.EconomyRules.MonthlyLedger(c, gs.ProvincesOf(c.Tag), gs.Tribes.Values, gs.Date);
+		var owned = gs.ProvincesOf(c.Tag).ToList();
+		var ledger = Untitled.Rules.EconomyRules.MonthlyLedger(c, owned, gs.Tribes.Values, gs.Armies.Values, gs.Date);
+		int underArms = Untitled.Rules.MilitaryRules.UnderArms(c, gs.Armies.Values, owned);
 		_ruler.Text = $"{ruler}\nTreasury: {c.Gold:0} gold ({ledger.Balance:+0.0;-0.0} a month)"
-			+ $"\nManpower: {c.Manpower} of {c.MaxManpower} regiments" + (mercs > 0 ? $" · {mercs} mercenaries" : "");
-		_ruler.TooltipText = $"Capital: {gs.CapitalText(c)}\n\nGold a month:\n+{ledger.Tax:0.0} tax from our settled people (tribesmen and nomads pay none)"
-			+ $"\n-{ledger.Garrisons:0.0} garrisons\n-{ledger.Mercenaries:0.0} mercenaries\n\n"
-			+ "Manpower: regiments of 1000 soldiers raised from the people of our core provinces.\nArmies and garrisons are drawn from them; they refill over ten years.";
+			+ $"\nUnder arms: {underArms} regiments · {gs.AvailableLevies(c)} more to levy" + (mercs > 0 ? $" · {mercs} mercenaries" : "");
+		_ruler.TooltipText = $"Capital: {gs.CapitalText(c)}\n\nGold a month:\n+{ledger.Tax:0.0} tax from our settled people (tribesmen, nomads and those under arms pay none)"
+			+ $"\n-{ledger.Armies:0.0} armies\n-{ledger.Garrisons:0.0} garrisons\n-{ledger.Mercenaries:0.0} mercenaries\n\n"
+			+ "Under arms: regiments of 1000 people levied from our provinces, in our armies and garrisons.\nThe levies are raised and disbanded in the Military tab of the country window.";
 		_ruler.MouseFilter = MouseFilterEnum.Pass;
 		TooltipText = "Our country: its ruler, finances and laws";
 		_portrait.TooltipText = r?.FullName ?? r?.Name;

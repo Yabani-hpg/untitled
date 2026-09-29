@@ -256,7 +256,7 @@ public partial class ProvincePanel : PanelContainer
 				double separatism = ControlRules.Separatism(p, gs.Date, owner);
 				Line($"Separatism {separatism:P0}: a core in {ControlRules.YearsUntilCore(p, gs.Date, owner)} years, if held in rein", HudStyle.Muted, 13);
 				int warriors = ControlRules.Warriors(p);
-				Line($"Garrison {p.Control.Garrison} regiments · {warriors} regiments of possible rebels · uprising risk {ControlRules.UprisingChance(p, owner, gs.Date):P1} a month",
+				Line($"Garrison {p.Control.Garrison.Count} regiments · {warriors} regiments of possible rebels · uprising risk {ControlRules.UprisingChance(p, owner, gs.Date):P1} a month",
 					ControlRules.UprisingChance(p, owner, gs.Date) > 0.01 ? HudStyle.Bad : HudStyle.Muted, 13);
 				if (owner != null && owner == player)
 					box.AddChild(GarrisonRow(p, player));
@@ -374,7 +374,7 @@ public partial class ProvincePanel : PanelContainer
 			box.AddChild(hireRow);
 
 			// absorption
-			var conditions = TribeRules.AbsorbConditions(t, player, provinces, gs.Date);
+			var conditions = TribeRules.AbsorbConditions(t, player, provinces, gs.Armies.Values, gs.Date);
 			bool canAbsorb = conditions.TrueForAll(c => c.Met);
 			box.AddChild(ActionRow("Absorb them", canAbsorb, canAbsorb ? "Their lands come under our rule, with separatism for 50 years" : null, () => gs.AbsorbTribe(t.Id)));
 			foreach (var (condition, met) in conditions)
@@ -384,28 +384,29 @@ public partial class ProvincePanel : PanelContainer
 		if (t.IsNomadic && t.AlliedTag != player.Tag)
 		{
 			int mercs = TribeRules.Mercenaries(gs.Tribes.Values, player.Tag);
-			Line($"Subjugate by force: they have {TribeRules.Warriors(t, provinces)} fierce regiments; we have {player.Manpower} free and {mercs} mercenaries", HudStyle.Muted);
+			Army army = TribeRules.ArmiesIn(t, player, gs.Armies.Values).FirstOrDefault();
+			Line($"Subjugate by force: they have {TribeRules.Warriors(t, provinces)} fierce regiments. "
+				+ (army != null ? $"The {army.Name} ({army.Regiments.Count} regiments) stands in their lands" : "March an army into their lands to give them battle")
+				+ (mercs > 0 ? $"; {mercs} mercenary regiments can go with it." : "."), HudStyle.Muted);
 			var row = new HBoxContainer();
 			row.AddThemeConstantOverride("separation", 6);
-			var own = new SpinBox { MinValue = 0, MaxValue = Math.Max(0, player.Manpower), Value = Math.Min(player.Manpower, TribeRules.Warriors(t, provinces) * 2), Suffix = "reg." };
 			var hired = new SpinBox { MinValue = 0, MaxValue = mercs, Value = mercs, Suffix = "merc.", Editable = mercs > 0 };
 			var odds = HudStyle.Body("", BodyFont, 12, HudStyle.Muted);
 			odds.SizeFlagsHorizontal = SizeFlags.ExpandFill;
-			var go = HudStyle.Button("Subjugate", BodyFont, 13);
+			var go = HudStyle.Button("Give battle", BodyFont, 13);
 			void UpdateOdds()
 			{
-				int n = (int)own.Value, m = (int)hired.Value;
-				bool can = TribeRules.CanSubjugate(t, player, gs.Tribes.Values, provinces, n, m, out string why);
+				int m = (int)hired.Value;
+				bool can = TribeRules.CanSubjugate(t, player, army, gs.Tribes.Values, provinces, m, out string why);
 				go.Disabled = !can;
-				go.TooltipText = can ? "Break the horde: all their lands become ours, held by the survivors" : why;
-				odds.Text = can ? $"{TribeRules.SubjugationChance(t, player, provinces, n, m):P0} to win" : why;
+				go.TooltipText = can ? "Break the horde: all their lands become ours, a regiment of the army left in each as its garrison" : why;
+				odds.Text = can ? $"{TribeRules.SubjugationChance(t, army, provinces, m):P0} to win" : why;
 			}
-			own.ValueChanged += _ => UpdateOdds();
 			hired.ValueChanged += _ => UpdateOdds();
-			go.Pressed += () => gs.SubjugateTribe(t.Id, (int)own.Value, (int)hired.Value);
+			go.Pressed += () => gs.SubjugateTribe(t.Id, army?.Id ?? 0, (int)hired.Value);
 			UpdateOdds();
-			row.AddChild(own);
-			row.AddChild(hired);
+			if (mercs > 0)
+				row.AddChild(hired);
 			row.AddChild(go);
 			box.AddChild(row);
 			box.AddChild(odds);
@@ -432,23 +433,26 @@ public partial class ProvincePanel : PanelContainer
 		return b;
 	}
 
+	/// <summary>The garrison: regiments of our army here stay behind in it, or leave it to join the army.</summary>
 	Control GarrisonRow(Province p, Country player)
 	{
+		GameState gs = GameState.Instance;
+		Army army = gs.ArmiesIn(p.Id).FirstOrDefault(a => a.OwnerTag == player.Tag && a.Regiments.Count > 0);
 		var row = new HBoxContainer();
 		row.AddThemeConstantOverride("separation", 8);
 		row.AddChild(HudStyle.Body("Garrison", BodyFont, 13, HudStyle.Muted));
 		var minus = HudStyle.Button("−", BodyFont, 13);
-		minus.Disabled = p.Control.Garrison <= 0;
-		minus.TooltipText = "Send a regiment home";
-		minus.Pressed += () => GameState.Instance.SetGarrison(p.Id, p.Control.Garrison - 1);
+		minus.Disabled = p.Control.Garrison.Count == 0;
+		minus.TooltipText = "A regiment leaves the garrison and joins our army here";
+		minus.Pressed += () => gs.ArmyFromGarrison(p.Id);
 		var plus = HudStyle.Button("+", BodyFont, 13);
-		plus.Disabled = player.Manpower <= 0;
-		plus.TooltipText = player.Manpower > 0 ? "Station another regiment" : "No regiments to spare";
-		plus.Pressed += () => GameState.Instance.SetGarrison(p.Id, p.Control.Garrison + 1);
+		plus.Disabled = army == null;
+		plus.TooltipText = army != null ? $"A regiment of the {army.Name} stays behind in the garrison" : "Bring an army here to leave regiments in the garrison";
+		plus.Pressed += () => gs.GarrisonFromArmy(p.Id);
 		row.AddChild(minus);
-		row.AddChild(HudStyle.Body($"{p.Control.Garrison}", BodyFont, 14));
+		row.AddChild(HudStyle.Body($"{p.Control.Garrison.Count}", BodyFont, 14));
 		row.AddChild(plus);
-		row.AddChild(HudStyle.Body($"({player.Manpower} free)", BodyFont, 13, HudStyle.Muted));
+		row.AddChild(HudStyle.Body(army != null ? $"(the {army.Name}: {army.Regiments.Count} here)" : "(no army here)", BodyFont, 13, HudStyle.Muted));
 		return row;
 	}
 
@@ -464,13 +468,17 @@ public partial class ProvincePanel : PanelContainer
 			return;
 		}
 
-		var grid = Grid(4);
+		int men = p.UnitsOf(Sex.Male), women = p.UnitsOf(Sex.Female);
+		_population.AddChild(HudStyle.Body($"{men * PopGroup.PeoplePerUnit:N0} men and {women * PopGroup.PeoplePerUnit:N0} women", BodyFont, 14, HudStyle.Muted));
+		var grid = Grid(5);
 		grid.AddThemeConstantOverride("h_separation", 14);
 		_population.AddChild(grid);
-		foreach (string h in new[] { "Culture", "Religion", "Occupation", "People" })
+		foreach (string h in new[] { "Culture", "Religion", "Occupation", "Men", "Women" })
 			grid.AddChild(HudStyle.Body(h, BodyFont, 13, HudStyle.Muted));
-		foreach (PopGroup pop in p.Pops.OrderByDescending(g => g.Units))
+		// men and women of one people side by side
+		foreach (var kind in p.Pops.GroupBy(g => (g.Culture, g.Religion, g.Occupation)).OrderByDescending(k => k.Sum(g => g.Units)))
 		{
+			PopGroup pop = kind.First();
 			var culture = new HBoxContainer();
 			culture.AddChild(HudStyle.Swatch(pop.Culture.Color));
 			culture.AddChild(HudStyle.Body(pop.Culture.Name, BodyFont));
@@ -482,9 +490,12 @@ public partial class ProvincePanel : PanelContainer
 				: "Settled farmers who work the land and staff the buildings.";
 			occupation.MouseFilter = MouseFilterEnum.Pass;
 			grid.AddChild(occupation);
-			var people = HudStyle.Body($"{pop.People:N0}", BodyFont);
-			people.HorizontalAlignment = HorizontalAlignment.Right;
-			grid.AddChild(people);
+			foreach (Sex sex in new[] { Sex.Male, Sex.Female })
+			{
+				var people = HudStyle.Body($"{kind.Where(g => g.Sex == sex).Sum(g => g.People):N0}", BodyFont);
+				people.HorizontalAlignment = HorizontalAlignment.Right;
+				grid.AddChild(people);
+			}
 		}
 
 		// share by occupation as a bar

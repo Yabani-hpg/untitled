@@ -123,7 +123,7 @@ public static class PopulationRules
 			if (units <= 0)
 				continue;
 			m.Group.Units -= units;
-			m.To.AddPops(m.Group.Culture, m.Group.Religion, m.Group.Occupation, units);
+			m.To.AddPops(m.Group.Culture, m.Group.Religion, m.Group.Occupation, m.Group.Sex, units);
 		}
 		foreach (Province p in provinces)
 			p?.Pops.RemoveAll(g => g.Units <= 0);

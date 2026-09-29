@@ -217,11 +217,12 @@ public static partial class DataLoader
 					int units = (int)GetFloat(pop, "units", 0f);
 					if (units <= 0)
 						throw new DataException($"{w}: units must be positive");
-					p.AddPops(
+					// half men, half women; odd units alternate so the sexes balance over the province's groups
+					p.AddPeople(
 						Lookup(defs.Cultures, GetString(pop, "culture", w), "culture", w),
 						Lookup(defs.Religions, GetString(pop, "religion", w), "religion", w),
 						Lookup(defs.Occupations, GetString(pop, "occupation", w), "occupation", w),
-						units);
+						units, (id + i) % 2 == 0);
 				}
 			}
 

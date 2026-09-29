@@ -33,10 +33,10 @@ public sealed class Country
 	/// <summary>Name of the capital city, if it differs from the province's ("Pi-Ramesses").</summary>
 	public string CapitalName { get; set; }
 	public Character Ruler { get; set; }
-	/// <summary>Regiments (1000 soldiers each) free to be sent out; garrisons are drawn from it.</summary>
-	public int Manpower { get; set; }
-	/// <summary>The most regiments its core provinces can raise (updated monthly).</summary>
-	public int MaxManpower { get; set; }
+	/// <summary>How its levies are armed: percent of the regiments for each unit type id. Empty: the defaults of data/units.json.</summary>
+	public Dictionary<string, int> LevyTemplate { get; } = new();
+	/// <summary>The number the next army it raises takes ("3rd Army").</summary>
+	public int NextArmyNumber { get; set; } = 1;
 	/// <summary>The treasury, in gold (taxed from settled people).</summary>
 	public double Gold { get; set; }
 	/// <summary>Last month's accounts (tax, garrisons, mercenaries).</summary>

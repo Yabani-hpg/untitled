@@ -51,7 +51,7 @@ public sealed class Province
 
 	// --- Population and production (data/province_setup.json, then live) ---
 
-	/// <summary>Population groups, at most one per culture, religion and occupation.</summary>
+	/// <summary>Population groups, at most one per culture, religion, occupation and sex.</summary>
 	public List<PopGroup> Pops { get; } = new();
 	/// <summary>forest, river, coast, desert, steppe, tundra, mountains, hills.</summary>
 	public HashSet<string> Features { get; } = new();
@@ -84,24 +84,46 @@ public sealed class Province
 		return units;
 	}
 
+	public int UnitsOf(Sex sex)
+	{
+		int units = 0;
+		foreach (PopGroup pop in Pops)
+		{
+			if (pop.Sex == sex)
+				units += pop.Units;
+		}
+		return units;
+	}
+
 	public bool HasFeature(string feature) => Features.Contains(feature);
 
 	public Building GetBuilding(BuildingType type) => Buildings.Find(b => b.Type == type);
 
 	/// <summary>Adds people, merging into the group of the same kind if there is one.</summary>
-	public void AddPops(Culture culture, Religion religion, Occupation occupation, int units)
+	public void AddPops(Culture culture, Religion religion, Occupation occupation, Sex sex, int units)
 	{
 		if (units <= 0)
 			return;
 		foreach (PopGroup pop in Pops)
 		{
-			if (pop.Culture == culture && pop.Religion == religion && pop.Occupation == occupation)
+			if (pop.Culture == culture && pop.Religion == religion && pop.Occupation == occupation && pop.Sex == sex)
 			{
 				pop.Units += units;
 				return;
 			}
 		}
-		Pops.Add(new PopGroup(culture, religion, occupation, units));
+		Pops.Add(new PopGroup(culture, religion, occupation, sex, units));
+	}
+
+	/// <summary>
+	/// Adds people of both sexes: half men and half women, an odd unit going to one or the other by
+	/// <paramref name="oddIsMale"/>.
+	/// </summary>
+	public void AddPeople(Culture culture, Religion religion, Occupation occupation, int units, bool oddIsMale)
+	{
+		int men = units / 2 + (units % 2 == 1 && oddIsMale ? 1 : 0);
+		AddPops(culture, religion, occupation, Sex.Male, men);
+		AddPops(culture, religion, occupation, Sex.Female, units - men);
 	}
 
 	/// <summary>The culture with the most people, or null for an empty province.</summary>

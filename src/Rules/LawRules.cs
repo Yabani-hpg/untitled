@@ -113,7 +113,7 @@ public static class LawRules
 			return 0;
 		from.Units--;
 		var (culture, religion) = into(from);
-		p.AddPops(culture, religion, from.Occupation, 1);
+		p.AddPops(culture, religion, from.Occupation, from.Sex, 1);
 		p.Pops.RemoveAll(g => g.Units <= 0);
 		return 1;
 	}

@@ -168,7 +168,7 @@ public static class TribeRules
 	// ------------------------------------------------------------------------------------ absorption
 
 	/// <summary>The conditions for absorbing a tribe, each with whether it is met.</summary>
-	public static List<(string Condition, bool Met)> AbsorbConditions(Tribe t, Country c, IReadOnlyList<Province> provinces, GameDate today)
+	public static List<(string Condition, bool Met)> AbsorbConditions(Tribe t, Country c, IReadOnlyList<Province> provinces, IEnumerable<Army> armies, GameDate today)
 	{
 		bool allied = t.AlliedTag == c.Tag;
 		var list = new List<(string, bool)>
@@ -181,14 +181,14 @@ public static class TribeRules
 		if (t.IsNomadic)
 		{
 			// nomads only join a country they respect: one whose army outnumbers their warriors
-			int ours = c.Manpower + provinces.Where(p => p?.OwnerTag == c.Tag).Sum(p => p.Control?.Garrison ?? 0);
+			int ours = MilitaryRules.UnderArms(c, armies, provinces.Where(p => p?.OwnerTag == c.Tag));
 			list.Add(($"Our regiments outnumber their {Warriors(t, provinces) + t.HiredRegiments} warriors", ours > Warriors(t, provinces) + t.HiredRegiments));
 		}
 		return list;
 	}
 
-	public static bool CanAbsorb(Tribe t, Country c, IReadOnlyList<Province> provinces, GameDate today) =>
-		AbsorbConditions(t, c, provinces, today).TrueForAll(x => x.Met);
+	public static bool CanAbsorb(Tribe t, Country c, IReadOnlyList<Province> provinces, IEnumerable<Army> armies, GameDate today) =>
+		AbsorbConditions(t, c, provinces, armies, today).TrueForAll(x => x.Met);
 
 	/// <summary>The tribe joins the country: its lands come under control, its mercenaries join the army.</summary>
 	public static void Absorb(Tribe t, Country c, IReadOnlyList<Province> provinces, GameDate today)
@@ -200,7 +200,6 @@ public static class TribeRules
 			p.Control = new ProvinceControl { Kind = ControlKind.Absorbed, Since = today };
 			p.TribeId = 0;
 		}
-		c.Manpower += t.HiredRegiments;
 		c.Gold += t.Food / EconomyRules.FoodPerGold;     // their stores, bartered into the treasury
 		t.Food = 0;
 		t.HiredRegiments = 0;
@@ -210,23 +209,20 @@ public static class TribeRules
 
 	// ---------------------------------------------------------------------------------- subjugation
 
-	/// <summary>The nomads defending: all their warriors, fierce, on the home ground of their camp.</summary>
-	public static ControlRules.Force Defenders(Tribe t, IReadOnlyList<Province> provinces) =>
-		new(0, Warriors(t, provinces), ControlRules.HomeGroundModifier(provinces[t.CampProvinceId]));
+	/// <summary>The nomads defending: all their warriors, fierce, on their home ground where our army stands.</summary>
+	public static ControlRules.Force Defenders(Tribe t, Army army, IReadOnlyList<Province> provinces) =>
+		ControlRules.Force.Of(0, Warriors(t, provinces), ControlRules.HomeGroundModifier(provinces[army?.ProvinceId > 0 ? army.ProvinceId : t.CampProvinceId]));
 
-	/// <summary>The country's army: its own regiments and its mercenaries, marching on the nomads' camp.</summary>
-	public static ControlRules.Force Attackers(Tribe t, Country c, IReadOnlyList<Province> provinces, int regiments, int mercenaries)
-	{
-		int best = int.MinValue;
-		foreach (int id in t.Provinces)
-		{
-			if (ControlRules.Borders(provinces[id], c.Tag))
-				best = Math.Max(best, ControlRules.AttackerModifier(provinces[id], c.Tag));
-		}
-		return new ControlRules.Force(regiments, mercenaries, best == int.MinValue ? 0 : best);
-	}
+	/// <summary>Our army, with the mercenaries sent along, in the nomads' lands.</summary>
+	public static ControlRules.Force Attackers(Army army, int mercenaries, IReadOnlyList<Province> provinces) =>
+		MilitaryRules.ForceOf(army.Regiments, provinces[army.ProvinceId], 0).Plus(ControlRules.Force.Of(0, mercenaries, 0));
 
-	public static bool CanSubjugate(Tribe t, Country c, IEnumerable<Tribe> tribes, IReadOnlyList<Province> provinces, int regiments, int mercenaries, out string reason)
+	/// <summary>The country's armies standing (not marching) in the tribe's lands, strongest first.</summary>
+	public static List<Army> ArmiesIn(Tribe t, Country c, IEnumerable<Army> armies) =>
+		armies.Where(a => a.OwnerTag == c.Tag && !a.Moving && a.Regiments.Count > 0 && t.Provinces.Contains(a.ProvinceId))
+			.OrderByDescending(a => a.Regiments.Count).ToList();
+
+	public static bool CanSubjugate(Tribe t, Country c, Army army, IEnumerable<Tribe> tribes, IReadOnlyList<Province> provinces, int mercenaries, out string reason)
 	{
 		reason = null;
 		if (!t.IsNomadic)
@@ -235,52 +231,52 @@ public static class TribeRules
 			reason = "They are our allies";
 		else if (!Borders(t, provinces, c.Tag))
 			reason = "Their lands must border ours";
-		else if (regiments + mercenaries < 1)
-			reason = "Send at least one regiment";
-		else if (regiments > c.Manpower)
-			reason = $"We have only {c.Manpower} regiments to spare";
-		else if (mercenaries > Mercenaries(tribes, c.Tag))
+		else if (army == null || army.OwnerTag != c.Tag || army.Regiments.Count == 0)
+			reason = "March an army into their lands first";
+		else if (army.Moving || !t.Provinces.Contains(army.ProvinceId))
+			reason = $"The {army.Name} must stand in their lands";
+		else if (mercenaries < 0 || mercenaries > Mercenaries(tribes, c.Tag))
 			reason = $"We have only {Mercenaries(tribes, c.Tag)} mercenary regiments";
 		return reason == null;
 	}
 
-	public static double SubjugationChance(Tribe t, Country c, IReadOnlyList<Province> provinces, int regiments, int mercenaries) =>
-		ControlRules.WinChance(Attackers(t, c, provinces, regiments, mercenaries), Defenders(t, provinces));
+	public static double SubjugationChance(Tribe t, Army army, IReadOnlyList<Province> provinces, int mercenaries) =>
+		ControlRules.WinChance(Attackers(army, mercenaries, provinces), Defenders(t, army, provinces));
 
 	/// <summary>
-	/// The army marches on the nomads. Winning breaks the horde: all its lands come under control as
-	/// subjugated provinces, the surviving regiments staying as their garrisons. Losing sends the survivors
-	/// home and makes the nomads hate us. The fallen on both sides are gone from the population.
+	/// The army gives battle to the nomads. Winning breaks the horde: all its lands come under control as
+	/// subjugated provinces, each held by a regiment of the army left behind as its garrison. Losing makes the
+	/// nomads hate us. The fallen on both sides are gone from the population.
 	/// </summary>
-	public static ControlRules.BattleResult Subjugate(Tribe t, Country c, IEnumerable<Tribe> tribes, IReadOnlyList<Province> provinces,
-		int regiments, int mercenaries, GameDate today, Random rng)
+	public static ControlRules.BattleResult Subjugate(Tribe t, Country c, Army army, IEnumerable<Tribe> tribes, IReadOnlyList<Province> provinces,
+		int mercenaries, GameDate today, Random rng)
 	{
-		ControlRules.Force attackers = Attackers(t, c, provinces, regiments, mercenaries);
-		ControlRules.BattleResult r = ControlRules.Battle(attackers, Defenders(t, provinces), rng);
+		ControlRules.BattleResult r = ControlRules.Battle(Attackers(army, mercenaries, provinces), Defenders(t, army, provinces), rng);
 
-		// losses fall on regulars and mercenaries in proportion
-		int total = regiments + mercenaries;
-		int mercLoss = total == 0 ? 0 : (int)Math.Round(r.AttackerLosses * (double)mercenaries / total);
-		int ownLoss = r.AttackerLosses - mercLoss;
-		LoseMercenaries(tribes, c.Tag, mercLoss, provinces);
-		int survivors = regiments - ownLoss;
-		ControlRules.KillWarriors(provinces[t.CampProvinceId], r.DefenderLosses);
+		// the mercenaries lose their share, the army's regiments theirs
+		LoseMercenaries(tribes, c.Tag, (int)Math.Round(mercenaries * r.AttackerShare), provinces);
+		army.Regiments.RemoveAll(MilitaryRules.TakeLosses(army.Regiments, r.AttackerShare, !r.AttackerWon).Contains);
+		ControlRules.KillWarriors(provinces[army.ProvinceId], r.DefenderLosses);
 
 		if (!r.AttackerWon)
 		{
-			c.Manpower -= ownLoss;
 			ChangeRelation(t, c.Tag, -30);
 			return r;
 		}
-		c.Manpower -= regiments;
-		var lands = t.Provinces.ToList();
-		for (int i = 0; i < lands.Count; i++)
+		// a regiment stays behind in each of their provinces, foot before horses and engines
+		var lands = t.Provinces.OrderBy(id => id == army.ProvinceId ? 0 : 1).ToList();
+		foreach (int id in lands)
 		{
-			Province p = provinces[lands[i]];
-			int garrison = survivors / lands.Count + (i < survivors % lands.Count ? 1 : 0);
+			Province p = provinces[id];
 			p.OwnerTag = c.Tag;
-			p.Control = new ProvinceControl { Kind = ControlKind.Subjugated, Since = today, Garrison = garrison };
+			p.Control = new ProvinceControl { Kind = ControlKind.Subjugated, Since = today };
 			p.TribeId = 0;
+			Regiment garrison = army.Regiments.OrderBy(x => x.Type.Category).ThenByDescending(x => x.Strength).FirstOrDefault();
+			if (garrison != null)
+			{
+				army.Regiments.Remove(garrison);
+				p.Control.Garrison.Add(garrison);
+			}
 		}
 		t.Provinces.Clear();
 		return r;

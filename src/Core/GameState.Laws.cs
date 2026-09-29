@@ -32,7 +32,6 @@ public partial class GameState
 		if (!LawRules.CanChange(c, law, option, this, Definitions, out reason))
 			return false;
 		LawRules.Change(c, law, option, Date, Definitions);
-		c.MaxManpower = ControlRules.MaxManpower(c, ProvincesOf(c.Tag));
 		Notify($"New law: {law.Name} is now {option.Name}.");
 		RefreshFlags();
 		EmitSignal(SignalName.LawsChanged);
@@ -63,8 +62,8 @@ public partial class GameState
 		// the heir comes from the old ruler's people, or, chosen by council or priests, from the capital's leading citizens
 		PopGroup people = old?.Population(GetProvince(old.ProvinceId));
 		if (newDynasty || people == null)
-			people = capital?.Pops.Where(g => LawRules.IsCitizen(c, g)).OrderByDescending(g => g.Units).FirstOrDefault()
-				?? capital?.Pops.OrderByDescending(g => g.Units).FirstOrDefault();
+			people = capital?.Pops.Where(g => g.IsMale && LawRules.IsCitizen(c, g)).OrderByDescending(g => g.Units).FirstOrDefault()
+				?? capital?.Pops.Where(g => g.IsMale).OrderByDescending(g => g.Units).FirstOrDefault();
 		Culture culture = people?.Culture ?? old?.Culture;
 		string cultureId = culture?.Id ?? "";
 

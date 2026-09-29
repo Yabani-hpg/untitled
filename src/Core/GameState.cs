@@ -107,6 +107,7 @@ public partial class GameState : Node
 		DataLoader.LoadNamesAndPortraits(Definitions);
 		DataLoader.LoadTribes(Definitions, _provinceNames);
 		DataLoader.LoadLaws(Definitions, _provinceNames);
+		DataLoader.LoadUnits(Definitions, _provinceNames);
 		LawRules.Defs = Definitions;
 		int countryFiles = DataLoader.LoadCountryFiles(_countries, Definitions, _provinceNames);
 
@@ -193,6 +194,7 @@ public partial class GameState : Node
 	public void AdvanceDay()
 	{
 		Date = Date.AddDays(1);
+		RunArmyDay();
 		EmitSignal(SignalName.DayAdvanced);
 		if (Date.Holocene.Day == 1)
 			RunMonthlyRules();
@@ -272,7 +274,7 @@ public partial class GameState : Node
 		RunControlStep();
 		RunTribeStep();
 		RunLawStep();
-		foreach (Country c in EconomyRules.MonthlyStep(_countries, _provinces, _tribes.Values, Definitions, Date))
+		foreach (Country c in EconomyRules.MonthlyStep(_countries, _provinces, _tribes.Values, _armies.Values, Definitions, Date))
 		{
 			if (c.Tag == PlayerTag)
 				Notify("Our treasury is empty: the mercenaries we could not pay have gone home.");

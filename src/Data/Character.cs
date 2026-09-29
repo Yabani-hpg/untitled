@@ -4,7 +4,7 @@ namespace Untitled.Data;
 
 /// <summary>
 /// A person: for now, the rulers of countries. Every character belongs to a population, a group of
-/// one culture, religion and occupation living in a province.
+/// one culture, religion, occupation and sex living in a province.
 /// </summary>
 public sealed class Character
 {
@@ -22,6 +22,7 @@ public sealed class Character
 	public Culture Culture { get; set; }
 	public Religion Religion { get; set; }
 	public Occupation Occupation { get; set; }
+	public Sex Sex { get; set; } = Sex.Male;
 
 	/// <summary>Age in whole years on <paramref name="date"/>.</summary>
 	public int AgeOn(GameDate date)
@@ -41,7 +42,7 @@ public sealed class Character
 			return null;
 		foreach (PopGroup pop in province.Pops)
 		{
-			if (pop.Culture == Culture && pop.Religion == Religion && pop.Occupation == Occupation)
+			if (pop.Culture == Culture && pop.Religion == Religion && pop.Occupation == Occupation && pop.Sex == Sex)
 				return pop;
 		}
 		return null;
