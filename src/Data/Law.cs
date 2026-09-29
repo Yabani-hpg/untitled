@@ -30,4 +30,6 @@ public sealed class LawOption
 	/// <summary>What the country must meet to adopt it, or null.</summary>
 	public Condition Requires { get; set; }
 	public string RequiresText { get; set; }
+	/// <summary>Technologies its requirement names (for showing what a technology opens).</summary>
+	public List<string> Techs { get; } = new();
 }

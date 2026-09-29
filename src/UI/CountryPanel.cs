@@ -402,9 +402,9 @@ public partial class CountryPanel : PanelContainer
 				grid.AddChild(share);
 			}
 		}
-		var later = defs.UnitTypes.Where(t => !MilitaryRules.IsAvailable(t, gs, c)).Take(4).ToList();
+		var later = defs.UnitTypes.Where(t => !MilitaryRules.IsAvailable(t, gs, c)).OrderBy(t => t.Tech.Cost).Take(4).ToList();
 		if (later.Count > 0)
-			arms.AddChild(Text("Still to come: " + string.Join("; ", later.Select(t => $"{t.Name} ({t.RequiresText})")) + "..."));
+			arms.AddChild(Text("Still to come: " + string.Join("; ", later.Select(t => $"{t.Name} (with {t.Tech.Name})")) + "... See the research window."));
 
 		// the armies
 		var field = Section("Armies in the field");

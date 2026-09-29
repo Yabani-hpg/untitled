@@ -1,8 +1,19 @@
 {
-	"_comment": "A settled country's laws and code: for each law, one option is in force. default: the option countries start with unless their country file says otherwise. requires: a condition (see data/countries/EGY.json flags) the country must meet to adopt the option, described by requires_text. modifiers change the country's numbers: tax (share more), noncitizen_tax (share more from non-citizens), noncitizen_manpower (share of their manpower raised; citizens give it all), uprising (share more likely), years_to_core (years added), tribe_relations (added to tribes' opinion), alliance_chance (added), building_cost (share more), mercenary_pay (share more), change_cost (share more to change laws). effects are ongoing: assimilation (units per core province a year turning to the ruler's culture), conversion (to the ruler's religion), succession (how the next ruler is chosen), citizens (who is a citizen), levy_share (share of those who can serve that are raised as levies), women_serve (1: women are levied too).",
+	"_comment": "A settled country's laws and code: for each law, one option is in force. default: the option countries start with unless their country file says otherwise. requires: a condition (see data/countries/EGY.json flags) the country must meet to adopt the option, described by requires_text. modifiers change the country's numbers: tax (share more), noncitizen_tax (share more from non-citizens), noncitizen_manpower (share of their manpower raised; citizens give it all), uprising (share more likely), years_to_core (years added), tribe_relations (added to tribes' opinion), alliance_chance (added), building_cost (share more), mercenary_pay (share more), change_cost (share more to change laws). effects are ongoing: assimilation (units per core province a year turning to the ruler's culture), conversion (to the ruler's religion), succession (how the next ruler is chosen), citizens (who is a citizen), levy_share (share of those who can serve that are raised as levies), women_serve (1: women are levied too). A requires condition { \"tech\": id } needs a technology of data/techs.json.",
 	"change_cost_gold": 50,
 	"change_cooldown_years": 5,
 	"laws": [
+		{
+			"id": "government", "name": "Government", "group": "Crown",
+			"description": "How the realm is ruled. New forms of government come with advances in administration.",
+			"default": "chiefdom",
+			"options": [
+				{ "id": "chiefdom", "name": "Chiefdom", "description": "A chief and his kin rule by custom and kinship: close to the tribes, poor at taxing.", "modifiers": { "tribe_relations": 10, "tax": -0.1 } },
+				{ "id": "monarchy", "name": "Monarchy", "description": "A king rules through his court and his officers.", "modifiers": { "uprising": -0.1 }, "requires": { "tech": "monarchy" }, "requires_text": "Monarchy" },
+				{ "id": "god_king", "name": "God-king", "description": "The ruler is a living god: the temples and the people serve the crown as one.", "effects": { "conversion": 0.3 }, "modifiers": { "tax": 0.05, "uprising": -0.1 }, "requires": { "tech": "divine_kingship" }, "requires_text": "Divine Kingship" },
+				{ "id": "republic", "name": "Republic", "description": "Elected magistrates and a council of citizens: free men argue, and learn.", "modifiers": { "research": 0.1, "uprising": 0.05 }, "requires": { "tech": "republic" }, "requires_text": "Republic" }
+			]
+		},
 		{
 			"id": "succession", "name": "Succession", "group": "Crown",
 			"description": "Who takes the throne when the ruler dies.",
@@ -10,8 +21,8 @@
 			"options": [
 				{ "id": "primogeniture", "name": "Primogeniture", "description": "The ruler's eldest son inherits. The dynasty goes on; the heir may be young.", "effects": { "succession": "eldest_child" } },
 				{ "id": "seniority", "name": "Agnatic seniority", "description": "The ruler's eldest brother inherits: older, seasoned rulers, and the dynasty goes on.", "effects": { "succession": "brother" } },
-				{ "id": "elective", "name": "Elective council", "description": "The great men of the realm choose the ablest among them. A new dynasty may rise.", "effects": { "succession": "elected" }, "modifiers": { "uprising": -0.1 } },
-				{ "id": "divine", "name": "Divine selection", "description": "The priests read the will of the gods and name the next ruler. Temples grow powerful.", "effects": { "succession": "chosen_by_priests", "conversion": 0.5 }, "modifiers": { "tax": -0.05 } }
+				{ "id": "elective", "name": "Elective council", "description": "The great men of the realm choose the ablest among them. A new dynasty may rise.", "effects": { "succession": "elected" }, "modifiers": { "uprising": -0.1 }, "requires": { "tech": "code_of_laws" }, "requires_text": "Code of Laws" },
+				{ "id": "divine", "name": "Divine selection", "description": "The priests read the will of the gods and name the next ruler. Temples grow powerful.", "effects": { "succession": "chosen_by_priests", "conversion": 0.5 }, "modifiers": { "tax": -0.05 }, "requires": { "tech": "divine_kingship" }, "requires_text": "Divine Kingship" }
 			]
 		},
 		{
@@ -53,8 +64,8 @@
 			"default": "state_cult",
 			"options": [
 				{ "id": "free_worship", "name": "Free worship", "description": "Every people worships its own gods; the state takes no side.", "modifiers": { "uprising": -0.1, "tax": -0.05 } },
-				{ "id": "state_cult", "name": "State cult", "description": "The ruler's gods are the state's gods; their temples collect offerings for the crown.", "modifiers": { "tax": 0.05 } },
-				{ "id": "enforced_worship", "name": "Enforced worship", "description": "All must worship the ruler's gods: other faiths convert, a unit a year in each core province.", "effects": { "conversion": 1 }, "modifiers": { "uprising": 0.2, "tribe_relations": -5 } }
+				{ "id": "state_cult", "name": "State cult", "description": "The ruler's gods are the state's gods; their temples collect offerings for the crown.", "modifiers": { "tax": 0.05 }, "requires": { "tech": "priesthood" }, "requires_text": "Priesthood" },
+				{ "id": "enforced_worship", "name": "Enforced worship", "description": "All must worship the ruler's gods: other faiths convert, a unit a year in each core province.", "effects": { "conversion": 1 }, "modifiers": { "uprising": 0.2, "tribe_relations": -5 }, "requires": { "tech": "theology" }, "requires_text": "Theology" }
 			]
 		},
 		{
@@ -63,7 +74,7 @@
 			"default": "customary",
 			"options": [
 				{ "id": "customary", "name": "Customary law", "description": "Each village judges by its old customs." },
-				{ "id": "codified", "name": "Codified law", "description": "The ruler's scribes write down the law and appoint judges: order, and a steadier hand in building.", "modifiers": { "tax": 0.05, "building_cost": -0.1, "years_to_core": -5 } },
+				{ "id": "codified", "name": "Codified law", "description": "The ruler's scribes write down the law and appoint judges: order, and a steadier hand in building.", "modifiers": { "tax": 0.05, "building_cost": -0.1, "years_to_core": -5 }, "requires": { "tech": "code_of_laws" }, "requires_text": "Code of Laws" },
 				{ "id": "harsh", "name": "Harsh code", "description": "Swift and brutal punishment keeps the provinces quiet, and frightens the tribes.", "modifiers": { "uprising": -0.3, "tribe_relations": -10, "alliance_chance": -0.1 } }
 			]
 		},
@@ -83,7 +94,7 @@
 			"default": "light",
 			"options": [
 				{ "id": "light", "name": "Light levy", "description": "One in ten of those who can serve is called up.", "effects": { "levy_share": 0.1 } },
-				{ "id": "heavy", "name": "Heavy levy", "description": "One in four is called up: a big army, and emptier fields.", "effects": { "levy_share": 0.25 }, "modifiers": { "uprising": 0.05 } },
+				{ "id": "heavy", "name": "Heavy levy", "description": "One in four is called up: a big army, and emptier fields.", "effects": { "levy_share": 0.25 }, "modifiers": { "uprising": 0.05 }, "requires": { "tech": "census" }, "requires_text": "Census" },
 				{ "id": "total", "name": "Total levy", "description": "All who can bear arms march to war, and nobody is left to work the land or pay the tax.", "effects": { "levy_share": 1.0 }, "modifiers": { "uprising": 0.2 } }
 			]
 		},
@@ -103,7 +114,7 @@
 			"options": [
 				{ "id": "open", "name": "Open frontier", "description": "Tribesmen come and go to trade: they think better of us.", "modifiers": { "tribe_relations": 10, "alliance_chance": 0.1 } },
 				{ "id": "guarded", "name": "Guarded frontier", "description": "Forts watch the desert roads: fewer raids and uprisings, cooler tribes.", "modifiers": { "uprising": -0.15, "tribe_relations": -5 } },
-				{ "id": "mercenary_pacts", "name": "Mercenary pacts", "description": "Tribal warriors are hired on standing terms: cheaper mercenaries.", "modifiers": { "mercenary_pay": -0.3, "tribe_relations": 5 } }
+				{ "id": "mercenary_pacts", "name": "Mercenary pacts", "description": "Tribal warriors are hired on standing terms: cheaper mercenaries.", "modifiers": { "mercenary_pay": -0.3, "tribe_relations": 5 }, "requires": { "tech": "diplomacy" }, "requires_text": "Diplomacy" }
 			]
 		}
 	]

@@ -85,7 +85,7 @@ public partial class ArmyPanel : PanelContainer
 		string where = a.Moving
 			? $"Marching to {gs.GetProvince(a.Destination)?.Name}: {gs.DaysToArrive(a)} days (now near {here?.Name})"
 			: $"In {here?.Name}";
-		_box.AddChild(HudStyle.Body($"{where} · {MilitaryRules.Speed(a):0} km a day", BodyFont, 14));
+		_box.AddChild(HudStyle.Body($"{where} · {MilitaryRules.Speed(a, owner):0} km a day", BodyFont, 14));
 		_box.AddChild(HudStyle.Body($"{a.Regiments.Count} regiments, {a.Men:N0} of {a.Regiments.Count * PopGroup.PeoplePerUnit:N0} men · {MilitaryRules.Upkeep(a):0.0} gold a month",
 			BodyFont, 13, HudStyle.Muted));
 
@@ -139,7 +139,7 @@ public partial class ArmyPanel : PanelContainer
 		{
 			int mercs = TribeRules.Mercenaries(gs.Tribes.Values, gs.PlayerTag);
 			bool can = TribeRules.CanSubjugate(t, gs.PlayerCountry, a, gs.Tribes.Values, gs.Provinces, mercs, out string why);
-			var battle = HudStyle.Button(can ? $"Give battle to {t.TheName} ({TribeRules.SubjugationChance(t, a, gs.Provinces, mercs):P0})" : $"Give battle to {t.TheName}", BodyFont, 13);
+			var battle = HudStyle.Button(can ? $"Give battle to {t.TheName} ({TribeRules.SubjugationChance(t, gs.PlayerCountry, a, gs.Provinces, mercs):P0})" : $"Give battle to {t.TheName}", BodyFont, 13);
 			battle.Disabled = !can;
 			battle.TooltipText = can
 				? $"They have {TribeRules.Warriors(t, gs.Provinces)} fierce regiments" + (mercs > 0 ? $"; our {mercs} mercenary regiments go with us" : "")

@@ -1,5 +1,5 @@
 {
-	"_comment": "Egypt at the start, 1 January 1200 BC (8801 HE): the Ramesside New Kingdom under Seti II, ruling Nubia to Napata and southern Canaan while the Bronze Age world collapses around it. Dates are Holocene 'year.month.day'. color: political map colour, RGB 0-255. start_provinces: groups of provinces (areas and/or province names) the country controls at the start; control is core, absorbed (the lands of tribes that allied and were absorbed) or subjugated (nomads held down by a garrison of regiments), since the given date (none: long ago, already a core). laws: the option in force for each law of data/laws.json (the rest take their defaults). ruler_names: the regnal names its rulers take; ruler_name_counts: how many rulers already had each, for their numbers (Ramesses III). allied_tribes: unsettled countries (tribes from data/tribes.json, by key) allied with the country at the start, and their relations with it. flags: the first flag whose condition holds is flown; the last one, without a condition, is the default.",
+	"_comment": "Egypt at the start, 1 January 1200 BC (8801 HE): the Ramesside New Kingdom under Seti II, ruling Nubia to Napata and southern Canaan while the Bronze Age world collapses around it. Dates are Holocene 'year.month.day'. color: political map colour, RGB 0-255. start_provinces: groups of provinces (areas and/or province names) the country controls at the start; control is core, absorbed (the lands of tribes that allied and were absorbed) or subjugated (nomads held down by a garrison of regiments), since the given date (none: long ago, already a core). laws: the option in force for each law of data/laws.json (the rest take their defaults). techs: technologies (data/techs.json) known at the start, besides those every settled country knows. ruler_names: the regnal names its rulers take; ruler_name_counts: how many rulers already had each, for their numbers (Ramesses III). allied_tribes: unsettled countries (tribes from data/tribes.json, by key) allied with the country at the start, and their relations with it. flags: the first flag whose condition holds is flown; the last one, without a condition, is the default.",
 	"tag": "EGY",
 	"name": "Egypt",
 	"adjective": "Egyptian",
@@ -9,6 +9,7 @@
 	"capital": "Imet-Pehet (Djanet)",
 	"capital_name": "Pi-Ramesses",
 	"laws": {
+		"government": "god_king",
 		"succession": "primogeniture",
 		"citizenship": "ruling_culture",
 		"noncitizens": "tributaries",
@@ -18,6 +19,7 @@
 		"slavery": "legal",
 		"frontier": "guarded"
 	},
+	"techs": ["chariotry", "monarchy", "code_of_laws", "divine_kingship", "diplomacy", "writing", "masonry", "sailing", "calendar", "mathematics", "medicine"],
 	"ruler_names": ["Ramesses", "Seti", "Merneptah", "Amenmesse", "Siptah", "Setnakhte", "Amenhotep", "Thutmose", "Horemheb"],
 	"ruler_name_counts": { "Ramesses": 2, "Seti": 2, "Merneptah": 1, "Amenmesse": 1, "Siptah": 0, "Setnakhte": 0, "Amenhotep": 3, "Thutmose": 4, "Horemheb": 1 },
 	"start_provinces": [

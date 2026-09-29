@@ -1,4 +1,4 @@
-[gd_scene load_steps=44 format=3 uid="uid://cyfurr3kc6nlw"]
+[gd_scene load_steps=45 format=3 uid="uid://cyfurr3kc6nlw"]
 
 [ext_resource type="Script" uid="uid://2unnrnjnrqwe" path="res://scenes/camera_rig.gd" id="1_ig7tw"]
 [ext_resource type="Texture2D" uid="uid://cd4qk132laylx" path="res://map/landmap.png" id="3_jkv2x"]
@@ -37,6 +37,7 @@
 [ext_resource type="Script" path="res://src/UI/CountryPanel.cs" id="40_countrypanel"]
 [ext_resource type="Script" path="res://src/Map/ArmyMarkers.cs" id="41_armymarkers"]
 [ext_resource type="Script" path="res://src/UI/ArmyPanel.cs" id="42_armypanel"]
+[ext_resource type="Script" path="res://src/UI/ResearchPanel.cs" id="43_researchpanel"]
 [ext_resource type="Script" path="res://src/Map/ProvinceBorders.cs" id="23_borders"]
 [ext_resource type="Shader" path="res://shaders/province_border.gdshader" id="24_bordershader"]
 
@@ -367,20 +368,23 @@ FlatWorldPath = NodePath("../Earth/FlatWorld")
 
 [node name="PlayerBar" type="PanelContainer" parent="HudLayer"]
 visible = false
+anchors_preset = 10
+anchor_right = 1.0
 offset_left = 16.0
-offset_top = 16.0
-offset_right = 452.0
-offset_bottom = 110.0
+offset_top = 12.0
+offset_right = -392.0
+offset_bottom = 76.0
 script = ExtResource("36_playerbar")
 TitleFont = ExtResource("29_cinzel")
 BodyFont = ExtResource("30_manrope")
 CameraRigPath = NodePath("../../CameraRig")
 CountryPanelPath = NodePath("../CountryPanel")
+ResearchPanelPath = NodePath("../ResearchPanel")
 
 [node name="ProvincePanel" type="PanelContainer" parent="HudLayer"]
 visible = false
 offset_left = 16.0
-offset_top = 128.0
+offset_top = 96.0
 offset_right = 452.0
 offset_bottom = 672.0
 script = ExtResource("22_provpanel")
@@ -475,6 +479,21 @@ offset_bottom = 400.0
 grow_horizontal = 2
 mouse_filter = 2
 script = ExtResource("38_messagefeed")
+BodyFont = ExtResource("30_manrope")
+
+[node name="ResearchPanel" type="PanelContainer" parent="HudLayer"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 92.0
+offset_right = -32.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("43_researchpanel")
+TitleFont = ExtResource("29_cinzel")
 BodyFont = ExtResource("30_manrope")
 
 [node name="CityView" type="Control" parent="HudLayer"]

@@ -14,7 +14,18 @@ public sealed record Language(string Id, string Name, LanguageFamily Family);
 public sealed record Culture(string Id, string Name, Color Color, Language Language, string ArtStyle);
 
 /// <summary>What a population group does for a living. Nomadic groups migrate between provinces for better pasture.</summary>
-public sealed record Occupation(string Id, string Name, bool Nomadic, Color Color);
+public sealed record Occupation(string Id, string Name, bool Nomadic, Color Color)
+{
+	public string Description { get; init; } = "";
+	/// <summary>Pays tax (by default, settled people do).</summary>
+	public bool Taxed { get; init; } = true;
+	/// <summary>Answers the levy.</summary>
+	public bool Levied { get; init; } = true;
+	/// <summary>Research points a month per unit, for each kind of research.</summary>
+	public IReadOnlyDictionary<TechCategory, double> Research { get; init; } = new Dictionary<TechCategory, double>();
+	/// <summary>Share of settled countries' settled people who have this occupation at the start.</summary>
+	public double StartShare { get; init; }
+}
 
 public enum ResourceCategory
 {
@@ -109,6 +120,11 @@ public sealed class Definitions
 	public double LawChangeCooldownYears { get; set; } = 5;
 
 	public LawDefinition GetLaw(string id) => Laws.Find(l => l.Id == id);
+
+	/// <summary>Technologies (data/techs.json), in file order.</summary>
+	public List<Tech> Techs { get; } = new();
+
+	public Tech GetTech(string id) => Techs.Find(t => t.Id == id);
 
 	/// <summary>Kinds of regiments (data/units.json), in file order.</summary>
 	public List<UnitType> UnitTypes { get; } = new();

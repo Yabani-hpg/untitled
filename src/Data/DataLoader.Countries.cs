@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using Godot;
 using Untitled.Core;
@@ -98,7 +99,10 @@ public static partial class DataLoader
 					}
 				}
 				if (o.TryGetProperty("requires", out JsonElement req))
+				{
 					pending.Add((option, req.Clone(), $"{w}.requires"));
+					option.Techs.AddRange(TechsNamed(req));
+				}
 				if (o.TryGetProperty("requires_text", out JsonElement rt))
 					option.RequiresText = rt.GetString();
 				law.Options.Add(option);
@@ -108,6 +112,11 @@ public static partial class DataLoader
 			defs.Laws.Add(law);
 		}
 		// requirements may name other laws, so they are read once all laws are known
+		foreach (var (option, req, w) in pending)
+		{
+			if (option.Techs.FirstOrDefault(t => defs.GetTech(t) == null) is string unknown)
+				throw new DataException($"{w}: unknown technology '{unknown}'");
+		}
 		foreach (var (option, req, w) in pending)
 			option.Requires = Condition.Parse(req, w, id => defs.Areas.TryGetValue(id, out List<int> a) ? a : null,
 				name => names.TryGetValue(name, out int pid) ? pid : 0);
@@ -132,24 +141,97 @@ public static partial class DataLoader
 					_ => throw new DataException($"{where}: category must be foot, mounted or siege"),
 				},
 				Description = e.TryGetProperty("description", out JsonElement d) ? d.GetString() : "",
+				Tech = e.TryGetProperty("tech", out JsonElement tech)
+					? defs.GetTech(tech.GetString()) ?? throw new DataException($"{where}: unknown technology '{tech.GetString()}'")
+					: null,
 				Attack = GetFloat(e, "attack", 1f),
 				Defense = System.Math.Max(0.1, GetFloat(e, "defense", 1f)),
 				Siege = GetFloat(e, "siege", 0f),
 				Speed = System.Math.Max(1, GetFloat(e, "speed", 20f)),
 				Cost = GetFloat(e, "cost", 0f),
 				Upkeep = GetFloat(e, "upkeep", 0.1f),
-				RequiresText = e.TryGetProperty("requires_text", out JsonElement rt) ? rt.GetString() : null,
 				DefaultShare = (int)GetFloat(e, "share", 0f),
 			};
 			if (defs.GetUnitType(type.Id) != null)
 				throw new DataException($"{where}: duplicate unit '{type.Id}'");
-			if (e.TryGetProperty("requires", out JsonElement req))
-				type.Requires = Condition.Parse(req, $"{where}.requires", id => defs.Areas.TryGetValue(id, out List<int> a) ? a : null,
-					name => names.TryGetValue(name, out int pid) ? pid : 0);
 			defs.UnitTypes.Add(type);
 		}
-		if (!defs.UnitTypes.Exists(u => u.Category == UnitCategory.Foot && u.Requires == null))
+		if (!defs.UnitTypes.Exists(u => u.Category == UnitCategory.Foot && u.Tech == null))
 			throw new DataException($"{UnitsPath}: needs a foot unit available from the start");
+	}
+
+	public const string TechsPath = "res://data/techs.json";
+
+	/// <summary>Technology ids a condition names in its { "tech": id } tests, at any depth.</summary>
+	static IEnumerable<string> TechsNamed(JsonElement e)
+	{
+		if (e.ValueKind == JsonValueKind.Object)
+		{
+			foreach (JsonProperty p in e.EnumerateObject())
+			{
+				if (p.Name == "tech" && p.Value.ValueKind == JsonValueKind.String)
+					yield return p.Value.GetString();
+				else
+					foreach (string t in TechsNamed(p.Value))
+						yield return t;
+			}
+		}
+		else if (e.ValueKind == JsonValueKind.Array)
+		{
+			foreach (JsonElement x in e.EnumerateArray())
+				foreach (string t in TechsNamed(x))
+					yield return t;
+		}
+	}
+
+	public static void LoadTechs(Definitions defs, Dictionary<string, int> names)
+	{
+		var pending = new List<(Tech, List<string>, string)>();
+		foreach (var (where, e) in ReadJsonArray(TechsPath, "techs"))
+		{
+			var tech = new Tech
+			{
+				Id = GetString(e, "id", where),
+				Name = GetString(e, "name", where),
+				Category = Tech.ParseCategory(GetString(e, "category", where), where),
+				Description = e.TryGetProperty("description", out JsonElement d) ? d.GetString() : "",
+				Cost = System.Math.Max(1, GetFloat(e, "cost", 100f)),
+				ConditionText = e.TryGetProperty("condition_text", out JsonElement ct) ? ct.GetString() : null,
+				KnownAtStart = e.TryGetProperty("known_at_start", out JsonElement ks) && ks.GetBoolean(),
+			};
+			if (defs.GetTech(tech.Id) != null)
+				throw new DataException($"{where}: duplicate technology '{tech.Id}'");
+			if (e.TryGetProperty("modifiers", out JsonElement mods))
+			{
+				foreach (JsonProperty m in mods.EnumerateObject())
+					tech.Modifiers[m.Name] = m.Value.GetDouble();
+			}
+			if (e.TryGetProperty("condition", out JsonElement cond))
+				tech.Condition = Condition.Parse(cond, $"{where}.condition", id => defs.Areas.TryGetValue(id, out List<int> a) ? a : null,
+					name => names.TryGetValue(name, out int pid) ? pid : 0);
+			pending.Add((tech, GetStringList(e, "requires", where), where));
+			defs.Techs.Add(tech);
+		}
+		// requirements may come later in the file
+		foreach (var (tech, requires, where) in pending)
+		{
+			foreach (string id in requires)
+				tech.Requires.Add(defs.GetTech(id) ?? throw new DataException($"{where}: requires unknown technology '{id}'"));
+		}
+		// and must not go round in a circle
+		var state = new Dictionary<Tech, int>();
+		void Visit(Tech t)
+		{
+			if (state.GetValueOrDefault(t) == 2)
+				return;
+			if (state.GetValueOrDefault(t) == 1)
+				throw new DataException($"{TechsPath}: technology '{t.Id}' requires itself, through its requirements");
+			state[t] = 1;
+			foreach (Tech r in t.Requires)
+				Visit(r);
+			state[t] = 2;
+		}
+		defs.Techs.ForEach(Visit);
 	}
 
 	public static void LoadTribes(Definitions defs, Dictionary<string, int> names)
@@ -292,6 +374,12 @@ public static partial class DataLoader
 					throw new DataException($"{path}:laws: '{l.Value.GetString()}' is not an option of {l.Name}");
 				def.Laws[l.Name] = l.Value.GetString();
 			}
+		}
+		foreach (string tech in GetStringList(e, "techs", path))
+		{
+			if (defs.GetTech(tech) == null)
+				throw new DataException($"{path}:techs: unknown technology '{tech}'");
+			def.Techs.Add(tech);
 		}
 		country.RulerNames.AddRange(GetStringList(e, "ruler_names", path));
 		if (e.TryGetProperty("ruler_name_counts", out JsonElement counts))

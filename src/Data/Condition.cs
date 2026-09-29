@@ -26,7 +26,8 @@ public abstract class Condition
 	/// <summary>
 	/// Parses one condition object. Its single key names the test:
 	/// all / any (array), not (condition), owns_area {area, min_share = 1}, owns_province (name),
-	/// province_count {min, max}, ruler_culture, ruler_religion, world_flag, date_from / date_before ("year.month.day", Holocene).
+	/// province_count {min, max}, ruler_culture, ruler_religion, world_flag, law ("law:option"), tech (a technology id),
+	/// owns_feature (a province feature: river, coast, desert...), date_from / date_before ("year.month.day", Holocene).
 	/// </summary>
 	public static Condition Parse(JsonElement e, string where, Func<string, IReadOnlyList<int>> areas, Func<string, int> provinceByName)
 	{
@@ -52,6 +53,8 @@ public abstract class Condition
 				"ruler_religion" => RulerReligion(v.GetString()),
 				"world_flag" => new WorldFlag(v.GetString()),
 				"law" => HasLaw(v.GetString(), w),
+				"tech" => KnowsTech(v.GetString()),
+				"owns_feature" => new OwnsFeature(v.GetString()),
 				"date_from" => new DateTest(ParseDate(v.GetString(), w), from: true),
 				"date_before" => new DateTest(ParseDate(v.GetString(), w), from: false),
 				_ => throw new DataException($"{w}: unknown condition '{p.Name}'"),
@@ -80,6 +83,8 @@ public abstract class Condition
 		string law = parts[0], option = parts[1];
 		return new Test(c => c.Laws.TryGetValue(law, out string o) && o == option);
 	}
+
+	static Condition KnowsTech(string id) => new Test(c => c.Techs.Contains(id));
 
 	static Condition RulerCulture(string id) => new Test(c => c.Ruler?.Culture?.Id == id);
 	static Condition RulerReligion(string id) => new Test(c => c.Ruler?.Religion?.Id == id);
@@ -166,5 +171,18 @@ public abstract class Condition
 	sealed class DateTest(GameDate date, bool from) : Condition
 	{
 		public override bool Holds(IWorld w, Country c) => from ? w.Date >= date : w.Date < date;
+	}
+
+	sealed class OwnsFeature(string feature) : Condition
+	{
+		public override bool Holds(IWorld w, Country c)
+		{
+			foreach (Province p in w.Provinces)
+			{
+				if (p != null && p.OwnerTag == c.Tag && p.HasFeature(feature))
+					return true;
+			}
+			return false;
+		}
 	}
 }

@@ -143,7 +143,7 @@ public partial class GameState
 		if (reason != null)
 			return false;
 		// an army on the march turns back from where it stands
-		List<int> path = MilitaryRules.FindPath(GetProvince(a.ProvinceId), to, MilitaryRules.Speed(a), _provinces, ProvinceMap.GetCentroid, ProvinceMap.Width);
+		List<int> path = MilitaryRules.FindPath(GetProvince(a.ProvinceId), to, MilitaryRules.Speed(a, GetCountry(a.OwnerTag)), _provinces, ProvinceMap.GetCentroid, ProvinceMap.Width);
 		if (path == null)
 		{
 			reason = $"There is no way over land to {to.Name}";
@@ -158,7 +158,7 @@ public partial class GameState
 	}
 
 	int StepDays(Army a, int next) =>
-		MilitaryRules.StepDays(GetProvince(a.ProvinceId), GetProvince(next), MilitaryRules.Speed(a), ProvinceMap.GetCentroid, ProvinceMap.Width);
+		MilitaryRules.StepDays(GetProvince(a.ProvinceId), GetProvince(next), MilitaryRules.Speed(a, GetCountry(a.OwnerTag)), ProvinceMap.GetCentroid, ProvinceMap.Width);
 
 	/// <summary>Days until the army reaches its destination.</summary>
 	public int DaysToArrive(Army a)
@@ -167,7 +167,7 @@ public partial class GameState
 			return 0;
 		int days = a.StepDays - a.DaysMarched;
 		for (int i = 1; i < a.Path.Count; i++)
-			days += MilitaryRules.StepDays(GetProvince(a.Path[i - 1]), GetProvince(a.Path[i]), MilitaryRules.Speed(a), ProvinceMap.GetCentroid, ProvinceMap.Width);
+			days += MilitaryRules.StepDays(GetProvince(a.Path[i - 1]), GetProvince(a.Path[i]), MilitaryRules.Speed(a, GetCountry(a.OwnerTag)), ProvinceMap.GetCentroid, ProvinceMap.Width);
 		return days;
 	}
 

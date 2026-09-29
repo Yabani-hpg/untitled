@@ -129,7 +129,9 @@ public partial class GameState : IWorld
 		}
 		foreach (Country c in _countries.Values)
 		{
+			SetUpTechs(c);
 			c.CapitalId = PickCapital(c);
+			SeedOccupations(c);
 			c.CapitalName = c.Definition?.CapitalName;
 			c.Ruler = c.Definition?.Ruler != null ? CreateRuler(c, c.Definition.Ruler) : GenerateRuler(c);
 			c.CurrentFlag = null;
@@ -137,6 +139,8 @@ public partial class GameState : IWorld
 			var owned = ProvincesOf(c.Tag).ToList();
 			c.Gold = owned.Count > 0 ? c.StartingGold : 0;
 			c.LastLedger = EconomyRules.MonthlyLedger(c, owned, Array.Empty<Tribe>(), Array.Empty<Army>(), Date);
+			foreach (var (cat, points) in TechRules.MonthlyPoints(c, owned, Array.Empty<Army>()).Points)
+				c.LastResearch[cat] = points;
 		}
 		CreateTribes();
 		SetUpTribeRelations();

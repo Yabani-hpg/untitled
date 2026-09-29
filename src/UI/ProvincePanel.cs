@@ -400,7 +400,7 @@ public partial class ProvincePanel : PanelContainer
 				bool can = TribeRules.CanSubjugate(t, player, army, gs.Tribes.Values, provinces, m, out string why);
 				go.Disabled = !can;
 				go.TooltipText = can ? "Break the horde: all their lands become ours, a regiment of the army left in each as its garrison" : why;
-				odds.Text = can ? $"{TribeRules.SubjugationChance(t, army, provinces, m):P0} to win" : why;
+				odds.Text = can ? $"{TribeRules.SubjugationChance(t, player, army, provinces, m):P0} to win" : why;
 			}
 			hired.ValueChanged += _ => UpdateOdds();
 			go.Pressed += () => gs.SubjugateTribe(t.Id, army?.Id ?? 0, (int)hired.Value);
@@ -485,8 +485,8 @@ public partial class ProvincePanel : PanelContainer
 			grid.AddChild(culture);
 			grid.AddChild(HudStyle.Body(pop.Religion.Name, BodyFont));
 			var occupation = HudStyle.Body(pop.Occupation.Name + (pop.Occupation.Nomadic ? " (nomadic)" : ""), BodyFont);
-			occupation.TooltipText = pop.Occupation.Nomadic
-				? "Nomads move freely between provinces toward better pasture."
+			occupation.TooltipText = pop.Occupation.Description is { Length: > 0 } d ? d
+				: pop.Occupation.Nomadic ? "Nomads move freely between provinces toward better pasture."
 				: "Settled farmers who work the land and staff the buildings.";
 			occupation.MouseFilter = MouseFilterEnum.Pass;
 			grid.AddChild(occupation);

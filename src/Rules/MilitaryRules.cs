@@ -26,14 +26,15 @@ public static class MilitaryRules
 
 	// ------------------------------------------------------------------------------------ unit types
 
-	public static bool IsAvailable(UnitType t, IWorld world, Country c) => t.Requires == null || t.Requires.Holds(world, c);
+	/// <summary>Whether the country knows how to raise the unit type (it knows its technology).</summary>
+	public static bool IsAvailable(UnitType t, IWorld world, Country c) => TechRules.Knows(c, t.Tech);
 
 	public static List<UnitType> AvailableTypes(Definitions defs, IWorld world, Country c) =>
 		defs.UnitTypes.Where(t => IsAvailable(t, world, c)).ToList();
 
 	/// <summary>The cheapest foot the country can always raise.</summary>
 	public static UnitType BasicFoot(Definitions defs) =>
-		defs.UnitTypes.Where(t => t.Category == UnitCategory.Foot && t.Requires == null).OrderBy(t => t.Cost).First();
+		defs.UnitTypes.Where(t => t.Category == UnitCategory.Foot && t.Tech == null).OrderBy(t => t.Cost).First();
 
 	/// <summary>The country's levy composition: percent for each unit type it can raise now (from its own choices, or the defaults).</summary>
 	public static List<(UnitType Type, int Share)> Template(Country c, Definitions defs, IWorld world)
@@ -77,13 +78,13 @@ public static class MilitaryRules
 	// ------------------------------------------------------------------------------------ levies
 
 	/// <summary>Whether people of this group may be levied: men, and women where the law lets them serve.</summary>
-	public static bool CanServe(Country c, PopGroup pop) => pop.IsMale || LawRules.Effect(c, "women_serve") > 0;
+	public static bool CanServe(Country c, PopGroup pop) => pop.Occupation.Levied && (pop.IsMale || LawRules.Effect(c, "women_serve") > 0);
 
-	/// <summary>Share of those who can serve that the levy obligation calls up.</summary>
+	/// <summary>Share of those who can serve that the levy obligation calls up (and technologies like the census add to).</summary>
 	public static double LevyShare(Country c)
 	{
 		double share = LawRules.Effect(c, "levy_share");
-		return share > 0 ? Math.Min(1, share) : 0.1;
+		return Math.Clamp((share > 0 ? share : 0.1) + LawRules.Mod(c, "levy_share"), 0.01, 1);
 	}
 
 	/// <summary>
@@ -236,9 +237,10 @@ public static class MilitaryRules
 		return regiments.Where(r => r.Type.Category == UnitCategory.Siege).OrderByDescending(r => r.Type.Attack * r.Strength).Take(foot).ToHashSet();
 	}
 
-	/// <summary>A side's regiments as a force in battle on <paramref name="where"/>'s ground.</summary>
-	public static ControlRules.Force ForceOf(IReadOnlyCollection<Regiment> regiments, Province where, int diceModifier)
+	/// <summary>A side's regiments as a force in battle on <paramref name="where"/>'s ground, with their country's arms and armour.</summary>
+	public static ControlRules.Force ForceOf(IReadOnlyCollection<Regiment> regiments, Province where, int diceModifier, Country owner = null)
 	{
+		double attack = 1 + LawRules.Mod(owner, "army_attack"), armour = 1 + LawRules.Mod(owner, "army_defense");
 		var screened = Screened(regiments);
 		double strength = 0, defense = 0, men = 0;
 		foreach (Regiment r in regiments)
@@ -249,7 +251,7 @@ public static class MilitaryRules
 				continue;
 			strength += r.Strength * r.Type.Attack * TerrainFactor(r.Type.Category, where) * (r.Fierce ? ControlRules.FierceMultiplier : 1);
 		}
-		return new ControlRules.Force(regiments.Count, strength, diceModifier, men > 0 ? defense / men : 1);
+		return new ControlRules.Force(regiments.Count, strength * attack, diceModifier, (men > 0 ? defense / men : 1) * armour);
 	}
 
 	/// <summary>
@@ -284,7 +286,8 @@ public static class MilitaryRules
 	// ------------------------------------------------------------------------------------ movement
 
 	/// <summary>An army marches at the pace of its slowest regiment, in km a day.</summary>
-	public static double Speed(Army a) => a.Regiments.Count == 0 ? 20 : a.Regiments.Min(r => r.Type.Speed);
+	public static double Speed(Army a, Country owner = null) =>
+		(a.Regiments.Count == 0 ? 20 : a.Regiments.Min(r => r.Type.Speed)) * (1 + Math.Max(0, LawRules.Mod(owner, "army_speed")));
 
 	/// <summary>Days to march from a province into its neighbour: the distance between their centres, slowed by rough ground and river crossings.</summary>
 	public static int StepDays(Province from, Province to, double speedKm, Func<int, Vector2?> centroid, float mapWidth)

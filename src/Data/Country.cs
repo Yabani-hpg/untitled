@@ -54,6 +54,17 @@ public sealed class Country
 	/// <summary>The counts at the start of a game (the country file's "ruler_name_counts").</summary>
 	public Dictionary<string, int> StartRulerNameCounts { get; } = new();
 
+	/// <summary>Technologies it knows (data/techs.json ids).</summary>
+	public HashSet<string> Techs { get; } = new();
+	/// <summary>Points put into each technology not yet known (kept when research moves elsewhere).</summary>
+	public Dictionary<string, double> ResearchProgress { get; } = new();
+	/// <summary>The technology each kind of research flows into, if any.</summary>
+	public Dictionary<TechCategory, string> Researching { get; } = new();
+	/// <summary>Points of each kind stockpiled while nothing was being researched.</summary>
+	public Dictionary<TechCategory, double> ResearchStockpile { get; } = new();
+	/// <summary>Last month's research points of each kind.</summary>
+	public Dictionary<TechCategory, double> LastResearch { get; } = new();
+
 	/// <summary>Tribes the country's diplomats are courting (improving relations with).</summary>
 	public HashSet<int> ImprovingRelations { get; } = new();
 
@@ -85,6 +96,8 @@ public sealed class CountryDefinition
 	public RulerDefinition Ruler { get; init; }
 	/// <summary>Law options the country starts with, where they differ from the defaults.</summary>
 	public Dictionary<string, string> Laws { get; } = new();
+	/// <summary>Technologies known at the start, besides those every settled country knows.</summary>
+	public List<string> Techs { get; } = new();
 }
 
 /// <summary>A province a country controls at the start. <c>Since</c> null means long before the start.</summary>

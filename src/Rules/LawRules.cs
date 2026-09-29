@@ -18,12 +18,12 @@ public static class LawRules
 
 	static IEnumerable<LawOption> InForce(Country c, Definitions defs) => defs.Laws.Select(l => Option(c, l));
 
-	/// <summary>The sum of a modifier over the country's laws (0 for no country).</summary>
+	/// <summary>The sum of a modifier over the country's laws and the technologies it knows (0 for no country).</summary>
 	public static double Mod(Country c, string key)
 	{
 		if (c == null || Defs == null)
 			return 0;
-		double sum = 0;
+		double sum = TechRules.Mod(c, key);
 		foreach (LawOption o in InForce(c, Defs))
 			sum += o.Modifiers.GetValueOrDefault(key);
 		return sum;

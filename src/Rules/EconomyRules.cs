@@ -64,7 +64,7 @@ public static class EconomyRules
 		double tax = 0;
 		foreach (PopGroup pop in p.Pops)
 		{
-			if (!pop.Occupation.Nomadic)
+			if (pop.Occupation.Taxed)
 				tax += pop.Units * TaxPerUnit * (LawRules.IsCitizen(owner, pop) ? 1 : noncitizens);
 		}
 		return Math.Max(0, tax * (1 + LawRules.Mod(owner, "tax")) * (1 - ControlRules.Separatism(p, today, owner)));

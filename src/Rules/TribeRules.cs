@@ -23,6 +23,9 @@ public static class TribeRules
 	/// <summary>How many tribes a country's diplomats can court at once.</summary>
 	public const int Diplomats = 2;
 
+	/// <summary>The country's diplomats: <see cref="Diplomats"/>, and more with diplomacy.</summary>
+	public static int DiplomatsOf(Country c) => Diplomats + (int)Math.Round(LawRules.Mod(c, "diplomats"));
+
 	// alliance
 	public const int MinRelationForAlliance = 25;
 	public const int YearsBeforeAskingAgain = 2;
@@ -214,8 +217,8 @@ public static class TribeRules
 		ControlRules.Force.Of(0, Warriors(t, provinces), ControlRules.HomeGroundModifier(provinces[army?.ProvinceId > 0 ? army.ProvinceId : t.CampProvinceId]));
 
 	/// <summary>Our army, with the mercenaries sent along, in the nomads' lands.</summary>
-	public static ControlRules.Force Attackers(Army army, int mercenaries, IReadOnlyList<Province> provinces) =>
-		MilitaryRules.ForceOf(army.Regiments, provinces[army.ProvinceId], 0).Plus(ControlRules.Force.Of(0, mercenaries, 0));
+	public static ControlRules.Force Attackers(Army army, int mercenaries, IReadOnlyList<Province> provinces, Country owner) =>
+		MilitaryRules.ForceOf(army.Regiments, provinces[army.ProvinceId], 0, owner).Plus(ControlRules.Force.Of(0, mercenaries, 0));
 
 	/// <summary>The country's armies standing (not marching) in the tribe's lands, strongest first.</summary>
 	public static List<Army> ArmiesIn(Tribe t, Country c, IEnumerable<Army> armies) =>
@@ -240,8 +243,8 @@ public static class TribeRules
 		return reason == null;
 	}
 
-	public static double SubjugationChance(Tribe t, Army army, IReadOnlyList<Province> provinces, int mercenaries) =>
-		ControlRules.WinChance(Attackers(army, mercenaries, provinces), Defenders(t, army, provinces));
+	public static double SubjugationChance(Tribe t, Country c, Army army, IReadOnlyList<Province> provinces, int mercenaries) =>
+		ControlRules.WinChance(Attackers(army, mercenaries, provinces, c), Defenders(t, army, provinces));
 
 	/// <summary>
 	/// The army gives battle to the nomads. Winning breaks the horde: all its lands come under control as
@@ -251,7 +254,7 @@ public static class TribeRules
 	public static ControlRules.BattleResult Subjugate(Tribe t, Country c, Army army, IEnumerable<Tribe> tribes, IReadOnlyList<Province> provinces,
 		int mercenaries, GameDate today, Random rng)
 	{
-		ControlRules.BattleResult r = ControlRules.Battle(Attackers(army, mercenaries, provinces), Defenders(t, army, provinces), rng);
+		ControlRules.BattleResult r = ControlRules.Battle(Attackers(army, mercenaries, provinces, c), Defenders(t, army, provinces), rng);
 
 		// the mercenaries lose their share, the army's regiments theirs
 		LoseMercenaries(tribes, c.Tag, (int)Math.Round(mercenaries * r.AttackerShare), provinces);

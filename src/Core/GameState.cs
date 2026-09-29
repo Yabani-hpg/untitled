@@ -106,9 +106,11 @@ public partial class GameState : Node
 		DataLoader.LoadAreas(Definitions, _provinceNames);
 		DataLoader.LoadNamesAndPortraits(Definitions);
 		DataLoader.LoadTribes(Definitions, _provinceNames);
+		DataLoader.LoadTechs(Definitions, _provinceNames);
 		DataLoader.LoadLaws(Definitions, _provinceNames);
 		DataLoader.LoadUnits(Definitions, _provinceNames);
 		LawRules.Defs = Definitions;
+		TechRules.Defs = Definitions;
 		int countryFiles = DataLoader.LoadCountryFiles(_countries, Definitions, _provinceNames);
 
 		ProvinceMapTexture = GD.Load<Texture2D>(ProvinceMapPath)
@@ -274,6 +276,7 @@ public partial class GameState : Node
 		RunControlStep();
 		RunTribeStep();
 		RunLawStep();
+		RunResearchStep();
 		foreach (Country c in EconomyRules.MonthlyStep(_countries, _provinces, _tribes.Values, _armies.Values, Definitions, Date))
 		{
 			if (c.Tag == PlayerTag)

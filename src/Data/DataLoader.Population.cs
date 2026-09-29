@@ -49,7 +49,20 @@ public static partial class DataLoader
 		foreach (var (where, e) in ReadJsonArray(OccupationsPath, null))
 		{
 			bool nomadic = e.TryGetProperty("nomadic", out JsonElement n) && n.ValueKind == JsonValueKind.True;
-			var o = new Occupation(GetString(e, "id", where), GetString(e, "name", where), nomadic, ParseHexColor(GetString(e, "color", where), where));
+			var research = new Dictionary<TechCategory, double>();
+			if (e.TryGetProperty("research", out JsonElement rs))
+			{
+				foreach (JsonProperty r in rs.EnumerateObject())
+					research[Tech.ParseCategory(r.Name, where)] = r.Value.GetDouble();
+			}
+			var o = new Occupation(GetString(e, "id", where), GetString(e, "name", where), nomadic, ParseHexColor(GetString(e, "color", where), where))
+			{
+				Description = e.TryGetProperty("description", out JsonElement d) ? d.GetString() : "",
+				Taxed = e.TryGetProperty("taxed", out JsonElement tx) ? tx.GetBoolean() : !nomadic,
+				Levied = !e.TryGetProperty("levied", out JsonElement lv) || lv.GetBoolean(),
+				Research = research,
+				StartShare = GetFloat(e, "start_share", 0f),
+			};
 			AddUnique(defs.Occupations, o.Id, o, where);
 		}
 

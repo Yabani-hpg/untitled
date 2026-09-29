@@ -32,9 +32,8 @@ public sealed class UnitType
 	public double Cost { get; init; }
 	/// <summary>Gold a month while under arms.</summary>
 	public double Upkeep { get; init; }
-	/// <summary>When it is available (for now, a date), or null for always.</summary>
-	public Condition Requires { get; set; }
-	public string RequiresText { get; init; }
+	/// <summary>The technology needed to raise it, or null for always.</summary>
+	public Tech Tech { get; set; }
 	/// <summary>Its share of a new country's levies, in percent.</summary>
 	public int DefaultShare { get; init; }
 

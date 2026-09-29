@@ -216,7 +216,7 @@ public static class ControlRules
 			// and the owner's armies standing in the province
 			var here = armies.Where(a => a.OwnerTag == owner.Tag && a.ProvinceId == p.Id && !a.Moving).ToList();
 			var defenders = p.Control.Garrison.Concat(here.SelectMany(a => a.Regiments)).ToList();
-			BattleResult r = Battle(Force.Of(0, Warriors(p), HomeGroundModifier(p)), MilitaryRules.ForceOf(defenders, p, 1), rng);
+			BattleResult r = Battle(Force.Of(0, Warriors(p), HomeGroundModifier(p)), MilitaryRules.ForceOf(defenders, p, 1, owner), rng);
 			var gone = MilitaryRules.TakeLosses(defenders, r.DefenderShare, r.AttackerWon);
 			foreach (Army a in here)
 				a.Regiments.RemoveAll(gone.Contains);
