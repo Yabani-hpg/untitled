@@ -102,6 +102,13 @@ public partial class GameState : Node
 		_provinces = DataLoader.LoadProvinces(DataLoader.ProvincesPath, _countries);
 		int adjacencies = DataLoader.LoadAdjacencies(DataLoader.AdjacenciesPath, _provinces);
 		Definitions = DataLoader.LoadDefinitions();
+		foreach (Province p in _provinces)
+		{
+			if (p == null || p.IsWater)
+				continue;
+			p.Relief = Definitions.GetRelief(p.Terrain)
+				?? throw new DataException($"{DataLoader.ProvincesPath}: province {p.Id} has terrain '{p.Terrain}', not a relief of {DataLoader.TerrainPath}");
+		}
 		_provinceNames = DataLoader.ProvinceNames(_provinces);
 		DataLoader.LoadAreas(Definitions, _provinceNames);
 		DataLoader.LoadNamesAndPortraits(Definitions);
@@ -274,6 +281,7 @@ public partial class GameState : Node
 		var moves = PopulationRules.MigrateNomads(_provinces);
 		int built = BuildingRules.PopulationBuildStep(_provinces, Definitions.Buildings);
 		RunControlStep();
+		RunAttritionStep();
 		RunTribeStep();
 		RunLawStep();
 		RunResearchStep();

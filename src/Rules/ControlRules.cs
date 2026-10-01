@@ -129,9 +129,8 @@ public static class ControlRules
 		return wins / 100.0;
 	}
 
-	/// <summary>Dice modifier of people defending their own land: hills and mountains, and deserts or steppe they know.</summary>
-	public static int HomeGroundModifier(Province p) =>
-		(p.HasFeature("mountains") ? 2 : p.HasFeature("hills") ? 1 : 0) + (p.HasFeature("desert") || p.HasFeature("steppe") ? 1 : 0);
+	/// <summary>Dice modifier of people fighting on their own land: its terrain, and deserts, steppe or jungle they know.</summary>
+	public static int HomeGroundModifier(Province p) => TerrainRules.HomeGroundDice(p);
 
 	/// <summary>An army's modifier marching into <paramref name="p"/> from the best of the country's bordering provinces (a river crossing costs 1).</summary>
 	public static int AttackerModifier(Province p, string tag)
@@ -212,11 +211,11 @@ public static class ControlRules
 			if (rng.NextDouble() >= UprisingChance(p, owner, today))
 				continue;
 
-			// the uprising: the rebels (fierce, on home ground) attack the garrison, its fort giving it +1,
+			// the uprising: the rebels (fierce, on home ground) attack the garrison, its fort giving it +1 and the terrain its own,
 			// and the owner's armies standing in the province
 			var here = armies.Where(a => a.OwnerTag == owner.Tag && a.ProvinceId == p.Id && !a.Moving).ToList();
 			var defenders = p.Control.Garrison.Concat(here.SelectMany(a => a.Regiments)).ToList();
-			BattleResult r = Battle(Force.Of(0, Warriors(p), HomeGroundModifier(p)), MilitaryRules.ForceOf(defenders, p, 1, owner), rng);
+			BattleResult r = Battle(Force.Of(0, Warriors(p), HomeGroundModifier(p)), MilitaryRules.ForceOf(defenders, p, 1 + TerrainRules.DefenseDice(p), owner), rng);
 			var gone = MilitaryRules.TakeLosses(defenders, r.DefenderShare, r.AttackerWon);
 			foreach (Army a in here)
 				a.Regiments.RemoveAll(gone.Contains);

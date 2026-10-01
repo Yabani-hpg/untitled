@@ -130,7 +130,7 @@ public partial class MapModes : Node
 			}
 			// premultiplied, so the shader's blend across province edges doesn't darken toward uncoloured neighbours
 			_palette.SetPixel(p.Id % PaletteSide, p.Id / PaletteSide, new Color(c.R * c.A, c.G * c.A, c.B * c.A, c.A));
-			if (mode == MapMode.Political && StripeFor(p, gs) is Color s)
+			if ((mode == MapMode.Political ? StripeFor(p, gs) : mode == MapMode.Terrain ? ReliefStripe(p.Relief) : null) is Color s)
 				_stripes.SetPixel(p.Id % PaletteSide, p.Id / PaletteSide, new Color(s.R * s.A, s.G * s.A, s.B * s.A, s.A));
 		}
 		_paletteTexture.Update(_palette);
@@ -159,6 +159,15 @@ public partial class MapModes : Node
 		return null;
 	}
 
+	/// <summary>Terrain stripes: the rougher the land, the stronger; impassable peaks in white.</summary>
+	public static Color? ReliefStripe(TerrainType relief) => relief?.Id switch
+	{
+		"hills" => new Color(0.55f, 0.42f, 0.28f, 0.45f),
+		"mountains" => new Color(0.28f, 0.2f, 0.14f, 0.75f),
+		"impassable" => new Color(0.97f, 0.97f, 1f, 0.9f),
+		_ => null,
+	};
+
 	static Color ColorFor(Province p, MapMode mode, GameState gs)
 	{
 		switch (mode)
@@ -178,6 +187,8 @@ public partial class MapModes : Node
 				return culture == null ? new Color(Unowned, 0.35f) : new Color(culture.Color, Opacity);
 			case MapMode.Food:
 				return p.Food == null ? new Color(Unowned, 0.35f) : new Color(p.Food.Color, Opacity);
+			case MapMode.Terrain:
+				return p.Biome == null ? new Color(Unowned, 0.35f) : new Color(p.Biome.Color, 0.85f);
 			case MapMode.Deposits:
 				return p.NonRenewable == null ? new Color(Unowned, 0.25f) : new Color(p.NonRenewable.Color, 0.85f);
 			default:

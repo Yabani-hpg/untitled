@@ -93,8 +93,48 @@ public sealed class BuildingType
 }
 
 /// <summary>All definition files of res://data, loaded once at startup.</summary>
+/// <summary>
+/// A biome (a province's vegetation) or a relief (its lie of the land), from data/terrain.json. A
+/// province's effects combine both: multipliers multiply, dice add up.
+/// </summary>
+public sealed class TerrainType
+{
+	public string Id { get; init; }
+	public string Name { get; init; }
+	public string Description { get; init; }
+	/// <summary>Terrain map mode colour (biomes).</summary>
+	public Color Color { get; init; }
+	/// <summary>The vegetation feature it gives a province (forest, steppe, desert, tundra), or null.</summary>
+	public string Feature { get; init; }
+	public double Density { get; init; } = 1;
+	public double Tribal { get; init; }
+	public double Pasture { get; init; } = 1;
+	/// <summary>Days on the march, times.</summary>
+	public double Move { get; init; } = 1;
+	/// <summary>Dice for those defending it.</summary>
+	public int Defense { get; init; }
+	/// <summary>Dice for its own people, fighting on their home ground.</summary>
+	public int Native { get; init; }
+	public double Mounted { get; init; } = 1;
+	public double Siege { get; init; } = 1;
+	/// <summary>Regiments it feeds (biomes), or times (reliefs).</summary>
+	public double Supply { get; init; } = 1;
+	/// <summary>Share of an army's men lost a month there.</summary>
+	public double Attrition { get; init; }
+	public bool Passable { get; init; } = true;
+
+	public override string ToString() => Id;
+}
+
 public sealed class Definitions
 {
+	/// <summary>Biomes and reliefs of data/terrain.json, in file order.</summary>
+	public List<TerrainType> Biomes { get; } = new();
+	public List<TerrainType> Reliefs { get; } = new();
+
+	public TerrainType GetBiome(string id) => Biomes.Find(b => b.Id == id);
+	public TerrainType GetRelief(string id) => Reliefs.Find(r => r.Id == id);
+
 	public Dictionary<string, Religion> Religions { get; } = new();
 	public Dictionary<string, LanguageFamily> LanguageFamilies { get; } = new();
 	public Dictionary<string, Language> Languages { get; } = new();

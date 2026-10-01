@@ -27,6 +27,8 @@ public enum MapMode
 	Food,
 	/// <summary>Resources: each province's non-renewable deposit.</summary>
 	Deposits,
+	/// <summary>Each province's biome, with its relief (hills, mountains, impassable peaks) in stripes.</summary>
+	Terrain,
 }
 
 // A game session: new game setup, the player's country, rulers, dynamic flags and the map mode.

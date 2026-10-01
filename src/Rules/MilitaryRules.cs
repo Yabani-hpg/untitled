@@ -215,20 +215,8 @@ public static class MilitaryRules
 
 	// ------------------------------------------------------------------------------------ battle
 
-	/// <summary>How well a kind of troops fights on a province's ground: horses hate mountains and forests, and love open desert and steppe.</summary>
-	public static double TerrainFactor(UnitCategory category, Province p)
-	{
-		if (p == null)
-			return 1;
-		return category switch
-		{
-			UnitCategory.Mounted when p.HasFeature("mountains") => 0.5,
-			UnitCategory.Mounted when p.HasFeature("forest") || p.HasFeature("hills") => 0.75,
-			UnitCategory.Mounted when p.HasFeature("desert") || p.HasFeature("steppe") => 1.2,
-			UnitCategory.Siege when p.HasFeature("mountains") => 0.7,
-			_ => 1,
-		};
-	}
+	/// <summary>How well a kind of troops fights on a province's ground: horses hate mountains and jungle, and love open steppe and desert.</summary>
+	public static double TerrainFactor(UnitCategory category, Province p) => TerrainRules.CategoryFactor(category, p);
 
 	/// <summary>Siege regiments screened by foot: one regiment of foot for each engine. The rest add nothing, and are lost with a lost battle.</summary>
 	static HashSet<Regiment> Screened(IReadOnlyCollection<Regiment> regiments)
@@ -289,7 +277,7 @@ public static class MilitaryRules
 	public static double Speed(Army a, Country owner = null) =>
 		(a.Regiments.Count == 0 ? 20 : a.Regiments.Min(r => r.Type.Speed)) * (1 + Math.Max(0, LawRules.Mod(owner, "army_speed")));
 
-	/// <summary>Days to march from a province into its neighbour: the distance between their centres, slowed by rough ground and river crossings.</summary>
+	/// <summary>Days to march from a province into its neighbour: the distance between their centres, slowed by its terrain and river crossings.</summary>
 	public static int StepDays(Province from, Province to, double speedKm, Func<int, Vector2?> centroid, float mapWidth)
 	{
 		double km = 50;
@@ -299,10 +287,7 @@ public static class MilitaryRules
 			dx = Mathf.Min(dx, mapWidth - dx);          // the map wraps around east to west
 			km = Math.Sqrt(dx * dx + (a.Y - b.Y) * (a.Y - b.Y)) * KmPerPixel;
 		}
-		double ground = to.HasFeature("mountains") ? 2.0
-			: to.HasFeature("hills") || to.HasFeature("forest") ? 1.4
-			: to.HasFeature("desert") ? 1.25 : 1.0;
-		int days = (int)Math.Ceiling(km / speedKm * ground);
+		int days = (int)Math.Ceiling(km / speedKm * TerrainRules.MoveFactor(to));
 		if (from.GetAdjacency(to)?.IsRiverCrossing == true)
 			days += RiverCrossingDays;
 		return Math.Max(1, days);

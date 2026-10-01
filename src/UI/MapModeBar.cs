@@ -42,6 +42,7 @@ public partial class MapModeBar : VBoxContainer
 		AddModeButton(row, MapMode.Natural, "Natural", "The land as it is");
 		AddModeButton(row, MapMode.Political, "Political", "Who owns each province");
 		AddModeButton(row, MapMode.Culture, "Culture", "The main culture of each province");
+		AddModeButton(row, MapMode.Terrain, "Terrain", "Each province's biome, with hills, mountains and impassable peaks in stripes");
 		var resources = HudStyle.Button("Resources", BodyFont, 13);
 		resources.TooltipText = "Food and non-renewable deposits";
 		resources.ToggleMode = true;
@@ -95,6 +96,9 @@ public partial class MapModeBar : VBoxContainer
 			MapMode.Culture => defs.Cultures.Values.Select(c => (c.Name, c.Color)),
 			MapMode.Food => defs.Resources.Values.Where(r => r.Category == ResourceCategory.Food).Select(r => (r.Name, r.Color)),
 			MapMode.Deposits => defs.Resources.Values.Where(r => r.Category == ResourceCategory.NonRenewable).Select(r => (r.Name, r.Color)),
+			MapMode.Terrain => defs.Biomes.Select(b => (b.Name, b.Color))
+				.Concat(defs.Reliefs.Where(r => Untitled.Map.MapModes.ReliefStripe(r) != null)
+					.Select(r => ($"{r.Name} (stripes)", Untitled.Map.MapModes.ReliefStripe(r).Value))),
 			_ => Enumerable.Empty<(string, Color)>(),
 		};
 		var list = entries.ToList();

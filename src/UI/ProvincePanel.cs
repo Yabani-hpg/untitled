@@ -151,7 +151,7 @@ public partial class ProvincePanel : PanelContainer
 		_ownerFlagFrame.Visible = ownerCountry != null;
 		_ownerFlag.Texture = HudStyle.Texture(ownerCountry?.CurrentFlag?.ImagePath);
 		_ownerFlag.TooltipText = ownerCountry?.CurrentFlag?.Name;
-		_subtitle.Text = p.IsWater ? (p.IsLake ? "Lake" : "Sea") : $"{owner} · {Capitalize(p.Terrain)}";
+		_subtitle.Text = p.IsWater ? (p.IsLake ? "Lake" : "Sea") : $"{owner} · {TerrainRules.Describe(p)}";
 		_tabs.SetTabHidden(1, p.IsWater);
 		_tabs.SetTabHidden(2, p.IsWater);
 		_cityButton.Disabled = p.IsWater || p.Pops.Count == 0 && p.Buildings.Count == 0;
@@ -186,7 +186,8 @@ public partial class ProvincePanel : PanelContainer
 			var religions = p.Pops.Select(g => g.Religion.Name).Distinct().ToList();
 			if (religions.Count > 0)
 				Row(grid, "Religion", string.Join(", ", religions));
-			Row(grid, "Terrain", Capitalize(p.Terrain));
+			Row(grid, "Terrain", TerrainRules.Describe(p));
+			Row(grid, "On the land", TerrainEffects(p));
 			if (p.Features.Count > 0)
 				Row(grid, "Features", string.Join(", ", p.Features.Select(Capitalize)));
 			Row(grid, "Food", p.Food?.Name ?? "None");
@@ -222,6 +223,30 @@ public partial class ProvincePanel : PanelContainer
 				Row(grid, "Navigable", string.Join(", ", navigable));
 		}
 		_overview.AddChild(HudStyle.Body($"Province #{p.Id}", BodyFont, 12, HudStyle.Muted));
+	}
+
+	/// <summary>What the terrain does to armies: march, defense, horses, supply, attrition.</summary>
+	static string TerrainEffects(Province p)
+	{
+		if (!p.IsPassable)
+			return $"{p.Relief?.Description} Armies can't enter it.";
+		var parts = new List<string> { $"marching x{TerrainRules.MoveFactor(p):0.##}" };
+		int dice = TerrainRules.DefenseDice(p);
+		if (dice > 0)
+			parts.Add($"defenders +{dice} dice");
+		if (p.Biome?.Native > 0)
+			parts.Add($"its people +{p.Biome.Native} on home ground");
+		double horses = TerrainRules.CategoryFactor(UnitCategory.Mounted, p);
+		if (Math.Abs(horses - 1) > 0.01)
+			parts.Add($"mounted x{horses:0.##}");
+		double siege = TerrainRules.CategoryFactor(UnitCategory.Siege, p);
+		if (Math.Abs(siege - 1) > 0.01)
+			parts.Add($"siege x{siege:0.##}");
+		parts.Add($"feeds {TerrainRules.Supply(p):0} regiments");
+		double attrition = TerrainRules.Attrition(p, 1);
+		if (attrition > 0)
+			parts.Add($"armies lose {attrition:P1} of their men a month");
+		return string.Join(" · ", parts);
 	}
 
 	// ---------------------------------------------------------------------------------- Control

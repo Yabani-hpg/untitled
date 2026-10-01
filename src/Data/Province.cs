@@ -26,6 +26,13 @@ public sealed class Province
 
 	public bool IsCore => Control?.Kind == ControlKind.Core;
 
+	/// <summary>Its vegetation (data/terrain.json biomes), from the setup; null for water.</summary>
+	public TerrainType Biome { get; set; }
+	/// <summary>Its relief (plains, hills, mountains, impassable): <see cref="Terrain"/> as a terrain type; null for water.</summary>
+	public TerrainType Relief { get; set; }
+	/// <summary>Land armies can enter it (not water, not impassable peaks).</summary>
+	public bool IsPassable => !IsWater && Relief?.Passable != false;
+
 	/// <summary>Who lives in the province, which decides how a country can take control of it.</summary>
 	public Inhabitants Inhabitants
 	{

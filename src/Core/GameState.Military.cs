@@ -140,6 +140,8 @@ public partial class GameState
 			reason = "Not our army";
 		else if (to == null || to.IsWater)
 			reason = "Armies march over land";
+		else if (!to.IsPassable)
+			reason = $"{to.Name}: {to.Relief?.Name.ToLowerInvariant()} no army can cross";
 		if (reason != null)
 			return false;
 		// an army on the march turns back from where it stands
@@ -282,6 +284,38 @@ public partial class GameState
 		}
 		if (moved)
 			EmitSignal(SignalName.ArmiesMoved);
+	}
+
+	/// <summary>
+	/// A month of supply: every army loses men to the land it stands in (heat, cold, fever) and, if it is
+	/// larger than the land and its people can feed, to hunger. Regiments worn down too far break up.
+	/// </summary>
+	void RunAttritionStep()
+	{
+		bool any = false;
+		foreach (Army a in _armies.Values)
+		{
+			Province p = GetProvince(a.ProvinceId);
+			double share = TerrainRules.Attrition(p, a.Regiments.Count);
+			if (share <= 0)
+				continue;
+			int before = a.Men;
+			foreach (Regiment r in a.Regiments)
+				r.Strength *= 1 - share;
+			a.Regiments.RemoveAll(r => r.Strength < MilitaryRules.BrokenBelow);
+			int lost = before - a.Men;
+			any |= lost > 0;
+			if (a.OwnerTag == PlayerTag && lost >= 100)
+			{
+				double supply = TerrainRules.Supply(p);
+				Notify($"The {a.Name} loses {lost:N0} men to {(a.Regiments.Count + 0.5 > supply ? "hunger and " : "")}the {p.Biome?.Name.ToLowerInvariant() ?? "land"} of {p.Name}"
+					+ $" ({share:P1} this month; the land feeds {supply:0} regiments).");
+			}
+		}
+		if (!any)
+			return;
+		RemoveEmptyArmies();
+		EmitSignal(SignalName.ArmiesChanged);
 	}
 
 	/// <summary>Armies that lost all their regiments are gone.</summary>

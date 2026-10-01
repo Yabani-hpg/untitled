@@ -17,7 +17,7 @@ public static class MovementRules
 {
 	public static bool CanMove(UnitDomain domain, Adjacency link) => domain switch
 	{
-		UnitDomain.Land => link.SharesBorder && !link.From.IsWater && !link.To.IsWater,
+		UnitDomain.Land => link.SharesBorder && !link.From.IsWater && link.To.IsPassable,
 		UnitDomain.SeaShip => link.SharesBorder && link.From.IsSea && link.To.IsSea,
 		UnitDomain.RiverShip => link.IsNavigableRiver || (link.SharesBorder && link.From.IsWater && link.To.IsWater),
 		_ => false,
@@ -26,7 +26,7 @@ public static class MovementRules
 	/// <summary>Whether a unit of this domain can be in the province at all.</summary>
 	public static bool CanOccupy(UnitDomain domain, Province province) => domain switch
 	{
-		UnitDomain.Land => !province.IsWater,
+		UnitDomain.Land => province.IsPassable,
 		UnitDomain.SeaShip => province.IsSea,
 		UnitDomain.RiverShip => province.IsWater || HasNavigableRiver(province),
 		_ => false,

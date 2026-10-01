@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
 """Generate the starting populations, resources, features and buildings of every land province.
 
-Reads the map (map/provinces.png, landmap.png, heightmapps.png, rivers.png) and data/provinces.csv,
-data/adjacencies.csv; writes data/province_setup.json, which the game loads on top of the provinces.
+Reads the map (map/provinces.png, heightmapps.png, rivers.png), the vegetation map (see terrain.py),
+data/provinces.csv, data/adjacencies.csv and data/terrain.json; writes each province's relief into the
+terrain column of data/provinces.csv, and data/province_setup.json, which the game loads on top of the
+provinces.
 import_natural_earth.py runs this at the end, because province ids change on every import. Hand
 edits to province_setup.json are overwritten; tune the tables below instead.
 
 Each land province gets:
-  features   forest, river, coast, desert, steppe, tundra, mountains, hills (from terrain, vegetation
-             colour of landmap.png, rivers and adjacencies)
+  terrain    its relief (plains, hills, mountains, impassable), in data/provinces.csv
+  biome      its vegetation zone (data/terrain.json biomes), from the vegetation map; river valleys in
+             dry land become floodplain, and regions files may set oases and valleys by hand
+  features   forest, steppe, desert or tundra (from the biome), mountains, hills, river, coast
   pops       population groups of 1000 people ({culture, religion, occupation, units}): culture by
              continent, peasants or tribesmen by how farmable the land is
   resources  {non_renewable, food}: one deposit (or none) and one food resource
@@ -23,10 +27,11 @@ import sys
 import numpy as np
 from PIL import Image
 
+import terrain
 from map_common import (HEIGHT, HEIGHTMAP_PNG, MAP_BOTTOM, MAP_TOP, PROVINCES_PNG, RIVER_CLASS_RGB, RIVERS_PNG,
                         ROOT, SEA_LEVEL, WIDTH)
 
-LANDMAP_PNG = ROOT / "map" / "landmap.png"
+TERRAIN_JSON = ROOT / "data" / "terrain.json"
 PROVINCES_CSV = ROOT / "data" / "provinces.csv"
 ADJACENCIES_CSV = ROOT / "data" / "adjacencies.csv"
 BUILDINGS_JSON = ROOT / "data" / "buildings.json"
@@ -46,14 +51,15 @@ CENTRAL_AMERICA = set("BLZ CRI GTM HND MEX NIC PAN SLV CUB JAM HTI DOM BHS PRI T
 UNINHABITED = set("ATA ATF HMD SGS IOT".split())
 OCEANIA = set("AUS NZL PNG FJI NCL SLB VUT WSM TON PYF FSM PLW GUM".split())   # Asian culture, thinly settled
 
-# --- population density (relative) ---------------------------------------------------------------------
-DENSITY = {"farmland": 1.0, "forest": 0.35, "steppe": 0.3, "desert": 0.03, "tundra": 0.02}
-DENSITY_TERRAIN = {"mountains": 0.45, "hills": 0.8}
+# --- population density (relative; biomes and reliefs carry their own in data/terrain.json) --------------
 RIVER_BONUS, COAST_BONUS = 2.2, 1.3
+# a river valley in dry land holds this many times the farmland density over its share of the province
+VALLEY_DENSITY = 5.0
+# dry land whose river valley is at least this share of the province is a floodplain
+FLOODPLAIN_VALLEY = 0.5
 CONTINENT_DENSITY = {"european": 1.0, "asian": 1.2, "african": 0.8, "north_american": 0.35, "south_american": 0.45}
 
-# share of tribesmen (the rest are peasants) by vegetation; rivers settle people
-TRIBAL_SHARE = {"farmland": 0.1, "forest": 0.45, "steppe": 0.85, "desert": 0.9, "tundra": 1.0}
+# share of tribesmen (the rest are peasants): by biome (data/terrain.json), more on some continents; rivers settle people
 TRIBAL_CONTINENT_BONUS = {"african": 0.25, "north_american": 0.35, "south_american": 0.2}
 
 # crude oil basins (lon0, lat0, lon1, lat1), where half the provinces with no other deposit have oil seeps
@@ -109,36 +115,18 @@ def culture_of(tag, lon, lat):
     return "asian"
 
 
-# grasslands that modern farmland hides on the satellite colours: (lon0, lat0, lon1, lat1)
-STEPPE_BOXES = [(28, 44, 60, 52.5), (-104, 33, -96, 50)]   # the Pontic-Caspian steppe, the Great Plains
-# river deltas and flood plains that were the most crowded farmland of the ancient world, whatever their
-# colour from space: the Nile Delta and Faiyum, Lower Mesopotamia (lon0, lat0, lon1, lat1)
+# river deltas and flood plains that were the most crowded farmland of the ancient world, whatever the
+# vegetation map shows: the Nile Delta and Faiyum, Lower Mesopotamia (lon0, lat0, lon1, lat1)
 FLOODPLAIN_BOXES = [(29.8, 29.0, 32.4, 31.7), (44.0, 30.5, 48.5, 33.6)]
-
-
-def vegetation(rgb, lon, lat):
-    """farmland, forest, steppe, desert or tundra from the average landmap colour."""
-    r, g, b = rgb
-    lum = (r + g + b) / 3
-    sat = max(rgb) - min(rgb)
-    if abs(lat) >= 66 or (lum >= 195 and sat < 20):
-        return "tundra"
-    if lum >= 132 and r - b >= 40 and abs(lat) < 50:
-        return "desert"
-    if lum < 33 or (lum < 42 and abs(lat) >= 40) or (lat >= 50 and sat < 22 and lum < 190):
-        return "forest"          # rainforest, the dark temperate forests, grey-green boreal forest
-    if any(x0 <= lon <= x1 and y0 <= lat <= y1 for x0, y0, x1, y1 in STEPPE_BOXES):
-        return "steppe"
-    if -10 <= lon <= 30 and 30 <= lat <= 46:
-        return "farmland"        # the dry Mediterranean scrub looks like steppe from space, but it was farmed
-    if r - b >= 36 and lum >= 70 and (abs(lat) >= 28 or 10 <= lat < 20):
-        return "steppe"          # dry grassland: temperate steppes, prairies, pampas, the Sahel
-    return "farmland"
 
 
 def food_for(p):
     f, veg, cul, lat, pid = p["features"], p["veg"], p["culture"], p["lat"], p["id"]
     tropical = abs(lat) < 23.5
+    if p["biome"] == "oasis":
+        return "dates"
+    if p["biome"] == "ice":
+        return "fish" if "coast" in f else None
     if veg == "tundra":
         return "fish" if "coast" in f else "sheep"
     if veg == "desert":
@@ -194,7 +182,7 @@ def deposit_for(p):
 
 def pops_for(p, units):
     floodplain = p["valley"] > 0.5      # settled farmers of a river valley, not desert nomads
-    tribal = TRIBAL_SHARE["farmland" if floodplain else p["veg"]] + TRIBAL_CONTINENT_BONUS.get(p["culture"], 0.0)
+    tribal = (BIOMES["floodplain"] if floodplain else BIOMES[p["biome"]])["tribal"] + TRIBAL_CONTINENT_BONUS.get(p["culture"], 0.0)
     if p["oceania"]:
         tribal += 0.6
     if "river" in p["features"]:
@@ -231,6 +219,29 @@ def buildings_for(p, defs):
     return built
 
 
+_terrain = json.loads(TERRAIN_JSON.read_text(encoding="utf-8"))
+BIOMES = {b["id"]: b for b in _terrain["biomes"]}
+RELIEFS = {r["id"]: r for r in _terrain["reliefs"]}
+
+
+def write_reliefs(relief):
+    """Writes each land province's relief into the terrain column of data/provinces.csv."""
+    lines = PROVINCES_CSV.read_text(encoding="utf-8").splitlines()
+    header = None
+    for i, line in enumerate(lines):
+        if not line.strip() or line.startswith("#"):
+            continue
+        cols = line.split(";")
+        if header is None:
+            header = cols
+            continue
+        pid, t = int(cols[header.index("id")]), header.index("terrain")
+        if pid in relief:
+            cols[t] = relief[pid]
+            lines[i] = ";".join(cols)
+    PROVINCES_CSV.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="\n")
+
+
 def main():
     provinces = read_csv(PROVINCES_CSV)
     land = {int(r["id"]): r for r in provinces if r["terrain"] not in ("sea", "lake")}
@@ -253,8 +264,15 @@ def main():
     ang = np.radians(xs * 360.0 / WIDTH - 180.0)
     lon = np.degrees(np.arctan2(np.bincount(ids, np.sin(ang), n), np.bincount(ids, np.cos(ang), n)))
     lat = np.bincount(ids, lat_px, n) / safe
-    land_rgb = np.asarray(Image.open(LANDMAP_PNG).convert("RGB")).reshape(-1, 3).astype(np.float64)
-    color = np.stack([np.bincount(ids, land_rgb[:, c], n) / safe for c in range(3)], axis=1)
+    # terrain: vegetation zones and relief, per province
+    zones = terrain.zone_map().ravel()
+    on_land = zones >= 0
+    zone_count = np.bincount(ids[on_land] * len(terrain.LEGEND) + zones[on_land],
+                             minlength=n * len(terrain.LEGEND)).reshape(n, len(terrain.LEGEND))
+    rugged, metres, land_px = (a.ravel() for a in terrain.relief_fields())
+    order = np.argsort(ids, kind="stable")
+    bounds = np.searchsorted(ids[order], np.arange(n + 1))
+    hand_biome = terrain.region_biomes()
     height = np.asarray(Image.open(HEIGHTMAP_PNG).convert("RGB"))[..., 0].ravel().astype(np.float64)
     elev = np.bincount(ids, np.maximum(height - SEA_LEVEL, 0), n) / safe
 
@@ -278,16 +296,30 @@ def main():
     for pid, row in sorted(land.items()):
         tag = row["owner"]
         p = {"id": pid, "lon": float(lon[pid]), "lat": float(lat[pid])}
-        p["veg"] = vegetation(tuple(color[pid]), p["lon"], p["lat"])
-        floodplain = any(x0 <= p["lon"] <= x1 and y0 <= p["lat"] <= y1 for x0, y0, x1, y1 in FLOODPLAIN_BOXES)
+        px = order[bounds[pid]:bounds[pid + 1]]
+        px = px[land_px[px]]
+        p["relief"] = terrain.relief_of(rugged[px], metres[px])
+        biome = terrain.biome_of(zone_count[pid], p["lat"], float(np.median(metres[px])) if len(px) else 0) or "tundra"
+        valley = min(1.0, 12.0 * river_count[pid] / max(count[pid], 1))
+        floodplain = p["relief"] == "plains" and (
+            any(x0 <= p["lon"] <= x1 and y0 <= p["lat"] <= y1 for x0, y0, x1, y1 in FLOODPLAIN_BOXES)
+            or biome in ("desert", "dry_steppe") and valley >= FLOODPLAIN_VALLEY)
         if floodplain:
-            p["veg"] = "farmland"
+            biome = "floodplain"
+        biome = hand_biome.get(row["name"], biome)
+        floodplain = biome == "floodplain"
+        if biome in ("floodplain", "oasis"):
+            p["relief"] = "plains"       # the valley floor and the oasis, whatever cliffs and dunes surround them
+        p["biome"] = biome
+        p["veg"] = BIOMES[biome].get("feature") or "farmland"
         p["floodplain"] = floodplain
         features = []
         if p["veg"] != "farmland":
             features.append(p["veg"])
-        if row["terrain"] in ("mountains", "hills"):
-            features.append(row["terrain"])
+        if p["relief"] in ("mountains", "hills"):
+            features.append(p["relief"])
+        elif p["relief"] == "impassable":
+            features.append("mountains")
         if pid in river_link or river_count[pid] >= 3 or floodplain:
             features.append("river")
         if pid in coast:
@@ -297,17 +329,13 @@ def main():
         p["food"] = food_for(p)
         p["deposit"] = deposit_for(p)
 
-        density = DENSITY[p["veg"]]
-        # a flood plain in the desert (the Nile, the Euphrates) packs its people along the river: the bonus
-        # scales with how much of the province is river valley, so a vast desert that merely touches the
-        # Nile stays empty
-        valley = min(1.0, 12.0 * river_count[pid] / max(count[pid], 1))
-        if p["floodplain"]:
-            density = DENSITY["farmland"] * 5.0
-        elif p["veg"] == "desert" and "river" in features:
-            density = DENSITY["desert"] + DENSITY["farmland"] * 5.0 * valley
+        density = BIOMES[biome]["density"]
+        # a river through dry land (the Nile, the Euphrates) packs its people along it: the bonus scales with
+        # how much of the province is river valley, so a vast desert that merely touches the Nile stays empty
+        if biome in ("desert", "dry_steppe") and "river" in features:
+            density += VALLEY_DENSITY * valley
         p["valley"] = 1.0 if p["floodplain"] else valley
-        weight = density * DENSITY_TERRAIN.get(row["terrain"], 1.0) * CONTINENT_DENSITY[p["culture"]]
+        weight = density * RELIEFS[p["relief"]]["density"] * CONTINENT_DENSITY[p["culture"]]
         if "river" in features:
             weight *= RIVER_BONUS
         if "coast" in features:
@@ -332,6 +360,7 @@ def main():
         p["pops"] = pops_for(p, units) if units > 0 else []
         entry = {
             "id": p["id"],
+            "biome": p["biome"],
             "features": p["features"],
             "resources": {"non_renewable": p["deposit"], "food": p["food"]},
             "pops": p["pops"],
@@ -339,6 +368,7 @@ def main():
         }
         out.append(entry)
 
+    write_reliefs({p["id"]: p["relief"] for p in setup})
     with SETUP_JSON.open("w", encoding="utf-8", newline="\n") as f:
         f.write('{\n\t"_comment": "Generated by tools/generate_setup.py; hand edits are overwritten. pops: units of '
                 f'{UNIT} people.",\n\t"provinces": [\n')
@@ -352,7 +382,8 @@ def main():
         for pop in e["pops"]:
             occ[pop["occupation"]] = occ.get(pop["occupation"], 0) + pop["units"]
     print(f"{len(out)} land provinces, {total} population units ({total * UNIT / 1e6:.1f}M people): {occ}")
-    print("vegetation:", tally("veg"))
+    print("biomes:", tally("biome"))
+    print("relief:", tally("relief"))
     print("culture:", tally("culture"))
     print("food:", tally("food"))
     print("deposits:", tally("deposit"))

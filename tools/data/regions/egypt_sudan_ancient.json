@@ -4,7 +4,8 @@
 		{ "country": "EGY" },
 		{ "country": "SDN", "names": ["Northern", "River Nile", "Red Sea"] }
 	],
-	"zone_terrain": { "valley": "plains", "oasis": "oasis", "desert": "desert" },
+	"zone_terrain": { "valley": "plains", "oasis": "plains" },
+	"zone_biome": { "valley": "floodplain", "oasis": "oasis" },
 	"valley": {
 		"rivers": ["Nile", "Rosetta Branch", "Damietta Branch"],
 		"radius_px": 3,

@@ -88,6 +88,18 @@ public partial class ArmyPanel : PanelContainer
 		_box.AddChild(HudStyle.Body($"{where} · {MilitaryRules.Speed(a, owner):0} km a day", BodyFont, 14));
 		_box.AddChild(HudStyle.Body($"{a.Regiments.Count} regiments, {a.Men:N0} of {a.Regiments.Count * PopGroup.PeoplePerUnit:N0} men · {MilitaryRules.Upkeep(a):0.0} gold a month",
 			BodyFont, 13, HudStyle.Muted));
+		if (here != null)
+		{
+			double supply = TerrainRules.Supply(here), attrition = TerrainRules.Attrition(here, a.Regiments.Count);
+			var land = HudStyle.Body($"{TerrainRules.Describe(here)}: the land feeds {supply:0} regiments"
+				+ (attrition > 0 ? $"; we lose {attrition:P1} of our men a month here" : ""), BodyFont, 13,
+				attrition >= 0.03 ? HudStyle.Bad : attrition > 0 ? HudStyle.Gold : HudStyle.Muted);
+			land.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			land.CustomMinimumSize = new Vector2(480, 0);
+			land.TooltipText = "Every month an army loses men to the land it stands in (heat, cold, fever), and to hunger if it is larger than the land and its people can feed.";
+			land.MouseFilter = MouseFilterEnum.Pass;
+			_box.AddChild(land);
+		}
 
 		// the regiments by kind
 		var grid = new GridContainer { Columns = 3 };

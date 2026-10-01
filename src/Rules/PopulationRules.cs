@@ -46,18 +46,12 @@ public static class PopulationRules
 	/// <summary>A neighbour's pasture must be this much better (per nomad) before anyone moves.</summary>
 	public const float MigrationThreshold = 1.25f;
 
-	/// <summary>Grazing a province offers nomads, from its land and its food slot (herds graze better than fields).</summary>
+	/// <summary>Grazing a province offers nomads, from its terrain (data/terrain.json pasture), rivers and its food slot (herds graze better than fields).</summary>
 	public static float PastureQuality(Province p)
 	{
 		if (p == null || p.IsWater)
 			return 0f;
-		float q = 0.6f;                       // open farmland
-		if (p.HasFeature("steppe")) q = 1.0f;
-		if (p.HasFeature("forest")) q = 0.35f;
-		if (p.HasFeature("desert")) q = 0.12f;
-		if (p.HasFeature("tundra")) q = 0.2f;
-		if (p.HasFeature("mountains")) q *= 0.5f;
-		else if (p.HasFeature("hills")) q *= 0.85f;
+		float q = (float)TerrainRules.Pasture(p);
 		if (p.HasFeature("river")) q += 0.25f;
 		if (p.Food != null && p.Food.WorkedBy.Count > 0 && p.Food.WorkedBy[0].Nomadic)
 			q += 0.3f;                        // cattle, sheep, horses: good grazing
@@ -101,7 +95,7 @@ public static class PopulationRules
 				float bestScore = home * MigrationThreshold;
 				foreach (Adjacency link in p.Neighbors)
 				{
-					if (link.To.IsWater || link.BorderLength <= 0)
+					if (!link.To.IsPassable || link.BorderLength <= 0)
 						continue;
 					float score = PasturePerNomad(link.To);
 					if (score > bestScore)

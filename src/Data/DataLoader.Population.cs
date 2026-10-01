@@ -87,6 +87,11 @@ public static partial class DataLoader
 			AddUnique(defs.Resources, r.Id, r, where);
 		}
 
+		foreach (var (where, e) in ReadJsonArray(TerrainPath, "biomes"))
+			defs.Biomes.Add(ParseTerrain(e, where, defs.Biomes));
+		foreach (var (where, e) in ReadJsonArray(TerrainPath, "reliefs"))
+			defs.Reliefs.Add(ParseTerrain(e, where, defs.Reliefs));
+
 		var buildingIds = new HashSet<string>();
 		foreach (var (where, e) in ReadJsonArray(BuildingsPath, "buildings"))
 			defs.Buildings.Add(ParseBuilding(e, where, defs, buildingIds));
@@ -195,6 +200,34 @@ public static partial class DataLoader
 		};
 	}
 
+	public const string TerrainPath = "res://data/terrain.json";
+
+	static TerrainType ParseTerrain(JsonElement e, string where, List<TerrainType> existing)
+	{
+		var t = new TerrainType
+		{
+			Id = GetString(e, "id", where),
+			Name = GetString(e, "name", where),
+			Description = e.TryGetProperty("description", out JsonElement d) ? d.GetString() : "",
+			Color = e.TryGetProperty("color", out JsonElement c) ? ParseHexColor(c.GetString(), where) : Colors.Gray,
+			Feature = e.TryGetProperty("feature", out JsonElement f) && f.ValueKind == JsonValueKind.String ? f.GetString() : null,
+			Density = GetFloat(e, "density", 1f),
+			Tribal = GetFloat(e, "tribal", 0f),
+			Pasture = GetFloat(e, "pasture", 1f),
+			Move = System.Math.Max(0.1, GetFloat(e, "move", 1f)),
+			Defense = (int)GetFloat(e, "defense", 0f),
+			Native = (int)GetFloat(e, "native", 0f),
+			Mounted = GetFloat(e, "mounted", 1f),
+			Siege = GetFloat(e, "siege", 1f),
+			Supply = GetFloat(e, "supply", 1f),
+			Attrition = GetFloat(e, "attrition", 0f),
+			Passable = !e.TryGetProperty("passable", out JsonElement pa) || pa.GetBoolean(),
+		};
+		if (existing.Exists(x => x.Id == t.Id))
+			throw new DataException($"{where}: duplicate terrain '{t.Id}'");
+		return t;
+	}
+
 	/// <summary>Reads province_setup.json into the provinces. Provinces missing from it stay empty.</summary>
 	public static int LoadProvinceSetup(string path, Province[] provinces, Definitions defs)
 	{
@@ -208,6 +241,8 @@ public static partial class DataLoader
 
 			foreach (string f in GetStringList(e, "features", where))
 				p.Features.Add(f);
+			if (e.TryGetProperty("biome", out JsonElement biome))
+				p.Biome = defs.GetBiome(biome.GetString()) ?? throw new DataException($"{where}: unknown biome '{biome.GetString()}'");
 
 			if (e.TryGetProperty("resources", out JsonElement res))
 			{
