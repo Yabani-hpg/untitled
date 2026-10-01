@@ -63,13 +63,13 @@ public abstract class Condition
 		return list.Count == 1 ? list[0] : new All(list);
 	}
 
-	/// <summary>A Holocene date written "year.month.day", Paradox style: "8801.1.1" is 1 January 1200 BC.</summary>
+	/// <summary>A Holocene date written "year.month.day", Paradox style: "8201.1.1" is 1 January 1800 BC.</summary>
 	public static GameDate ParseDate(string text, string where)
 	{
 		string[] parts = (text ?? "").Split('.');
 		if (parts.Length != 3 || !int.TryParse(parts[0], out int y) || !int.TryParse(parts[1], out int m) || !int.TryParse(parts[2], out int d)
 			|| m < 1 || m > 12 || d < 1 || d > GameDate.DaysInMonth(y - GameDate.HoloceneOffset, m))
-			throw new DataException($"{where}: '{text}' is not a Holocene date like 8801.1.1");
+			throw new DataException($"{where}: '{text}' is not a Holocene date like 8201.1.1");
 		return GameDate.FromHolocene(y, m, d);
 	}
 

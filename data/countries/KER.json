@@ -1,0 +1,67 @@
+{
+	"_comment": "The Kingdom of Kerma (Kush to the Egyptians) at the start, 1 January 1800 BC: the first Nubian state, ruled from the great city of Kerma below the Third Cataract and holding the Dongola Reach to the Fourth; Egypt's rival and trading partner across the Second Cataract forts. Its kings are generated (none are known by name).",
+	"tag": "KER",
+	"name": "Kerma",
+	"adjective": "Kushite",
+	"color": [
+		120,
+		40,
+		120
+	],
+	"government": "Kushite kingdom",
+	"ruler_title": "King",
+	"capital": "Kerma",
+	"capital_name": "Kerma",
+	"gold": 60,
+	"laws": {
+		"government": "monarchy",
+		"succession": "primogeniture",
+		"citizenship": "kindred",
+		"noncitizens": "protected",
+		"culture_policy": "tolerance",
+		"religion": "state_cult",
+		"legal_code": "customary",
+		"slavery": "legal",
+		"frontier": "open"
+	},
+	"techs": [
+		"monarchy"
+	],
+	"ruler_names": [
+		"Kashta",
+		"Alara",
+		"Nedjeh",
+		"Teriteqas",
+		"Awawa"
+	],
+	"ruler_name_counts": {
+		"Kashta": 0,
+		"Alara": 0,
+		"Nedjeh": 0,
+		"Teriteqas": 0,
+		"Awawa": 0
+	},
+	"start_provinces": [
+		{
+			"areas": [
+				"dongola_reach"
+			],
+			"control": "core"
+		},
+		{
+			"provinces": [
+				"Kurgus"
+			],
+			"control": "absorbed",
+			"since": "8171.1.1",
+			"_comment": "chiefs of the Abu Hamed reach drawn into the kingdom"
+		}
+	],
+	"allied_tribes": [
+		{
+			"tribe": "irem",
+			"since": "8185.1.1",
+			"relation": 50
+		}
+	]
+}

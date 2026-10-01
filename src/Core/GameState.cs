@@ -37,8 +37,8 @@ public partial class GameState : Node
 	[Signal]
 	public delegate void ClockChangedEventHandler();
 
-	/// <summary>1 January 8801 HE, i.e. 1 January 1200 BC: the Bronze Age collapse.</summary>
-	public static readonly GameDate StartDate = GameDate.FromHolocene(8801, 1, 1);
+	/// <summary>1 January 8201 HE, i.e. 1 January 1800 BC: the Middle Bronze Age, Egypt's Middle Kingdom at its height.</summary>
+	public static readonly GameDate StartDate = GameDate.FromHolocene(8201, 1, 1);
 
 	public const int MinSpeed = 1;
 	public const int MaxSpeed = 5;
@@ -119,6 +119,11 @@ public partial class GameState : Node
 		LawRules.Defs = Definitions;
 		TechRules.Defs = Definitions;
 		int countryFiles = DataLoader.LoadCountryFiles(_countries, Definitions, _provinceNames);
+		foreach (Country c in _countries.Values)
+		{
+			foreach (var (id, name) in c.Definition?.ProvinceNames ?? new())
+				_provinces[id].AlternateNames[c.Tag] = name;
+		}
 
 		ProvinceMapTexture = GD.Load<Texture2D>(ProvinceMapPath)
 			?? throw new DataException($"{ProvinceMapPath}: cannot load");
@@ -158,7 +163,7 @@ public partial class GameState : Node
 
 	// ------------------------------------------------------------------------------ time and calendars
 
-	/// <summary>Today in the default (Gregorian) calendar: "1 January 1200 BC".</summary>
+	/// <summary>Today in the default (Gregorian) calendar: "1 January 1800 BC".</summary>
 	public string DateText => Definitions.DefaultCalendar?.Format(Date) ?? Date.Holocene.ToString();
 
 	public void SetPaused(bool paused)

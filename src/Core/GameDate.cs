@@ -5,7 +5,7 @@ namespace Untitled.Core;
 /// <summary>
 /// A day in the game, counted as a Julian Day Number so that every calendar converts from one integer.
 /// The Holocene calendar governs the game: dates in data and saves are Holocene dates (year = astronomical
-/// year + 10000, Gregorian months and leap years), so 1 January 8801 HE is 1 January 1200 BC.
+/// year + 10000, Gregorian months and leap years), so 1 January 8201 HE is 1 January 1800 BC.
 /// </summary>
 public readonly record struct GameDate(long Day) : IComparable<GameDate>
 {

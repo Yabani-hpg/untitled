@@ -6,7 +6,7 @@ wall paintings. Named rulers get their own drawing (Seti II of Egypt); every cul
 generic portraits, which rulers without a drawing of their own are given (see data/portraits.json).
 
 Outputs (overwritten):
-  gfx/portraits/EGY_seti_ii.png
+  gfx/portraits/EGY_seti_ii.png, gfx/portraits/EGY_amenemhat_iii.png
   gfx/portraits/generic/<culture>_<n>.png
   data/portraits.json               the generic portraits of each culture
 
@@ -176,6 +176,92 @@ def seti_ii():
     return frame(skin_body + face + body + crown, background, defs=defs)
 
 
+def amenemhat_iii():
+    """Amenemhat III (Nimaatre), pharaoh of Egypt c. 1831-1786 BC, in the striped nemes headcloth of his statues."""
+    skin, shade = "#9a5230", "#64301a"
+    defs = skin_gradient(skin, shade) + """
+<linearGradient id="wall" x1="0" y1="0" x2="0" y2="1">
+  <stop offset="0" stop-color="#e8cf98"/><stop offset="1" stop-color="#c9a468"/>
+</linearGradient>
+<linearGradient id="crown" x1="0" y1="0" x2="1" y2="1">
+  <stop offset="0" stop-color="#3f63b8"/><stop offset="1" stop-color="#1b2f6e"/>
+</linearGradient>
+<clipPath id="crownclip">
+  <path d="M212 150 C222 108 210 66 182 48 C150 30 108 44 98 88 C90 122 96 156 112 178 L150 170 C168 154 190 146 212 150 Z"/>
+</clipPath>
+<clipPath id="bodyclip"><path d="M34 400 C44 336 96 304 170 302 C246 302 292 336 304 400 Z"/></clipPath>"""
+
+    background = """
+<rect x="0" y="0" width="320" height="400" fill="url(#wall)"/>
+<rect x="0" y="0" width="320" height="30" fill="#1f3b7a"/>
+<g fill="#e3b94a">""" + "".join(f'<path d="M{x} 30 L{x + 10} 14 L{x + 20} 30 Z"/>' for x in range(4, 320, 22)) + """</g>
+<rect x="0" y="30" width="320" height="5" fill="#b23a24"/>
+<!-- cartouche: Nimaatre, the throne name -->
+<g transform="translate(18 60)">
+  <rect x="0" y="0" width="46" height="150" rx="23" fill="#f2e2b8" stroke="#1b1410" stroke-width="3"/>
+  <line x1="-4" y1="156" x2="50" y2="156" stroke="#1b1410" stroke-width="4"/>
+  <circle cx="23" cy="24" r="10" fill="#c8402a" stroke="#1b1410" stroke-width="1.5"/>
+  <path d="M11 58 C11 44 35 44 35 58 L35 64 L11 64 Z" fill="#2e6d9e" stroke="#1b1410" stroke-width="1.5"/>
+  <ellipse cx="23" cy="80" rx="6" ry="8" fill="none" stroke="#1b1410" stroke-width="3"/><path d="M23 88 L23 108 M13 90 L33 90" stroke="#1b1410" stroke-width="3"/>
+  <ellipse cx="23" cy="122" rx="11" ry="7" fill="#2f7a4a" stroke="#1b1410" stroke-width="1.5"/>
+  <path d="M14 136 L32 136" stroke="#1b1410" stroke-width="3"/>
+</g>
+<g fill="#1b1410" opacity="0.55">
+  <path d="M276 70 l10 0 l0 26 l-10 0 z"/><circle cx="281" cy="112" r="6"/><path d="M272 130 q9 -12 18 0 z"/>
+  <path d="M276 150 l10 0 l0 20 l-10 0 z"/><path d="M270 186 l22 0 l-4 8 l-14 0 z"/>
+</g>"""
+
+    body = f"""
+<g clip-path="url(#bodyclip)">
+  <path d="M34 400 C44 336 96 304 170 302 C246 302 292 336 304 400 Z" fill="url(#skin)"/>
+  <!-- wesekh: the broad collar, bands of faience beads -->
+  <g fill="none" stroke-width="11">
+    <ellipse cx="168" cy="300" rx="84" ry="44" stroke="#1f5fa8"/>
+    <ellipse cx="168" cy="300" rx="97" ry="55" stroke="#d9a93a"/>
+    <ellipse cx="168" cy="300" rx="110" ry="66" stroke="#b23a24"/>
+    <ellipse cx="168" cy="300" rx="123" ry="77" stroke="#2f8a5a"/>
+    <ellipse cx="168" cy="300" rx="136" ry="88" stroke="#d9a93a"/>
+  </g>
+  <g fill="#d9a93a" stroke="#6b4f1d" stroke-width="1">""" + "".join(
+        f'<path d="M{168 + 146 * c:.1f} {300 + 96 * s:.1f} l{7 * c:.1f} {12 * s + 4:.1f} l{-7 * s:.1f} {3:.1f} z"/>'
+        for c, s in [(math.cos(a / 10), math.sin(a / 10)) for a in range(2, 30)]) + """</g>
+  <g fill="none" stroke="#1b1410" stroke-width="1.2" opacity="0.5">
+    <ellipse cx="168" cy="300" rx="78" ry="38"/><ellipse cx="168" cy="300" rx="142" ry="94"/>
+  </g>
+</g>"""
+
+    face = head(skin, shade, nose=0, chin=0) + EYE + MOUTH + f"""
+<!-- ceremonial false beard, braided, held by a strap along the jaw -->
+<path d="M204 238 L214 238 L219 288 C216 292 210 292 207 288 Z" fill="#2a1d14" stroke="#120d0a" stroke-width="1.5"/>
+<g stroke="#5a4330" stroke-width="1.4">""" + "".join(f'<line x1="{205 + i * 0.3}" y1="{246 + i * 7}" x2="{217 - i * 0.1}" y2="{244 + i * 7}"/>' for i in range(6)) + f"""</g>
+<path d="M204 238 C190 234 170 222 152 206" fill="none" stroke="#2a1d14" stroke-width="3"/>"""
+
+    crown = """
+<!-- nemes: the striped royal headcloth, falling in lappets to the shoulders, with a golden uraeus -->
+<defs>
+  <clipPath id="nemesclip">
+    <path d="M212 150 C222 108 210 66 182 48 C150 30 108 44 98 88 C90 122 92 150 92 170 L84 296 L138 300 L146 196 C166 174 190 160 212 150 Z"/>
+  </clipPath>
+</defs>
+<path d="M212 150 C222 108 210 66 182 48 C150 30 108 44 98 88 C90 122 92 150 92 170 L84 296 L138 300 L146 196 C166 174 190 160 212 150 Z"
+      fill="#e7c04d" stroke="#6b4f1d" stroke-width="3"/>
+<g clip-path="url(#nemesclip)" fill="#2b4a9a">""" + "".join(
+        f'<path d="M60 {y} L240 {y - 28} L240 {y - 16} L60 {y + 12} Z"/>' for y in range(40, 330, 24)) + """</g>
+<path d="M212 150 C222 108 210 66 182 48 C150 30 108 44 98 88 C90 122 92 150 92 170 L84 296 L138 300 L146 196 C166 174 190 160 212 150 Z"
+      fill="none" stroke="#6b4f1d" stroke-width="3"/>
+<!-- the headband across the brow -->
+<path d="M100 160 C130 150 160 148 212 150" fill="none" stroke="#e7c04d" stroke-width="7"/>
+<path d="M100 160 C130 150 160 148 212 150" fill="none" stroke="#8a6a1c" stroke-width="1.2"/>
+<!-- uraeus: the rearing cobra of kingship -->
+<path d="M210 146 C216 136 226 132 228 122 C229 114 222 112 218 118 C216 122 220 126 222 124"
+      fill="none" stroke="#e7c04d" stroke-width="5" stroke-linecap="round"/>
+<path d="M210 146 C216 136 226 132 228 122 C229 114 222 112 218 118" fill="none" stroke="#8a6a1c" stroke-width="1.2"/>
+<ellipse cx="227" cy="119" rx="4" ry="6" fill="#e7c04d" stroke="#8a6a1c" stroke-width="1"/>
+"""
+    skin_body = f'<path d="{BODY}" fill="url(#skin)" stroke="{shade}" stroke-width="1.5"/>'
+    return frame(skin_body + face + body + crown, background, defs=defs)
+
+
 # --------------------------------------------------------------------------------------- generic busts
 
 CULTURE_LOOKS = {
@@ -318,6 +404,7 @@ def render(svg, path):
 
 def main():
     render(seti_ii(), OUT / "EGY_seti_ii.png")
+    render(amenemhat_iii(), OUT / "EGY_amenemhat_iii.png")
     table = {}
     for culture in CULTURE_LOOKS:
         paths = []

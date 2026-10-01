@@ -50,7 +50,7 @@ func _on_btn_hover_exit(b: Control) -> void:
 # --- Button actions ---
 
 func _on_new_game() -> void:
-	# a fresh world on 1 January 1200 BC; the map scene opens on the country selection screen
+	# a fresh world on 1 January 1800 BC; the map scene opens on the country selection screen
 	GameState.NewGame()
 	_transition_to(first_scene)
 

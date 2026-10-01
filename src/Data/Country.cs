@@ -101,6 +101,8 @@ public sealed class CountryDefinition
 	public Dictionary<string, string> Laws { get; } = new();
 	/// <summary>Technologies known at the start, besides those every settled country knows.</summary>
 	public List<string> Techs { get; } = new();
+	/// <summary>The country's own names for provinces (by province id), used while it owns them.</summary>
+	public Dictionary<int, string> ProvinceNames { get; } = new();
 }
 
 /// <summary>A province a country controls at the start. <c>Since</c> null means long before the start.</summary>

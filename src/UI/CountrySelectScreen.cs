@@ -6,7 +6,7 @@ using Untitled.Data;
 namespace Untitled.UI;
 
 /// <summary>
-/// The country selection screen after New Game: the world on 1 January 1200 BC, where clicking any
+/// The country selection screen after New Game: the world on 1 January 1800 BC, where clicking any
 /// province picks its country. Shows the country's flag, government, capital, people and its ruler with
 /// portrait, and starts the game as that country.
 /// </summary>
@@ -30,7 +30,7 @@ public partial class CountrySelectScreen : Control
 	Label _hint;
 
 	/// <summary>Featured nations, shown as buttons; the first is the one the screen opens on.</summary>
-	static readonly string[] Featured = { "EGY" };
+	static readonly string[] Featured = { "EGY", "KER" };
 
 	public override void _Ready()
 	{
@@ -84,7 +84,7 @@ public partial class CountrySelectScreen : Control
 		title.HorizontalAlignment = HorizontalAlignment.Center;
 		box.AddChild(title);
 		string date = GameState.Instance?.DateText ?? "";
-		var sub = HudStyle.Body($"{date} · The Bronze Age collapses. Click a province to pick its nation.", BodyFont, 14, HudStyle.Muted);
+		var sub = HudStyle.Body($"{date} · The Middle Bronze Age. Click a province to pick its nation.", BodyFont, 14, HudStyle.Muted);
 		sub.HorizontalAlignment = HorizontalAlignment.Center;
 		box.AddChild(sub);
 		_hint = HudStyle.Body("Beyond the few organized states, the world belongs to tribes and nomads.", BodyFont, 13, HudStyle.Muted);

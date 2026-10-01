@@ -126,7 +126,17 @@ def egypt_islamic():
                f'<circle cx="150" cy="100" r="58" fill="{WHITE}"/><circle cx="170" cy="100" r="50" fill="#1f6b3a"/>{stars}')
 
 
+def kerma():
+    """Kerma: the red field and black rim of its black-topped pottery, with the horns of the sacred bull."""
+    horns = ('<path d="M96 132 C92 104 104 84 126 82 C118 94 116 108 122 120 L150 132 L178 120 C184 108 182 94 174 82 '
+             'C196 84 208 104 204 132 C196 152 172 158 150 150 C128 158 104 152 96 132 Z" fill="#f1ead8" stroke="#231c16" stroke-width="3"/>'
+             '<circle cx="150" cy="118" r="14" fill="#d9a93a" stroke="#231c16" stroke-width="3"/>')
+    return svg(f'<rect width="300" height="200" fill="#8f2a24"/><rect width="300" height="46" fill="#231c16"/>'
+               f'<rect y="46" width="300" height="6" fill="#d9a93a"/>{horns}')
+
+
 SPECIAL = {
+    "KER": {"KER.png": kerma},
     "EGY": {
         "EGY.png": egypt_default,
         "EGY_upper.png": egypt_upper,

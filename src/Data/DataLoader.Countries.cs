@@ -375,6 +375,15 @@ public static partial class DataLoader
 				def.Laws[l.Name] = l.Value.GetString();
 			}
 		}
+		if (e.TryGetProperty("province_names", out JsonElement altNames))
+		{
+			foreach (JsonProperty n in altNames.EnumerateObject())
+			{
+				if (n.Value.ValueKind != JsonValueKind.String || n.Value.GetString().Length == 0)
+					throw new DataException($"{path}:province_names: '{n.Name}' needs a name");
+				def.ProvinceNames[ProvinceByName(names, n.Name, $"{path}:province_names")] = n.Value.GetString();
+			}
+		}
 		foreach (string tech in GetStringList(e, "techs", path))
 		{
 			if (defs.GetTech(tech) == null)

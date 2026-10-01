@@ -55,6 +55,7 @@
 	{"tag": "DZA", "name": "Algeria", "color": [168, 122, 47]},
 	{"tag": "ECU", "name": "Ecuador", "color": [90, 149, 184]},
 	{"tag": "EGY", "name": "Egypt", "color": [66, 71, 158]},
+	{"tag": "KER", "name": "Kerma", "color": [120, 40, 120]},
 	{"tag": "ERI", "name": "Eritrea", "color": [77, 113, 196]},
 	{"tag": "ESP", "name": "Spain", "color": [59, 184, 142]},
 	{"tag": "EST", "name": "Estonia", "color": [116, 186, 95]},

@@ -9,7 +9,15 @@ public sealed class Province
 {
 	public int Id { get; }
 	public Color MapColor { get; }
-	public string Name { get; }
+	/// <summary>Its name in data/provinces.csv, which areas, country files and saves refer to.</summary>
+	public string BaseName { get; }
+	/// <summary>
+	/// What its owner calls it: a country file's "province_names" (London is Londinium under Rome), by
+	/// owner tag.
+	/// </summary>
+	public Dictionary<string, string> AlternateNames { get; } = new();
+	/// <summary>Its name as shown: the owner's name for it if it has one, else <see cref="BaseName"/>.</summary>
+	public string Name => OwnerTag != null && AlternateNames.TryGetValue(OwnerTag, out string name) ? name : BaseName;
 	public string Terrain { get; }
 
 	/// <summary>
@@ -156,7 +164,7 @@ public sealed class Province
 	{
 		Id = id;
 		MapColor = mapColor;
-		Name = name;
+		BaseName = name;
 		Terrain = terrain;
 		OwnerTag = ownerTag;
 		MapOwnerTag = ownerTag;

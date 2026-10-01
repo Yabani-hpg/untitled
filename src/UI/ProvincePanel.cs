@@ -186,6 +186,8 @@ public partial class ProvincePanel : PanelContainer
 			var religions = p.Pops.Select(g => g.Religion.Name).Distinct().ToList();
 			if (religions.Count > 0)
 				Row(grid, "Religion", string.Join(", ", religions));
+			if (p.Name != p.BaseName)
+				Row(grid, "Also called", $"{p.BaseName}, by others");
 			Row(grid, "Terrain", TerrainRules.Describe(p));
 			Row(grid, "On the land", TerrainEffects(p));
 			if (p.Features.Count > 0)

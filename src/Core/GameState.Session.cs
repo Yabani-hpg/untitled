@@ -85,7 +85,7 @@ public partial class GameState : IWorld
 		name != null && _provinceNames.TryGetValue(name, out int id) && id > 0 ? id : 0;
 
 	/// <summary>
-	/// Sets up a fresh game on 1 January 1200 BC: provinces as on the map with their starting populations,
+	/// Sets up a fresh game on 1 January 1800 BC: provinces as on the map with their starting populations,
 	/// each country file's start provinces, capitals, rulers and flags. Ends in the country selection phase.
 	/// </summary>
 	public void NewGame()

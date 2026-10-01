@@ -29,7 +29,7 @@ public static class SaveGames
 
 	public static string PathFor(string name) => $"{Dir}/{Sanitize(name)}{Extension}";
 
-	/// <summary>A default name for a new save: "Egypt 1200 BC".</summary>
+	/// <summary>A default name for a new save: "Egypt 1800 BC".</summary>
 	public static string SuggestName(GameState gs)
 	{
 		string country = gs.PlayerCountry?.Name ?? "Game";

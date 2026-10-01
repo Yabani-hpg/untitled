@@ -113,7 +113,10 @@ public partial class MapLabels : Node3D
 			GameState.Instance.OwnershipChanged -= RefreshCountryLabels;
 	}
 
-	/// <summary>Recompute country names from current ownership (after conquests, unions, ...).</summary>
+	/// <summary>
+	/// Recompute country names from current ownership (after conquests, unions, ...), and province names
+	/// too where owners have names of their own for provinces.
+	/// </summary>
 	public void RefreshCountryLabels()
 	{
 		GameState state = GameState.Instance;
@@ -123,6 +126,8 @@ public partial class MapLabels : Node3D
 		var provinces = state.Provinces;
 		var countries = state.Countries;
 		_countryTask = Task.Run(() => LayOut(LabelLayout.Compute(map, provinces, countries, includeProvinces: false)));
+		if (provinces.Any(p => p != null && p.AlternateNames.Count > 0))
+			_provinceTask = Task.Run(() => LayOut(LabelLayout.Compute(map, provinces, countries, includeCountries: false)));
 	}
 
 	void Build(Task<GlyphBatch> task, Node3D layer, string what)
