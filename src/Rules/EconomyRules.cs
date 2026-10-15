@@ -58,8 +58,8 @@ public static class EconomyRules
 	/// </summary>
 	public static double Tax(Province p, GameDate today, Country owner)
 	{
-		if (p.Control == null)
-			return 0;
+		if (p.Control == null || p.OccupierTag != null)
+			return 0;                         // an occupied province's tax goes nowhere
 		double noncitizens = 1 + LawRules.Mod(owner, "noncitizen_tax");
 		double tax = 0;
 		foreach (PopGroup pop in p.Pops)

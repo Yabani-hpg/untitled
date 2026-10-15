@@ -150,6 +150,7 @@ public partial class GameState : IWorld
 		}
 		CreateTribes();
 		SetUpTribeRelations();
+		SetUpDiplomacy();
 		EnsureMenAndWomen();
 		foreach (Tribe t in _tribes.Values)
 		{

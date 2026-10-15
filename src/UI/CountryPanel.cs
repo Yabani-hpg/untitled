@@ -219,6 +219,7 @@ public partial class CountryPanel : PanelContainer
 		ControlKind.Core => "cores",
 		ControlKind.Absorbed => "absorbed",
 		ControlKind.Subjugated => "subjugated",
+		ControlKind.Conquered => "conquered",
 		_ => "other",
 	};
 

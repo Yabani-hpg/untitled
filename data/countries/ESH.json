@@ -71,5 +71,10 @@
 	},
 	"province_pops": {
 		"Diyala": 60
-	}
+	},
+	"claims": [
+		"Baghdad",
+		"Diyala",
+		"Sala ad-Din"
+	]
 }

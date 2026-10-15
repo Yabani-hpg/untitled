@@ -20,12 +20,14 @@ public partial class PlayerBar : PanelContainer
 	[Export] public NodePath CameraRigPath { get; set; }
 	[Export] public NodePath CountryPanelPath { get; set; }
 	[Export] public NodePath ResearchPanelPath { get; set; }
+	[Export] public NodePath DiplomacyPanelPath { get; set; }
 
 	TextureRect _flag;
 	TextureRect _portrait;
 	Label _name;
 	Label _ruler;
 	readonly Dictionary<string, (Control Box, Label Value, Label Detail)> _chips = new();
+	Button _diplomacyButton;
 
 	public override void _Ready()
 	{
@@ -68,6 +70,12 @@ public partial class PlayerBar : PanelContainer
 		Chip(chips, "population", "population", () => CountryPanel()?.Toggle(0), 88);
 		Chip(chips, "research", "science", () => ResearchPanel()?.Toggle(), 190);
 		Chip(chips, "army", "army", () => CountryPanel()?.Toggle(2), 84);
+		var diplomacy = HudStyle.Button("Diplomacy", BodyFont, 13);
+		diplomacy.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+		diplomacy.TooltipText = "Other countries: opinions, alliances, wars and peace";
+		diplomacy.Pressed += () => GetNodeOrNull<DiplomacyPanel>(DiplomacyPanelPath ?? new NodePath())?.Toggle();
+		chips.AddChild(diplomacy);
+		_diplomacyButton = diplomacy;
 
 		GameState gs = GameState.Instance;
 		if (gs == null)
@@ -81,6 +89,7 @@ public partial class PlayerBar : PanelContainer
 		gs.ArmiesChanged += Refresh;
 		gs.LawsChanged += Refresh;
 		gs.RulerChanged += OnRulerChanged;
+		gs.WarsChanged += Refresh;
 		Refresh();
 		// a loaded game opens on the player's capital
 		if (gs.Phase == GamePhase.Playing)
@@ -101,6 +110,7 @@ public partial class PlayerBar : PanelContainer
 		gs.ArmiesChanged -= Refresh;
 		gs.LawsChanged -= Refresh;
 		gs.RulerChanged -= OnRulerChanged;
+		gs.WarsChanged -= Refresh;
 	}
 
 	void OnProvinceChanged(int id) => Refresh();
@@ -211,6 +221,9 @@ public partial class PlayerBar : PanelContainer
 			+ (stock >= 1 ? $"\nStockpile: {stock:0} points" : "") + "\n\nClick to open the research trees.";
 		Set("research", $"+{points:0.0}", detail, tip, t == null ? HudStyle.Bad : HudStyle.Muted);
 
+		var wars = gs.WarsOf(c.Tag).ToList();
+		_diplomacyButton.Text = wars.Count > 0 ? $"⚔ At war ({wars.Count})" : "Diplomacy";
+		_diplomacyButton.AddThemeColorOverride("font_color", wars.Count > 0 ? HudStyle.Bad : HudStyle.Text);
 		int under = MilitaryRules.UnderArms(c, gs.Armies.Values, owned);
 		int mercs = TribeRules.Mercenaries(gs.Tribes.Values, c.Tag);
 		int levy = gs.AvailableLevies(c);

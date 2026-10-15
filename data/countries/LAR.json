@@ -81,5 +81,10 @@
 			"religion": "pagan",
 			"occupation": "peasants"
 		}
-	}
+	},
+	"claims": [
+		"Al-Qādisiyyah",
+		"Babil",
+		"Al-Basrah"
+	]
 }

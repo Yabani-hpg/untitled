@@ -29,6 +29,12 @@ public sealed class Province
 	/// <summary>How the controlling country holds the province; null when uncontrolled.</summary>
 	public ProvinceControl Control { get; set; }
 
+	/// <summary>Tag of the country whose army holds the province in war, or null: its owner's tax and levies are lost until the peace.</summary>
+	public string OccupierTag { get; set; }
+	/// <summary>Days of siege the occupier's armies have put in, toward <see cref="Untitled.Rules.WarRules.SiegeDays"/>.</summary>
+	public double SiegeProgress { get; set; }
+	public string SiegerTag { get; set; }
+
 	/// <summary>The tribe (unsettled country) whose people live here, or 0. Only uncontrolled land has one.</summary>
 	public int TribeId { get; set; }
 
@@ -178,6 +184,9 @@ public sealed class Province
 	{
 		OwnerTag = null;                 // every province starts uncontrolled; country files take theirs
 		Control = null;
+		OccupierTag = null;
+		SiegerTag = null;
+		SiegeProgress = 0;
 		TribeId = 0;
 		Pops.Clear();
 		Buildings.Clear();

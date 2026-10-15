@@ -58,5 +58,8 @@
 	],
 	"province_pops": {
 		"Kriti": 80
-	}
+	},
+	"claims": [
+		"Kriti"
+	]
 }

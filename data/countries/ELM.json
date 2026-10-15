@@ -80,5 +80,12 @@
 			"religion": "pagan",
 			"occupation": "peasants"
 		}
-	}
+	},
+	"claims": [
+		"Dhi-Qar",
+		"Diyala",
+		"Maysan",
+		"Ilam",
+		"Lorestan"
+	]
 }

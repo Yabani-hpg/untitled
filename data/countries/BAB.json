@@ -76,5 +76,11 @@
 			"religion": "pagan",
 			"occupation": "peasants"
 		}
-	}
+	},
+	"claims": [
+		"Al-Qādisiyyah",
+		"Diyala",
+		"Dhi-Qar",
+		"Al-Anbar"
+	]
 }

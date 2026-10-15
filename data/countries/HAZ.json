@@ -63,5 +63,9 @@
 	},
 	"province_pops": {
 		"HaZafon": 25
-	}
+	},
+	"claims": [
+		"HaMerkaz",
+		"South Lebanon"
+	]
 }

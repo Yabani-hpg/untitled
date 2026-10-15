@@ -76,7 +76,15 @@ public partial class GameState
 	/// </summary>
 	public Army RaiseLevies(int regiments, out string reason)
 	{
-		Country c = PlayerCountry;
+		Army army = RaiseLeviesFor(PlayerCountry, regiments, out reason);
+		if (army != null)
+			SelectArmy(army.Id);
+		return army;
+	}
+
+	/// <summary>Raises levies for any country (the player's, or one run by the game).</summary>
+	Army RaiseLeviesFor(Country c, int regiments, out string reason)
+	{
 		reason = null;
 		int available = AvailableLevies(c);
 		if (c == null || GetProvince(c.CapitalId) == null)
@@ -98,10 +106,10 @@ public partial class GameState
 		c.Gold -= raised.Sum(r => r.Type.Cost);
 		Army army = NewArmy(c, c.CapitalId);
 		army.Regiments.AddRange(raised);
-		Notify($"The levies are called up: {raised.Count} regiments ({Describe(army)}) muster at {CapitalText(c)} as the {army.Name}."
-			+ (cost > 0 ? $" Arming them cost {raised.Sum(r => r.Type.Cost):0} gold." : ""));
+		if (c.Tag == PlayerTag)
+			Notify($"The levies are called up: {raised.Count} regiments ({Describe(army)}) muster at {CapitalText(c)} as the {army.Name}."
+				+ (cost > 0 ? $" Arming them cost {raised.Sum(r => r.Type.Cost):0} gold." : ""));
 		AfterArmyChange(army.ProvinceId, affectsPeople: true);
-		SelectArmy(army.Id);
 		return army;
 	}
 
@@ -124,8 +132,14 @@ public partial class GameState
 		Army a = GetArmy(armyId);
 		if (a == null || a.OwnerTag != PlayerTag)
 			return;
+		Disband(a);
+	}
+
+	void Disband(Army a)
+	{
 		int home = MilitaryRules.SendHome(a.Regiments, _provinces, _rng);
-		Notify($"The {a.Name} is disbanded: {home * PopGroup.PeoplePerUnit:N0} soldiers go home.");
+		if (a.OwnerTag == PlayerTag)
+			Notify($"The {a.Name} is disbanded: {home * PopGroup.PeoplePerUnit:N0} soldiers go home.");
 		RemoveArmy(a);
 		AfterArmyChange(a.ProvinceId, affectsPeople: true);
 	}
@@ -268,19 +282,39 @@ public partial class GameState
 	void RunArmyDay()
 	{
 		bool moved = false;
-		foreach (Army a in _armies.Values)
+		var arrived = new List<(Army, int)>();
+		foreach (Army a in _armies.Values.ToList())
 		{
 			if (!a.Moving)
 				continue;
 			moved = true;
 			if (++a.DaysMarched < a.StepDays)
 				continue;
+			int from = a.ProvinceId;
 			a.ProvinceId = a.Path[0];
 			a.Path.RemoveAt(0);
 			a.DaysMarched = 0;
 			a.StepDays = a.Moving ? StepDays(a, a.Path[0]) : 0;
 			if (!a.Moving && a.OwnerTag == PlayerTag)
 				Notify($"The {a.Name} reaches {GetProvince(a.ProvinceId)?.Name}.");
+			arrived.Add((a, from));
+		}
+		foreach (var (a, from) in arrived)
+		{
+			if (_armies.ContainsKey(a.Id) && a.Regiments.Count > 0)
+			{
+				// an army marching through stops to fight enemies in its way
+				if (ArmiesIn(a.ProvinceId).Any(o => Enemies(a.OwnerTag, o.OwnerTag)))
+				{
+					var onward = a.Path.ToList();
+					a.Path.Clear();
+					a.StepDays = 0;
+					bool won = CheckBattle(a, from);
+					// the winner marches on; the loser has been sent back
+					if (won && onward.Count > 0 && _armies.ContainsKey(a.Id) && a.Regiments.Count > 0)
+						OrderArmy(a, onward[^1]);
+				}
+			}
 		}
 		if (moved)
 			EmitSignal(SignalName.ArmiesMoved);

@@ -389,6 +389,9 @@ public static partial class DataLoader
 			foreach (JsonProperty n in popCounts.EnumerateObject())
 				def.ProvincePops[ProvinceByName(names, n.Name, $"{path}:province_pops")] = n.Value.GetInt32();
 		}
+		foreach (string claim in GetStringList(e, "claims", path))
+			def.Claims.Add(ProvinceByName(names, claim, $"{path}:claims"));
+		def.Allies.AddRange(GetStringList(e, "allies", path));
 		foreach (string tech in GetStringList(e, "techs", path))
 		{
 			if (defs.GetTech(tech) == null)

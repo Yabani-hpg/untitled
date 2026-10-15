@@ -76,5 +76,10 @@
 			"religion": "pagan",
 			"occupation": "peasants"
 		}
-	}
+	},
+	"claims": [
+		"Shaanxi",
+		"Hebei",
+		"Shandong"
+	]
 }

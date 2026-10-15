@@ -66,6 +66,41 @@ public partial class GameState
 			w.WriteEndArray();
 			w.WriteNumber("research_stockpile", Math.Round(c.ResearchStockpile, 3));
 			w.WriteNumber("next_army", c.NextArmyNumber);
+			w.WriteNumber("prestige", Math.Round(c.Prestige, 2));
+			w.WriteStartObject("opinions");
+			foreach (var (tag, o) in c.Opinions)
+				w.WriteNumber(tag, o);
+			w.WriteEndObject();
+			w.WriteStartArray("opinion_modifiers");
+			foreach (var (tag, list) in c.OpinionModifiers)
+			{
+				foreach (OpinionModifier m in list)
+				{
+					w.WriteStartArray();
+					w.WriteStringValue(tag);
+					w.WriteStringValue(m.Reason);
+					w.WriteNumberValue(m.Amount);
+					w.WriteNumberValue(m.Until.Day);
+					w.WriteEndArray();
+				}
+			}
+			w.WriteEndArray();
+			w.WriteStartArray("allies");
+			foreach (string t in c.Allies)
+				w.WriteStringValue(t);
+			w.WriteEndArray();
+			w.WriteStartObject("truces");
+			foreach (var (tag, until) in c.Truces)
+				w.WriteNumber(tag, until.Day);
+			w.WriteEndObject();
+			w.WriteStartArray("claims");
+			foreach (int id in c.Claims)
+				w.WriteNumberValue(id);
+			w.WriteEndArray();
+			w.WriteStartArray("courting");
+			foreach (string t in c.ImprovingCountryRelations)
+				w.WriteStringValue(t);
+			w.WriteEndArray();
 			w.WriteStartObject("levy_template");
 			foreach (var (unit, share) in c.LevyTemplate)
 				w.WriteNumber(unit, share);
@@ -107,6 +142,36 @@ public partial class GameState
 			w.WriteNumber("marched", a.DaysMarched);
 			w.WriteNumber("step_days", a.StepDays);
 			WriteRegiments(w, "regiments", a.Regiments);
+			w.WriteEndObject();
+		}
+		w.WriteEndArray();
+
+		w.WriteNumber("next_war", _nextWarId);
+		w.WriteStartArray("wars");
+		foreach (War war in _wars.Values)
+		{
+			w.WriteStartObject();
+			w.WriteNumber("id", war.Id);
+			w.WriteString("attacker", war.AttackerTag);
+			w.WriteString("defender", war.DefenderTag);
+			w.WriteString("cb", war.CasusBelli.ToString().ToLowerInvariant());
+			w.WriteNumber("started", war.Started.Day);
+			w.WriteNumber("battle_score", Math.Round(war.BattleScore, 3));
+			w.WriteStartArray("attackers");
+			foreach (string t in war.Attackers) w.WriteStringValue(t);
+			w.WriteEndArray();
+			w.WriteStartArray("defenders");
+			foreach (string t in war.Defenders) w.WriteStringValue(t);
+			w.WriteEndArray();
+			w.WriteStartArray("battles");
+			foreach (BattleRecord b in war.Battles)
+			{
+				w.WriteStartArray();
+				w.WriteNumberValue(b.Date.Day); w.WriteNumberValue(b.ProvinceId); w.WriteStringValue(b.AttackerTag); w.WriteStringValue(b.DefenderTag);
+				w.WriteBooleanValue(b.AttackerWon); w.WriteNumberValue(b.AttackerMen); w.WriteNumberValue(b.DefenderMen); w.WriteNumberValue(b.AttackerLost); w.WriteNumberValue(b.DefenderLost);
+				w.WriteEndArray();
+			}
+			w.WriteEndArray();
 			w.WriteEndObject();
 		}
 		w.WriteEndArray();
@@ -165,6 +230,12 @@ public partial class GameState
 				w.WriteEndObject();
 			}
 			if (p.TribeId != 0) w.WriteNumber("tribe", p.TribeId);
+			if (p.OccupierTag != null) w.WriteString("occupier", p.OccupierTag);
+			if (p.SiegerTag != null)
+			{
+				w.WriteString("sieger", p.SiegerTag);
+				w.WriteNumber("siege", Math.Round(p.SiegeProgress, 2));
+			}
 			w.WriteStartArray("features");
 			foreach (string f in p.Features)
 				w.WriteStringValue(f);
@@ -256,6 +327,32 @@ public partial class GameState
 			c.CapitalName = e.TryGetProperty("capital_name", out JsonElement cn) ? cn.GetString() : null;
 			c.Ruler = e.TryGetProperty("ruler", out JsonElement r) && _characters.TryGetValue(r.GetInt32(), out Character ruler) ? ruler : null;
 			c.NextArmyNumber = e.TryGetProperty("next_army", out JsonElement na) ? na.GetInt32() : 1;
+			if (e.TryGetProperty("opinions", out JsonElement opinions))
+			{
+				c.Prestige = e.TryGetProperty("prestige", out JsonElement pr) ? pr.GetDouble() : 0;
+				c.Opinions.Clear();
+				foreach (JsonProperty o in opinions.EnumerateObject())
+					c.Opinions[o.Name] = o.Value.GetInt32();
+				c.OpinionModifiers.Clear();
+				foreach (JsonElement m in e.GetProperty("opinion_modifiers").EnumerateArray())
+				{
+					if (!c.OpinionModifiers.TryGetValue(m[0].GetString(), out List<OpinionModifier> list))
+						c.OpinionModifiers[m[0].GetString()] = list = new List<OpinionModifier>();
+					list.Add(new OpinionModifier(m[1].GetString(), m[2].GetInt32(), new GameDate(m[3].GetInt64())));
+				}
+				c.Allies.Clear();
+				foreach (JsonElement t in e.GetProperty("allies").EnumerateArray())
+					c.Allies.Add(t.GetString());
+				c.Truces.Clear();
+				foreach (JsonProperty t in e.GetProperty("truces").EnumerateObject())
+					c.Truces[t.Name] = new GameDate(t.Value.GetInt64());
+				c.Claims.Clear();
+				foreach (JsonElement id in e.GetProperty("claims").EnumerateArray())
+					c.Claims.Add(id.GetInt32());
+				c.ImprovingCountryRelations.Clear();
+				foreach (JsonElement t in e.GetProperty("courting").EnumerateArray())
+					c.ImprovingCountryRelations.Add(t.GetString());
+			}
 			if (e.TryGetProperty("techs", out JsonElement techs))
 			{
 				// saves from before research keep the new game's knowledge
@@ -364,6 +461,9 @@ public partial class GameState
 			}
 			if (save.TryGetProperty("tribes", out _))
 				p.TribeId = e.TryGetProperty("tribe", out JsonElement tr) ? tr.GetInt32() : 0;
+			p.OccupierTag = e.TryGetProperty("occupier", out JsonElement oc) && _countries.ContainsKey(oc.GetString()) ? oc.GetString() : null;
+			p.SiegerTag = e.TryGetProperty("sieger", out JsonElement sg) && _countries.ContainsKey(sg.GetString()) ? sg.GetString() : null;
+			p.SiegeProgress = p.SiegerTag != null && e.TryGetProperty("siege", out JsonElement sp) ? sp.GetDouble() : 0;
 			p.Features.Clear();
 			foreach (JsonElement f in e.GetProperty("features").EnumerateArray())
 				p.Features.Add(f.GetString());
@@ -471,6 +571,32 @@ public partial class GameState
 					_armies[a.Id] = a;
 			}
 			_nextArmyId = save.GetProperty("next_army").GetInt32();
+		}
+		_wars.Clear();
+		if (save.TryGetProperty("wars", out JsonElement wars))
+		{
+			foreach (JsonElement e in wars.EnumerateArray())
+			{
+				var war = new War
+				{
+					Id = e.GetProperty("id").GetInt32(),
+					AttackerTag = e.GetProperty("attacker").GetString(),
+					DefenderTag = e.GetProperty("defender").GetString(),
+					CasusBelli = Enum.TryParse(e.GetProperty("cb").GetString(), true, out CasusBelli cb) ? cb : CasusBelli.Conquest,
+					Started = new GameDate(e.GetProperty("started").GetInt64()),
+					BattleScore = e.GetProperty("battle_score").GetDouble(),
+				};
+				if (GetCountry(war.AttackerTag) == null || GetCountry(war.DefenderTag) == null)
+					continue;
+				foreach (JsonElement t in e.GetProperty("attackers").EnumerateArray()) war.Attackers.Add(t.GetString());
+				foreach (JsonElement t in e.GetProperty("defenders").EnumerateArray()) war.Defenders.Add(t.GetString());
+				foreach (JsonElement b in e.GetProperty("battles").EnumerateArray())
+					war.Battles.Add(new BattleRecord(new GameDate(b[0].GetInt64()), b[1].GetInt32(), b[2].GetString(), b[3].GetString(), b[4].GetBoolean(), b[5].GetInt32(), b[6].GetInt32(), b[7].GetInt32(), b[8].GetInt32()));
+				_wars[war.Id] = war;
+			}
+			_nextWarId = save.GetProperty("next_war").GetInt32();
+			foreach (War w in _wars.Values)
+				WarRules.UpdateScore(w, _countries, _provinces);
 		}
 		foreach (var (p, n) in pendingGarrisons)
 		{

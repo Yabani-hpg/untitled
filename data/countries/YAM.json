@@ -72,5 +72,11 @@
 	"province_pops": {
 		"Aleppo": 50,
 		"Idlib": 20
-	}
+	},
+	"claims": [
+		"Homs (Hims)",
+		"Idlib",
+		"Lattakia",
+		"Ar Raqqah"
+	]
 }

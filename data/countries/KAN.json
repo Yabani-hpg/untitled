@@ -58,5 +58,10 @@
 	"province_pops": {
 		"Kayseri": 30,
 		"Nevsehir": 10
-	}
+	},
+	"claims": [
+		"Aksaray",
+		"Nevsehir",
+		"Yozgat"
+	]
 }

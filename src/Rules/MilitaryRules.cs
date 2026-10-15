@@ -93,7 +93,7 @@ public static class MilitaryRules
 	/// </summary>
 	public static double LevyWeight(Country c, Province p, PopGroup pop, GameDate today)
 	{
-		if (p.OwnerTag != c.Tag || p.Control == null || p.Control.Kind == ControlKind.Subjugated || !CanServe(c, pop))
+		if (p.OwnerTag != c.Tag || p.Control == null || p.OccupierTag != null || p.Control.Kind == ControlKind.Subjugated || !CanServe(c, pop))
 			return 0;
 		double w = LawRules.IsCitizen(c, pop) ? 1 : Math.Clamp(LawRules.Mod(c, "noncitizen_manpower"), 0, 1);
 		return w * (1 - ControlRules.Separatism(p, today, c));

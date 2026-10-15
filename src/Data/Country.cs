@@ -70,6 +70,22 @@ public sealed class Country
 
 	/// <summary>Tribes the country's diplomats are courting (improving relations with).</summary>
 	public HashSet<int> ImprovingRelations { get; } = new();
+	/// <summary>Settled countries its diplomats are courting.</summary>
+	public HashSet<string> ImprovingCountryRelations { get; } = new();
+
+	// --- diplomacy ---
+
+	/// <summary>Opinion of each other settled country, -200..200.</summary>
+	public Dictionary<string, int> Opinions { get; } = new();
+	/// <summary>Standing changes to opinion, by country, each with a reason and the date it fades from ("insulted", "conquered a neighbour").</summary>
+	public Dictionary<string, List<OpinionModifier>> OpinionModifiers { get; } = new();
+	public HashSet<string> Allies { get; } = new();
+	/// <summary>Countries it has a truce with, and until when.</summary>
+	public Dictionary<string, GameDate> Truces { get; } = new();
+	/// <summary>Provinces it claims (ids): a casus belli, and cheaper to take.</summary>
+	public HashSet<int> Claims { get; } = new();
+	/// <summary>Prestige, -100..100: won in battle and in peace, lost in defeat; the world's opinion of us follows it.</summary>
+	public double Prestige { get; set; }
 
 	/// <summary>The flag flown now (see <see cref="Flags"/>).</summary>
 	public FlagDefinition CurrentFlag { get; set; }
@@ -82,6 +98,9 @@ public sealed class Country
 		Adjective = name;
 	}
 }
+
+/// <summary>A standing change to one country's opinion of another, fading away by <see cref="Until"/>.</summary>
+public sealed record OpinionModifier(string Reason, int Amount, GameDate Until);
 
 /// <summary>One of a country's flags, flown while its condition holds.</summary>
 public sealed record FlagDefinition(string Id, string Name, string ImagePath, Condition Condition);
@@ -101,6 +120,10 @@ public sealed class CountryDefinition
 	public Dictionary<string, string> Laws { get; } = new();
 	/// <summary>Technologies known at the start, besides those every settled country knows.</summary>
 	public List<string> Techs { get; } = new();
+	/// <summary>Provinces it claims at the start (ids).</summary>
+	public List<int> Claims { get; } = new();
+	/// <summary>Countries allied with it at the start.</summary>
+	public List<string> Allies { get; } = new();
 	/// <summary>The country's own names for provinces (by province id), used while it owns them.</summary>
 	public Dictionary<int, string> ProvinceNames { get; } = new();
 	/// <summary>Population (in units) set by hand for provinces at the start, by province id, where the generated numbers are wrong.</summary>

@@ -67,5 +67,12 @@
 			"religion": "pagan",
 			"occupation": "peasants"
 		}
-	}
+	},
+	"claims": [
+		"Ar Raqqah",
+		"Al-Anbar"
+	],
+	"allies": [
+		"YAM"
+	]
 }

@@ -1,9 +1,13 @@
 {
-	"_comment": "Egypt at the start, 1 January 1800 BC (8201 HE): the Middle Kingdom of the 12th Dynasty under Amenemhat III, ruled from Itjtawy at the mouth of the Faiyum, holding Lower Nubia to the Second Cataract forts and facing the Kingdom of Kerma beyond them. province_names: the country's own names for provinces it may come to hold (by the provinces' names in data/provinces.csv), shown while it owns them. province_pops: population in units of 1000 set by hand for provinces where the generated numbers are off. Dates are Holocene 'year.month.day'. color: political map colour, RGB 0-255. start_provinces: groups of provinces (areas and/or province names) the country controls at the start; control is core, absorbed (the lands of tribes that allied and were absorbed) or subjugated (nomads held down by a garrison of regiments), since the given date (none: long ago, already a core). laws: the option in force for each law of data/laws.json (the rest take their defaults). techs: technologies (data/techs.json) known at the start, besides those every settled country knows. ruler_names: the regnal names its rulers take; ruler_name_counts: how many rulers already had each, for their numbers (Ramesses III). allied_tribes: unsettled countries (tribes from data/tribes.json, by key) allied with the country at the start, and their relations with it. flags: the first flag whose condition holds is flown; the last one, without a condition, is the default.",
+	"_comment": "Egypt at the start, 1 January 1800 BC (8201 HE): the Middle Kingdom of the 12th Dynasty under Amenemhat III, ruled from Itjtawy at the mouth of the Faiyum, holding Lower Nubia to the Second Cataract forts and facing the Kingdom of Kerma beyond them. province_names: the country's own names for provinces it may come to hold (by the provinces' names in data/provinces.csv), shown while it owns them. claims: provinces the country claims, a casus belli and cheaper to take in a peace. allies: countries allied with it at the start. province_pops: population in units of 1000 set by hand for provinces where the generated numbers are off. Dates are Holocene 'year.month.day'. color: political map colour, RGB 0-255. start_provinces: groups of provinces (areas and/or province names) the country controls at the start; control is core, absorbed (the lands of tribes that allied and were absorbed) or subjugated (nomads held down by a garrison of regiments), since the given date (none: long ago, already a core). laws: the option in force for each law of data/laws.json (the rest take their defaults). techs: technologies (data/techs.json) known at the start, besides those every settled country knows. ruler_names: the regnal names its rulers take; ruler_name_counts: how many rulers already had each, for their numbers (Ramesses III). allied_tribes: unsettled countries (tribes from data/tribes.json, by key) allied with the country at the start, and their relations with it. flags: the first flag whose condition holds is flown; the last one, without a condition, is the default.",
 	"tag": "EGY",
 	"name": "Egypt",
 	"adjective": "Egyptian",
-	"color": [255, 0, 0],
+	"color": [
+		255,
+		0,
+		0
+	],
 	"government": "Pharaonic monarchy",
 	"ruler_title": "Pharaoh",
 	"capital": "Naret-Pehet (Shedet)",
@@ -19,16 +23,75 @@
 		"slavery": "legal",
 		"frontier": "guarded"
 	},
-	"techs": ["monarchy", "code_of_laws", "divine_kingship", "diplomacy", "writing", "masonry", "sailing", "calendar", "mathematics", "medicine"],
-	"ruler_names": ["Amenemhat", "Senusret", "Sobekhotep", "Neferhotep", "Mentuhotep", "Intef", "Khendjer", "Hor"],
-	"ruler_name_counts": { "Amenemhat": 3, "Senusret": 3, "Sobekhotep": 0, "Neferhotep": 0, "Mentuhotep": 4, "Intef": 3, "Khendjer": 0, "Hor": 0 },
+	"techs": [
+		"monarchy",
+		"code_of_laws",
+		"divine_kingship",
+		"diplomacy",
+		"writing",
+		"masonry",
+		"sailing",
+		"calendar",
+		"mathematics",
+		"medicine"
+	],
+	"ruler_names": [
+		"Amenemhat",
+		"Senusret",
+		"Sobekhotep",
+		"Neferhotep",
+		"Mentuhotep",
+		"Intef",
+		"Khendjer",
+		"Hor"
+	],
+	"ruler_name_counts": {
+		"Amenemhat": 3,
+		"Senusret": 3,
+		"Sobekhotep": 0,
+		"Neferhotep": 0,
+		"Mentuhotep": 4,
+		"Intef": 3,
+		"Khendjer": 0,
+		"Hor": 0
+	},
 	"start_provinces": [
-		{ "areas": ["upper_egypt", "lower_egypt", "egyptian_oases", "lower_nubia"], "control": "core", "_comment": "Lower Nubia (Wawat) was conquered by Senusret I, c. 1950 BC, and is Egyptian by now" },
-		{ "areas": ["second_cataract"], "control": "subjugated", "since": "8141.1.1", "garrison": 2, "_comment": "the Batn el-Hajar beyond the fortress line of Semna, fixed as the border by Senusret III, c. 1860 BC" },
-		{ "areas": ["egyptian_deserts"], "control": "subjugated", "since": "8165.1.1", "garrison": 2, "_comment": "the mining deserts, held against the Medjay and Mentiu nomads" }
+		{
+			"areas": [
+				"upper_egypt",
+				"lower_egypt",
+				"egyptian_oases",
+				"lower_nubia"
+			],
+			"control": "core",
+			"_comment": "Lower Nubia (Wawat) was conquered by Senusret I, c. 1950 BC, and is Egyptian by now"
+		},
+		{
+			"areas": [
+				"second_cataract"
+			],
+			"control": "subjugated",
+			"since": "8141.1.1",
+			"garrison": 2,
+			"_comment": "the Batn el-Hajar beyond the fortress line of Semna, fixed as the border by Senusret III, c. 1860 BC"
+		},
+		{
+			"areas": [
+				"egyptian_deserts"
+			],
+			"control": "subjugated",
+			"since": "8165.1.1",
+			"garrison": 2,
+			"_comment": "the mining deserts, held against the Medjay and Mentiu nomads"
+		}
 	],
 	"allied_tribes": [
-		{ "tribe": "medjay", "since": "8190.1.1", "relation": 60, "_comment": "the Medjay, Egypt's desert scouts and police" }
+		{
+			"tribe": "medjay",
+			"since": "8190.1.1",
+			"relation": 60,
+			"_comment": "the Medjay, Egypt's desert scouts and police"
+		}
 	],
 	"province_names": {
 		"Kerma": "Kash",
@@ -43,39 +106,122 @@
 		"dynasty": "12th Dynasty",
 		"birth": "8156.1.1",
 		"portrait": "res://gfx/portraits/EGY_amenemhat_iii.png",
-		"population": { "province": "Naret-Pehet (Shedet)", "culture": "african", "religion": "pagan", "occupation": "peasants" }
+		"population": {
+			"province": "Naret-Pehet (Shedet)",
+			"culture": "african",
+			"religion": "pagan",
+			"occupation": "peasants"
+		}
 	},
 	"flags": [
 		{
-			"id": "islamic", "name": "Misr", "image": "res://gfx/flags/EGY_islamic.png",
-			"condition": { "ruler_religion": "islam" }
+			"id": "islamic",
+			"name": "Misr",
+			"image": "res://gfx/flags/EGY_islamic.png",
+			"condition": {
+				"ruler_religion": "islam"
+			}
 		},
 		{
-			"id": "empire", "name": "The Empire of the Two Lands", "image": "res://gfx/flags/EGY_empire.png",
-			"condition": { "all": [
-				{ "owns_area": { "area": "upper_egypt", "min_share": 0.5 } },
-				{ "owns_area": { "area": "lower_egypt", "min_share": 0.5 } },
-				{ "owns_area": { "area": "nubia", "min_share": 0.6 } },
-				{ "owns_area": { "area": "canaan", "min_share": 0.75 } },
-				{ "owns_area": { "area": "retjenu", "min_share": 0.5 } }
-			] }
+			"id": "empire",
+			"name": "The Empire of the Two Lands",
+			"image": "res://gfx/flags/EGY_empire.png",
+			"condition": {
+				"all": [
+					{
+						"owns_area": {
+							"area": "upper_egypt",
+							"min_share": 0.5
+						}
+					},
+					{
+						"owns_area": {
+							"area": "lower_egypt",
+							"min_share": 0.5
+						}
+					},
+					{
+						"owns_area": {
+							"area": "nubia",
+							"min_share": 0.6
+						}
+					},
+					{
+						"owns_area": {
+							"area": "canaan",
+							"min_share": 0.75
+						}
+					},
+					{
+						"owns_area": {
+							"area": "retjenu",
+							"min_share": 0.5
+						}
+					}
+				]
+			}
 		},
 		{
-			"id": "upper", "name": "Upper Egypt", "image": "res://gfx/flags/EGY_upper.png",
-			"condition": { "all": [
-				{ "owns_area": { "area": "upper_egypt", "min_share": 0.5 } },
-				{ "not": { "owns_area": { "area": "lower_egypt", "min_share": 0.01 } } }
-			] }
+			"id": "upper",
+			"name": "Upper Egypt",
+			"image": "res://gfx/flags/EGY_upper.png",
+			"condition": {
+				"all": [
+					{
+						"owns_area": {
+							"area": "upper_egypt",
+							"min_share": 0.5
+						}
+					},
+					{
+						"not": {
+							"owns_area": {
+								"area": "lower_egypt",
+								"min_share": 0.01
+							}
+						}
+					}
+				]
+			}
 		},
 		{
-			"id": "lower", "name": "Lower Egypt", "image": "res://gfx/flags/EGY_lower.png",
-			"condition": { "all": [
-				{ "owns_area": { "area": "lower_egypt", "min_share": 0.5 } },
-				{ "not": { "owns_area": { "area": "upper_egypt", "min_share": 0.01 } } }
-			] }
+			"id": "lower",
+			"name": "Lower Egypt",
+			"image": "res://gfx/flags/EGY_lower.png",
+			"condition": {
+				"all": [
+					{
+						"owns_area": {
+							"area": "lower_egypt",
+							"min_share": 0.5
+						}
+					},
+					{
+						"not": {
+							"owns_area": {
+								"area": "upper_egypt",
+								"min_share": 0.01
+							}
+						}
+					}
+				]
+			}
 		},
 		{
-			"id": "default", "name": "The Two Lands", "image": "res://gfx/flags/EGY.png"
+			"id": "default",
+			"name": "The Two Lands",
+			"image": "res://gfx/flags/EGY.png"
 		}
+	],
+	"claims": [
+		"Kush (Batn el-Hajar)",
+		"Kerma",
+		"Napata",
+		"Gaza Strip",
+		"HaDarom",
+		"Sinai (Mefkat)"
+	],
+	"allies": [
+		"BYB"
 	]
 }

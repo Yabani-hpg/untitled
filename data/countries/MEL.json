@@ -57,5 +57,9 @@
 			"control": "absorbed",
 			"since": "8171.1.1"
 		}
+	],
+	"claims": [
+		"Gujarat",
+		"Sind"
 	]
 }

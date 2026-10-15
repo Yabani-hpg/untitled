@@ -209,6 +209,7 @@ public partial class GameState : Node
 	{
 		Date = Date.AddDays(1);
 		RunArmyDay();
+		RunSiegeDay();
 		EmitSignal(SignalName.DayAdvanced);
 		if (Date.Holocene.Day == 1)
 			RunMonthlyRules();
@@ -290,6 +291,8 @@ public partial class GameState : Node
 		RunTribeStep();
 		RunLawStep();
 		RunResearchStep();
+		RunDiplomacyStep();
+		RunAiStep();
 		foreach (Country c in EconomyRules.MonthlyStep(_countries, _provinces, _tribes.Values, _armies.Values, Definitions, Date))
 		{
 			if (c.Tag == PlayerTag)

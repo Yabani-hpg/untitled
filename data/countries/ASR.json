@@ -85,5 +85,14 @@
 			"religion": "pagan",
 			"occupation": "peasants"
 		}
-	}
+	},
+	"claims": [
+		"Dayr Az Zawr",
+		"Ar Raqqah",
+		"Diyala",
+		"At-Ta'mim"
+	],
+	"allies": [
+		"QTN"
+	]
 }

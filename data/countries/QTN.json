@@ -67,5 +67,10 @@
 	"province_pops": {
 		"Homs (Hims)": 25,
 		"Hamah": 20
-	}
+	},
+	"claims": [
+		"Hamah",
+		"Idlib",
+		"Beqaa"
+	]
 }

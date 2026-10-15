@@ -18,6 +18,7 @@ public partial class ProvincePanel : PanelContainer
 	[Export] public Font TitleFont { get; set; }
 	[Export] public Font BodyFont { get; set; }
 	[Export] public NodePath CityViewPath { get; set; }
+	[Export] public NodePath DiplomacyPanelPath { get; set; }
 
 	CityView _cityView;
 	Label _name;
@@ -275,9 +276,26 @@ public partial class ProvincePanel : PanelContainer
 			{
 				ControlKind.Core => "Core province",
 				ControlKind.Absorbed => "Absorbed tribes",
+				ControlKind.Conquered => "Conquered province",
 				_ => "Subjugated nomads",
 			};
 			Line($"{how} of {owner?.Name}", HudStyle.Text, 15);
+			if (p.OccupierTag != null)
+				Line($"Occupied by {gs.GetCountry(p.OccupierTag)?.Adjective} troops: its tax and levies are lost until the peace", HudStyle.Bad, 13);
+			else if (p.SiegerTag != null && p.SiegeProgress > 0)
+				Line($"Under siege by {gs.GetCountry(p.SiegerTag)?.Adjective} troops: {p.SiegeProgress / WarRules.SiegeNeeded(p):P0}", HudStyle.Bad, 13);
+			if (owner != null && owner != player && player != null)
+			{
+				int theirs = DiplomacyRules.Opinion(owner, player.Tag);
+				var row = new HBoxContainer();
+				row.AddThemeConstantOverride("separation", 8);
+				box.AddChild(row);
+				row.AddChild(HudStyle.Body($"{owner.Adjective} opinion of us: {theirs:+0;-0;0}" + (gs.AtWarWith(player.Tag, owner.Tag) ? " · at war with us" : player.Allies.Contains(owner.Tag) ? " · our ally" : ""),
+					BodyFont, 13, gs.AtWarWith(player.Tag, owner.Tag) ? HudStyle.Bad : theirs >= 0 ? HudStyle.Good : HudStyle.Muted));
+				var dip = HudStyle.Button("Diplomacy", BodyFont, 12);
+				dip.Pressed += () => GetNodeOrNull<DiplomacyPanel>(DiplomacyPanelPath ?? new NodePath())?.Open(owner.Tag);
+				row.AddChild(dip);
+			}
 			if (!p.IsCore)
 			{
 				double separatism = ControlRules.Separatism(p, gs.Date, owner);

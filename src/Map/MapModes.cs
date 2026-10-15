@@ -145,6 +145,8 @@ public partial class MapModes : Node
 	/// </summary>
 	static Color? StripeFor(Province p, GameState gs)
 	{
+		if (p.OccupierTag != null && gs.GetCountry(p.OccupierTag) is Country holder)
+			return new Color(holder.MapColor, 0.85f);           // occupied in war: the occupier's colour in stripes
 		if (p.Control != null && !p.IsCore)
 		{
 			double separatism = Untitled.Rules.ControlRules.Separatism(p, gs.Date, gs.GetCountry(p.OwnerTag));

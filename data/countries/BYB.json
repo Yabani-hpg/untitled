@@ -65,5 +65,8 @@
 	},
 	"province_pops": {
 		"Mount Lebanon": 25
-	}
+	},
+	"claims": [
+		"North Lebanon"
+	]
 }

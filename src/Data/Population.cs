@@ -70,6 +70,8 @@ public enum ControlKind
 	Absorbed,
 	/// <summary>Nomads subjugated by force and held by a garrison.</summary>
 	Subjugated,
+	/// <summary>Taken from another settled country in war.</summary>
+	Conquered,
 }
 
 /// <summary>How a country holds a province. Held in rein for 50 years, a province becomes a core.</summary>

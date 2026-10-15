@@ -55,5 +55,9 @@
 	],
 	"province_pops": {
 		"Lattakia": 20
-	}
+	},
+	"claims": [
+		"Lattakia",
+		"Tartus"
+	]
 }
