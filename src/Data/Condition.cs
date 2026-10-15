@@ -73,6 +73,7 @@ public abstract class Condition
 				"is_player" => IsPlayer(v.GetBoolean()),
 				"is_vassal" => IsVassal(v.GetBoolean()),
 				"has_vassals" => HasVassals(v.GetBoolean()),
+				"estate_loyalty" => EstateLoyalty(v, w),
 				"tag" => IsTag(v.GetString()),
 				"government" => HasGovernment(v.GetString()),
 				_ => throw new DataException($"{w}: unknown condition '{p.Name}'"),
@@ -108,6 +109,15 @@ public abstract class Condition
 	static Condition IsVassal(bool value) => new Test(c => (c.OverlordTag != null) == value);
 	static Condition HasVassals(bool value) => new WorldTest((world, c) => world.HasVassals(c.Tag) == value);
 	static Condition IsTag(string tag) => new Test(c => c.Tag == tag);
+
+	/// <summary>{ "estate": id, "min": x, "max": y } on an estate's loyalty (50 when never set).</summary>
+	static Condition EstateLoyalty(JsonElement v, string w)
+	{
+		string estate = v.TryGetProperty("estate", out JsonElement es) ? es.GetString() : throw new DataException($"{w}: estate_loyalty needs an estate");
+		double min = v.TryGetProperty("min", out JsonElement mn) ? mn.GetDouble() : double.NegativeInfinity;
+		double max = v.TryGetProperty("max", out JsonElement mx) ? mx.GetDouble() : double.PositiveInfinity;
+		return new Test(c => c.EstateLoyalty.TryGetValue(estate, out double l) ? l >= min && l <= max : 50 >= min && 50 <= max);
+	}
 	static Condition HasGovernment(string option) => new Test(c => c.Laws.TryGetValue("government", out string g) && g == option);
 
 	static Condition HasCountryFlag(string flag) => new Test(c => c.EventFlags.Contains(flag));

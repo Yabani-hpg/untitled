@@ -123,6 +123,7 @@ public partial class GameState : Node
 		DataLoader.LoadIdeas(Definitions);
 		DataLoader.LoadAdvisors(Definitions);
 		DataLoader.LoadReforms(Definitions);
+		DataLoader.LoadDisasters(Definitions, _provinceNames);
 		LawRules.Defs = Definitions;
 		TechRules.Defs = Definitions;
 		int countryFiles = DataLoader.LoadCountryFiles(_countries, Definitions, _provinceNames);
@@ -300,6 +301,7 @@ public partial class GameState : Node
 		RunEstateStep();
 		RunAdvisorStep();
 		RunReformStep();
+		RunDisasterStep();
 		RunResearchStep();
 		RunIdeaStep();
 		RunDiplomacyStep();

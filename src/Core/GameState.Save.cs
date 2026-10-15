@@ -123,6 +123,12 @@ public partial class GameState
 				}
 				w.WriteEndArray();
 			}
+			w.WriteStartObject("disaster_progress");
+			foreach (var (id, p) in c.DisasterProgress) w.WriteNumber(id, Math.Round(p, 2));
+			w.WriteEndObject();
+			w.WriteStartObject("disasters");
+			foreach (var (id, since) in c.ActiveDisasters) w.WriteNumber(id, since.Day);
+			w.WriteEndObject();
 			w.WriteStartArray("reforms");
 			foreach (string id in c.Reforms) w.WriteStringValue(id);
 			w.WriteEndArray();
@@ -466,6 +472,12 @@ public partial class GameState
 						_nextAdvisorId = Math.Max(_nextAdvisorId, advisor.Id + 1);
 					}
 				}
+				c.DisasterProgress.Clear();
+				if (e.TryGetProperty("disaster_progress", out JsonElement dp))
+					foreach (JsonProperty kv in dp.EnumerateObject()) c.DisasterProgress[kv.Name] = kv.Value.GetDouble();
+				c.ActiveDisasters.Clear();
+				if (e.TryGetProperty("disasters", out JsonElement da))
+					foreach (JsonProperty kv in da.EnumerateObject()) c.ActiveDisasters[kv.Name] = new GameDate(kv.Value.GetInt64());
 				c.Reforms.Clear();
 				if (e.TryGetProperty("reforms", out JsonElement rf))
 					foreach (JsonElement id in rf.EnumerateArray()) c.Reforms.Add(id.GetString());

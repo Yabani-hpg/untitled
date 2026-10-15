@@ -124,6 +124,9 @@ public sealed class Country
 	/// <summary>Government reforms enacted, and the progress toward the next.</summary>
 	public List<string> Reforms { get; } = new();
 	public double ReformProgress { get; set; }
+	/// <summary>Disasters brewing (progress toward 100) and running (since when).</summary>
+	public Dictionary<string, double> DisasterProgress { get; } = new();
+	public Dictionary<string, GameDate> ActiveDisasters { get; } = new();
 	/// <summary>Loans taken, oldest first.</summary>
 	public List<Loan> Loans { get; } = new();
 	/// <summary>Until when the crown's credit and tax suffer after a bankruptcy.</summary>

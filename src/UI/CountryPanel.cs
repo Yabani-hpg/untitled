@@ -225,6 +225,10 @@ public partial class CountryPanel : PanelContainer
 		Row("Legitimacy", $"{c.Legitimacy:0} · prestige {c.Prestige:+0;-0;0}", c.Legitimacy >= 60 ? HudStyle.Text : HudStyle.Bad);
 		Row("War exhaustion", $"{c.WarExhaustion:0.0} of {StateRules.MaxExhaustion:0}" + (gs.WarsOf(c.Tag).Any() ? $" · at war ({gs.WarsOf(c.Tag).Count()})" : ""), c.WarExhaustion >= 5 ? HudStyle.Bad : HudStyle.Text);
 		Row("Unrest", $"uprisings x{StateRules.UnrestFactor(c):0.00} · tax x{StateRules.TaxFactor(c):0.00}", StateRules.UnrestFactor(c) > 1.3 ? HudStyle.Bad : HudStyle.Muted);
+		foreach (var (id, since) in c.ActiveDisasters)
+			Row("Disaster", $"{gs.Definitions.GetDisaster(id)?.Name} since {gs.Definitions.DefaultCalendar.Format(since)} · {IdeaRules.Describe(gs.Definitions.GetDisaster(id)?.Modifiers ?? new())}", HudStyle.Bad);
+		foreach (var (id, progress) in c.DisasterProgress.OrderByDescending(kv => kv.Value))
+			Row("Brewing", $"{gs.Definitions.GetDisaster(id)?.Name}: {progress:0}% · {gs.Definitions.GetDisaster(id)?.Description}", progress >= 50 ? HudStyle.Bad : HudStyle.Gold);
 		Row("Treasury", $"{c.Gold:0} gold" + (c.IsBankrupt(gs.Date) ? $" · bankrupt until {gs.Definitions.DefaultCalendar.Format(c.BankruptUntil)}: tax at {EconomyRules.BankruptTaxFactor:P0}" : ""), c.IsBankrupt(gs.Date) ? HudStyle.Bad : HudStyle.Text);
 		if (c.Loans.Count > 0)
 			Row("Debt", $"{c.Loans.Count} loans, {c.Debt:0} gold, {ledger.Interest:0.0} interest a month · the oldest ({c.Loans[0].Amount:0} at {c.Loans[0].Rate:P0}) falls due {gs.Definitions.DefaultCalendar.Format(c.Loans[0].Due)}", HudStyle.Bad);
