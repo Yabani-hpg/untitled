@@ -225,6 +225,12 @@ public partial class CountryPanel : PanelContainer
 		long men = owned.Sum(p => p.UnitsOf(Sex.Male)), women = owned.Sum(p => p.UnitsOf(Sex.Female));
 		Row("Men and women", $"{men * PopGroup.PeoplePerUnit:N0} men · {women * PopGroup.PeoplePerUnit:N0} women at home");
 		Row("Under arms", $"{MilitaryRules.UnderArms(c, gs.Armies.Values, owned)} regiments · {gs.AvailableLevies(c)} more to levy · {TribeRules.Mercenaries(gs.Tribes.Values, c.Tag)} mercenaries");
+		Row("Rivals", c.Rivals.Count > 0 ? string.Join(", ", c.Rivals.Select(t => gs.GetCountry(t)?.Name)) : "none named", HudStyle.Muted);
+		var against = gs.CoalitionAgainst(c.Tag).ToList();
+		if (against.Count > 0)
+			Row("Coalition", $"{against.Count} stand against our aggression: {string.Join(", ", against.Select(m => m.Name))}", HudStyle.Bad);
+		if (c.CoalitionAgainst != null)
+			Row("Coalition", $"we stand against {gs.GetCountry(c.CoalitionAgainst)?.Name} with {gs.CoalitionAgainst(c.CoalitionAgainst).Count() - 1} others", HudStyle.Gold);
 		if (c.OverlordTag != null)
 			Row("Overlord", $"{gs.GetCountry(c.OverlordTag)?.Name} · we pay {gs.TributeOf(c):0.0} gold a month", HudStyle.Bad);
 		var vassals = gs.VassalsOf(c.Tag).ToList();

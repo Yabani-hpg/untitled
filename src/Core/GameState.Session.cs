@@ -136,6 +136,9 @@ public partial class GameState : IWorld
 			c.EventFlags.Clear();
 			c.Done.Clear();
 			c.Merchants.Clear();
+			c.Rivals.Clear();
+			c.Aggression.Clear();
+			c.CoalitionAgainst = null;
 			if (c.Definition == null)
 				continue;
 			foreach (string f in c.Definition.StartFlags)

@@ -96,6 +96,12 @@ public sealed class Country
 	public HashSet<string> Done { get; } = new();
 	/// <summary>Merchants at work, one per trade node at most.</summary>
 	public List<Merchant> Merchants { get; } = new();
+	/// <summary>Countries named as rivals.</summary>
+	public HashSet<string> Rivals { get; } = new();
+	/// <summary>Aggressive expansion felt against each conqueror: it sours opinion and, high enough, brings coalitions.</summary>
+	public Dictionary<string, double> Aggression { get; } = new();
+	/// <summary>The country this one stands in a coalition against, or null.</summary>
+	public string CoalitionAgainst { get; set; }
 	/// <summary>Stability, -3..+3.</summary>
 	public int Stability { get; set; }
 	/// <summary>The ruler's legitimacy, 0..100.</summary>

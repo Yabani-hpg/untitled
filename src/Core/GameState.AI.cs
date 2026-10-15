@@ -23,6 +23,7 @@ public partial class GameState
 		foreach (Country c in SettledCountries.Where(c => c.Tag != PlayerTag).ToList())
 		{
 			AiDiplomacy(c);
+			AiRivals(c);
 			AiTrade(c);
 			AiNavy(c);
 			if (AtWar(c.Tag))
@@ -88,10 +89,11 @@ public partial class GameState
 		// war: press a claim or take revenge on a neighbour we outmatch (vassals make no war)
 		if (AtWar(c.Tag) || c.Gold < 20 || c.OverlordTag != null)
 			return;
-		foreach (Country target in neighbours.OrderBy(_ => _rng.Next()))
+		foreach (Country target in neighbours.OrderByDescending(o => c.Rivals.Contains(o.Tag) ? 1 : 0).ThenBy(_ => _rng.Next()))
 		{
 			CasusBelli cb = BestCasusBelli(c, target);
-			if (cb == CasusBelli.Conquest || WarObstacle(c, target) != null)
+			// war without cause only on a rival, and only when the neighbourhood does not fear us yet
+			if (cb == CasusBelli.Conquest && (!c.Rivals.Contains(target.Tag) || neighbours.Any(o => AggressionOf(o, c.Tag) > DiplomacyRules.CoalitionThreshold * 0.5)) || WarObstacle(c, target) != null)
 				continue;
 			double ours = WarRules.SideStrength(c.Allies.Append(c.Tag), _countries, _provinces, _armies.Values, Date);
 			double theirs = WarRules.SideStrength(target.Allies.Append(target.Tag), _countries, _provinces, _armies.Values, Date);
@@ -258,6 +260,12 @@ public partial class GameState
 			.OrderByDescending(p => winner.Claims.Contains(p.Id) ? 2 : 0 + (p.OccupierTag != null ? 1 : 0))
 			.ThenBy(p => WarRules.Value(p, GetCountry(p.OwnerTag))).ToList();
 		double budget = score;
+		// a rival beaten is a rival humbled
+		if (loserLeaderFirst != null && winner.Rivals.Contains(loserLeaderFirst.Tag) && budget >= WarRules.HumiliateCost + 10)
+		{
+			terms.Humiliate = true;
+			budget -= WarRules.HumiliateCost;
+		}
 		foreach (Province p in candidates)
 		{
 			if (!winner.Claims.Contains(p.Id) && p.OccupierTag == null)
@@ -285,6 +293,8 @@ public partial class GameState
 			parts.Add(string.Join(", ", terms.Provinces.Select(id => GetProvince(id)?.Name)));
 		if (terms.Gold > 0)
 			parts.Add($"{terms.Gold:0} gold");
+		if (terms.Humiliate)
+			parts.Add("a humbling before the world");
 		return string.Join(" and ", parts);
 	}
 

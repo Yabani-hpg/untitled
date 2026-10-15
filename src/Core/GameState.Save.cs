@@ -81,6 +81,13 @@ public partial class GameState
 			w.WriteStartArray("done");
 			foreach (string f in c.Done) w.WriteStringValue(f);
 			w.WriteEndArray();
+			w.WriteStartArray("rivals");
+			foreach (string t in c.Rivals) w.WriteStringValue(t);
+			w.WriteEndArray();
+			w.WriteStartObject("aggression");
+			foreach (var (t, v) in c.Aggression) w.WriteNumber(t, Math.Round(v, 2));
+			w.WriteEndObject();
+			if (c.CoalitionAgainst != null) w.WriteString("coalition", c.CoalitionAgainst);
 			w.WriteStartArray("merchants");
 			foreach (Merchant m in c.Merchants)
 			{
@@ -369,6 +376,13 @@ public partial class GameState
 				c.Done.Clear();
 				if (e.TryGetProperty("done", out JsonElement dn))
 					foreach (JsonElement f in dn.EnumerateArray()) c.Done.Add(f.GetString());
+				c.Rivals.Clear();
+				if (e.TryGetProperty("rivals", out JsonElement rv))
+					foreach (JsonElement t in rv.EnumerateArray()) c.Rivals.Add(t.GetString());
+				c.Aggression.Clear();
+				if (e.TryGetProperty("aggression", out JsonElement ag))
+					foreach (JsonProperty kv in ag.EnumerateObject()) c.Aggression[kv.Name] = kv.Value.GetDouble();
+				c.CoalitionAgainst = e.TryGetProperty("coalition", out JsonElement co) ? co.GetString() : null;
 				c.Merchants.Clear();
 				if (e.TryGetProperty("merchants", out JsonElement ms))
 				{

@@ -25,6 +25,16 @@ public static class DiplomacyRules
 	public const int TruceYears = 5;
 	/// <summary>Years a wrong is remembered.</summary>
 	public const int MemoryYears = 20;
+	/// <summary>Rivals: how many a country may name, what it costs them in opinion, who qualifies.</summary>
+	public const int MaxRivals = 3, RivalOpinion = -50, RivalReach = 12;
+	public const double RivalMinStrength = 0.4, RivalMaxStrength = 2.5, EndRivalryPrestige = 10;
+	/// <summary>Aggressive expansion: felt per unit of people in land taken, halved with a claim, fading each year; capped.</summary>
+	public const double AggressionPerUnit = 1.0, ClaimAggressionShare = 0.5, AggressionDecayPerYear = 4, MaxAggression = 200;
+	/// <summary>How far (in map steps) from the land taken a country must be to feel it, when not a neighbour of those concerned.</summary>
+	public const int AggressionReach = 6;
+	/// <summary>Coalitions: aggression needed to join; members needed and strength (against the aggressor's side) to strike.</summary>
+	public const double CoalitionThreshold = 50, CoalitionStrikeRatio = 0.8;
+	public const int CoalitionMinMembers = 2;
 
 	/// <summary>Where a country's opinion of another settles with nothing else going on.</summary>
 	public static int BaseOpinion(Country of, Country other, bool neighbours)
@@ -64,7 +74,7 @@ public static class DiplomacyRules
 	/// <summary>A month: opinion drifts toward base plus modifiers, faster with a diplomat at work.</summary>
 	public static void MonthlyStep(Country of, Country other, bool neighbours, GameDate today)
 	{
-		int target = Math.Clamp(BaseOpinion(of, other, neighbours) + Modifiers(of, other.Tag, today), MinOpinion, MaxOpinion);
+		int target = Math.Clamp(BaseOpinion(of, other, neighbours) + Modifiers(of, other.Tag, today) - (int)Math.Round(of.Aggression.GetValueOrDefault(other.Tag)), MinOpinion, MaxOpinion);
 		int o = Opinion(of, other.Tag);
 		if (other.ImprovingCountryRelations.Contains(of.Tag))
 			o += ImproveRelationsPerMonth;

@@ -36,6 +36,8 @@ public static class WarRules
 	public const int YearsBeforeAnnex = 10;
 	/// <summary>Score cost of gold: one point for this much.</summary>
 	public const double GoldPerScorePoint = 10;
+	/// <summary>Score cost of humbling the loser, and the prestige that passes from it to the winner.</summary>
+	public const double HumiliateCost = 10, HumiliatePrestige = 25;
 	/// <summary>Months of war before a losing country (run by the game) will consider peace.</summary>
 	public const int MonthsBeforePeace = 12;
 	/// <summary>Opinion lost with the neighbours of a country that takes land without a claim, per province.</summary>
@@ -117,6 +119,8 @@ public static class WarRules
 	{
 		double loserValue = provinces.Where(p => p?.OwnerTag != null && loserSide.Contains(p.OwnerTag)).Sum(p => Value(p, countries.GetValueOrDefault(p.OwnerTag)));
 		double cost = terms.Gold / GoldPerScorePoint;
+		if (terms.Humiliate)
+			cost += HumiliateCost;
 		if (terms.Vassalize)
 			cost += VassalizeCostBase + VassalizeCostPerProvince * provinces.Count(p => p?.OwnerTag != null && loserSide.Contains(p.OwnerTag));
 		foreach (int id in terms.Provinces)

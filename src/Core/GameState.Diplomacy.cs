@@ -232,7 +232,7 @@ public partial class GameState
 					Notify($"Our ally {leader.Name} calls us to war against {(side == war.Defenders ? attacker : defender).Name}, and we answer.");
 			}
 		}
-		string cause = cb switch { CasusBelli.Claim => "to press its claims", CasusBelli.Revenge => "in revenge", _ => "without cause" };
+		string cause = cb switch { CasusBelli.Claim => "to press its claims", CasusBelli.Revenge => "in revenge", CasusBelli.Coalition => "at the head of a coalition", _ => "without cause" };
 		if (war.Includes(PlayerTag) || AreNeighbours(PlayerTag, attacker.Tag) || AreNeighbours(PlayerTag, defender.Tag))
 			Notify($"{attacker.Name} declares war on {defender.Name} {cause}."
 				+ (war.Attackers.Count + war.Defenders.Count > 2 ? $" Allies join: {string.Join(", ", war.Attackers.Skip(1).Concat(war.Defenders.Skip(1)).Select(t => GetCountry(t)?.Name))}." : ""));
@@ -300,11 +300,8 @@ public partial class GameState
 			foreach (Regiment r in p.Control?.Garrison ?? new())
 				MilitaryRules.SendHome(new[] { r }, _provinces, _rng);
 			DiplomacyRules.AddModifier(from, winner.Tag, "Took our land", -40, Date);
-			if (!winner.Claims.Contains(id) && war.CasusBelli == CasusBelli.Conquest)
-			{
-				foreach (Country o in SettledCountries.Where(o => o != winner && AreNeighbours(o.Tag, winner.Tag) || o == from))
-					DiplomacyRules.AddModifier(o, winner.Tag, "Seized land from a neighbour", WarRules.AggressionOpinion, Date, 15);
-			}
+			if (war.CasusBelli != CasusBelli.Coalition)
+				AddAggression(winner, p, from, winner.Claims.Contains(id));
 			p.OwnerTag = winner.Tag;
 			p.Control = new ProvinceControl { Kind = ControlKind.Conquered, Since = Date };
 			winner.Claims.Remove(id);
@@ -346,6 +343,25 @@ public partial class GameState
 				if (GetCountry(a) is Country ca) ca.Truces[b] = truce;
 				if (GetCountry(b) is Country cb) cb.Truces[a] = truce;
 			}
+		if (terms.Humiliate)
+		{
+			winner.Prestige = Math.Clamp(winner.Prestige + WarRules.HumiliatePrestige, -100, 100);
+			loser.Prestige = Math.Clamp(loser.Prestige - WarRules.HumiliatePrestige, -100, 100);
+			loser.Legitimacy = Math.Max(0, loser.Legitimacy - 10);
+			DiplomacyRules.AddModifier(loser, winner.Tag, "Humbled us", -30, Date);
+			if (winner.Tag == PlayerTag || loser.Tag == PlayerTag)
+				Notify($"{loser.Name} is humbled before the world by {winner.Name}.");
+		}
+		if (war.CasusBelli == CasusBelli.Coalition)
+		{
+			// the coalition has had its war: it breaks up, its fear half spent
+			foreach (Country m in SettledCountries.Where(m => m.CoalitionAgainst == war.DefenderTag))
+			{
+				m.CoalitionAgainst = null;
+				if (m.Aggression.ContainsKey(war.DefenderTag))
+					m.Aggression[war.DefenderTag] *= 0.5;
+			}
+		}
 		if (!terms.IsWhitePeace)
 		{
 			winner.Prestige = Math.Clamp(winner.Prestige + WarRules.PrestigeForVictory, -100, 100);
@@ -451,6 +467,7 @@ public partial class GameState
 	{
 		foreach (Province p in ProvincesOf(vassal.Tag).ToList())
 		{
+			AddAggression(us, p, vassal, false, 0.5);
 			p.OwnerTag = us.Tag;
 			p.Control = new ProvinceControl { Kind = ControlKind.Conquered, Since = Date };
 		}
@@ -498,6 +515,7 @@ public partial class GameState
 			c.Prestige *= 0.995;
 			StateRules.MonthlyStep(c, AtWar(c.Tag));
 		}
+		RunCoalitionStep();
 		foreach (War w in _wars.Values)
 			WarRules.UpdateScore(w, _countries, _provinces);
 		EmitSignal(SignalName.DiplomacyChanged);

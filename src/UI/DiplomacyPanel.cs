@@ -181,6 +181,9 @@ public partial class DiplomacyPanel : PanelContainer
 		if (DiplomacyRules.HasTruce(us, c.Tag, gs.Date)) parts.Add("truce");
 		if (gs.AreNeighbours(us.Tag, c.Tag)) parts.Add("neighbour");
 		if (us.Claims.Any(id => gs.Provinces[id]?.OwnerTag == c.Tag)) parts.Add("we have claims");
+		if (us.Rivals.Contains(c.Tag)) parts.Add("our rival");
+		else if (c.Rivals.Contains(us.Tag)) parts.Add("counts us a rival");
+		if (c.CoalitionAgainst == us.Tag) parts.Add("in a coalition against us");
 		return parts.Count > 0 ? string.Join(" · ", parts) : $"{gs.ProvincesOf(c.Tag).Count()} provinces";
 	}
 
@@ -210,6 +213,11 @@ public partial class DiplomacyPanel : PanelContainer
 		facts.AddChild(HudStyle.Body("Allies: " + (c.Allies.Count > 0 ? string.Join(", ", c.Allies.Select(t => gs.GetCountry(t)?.Name)) : "none")
 			+ (c.OverlordTag != null ? $" · vassal of {gs.GetCountry(c.OverlordTag)?.Name}" : "")
 			+ (gs.VassalsOf(c.Tag).Any() ? $" · vassals: {string.Join(", ", gs.VassalsOf(c.Tag).Select(v => v.Name))}" : ""), BodyFont, 13, HudStyle.Muted));
+		var rivalsOf = c.Rivals.Select(t => gs.GetCountry(t)?.Name).Where(n => n != null).ToList();
+		var coalition = gs.CoalitionAgainst(c.Tag).ToList();
+		facts.AddChild(HudStyle.Body("Rivals: " + (rivalsOf.Count > 0 ? string.Join(", ", rivalsOf) : "none")
+			+ (coalition.Count > 0 ? $" · a coalition of {coalition.Count} stands against them: {string.Join(", ", coalition.Select(m => m.Name))}" : "")
+			+ (c.CoalitionAgainst != null ? $" · in the coalition against {gs.GetCountry(c.CoalitionAgainst)?.Name}" : ""), BodyFont, 13, HudStyle.Muted));
 		var goTo = HudStyle.Button("Go to", BodyFont, 12);
 		goTo.Pressed += () => MapCamera.FocusProvince(GetNodeOrNull<Node3D>(CameraRigPath ?? new NodePath()), c.CapitalId);
 		facts.AddChild(goTo);
@@ -227,6 +235,10 @@ public partial class DiplomacyPanel : PanelContainer
 			+ $"{(c.Ruler?.Religion == us.Ruler?.Religion ? ", same gods" : "")}{(neighbours ? ", neighbours" : "")}, our prestige {us.Prestige:+0;-0;0})", BodyFont, 12, HudStyle.Muted));
 		foreach (OpinionModifier m in c.OpinionModifiers.GetValueOrDefault(us.Tag) ?? new())
 			opinions.AddChild(HudStyle.Body($"  {m.Reason}: {m.Amount:+0;-0} (until {gs.Definitions.DefaultCalendar.Format(m.Until)})", BodyFont, 12, m.Amount >= 0 ? HudStyle.Good : HudStyle.Bad));
+		if (gs.AggressionOf(c, us.Tag) > 0)
+			opinions.AddChild(HudStyle.Body($"  Aggressive expansion: {-gs.AggressionOf(c, us.Tag):0} (our conquests frighten them; it fades {DiplomacyRules.AggressionDecayPerYear:0} a year; at {DiplomacyRules.CoalitionThreshold:0} they may join a coalition against us)", BodyFont, 12, HudStyle.Bad));
+		if (gs.AggressionOf(us, c.Tag) > 0)
+			opinions.AddChild(HudStyle.Body($"  Their aggressive expansion frightens us: {gs.AggressionOf(us, c.Tag):0}", BodyFont, 12, HudStyle.Muted));
 		if (DiplomacyRules.HasTruce(us, c.Tag, gs.Date))
 			opinions.AddChild(HudStyle.Body($"Truce until {gs.Definitions.DefaultCalendar.Format(us.Truces[c.Tag])}", BodyFont, 13, HudStyle.Gold));
 
@@ -258,9 +270,40 @@ public partial class DiplomacyPanel : PanelContainer
 			ally.Pressed += () => _status.Text = gs.ProposeAlliance(c.Tag, out string reason) ? $"{c.Name} is our ally." : reason;
 			buttons.AddChild(ally);
 		}
+		if (us.Rivals.Contains(c.Tag))
+		{
+			var end = HudStyle.Button("End rivalry", BodyFont, 13);
+			end.TooltipText = $"Costs {DiplomacyRules.EndRivalryPrestige:0} prestige";
+			end.Pressed += () => gs.EndRivalry(c.Tag);
+			buttons.AddChild(end);
+		}
+		else
+		{
+			string why = gs.RivalObstacle(us, c);
+			var rival = HudStyle.Button("Declare rival", BodyFont, 13);
+			rival.Disabled = why != null;
+			rival.TooltipText = why ?? $"A rival: opinion {DiplomacyRules.RivalOpinion} both ways; humbling them in war brings {WarRules.HumiliatePrestige:0} prestige ({us.Rivals.Count} of {DiplomacyRules.MaxRivals} rivals named)";
+			rival.Pressed += () => { if (!gs.SetRival(c.Tag, out string r)) _status.Text = r; };
+			buttons.AddChild(rival);
+		}
+		if (us.CoalitionAgainst == c.Tag)
+		{
+			var leave = HudStyle.Button("Leave coalition", BodyFont, 13);
+			leave.Pressed += () => gs.LeaveCoalition();
+			buttons.AddChild(leave);
+		}
+		else if (gs.AggressionOf(us, c.Tag) > 0)
+		{
+			string why = gs.CoalitionObstacle(us, c);
+			var join = HudStyle.Button("Join coalition", BodyFont, 13);
+			join.Disabled = why != null;
+			join.TooltipText = why ?? $"Stand with the {gs.CoalitionAgainst(c.Tag).Count()} others against their aggression: when the coalition outweighs them it goes to war together";
+			join.Pressed += () => { if (!gs.JoinCoalition(c.Tag, out string r)) _status.Text = r; };
+			buttons.AddChild(join);
+		}
 		string obstacle = gs.WarObstacle(us, c);
 		CasusBelli cb = gs.BestCasusBelli(us, c);
-		var war = HudStyle.Button($"Declare war ({cb switch { CasusBelli.Claim => "claim", CasusBelli.Revenge => "revenge", _ => "no cause" }})", BodyFont, 13);
+		var war = HudStyle.Button($"Declare war ({cb switch { CasusBelli.Claim => "claim", CasusBelli.Revenge => "revenge", CasusBelli.Coalition => "coalition", _ => "no cause" }})", BodyFont, 13);
 		war.Disabled = obstacle != null;
 		war.TooltipText = obstacle ?? cb switch
 		{
@@ -381,9 +424,14 @@ public partial class DiplomacyPanel : PanelContainer
 		if (BodyFont != null) vassalTick.AddThemeFontOverride("font", BodyFont);
 		vassalTick.AddThemeFontSizeOverride("font_size", 13);
 		vassalTick.Visible = enemyLeader?.OverlordTag == null && us.OverlordTag == null;
+		var humbleTick = new CheckBox { Text = $"Humble {enemyLeader?.Name} before the world", FocusMode = FocusModeEnum.None };
+		if (BodyFont != null) humbleTick.AddThemeFontOverride("font", BodyFont);
+		humbleTick.AddThemeFontSizeOverride("font_size", 13);
+		humbleTick.Visible = enemyLeader != null && (us.Rivals.Contains(enemyLeader.Tag) || w.CasusBelli == CasusBelli.Coalition);
+		humbleTick.TooltipText = $"Costs {WarRules.HumiliateCost:0} score: {WarRules.HumiliatePrestige:0} prestige passes from them to us";
 		PeaceTerms Terms()
 		{
-			var t = new PeaceTerms { Gold = goldBox.Value, Vassalize = vassalTick.ButtonPressed };
+			var t = new PeaceTerms { Gold = goldBox.Value, Vassalize = vassalTick.ButtonPressed, Humiliate = humbleTick.ButtonPressed };
 			t.Provinces.AddRange(chosen.Where(id => demandable.Any(p => p.Id == id)));
 			return t;
 		}
@@ -410,6 +458,8 @@ public partial class DiplomacyPanel : PanelContainer
 		var vassalOnly = new PeaceTerms { Vassalize = true };
 		vassalTick.TooltipText = $"They keep their land but pay tribute and follow us to war · costs {WarRules.TermsCost(vassalOnly, us, losers, gs.Countries, gs.Provinces):0} score";
 		peace.AddChild(vassalTick);
+		humbleTick.Toggled += _ => UpdateCost();
+		peace.AddChild(humbleTick);
 		var goldRow = new HBoxContainer();
 		goldRow.AddThemeConstantOverride("separation", 8);
 		goldRow.AddChild(HudStyle.Body("Gold:", BodyFont, 13, HudStyle.Muted));

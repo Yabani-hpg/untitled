@@ -12,6 +12,8 @@ public enum CasusBelli
 	Conquest,
 	/// <summary>A war against a country that humiliated or attacked us before: full score from battles.</summary>
 	Revenge,
+	/// <summary>A coalition curbing an aggressor: no cause needed, and the land it takes frightens no one.</summary>
+	Coalition,
 }
 
 /// <summary>A war between settled countries, with the allies each side called in.</summary>
@@ -58,5 +60,7 @@ public sealed class PeaceTerms
 	public double Gold { get; set; }
 	/// <summary>The loser becomes the winner's vassal.</summary>
 	public bool Vassalize { get; set; }
-	public bool IsWhitePeace => Provinces.Count == 0 && Gold <= 0 && !Vassalize;
+	/// <summary>The loser is humbled before the world: prestige passes from it to the winner.</summary>
+	public bool Humiliate { get; set; }
+	public bool IsWhitePeace => Provinces.Count == 0 && Gold <= 0 && !Vassalize && !Humiliate;
 }
