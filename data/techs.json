@@ -760,6 +760,133 @@
     "steam_power"
    ],
    "description": "The motor: fire inside the engine, and the motor vehicle."
+  },
+  {
+   "id": "galleys",
+   "name": "Galleys",
+   "category": "military",
+   "cost": 500,
+   "requires": [
+    "sailing",
+    "bronze_working"
+   ],
+   "condition": {
+    "any": [
+     {
+      "owns_feature": "coast"
+     },
+     {
+      "owns_feature": "river"
+     }
+    ]
+   },
+   "condition_text": "A coast or a river in the realm",
+   "description": "Long oared ships with a ram: warships, not cargo boats."
+  },
+  {
+   "id": "triremes",
+   "name": "Triremes",
+   "category": "military",
+   "cost": 1500,
+   "requires": [
+    "galleys",
+    "iron_working"
+   ],
+   "condition": {
+    "any": [
+     {
+      "owns_feature": "coast"
+     },
+     {
+      "owns_feature": "river"
+     }
+    ]
+   },
+   "condition_text": "A coast or a river in the realm",
+   "description": "Three banks of oars and a bronze ram, rowed by free citizens."
+  },
+  {
+   "id": "navigation",
+   "name": "Navigation",
+   "category": "science",
+   "cost": 900,
+   "requires": [
+    "sailing",
+    "astronomy"
+   ],
+   "condition": {
+    "any": [
+     {
+      "owns_feature": "coast"
+     },
+     {
+      "owns_feature": "river"
+     }
+    ]
+   },
+   "condition_text": "A coast or a river in the realm",
+   "description": "Steering by the stars across open water, far from any coast.",
+   "modifiers": {
+    "trade_power": 0.1
+   }
+  },
+  {
+   "id": "carracks",
+   "name": "Carracks",
+   "category": "science",
+   "cost": 2500,
+   "requires": [
+    "navigation",
+    "mechanics"
+   ],
+   "condition": {
+    "any": [
+     {
+      "owns_feature": "coast"
+     },
+     {
+      "owns_feature": "river"
+     }
+    ]
+   },
+   "condition_text": "A coast in the realm",
+   "description": "Tall ocean-going ships with castles and three masts.",
+   "modifiers": {
+    "trade_power": 0.1
+   }
+  },
+  {
+   "id": "ships_of_the_line",
+   "name": "Ships of the Line",
+   "category": "military",
+   "cost": 5000,
+   "requires": [
+    "carracks",
+    "cannon"
+   ],
+   "description": "Warships built to fight in line, broadside to broadside."
+  },
+  {
+   "id": "ironclads",
+   "name": "Ironclads",
+   "category": "military",
+   "cost": 9000,
+   "requires": [
+    "ships_of_the_line",
+    "steam_power"
+   ],
+   "description": "Steam warships clad in iron."
+  },
+  {
+   "id": "dreadnoughts",
+   "name": "Dreadnoughts",
+   "category": "military",
+   "cost": 14000,
+   "requires": [
+    "ironclads",
+    "internal_combustion"
+   ],
+   "description": "All-big-gun battleships."
   }
  ]
 }

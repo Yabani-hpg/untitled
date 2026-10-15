@@ -165,6 +165,7 @@ public partial class GameState
 			w.WriteEndArray();
 			w.WriteNumber("marched", a.DaysMarched);
 			w.WriteNumber("step_days", a.StepDays);
+			if (a.AboardFleetId != 0) w.WriteNumber("aboard", a.AboardFleetId);
 			WriteRegiments(w, "regiments", a.Regiments);
 			w.WriteEndObject();
 		}
@@ -608,10 +609,11 @@ public partial class GameState
 					ProvinceId = at.Id,
 					DaysMarched = e.GetProperty("marched").GetInt32(),
 					StepDays = e.GetProperty("step_days").GetInt32(),
+					AboardFleetId = e.TryGetProperty("aboard", out JsonElement aboard) ? aboard.GetInt32() : 0,
 				};
 				foreach (JsonElement id in e.GetProperty("path").EnumerateArray())
 				{
-					if (GetProvince(id.GetInt32()) is Province step && !step.IsWater)
+					if (GetProvince(id.GetInt32()) is Province step)
 						a.Path.Add(step.Id);
 				}
 				a.Regiments.AddRange(ReadRegiments(e.GetProperty("regiments"), warnings));

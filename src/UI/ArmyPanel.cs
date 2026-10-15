@@ -82,13 +82,20 @@ public partial class ArmyPanel : PanelContainer
 		close.Pressed += () => gs.SelectArmy(0);
 		head.AddChild(close);
 
-		string where = a.Moving
-			? $"Marching to {gs.GetProvince(a.Destination)?.Name}: {gs.DaysToArrive(a)} days (now near {here?.Name})"
-			: $"In {here?.Name}";
+		Army ship = gs.GetArmy(a.AboardFleetId);
+		string where = ship != null
+			? $"Aboard the {ship.Name}" + (ship.Moving ? $", sailing to {gs.GetProvince(ship.Destination)?.Name}" : here.IsWater ? $", off the coast in the {here.Name}" : $", in harbour at {here.Name}")
+			: a.Moving
+			? $"{(a.IsFleet ? "Sailing" : "Marching")} to {gs.GetProvince(a.Destination)?.Name}: {gs.DaysToArrive(a)} days (now near {here?.Name})"
+			: a.IsFleet && here?.IsWater == true ? $"At sea in the {here.Name}" : a.IsFleet ? $"In harbour at {here?.Name}" : $"In {here?.Name}";
 		_box.AddChild(HudStyle.Body($"{where} · {MilitaryRules.Speed(a, owner):0} km a day", BodyFont, 14));
-		_box.AddChild(HudStyle.Body($"{a.Regiments.Count} regiments, {a.Men:N0} of {a.Regiments.Count * PopGroup.PeoplePerUnit:N0} men · {MilitaryRules.Upkeep(a):0.0} gold a month",
-			BodyFont, 13, HudStyle.Muted));
-		if (here != null)
+		if (a.IsFleet)
+			_box.AddChild(HudStyle.Body($"{a.Regiments.Count} ships · room for {a.Capacity} regiments, {gs.CargoUsed(a)} aboard · {MilitaryRules.Upkeep(a):0.0} gold a month",
+				BodyFont, 13, HudStyle.Muted));
+		else
+			_box.AddChild(HudStyle.Body($"{a.Regiments.Count} regiments, {a.Men:N0} of {a.Regiments.Count * PopGroup.PeoplePerUnit:N0} men · {MilitaryRules.Upkeep(a):0.0} gold a month",
+				BodyFont, 13, HudStyle.Muted));
+		if (here != null && !here.IsWater && !a.IsFleet && ship == null)
 		{
 			double supply = TerrainRules.Supply(here), attrition = TerrainRules.Attrition(here, a.Regiments.Count);
 			var land = HudStyle.Body($"{TerrainRules.Describe(here)}: the land feeds {supply:0} regiments"
@@ -136,14 +143,39 @@ public partial class ArmyPanel : PanelContainer
 			b.Pressed += action;
 			orders.AddChild(b);
 		}
-		int others = gs.ArmiesIn(a.ProvinceId).Count(o => o != a && o.OwnerTag == a.OwnerTag);
+		int others = gs.ArmiesIn(a.ProvinceId).Count(o => o != a && o.OwnerTag == a.OwnerTag && o.IsFleet == a.IsFleet);
+		if (ship != null)
+		{
+			// an army aboard a fleet: ashore into the harbour, or onto a coast by right-click
+			bool inHarbour = !ship.Moving && here != null && !here.IsWater;
+			Order("Go ashore", inHarbour ? $"Land at {here.Name}" : "Right-click a coast beside the fleet to land there", inHarbour, () => gs.Disembark(a.Id, here.Id, out _));
+			_box.AddChild(HudStyle.Body("Right-click a coast beside the fleet to land there.", BodyFont, 12, HudStyle.Muted));
+			return;
+		}
 		if (a.Moving)
 			Order("Halt", "Stop at the next province", true, () => gs.MoveArmy(a.Id, a.Path[0], out _));
-		Order("Split", "Split the army in two", !a.Moving && a.Regiments.Count >= 2, () => gs.SplitArmy(a.Id));
-		Order("Merge", others > 0 ? $"The {others} other armies here join this one" : "No other army of ours here", !a.Moving && others > 0, () => gs.MergeArmies(a.Id));
+		Order("Split", $"Split the {(a.IsFleet ? "fleet" : "army")} in two", !a.Moving && a.Regiments.Count >= 2, () => gs.SplitArmy(a.Id));
+		Order("Merge", others > 0 ? $"The {others} other {(a.IsFleet ? "fleets" : "armies")} here join this one" : $"No other {(a.IsFleet ? "fleet" : "army")} of ours here", !a.Moving && others > 0, () => gs.MergeArmies(a.Id));
+		if (a.IsFleet)
+		{
+			bool inHarbour = !a.Moving && here != null && !here.IsWater;
+			var cargo = gs.Cargo(a).ToList();
+			Order("Land troops", cargo.Count == 0 ? "No troops aboard" : inHarbour ? $"The {cargo.Count} armies aboard go ashore at {here.Name}" : "Right-click a coast beside the fleet to land them there",
+				cargo.Count > 0 && inHarbour, () => { foreach (Army c in cargo) gs.Disembark(c.Id, here.Id, out _); });
+			Order("Scuttle", inHarbour || cargo.Count == 0 ? "Break up the fleet" : "The troops aboard would drown: land them first", inHarbour || cargo.Count == 0, () => gs.DisbandArmy(a.Id));
+			foreach (Army c in cargo)
+				_box.AddChild(HudStyle.Body($"Aboard: the {c.Name}, {c.Regiments.Count} regiments", BodyFont, 13, HudStyle.Gold));
+			_box.AddChild(HudStyle.Body("Right-click a sea or one of our harbours to sail there; right-click a coast beside the fleet to land the troops aboard.", BodyFont, 12, HudStyle.Muted));
+			return;
+		}
 		bool canGarrison = !a.Moving && here?.OwnerTag == gs.PlayerTag && here.Control != null;
 		Order("Leave garrison", canGarrison ? $"A regiment stays behind to hold {here.Name}" : "Only in our own provinces", canGarrison, () => gs.GarrisonFromArmy(a.ProvinceId, a.Id));
 		Order("Disband", "Send the survivors home to their fields", true, () => gs.DisbandArmy(a.Id));
+		// a fleet of ours in this harbour or off this coast with room: board it
+		Army ride = gs.Armies.Values.FirstOrDefault(f => f.IsFleet && f.OwnerTag == a.OwnerTag && !f.Moving && f.Capacity - gs.CargoUsed(f) >= a.Regiments.Count
+			&& (f.ProvinceId == a.ProvinceId || here?.GetAdjacency(gs.GetProvince(f.ProvinceId))?.SharesBorder == true));
+		if (ride != null && !a.Moving)
+			Order($"Board the {ride.Name}", $"The army goes aboard ({ride.Capacity - gs.CargoUsed(ride)} regiments of room)", true, () => gs.Embark(a.Id, ride.Id, out _));
 
 		// nomads here: give them battle
 		Tribe t = gs.TribeOf(here);

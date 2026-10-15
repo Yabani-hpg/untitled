@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Untitled.Core;
 
 namespace Untitled.Data;
@@ -11,6 +12,8 @@ public enum UnitCategory
 	Mounted,
 	/// <summary>Rams, catapults, trebuchets, cannon, artillery: powerful but very vulnerable, manned by soldiers.</summary>
 	Siege,
+	/// <summary>Ships: they sail the seas and rivers, carry regiments and fight other ships.</summary>
+	Ship,
 }
 
 /// <summary>A kind of regiment (data/units.json).</summary>
@@ -36,6 +39,13 @@ public sealed class UnitType
 	public Tech Tech { get; set; }
 	/// <summary>Its share of a new country's levies, in percent.</summary>
 	public int DefaultShare { get; init; }
+	/// <summary>Ships: whether they sail the seas or only rivers and coasts.</summary>
+	public Untitled.Rules.UnitDomain Domain { get; init; } = Untitled.Rules.UnitDomain.Land;
+	/// <summary>Ships: regiments one carries.</summary>
+	public int Capacity { get; init; }
+	/// <summary>Ships: trade power one brings to the node of the sea it sails.</summary>
+	public double TradePower { get; init; }
+	public bool IsShip => Category == UnitCategory.Ship;
 
 	public override string ToString() => Id;
 }
@@ -80,6 +90,14 @@ public sealed class Army
 	public int StepDays { get; set; }
 
 	public bool Moving => Path.Count > 0;
+	/// <summary>The fleet this army rides aboard, or 0.</summary>
+	public int AboardFleetId { get; set; }
+	/// <summary>A fleet: an army made of ships.</summary>
+	public bool IsFleet => Regiments.Count > 0 && Regiments.TrueForAll(r => r.Type.IsShip);
+	public Untitled.Rules.UnitDomain Domain => !IsFleet ? Untitled.Rules.UnitDomain.Land
+		: Regiments.Exists(r => r.Type.Domain == Untitled.Rules.UnitDomain.SeaShip) ? Untitled.Rules.UnitDomain.SeaShip : Untitled.Rules.UnitDomain.RiverShip;
+	/// <summary>Regiments a fleet can carry.</summary>
+	public int Capacity => Regiments.Sum(r => r.Type.Capacity);
 	public int Destination => Path.Count > 0 ? Path[^1] : ProvinceId;
 
 	public int Count(UnitCategory category) => Regiments.FindAll(r => r.Type.Category == category).Count;

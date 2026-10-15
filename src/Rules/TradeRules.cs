@@ -114,7 +114,7 @@ public static class TradeRules
 	}
 
 	/// <summary>The month's trade, nodes in flow order.</summary>
-	public static TradeReport Compute(IReadOnlyList<TradeNode> nodes, IReadOnlyList<Province> provinces, IReadOnlyDictionary<string, Country> countries, Definitions defs)
+	public static TradeReport Compute(IReadOnlyList<TradeNode> nodes, IReadOnlyList<Province> provinces, IReadOnlyDictionary<string, Country> countries, Definitions defs, IEnumerable<Army> armies = null)
 	{
 		var report = new TradeReport();
 		var home = new Dictionary<string, TradeNode>();
@@ -150,6 +150,14 @@ public static class TradeRules
 				if (report.Nodes.TryGetValue(m.NodeId, out NodeReport r))
 					r.Power[c.Tag] = r.Power.GetValueOrDefault(c.Tag) + MerchantPower * Math.Max(0.1, 1 + TechRules.Mod(c, "trade_power") + LawRules.Mod(c, "trade_power"));
 			}
+		}
+		// ships at sea protect the trade of the node their sea lies in
+		foreach (Army f in armies ?? Enumerable.Empty<Army>())
+		{
+			if (!f.IsFleet || f.ProvinceId < 0 || f.ProvinceId >= provinces.Count || provinces[f.ProvinceId]?.TradeNode is not TradeNode at || !countries.TryGetValue(f.OwnerTag, out Country o))
+				continue;
+			if (report.Nodes.TryGetValue(at.Id, out NodeReport r))
+				r.Power[f.OwnerTag] = r.Power.GetValueOrDefault(f.OwnerTag) + NavalRules.TradePower(f) * Math.Max(0.1, 1 + TechRules.Mod(o, "trade_power") + LawRules.Mod(o, "trade_power"));
 		}
 		// value flows downstream, node by node
 		foreach (TradeNode node in nodes)

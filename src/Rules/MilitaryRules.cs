@@ -113,7 +113,7 @@ public static class MilitaryRules
 
 	/// <summary>Regiments under arms: in the country's armies and its garrisons.</summary>
 	public static int UnderArms(Country c, IEnumerable<Army> armies, IEnumerable<Province> owned) =>
-		armies.Where(a => a.OwnerTag == c.Tag).Sum(a => a.Regiments.Count)
+		armies.Where(a => a.OwnerTag == c.Tag).Sum(a => a.Regiments.Count(r => !r.Type.IsShip))
 		+ owned.Sum(p => p.Control?.Garrison.Count ?? 0);
 
 	/// <summary>
@@ -294,9 +294,10 @@ public static class MilitaryRules
 	}
 
 	/// <summary>The quickest way over land from one province to another (not including the start), or null if there is none.</summary>
-	public static List<int> FindPath(Province from, Province to, double speedKm, IReadOnlyList<Province> provinces, Func<int, Vector2?> centroid, float mapWidth)
+	public static List<int> FindPath(Province from, Province to, double speedKm, IReadOnlyList<Province> provinces, Func<int, Vector2?> centroid, float mapWidth,
+		UnitDomain domain = UnitDomain.Land, Func<Province, bool> harbour = null)
 	{
-		if (from == null || to == null || to.IsWater)
+		if (from == null || to == null || !MovementRules.CanOccupy(domain, to, harbour))
 			return null;
 		if (from == to)
 			return new List<int>();
@@ -313,7 +314,7 @@ public static class MilitaryRules
 			Province p = provinces[id];
 			foreach (Adjacency link in p.Neighbors)
 			{
-				if (!MovementRules.CanMove(UnitDomain.Land, link))
+				if (!MovementRules.CanMove(domain, link, harbour))
 					continue;
 				int d = days + StepDays(p, link.To, speedKm, centroid, mapWidth);
 				if (best.TryGetValue(link.To.Id, out int known) && known <= d)

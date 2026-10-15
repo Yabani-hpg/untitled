@@ -296,6 +296,8 @@ public partial class ProvincePanel : PanelContainer
 				dip.Pressed += () => GetNodeOrNull<DiplomacyPanel>(DiplomacyPanelPath ?? new NodePath())?.Open(owner.Tag);
 				row.AddChild(dip);
 			}
+			if (owner != null && owner == player && NavalRules.IsHarbour(p))
+				box.AddChild(ShipyardRow(p, player));
 			if (!p.IsCore)
 			{
 				double separatism = ControlRules.Separatism(p, gs.Date, owner);
@@ -479,6 +481,37 @@ public partial class ProvincePanel : PanelContainer
 	}
 
 	/// <summary>The garrison: regiments of our army here stay behind in it, or leave it to join the army.</summary>
+	/// <summary>The harbour: ships the player can build here, at their cost.</summary>
+	Control ShipyardRow(Province p, Country player)
+	{
+		GameState gs = GameState.Instance;
+		var box = new VBoxContainer();
+		box.AddThemeConstantOverride("separation", 2);
+		var fleets = gs.FleetsIn(p.Id).Where(f => f.OwnerTag == player.Tag).ToList();
+		box.AddChild(HudStyle.Body("Harbour" + (fleets.Count > 0 ? $" · {string.Join(", ", fleets.Select(f => $"the {f.Name} ({f.Regiments.Count} ships)"))}" : ""), BodyFont, 13, HudStyle.Muted));
+		var row = new HFlowContainer();
+		row.AddThemeConstantOverride("h_separation", 6);
+		box.AddChild(row);
+		var types = gs.ShipTypesFor(player, p);
+		if (types.Count == 0)
+			row.AddChild(HudStyle.Body("We know no ships we could build here", BodyFont, 12, HudStyle.Muted));
+		foreach (UnitType t in types)
+		{
+			var b = HudStyle.Button($"Build {t.Name.ToLowerInvariant()} ({t.Cost:0} gold)", BodyFont, 12);
+			b.Disabled = player.Gold < t.Cost;
+			b.TooltipText = $"{t.Description}\nAttack {t.Attack:0.0#} · defense {t.Defense:0.0#} · {t.Speed:0} km a day · carries {t.Capacity} regiments · trade power {t.TradePower:0.0#} · upkeep {t.Upkeep:0.00} a month";
+			string id = t.Id;
+			b.Pressed += () =>
+			{
+				if (!gs.BuildShip(p.Id, id, out string why))
+					gs.Notify(why);
+				Refresh();
+			};
+			row.AddChild(b);
+		}
+		return box;
+	}
+
 	Control GarrisonRow(Province p, Country player)
 	{
 		GameState gs = GameState.Instance;

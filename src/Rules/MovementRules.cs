@@ -1,3 +1,4 @@
+using System;
 using Untitled.Data;
 
 namespace Untitled.Rules;
@@ -15,20 +16,26 @@ public enum UnitDomain
 /// <summary>Which single steps between adjacent provinces a unit may take. Pathfinding builds on this.</summary>
 public static class MovementRules
 {
-	public static bool CanMove(UnitDomain domain, Adjacency link) => domain switch
+	/// <param name="harbour">For ships: whether they may lie in a land province (a harbour of theirs).</param>
+	public static bool CanMove(UnitDomain domain, Adjacency link, Func<Province, bool> harbour = null)
 	{
-		UnitDomain.Land => link.SharesBorder && !link.From.IsWater && link.To.IsPassable,
-		UnitDomain.SeaShip => link.SharesBorder && link.From.IsSea && link.To.IsSea,
-		UnitDomain.RiverShip => link.IsNavigableRiver || (link.SharesBorder && link.From.IsWater && link.To.IsWater),
-		_ => false,
-	};
+		bool Harbour(Province p) => harbour != null && harbour(p);
+		return domain switch
+		{
+			UnitDomain.Land => link.SharesBorder && !link.From.IsWater && link.To.IsPassable,
+			UnitDomain.SeaShip => link.SharesBorder && (link.From.IsSea && (link.To.IsSea || Harbour(link.To)) || link.To.IsSea && Harbour(link.From)),
+			UnitDomain.RiverShip => link.IsNavigableRiver
+				|| link.SharesBorder && (link.From.IsWater && (link.To.IsWater || Harbour(link.To)) || link.To.IsWater && Harbour(link.From)),
+			_ => false,
+		};
+	}
 
 	/// <summary>Whether a unit of this domain can be in the province at all.</summary>
-	public static bool CanOccupy(UnitDomain domain, Province province) => domain switch
+	public static bool CanOccupy(UnitDomain domain, Province province, Func<Province, bool> harbour = null) => domain switch
 	{
 		UnitDomain.Land => province.IsPassable,
-		UnitDomain.SeaShip => province.IsSea,
-		UnitDomain.RiverShip => province.IsWater || HasNavigableRiver(province),
+		UnitDomain.SeaShip => province.IsSea || harbour != null && harbour(province),
+		UnitDomain.RiverShip => province.IsWater || HasNavigableRiver(province) || harbour != null && harbour(province),
 		_ => false,
 	};
 

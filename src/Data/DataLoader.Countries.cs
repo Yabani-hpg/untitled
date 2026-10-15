@@ -138,8 +138,13 @@ public static partial class DataLoader
 					"foot" => UnitCategory.Foot,
 					"mounted" => UnitCategory.Mounted,
 					"siege" => UnitCategory.Siege,
-					_ => throw new DataException($"{where}: category must be foot, mounted or siege"),
+					"ship" => UnitCategory.Ship,
+					_ => throw new DataException($"{where}: category must be foot, mounted, siege or ship"),
 				},
+				Domain = category != "ship" ? Untitled.Rules.UnitDomain.Land
+					: (e.TryGetProperty("domain", out JsonElement dom) ? dom.GetString() : "sea") == "river" ? Untitled.Rules.UnitDomain.RiverShip : Untitled.Rules.UnitDomain.SeaShip,
+				Capacity = (int)GetFloat(e, "capacity", 0f),
+				TradePower = GetFloat(e, "trade_power", 0f),
 				Description = e.TryGetProperty("description", out JsonElement d) ? d.GetString() : "",
 				Tech = e.TryGetProperty("tech", out JsonElement tech)
 					? defs.GetTech(tech.GetString()) ?? throw new DataException($"{where}: unknown technology '{tech.GetString()}'")

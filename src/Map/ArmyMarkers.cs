@@ -125,8 +125,8 @@ public partial class ArmyMarkers : Node3D
 		var perProvince = new Dictionary<int, int>();
 		foreach (Army a in gs.Armies.Values)
 		{
-			if (ArmyPosition(gs, a) is not Vector3 at)
-				continue;
+			if (a.AboardFleetId != 0 || ArmyPosition(gs, a) is not Vector3 at)
+				continue;         // troops aboard a fleet show with it
 			alive.Add(a.Id);
 			if (!_markers.TryGetValue(a.Id, out Node3D marker))
 				_markers[a.Id] = marker = MakeMarker(a);
@@ -143,7 +143,8 @@ public partial class ArmyMarkers : Node3D
 			label.Text = $"{a.Regiments.Count}";
 			label.Modulate = a.OwnerTag == gs.PlayerTag ? new Color(1f, 0.95f, 0.8f) : new Color(1f, 0.7f, 0.6f);
 			var name = marker.GetNode<Label3D>("Name");
-			name.Text = a.Name;
+			name.Text = a.IsFleet ? $"{a.Name} ⚓" : a.Name;
+			name.Modulate = a.IsFleet ? new Color(0.6f, 0.85f, 1f) : new Color(1f, 0.85f, 0.45f);
 			name.Visible = a.Id == gs.SelectedArmyId;
 		}
 		foreach (int id in _markers.Keys.ToList())
@@ -329,7 +330,7 @@ public partial class ArmyMarkers : Node3D
 			int target = _picker.ProvinceAtScreen(mb.Position);
 			if (gs.GetProvince(target) != null)
 			{
-				if (!gs.MoveArmy(a.Id, target, out string why))
+				if (!gs.OrderUnit(a.Id, target, out string why) && why != null)
 					gs.Notify(why);
 			}
 			GetViewport().SetInputAsHandled();

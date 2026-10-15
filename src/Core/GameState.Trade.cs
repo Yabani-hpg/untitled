@@ -24,7 +24,7 @@ public partial class GameState
 
 	public void RecomputeTrade()
 	{
-		Trade = TradeRules.Compute(Definitions.TradeNodes, _provinces, _countries, Definitions);
+		Trade = TradeRules.Compute(Definitions.TradeNodes, _provinces, _countries, Definitions, _armies.Values);
 		EmitSignal(SignalName.TradeChanged);
 	}
 

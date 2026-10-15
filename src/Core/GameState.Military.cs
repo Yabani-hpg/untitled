@@ -34,7 +34,7 @@ public partial class GameState
 
 	public IEnumerable<Army> ArmiesOf(string tag) => _armies.Values.Where(a => a.OwnerTag == tag);
 
-	public IEnumerable<Army> ArmiesIn(int provinceId) => _armies.Values.Where(a => a.ProvinceId == provinceId && !a.Moving);
+	public IEnumerable<Army> ArmiesIn(int provinceId) => _armies.Values.Where(a => a.ProvinceId == provinceId && !a.Moving && a.AboardFleetId == 0);
 
 	public void SelectArmy(int id)
 	{
@@ -61,6 +61,9 @@ public partial class GameState
 
 	void RemoveArmy(Army a)
 	{
+		// a fleet lost at sea takes the troops aboard down with it
+		foreach (Army aboard in _armies.Values.Where(x => x.AboardFleetId == a.Id).ToList())
+			RemoveArmy(aboard);
 		_armies.Remove(a.Id);
 		if (SelectedArmyId == a.Id)
 			SelectArmy(0);
@@ -137,6 +140,23 @@ public partial class GameState
 
 	void Disband(Army a)
 	{
+		if (a.IsFleet)
+		{
+			// the troops aboard go ashore if the fleet lies in a harbour; at sea they go down with it
+			Province at = GetProvince(a.ProvinceId);
+			foreach (Army aboard in Cargo(a).ToList())
+			{
+				if (at != null && !at.IsWater)
+					aboard.AboardFleetId = 0;
+				else
+					Disband(aboard);
+			}
+			if (a.OwnerTag == PlayerTag)
+				Notify($"The {a.Name} is broken up: {a.Regiments.Count} ships scuttled.");
+			RemoveArmy(a);
+			AfterArmyChange(a.ProvinceId);
+			return;
+		}
 		int home = MilitaryRules.SendHome(a.Regiments, _provinces, _rng);
 		if (a.OwnerTag == PlayerTag)
 			Notify($"The {a.Name} is disbanded: {home * PopGroup.PeoplePerUnit:N0} soldiers go home.");
@@ -152,17 +172,24 @@ public partial class GameState
 		Province to = GetProvince(provinceId);
 		if (a == null || a.OwnerTag != PlayerTag)
 			reason = "Not our army";
-		else if (to == null || to.IsWater)
-			reason = "Armies march over land";
-		else if (!to.IsPassable)
+		else if (a.AboardFleetId != 0)
+			reason = "The army is aboard a fleet: order it ashore";
+		else if (to == null)
+			reason = "No such province";
+		else if (a.IsFleet && !MovementRules.CanOccupy(a.Domain, to, HarbourTest(a)))
+			reason = a.Domain == UnitDomain.SeaShip ? "Ships sail the seas and lie in our harbours" : "River boats keep to the rivers, lakes and coasts";
+		else if (!a.IsFleet && to.IsWater)
+			reason = "Armies march over land; a fleet can carry them";
+		else if (!a.IsFleet && !to.IsPassable)
 			reason = $"{to.Name}: {to.Relief?.Name.ToLowerInvariant()} no army can cross";
 		if (reason != null)
 			return false;
 		// an army on the march turns back from where it stands
-		List<int> path = MilitaryRules.FindPath(GetProvince(a.ProvinceId), to, MilitaryRules.Speed(a, GetCountry(a.OwnerTag)), _provinces, ProvinceMap.GetCentroid, ProvinceMap.Width);
+		List<int> path = MilitaryRules.FindPath(GetProvince(a.ProvinceId), to, MilitaryRules.Speed(a, GetCountry(a.OwnerTag)), _provinces, ProvinceMap.GetCentroid, ProvinceMap.Width,
+			a.Domain, a.IsFleet ? HarbourTest(a) : null);
 		if (path == null)
 		{
-			reason = $"There is no way over land to {to.Name}";
+			reason = a.IsFleet ? $"There is no sea road to {to.Name}" : $"There is no way over land to {to.Name}";
 			return false;
 		}
 		a.Path.Clear();
@@ -210,8 +237,10 @@ public partial class GameState
 		Army a = GetArmy(armyId);
 		if (a == null || a.OwnerTag != PlayerTag || a.Moving)
 			return;
-		foreach (Army other in ArmiesIn(a.ProvinceId).Where(o => o != a && o.OwnerTag == a.OwnerTag).ToList())
+		foreach (Army other in ArmiesIn(a.ProvinceId).Where(o => o != a && o.OwnerTag == a.OwnerTag && o.IsFleet == a.IsFleet).ToList())
 		{
+			foreach (Army aboard in Cargo(other).ToList())
+				aboard.AboardFleetId = a.Id;
 			a.Regiments.AddRange(other.Regiments);
 			RemoveArmy(other);
 		}
@@ -222,7 +251,7 @@ public partial class GameState
 	public bool GarrisonFromArmy(int provinceId, int armyId = 0)
 	{
 		Province p = GetProvince(provinceId);
-		Army a = ArmiesIn(provinceId).Where(x => x.OwnerTag == PlayerTag && x.Regiments.Count > 0 && (armyId == 0 || x.Id == armyId))
+		Army a = ArmiesIn(provinceId).Where(x => x.OwnerTag == PlayerTag && !x.IsFleet && x.Regiments.Count > 0 && (armyId == 0 || x.Id == armyId))
 			.OrderByDescending(x => x.Regiments.Count).FirstOrDefault();
 		if (p?.Control == null || p.OwnerTag != PlayerTag || a == null)
 			return false;
@@ -242,7 +271,7 @@ public partial class GameState
 		Province p = GetProvince(provinceId);
 		if (p?.Control == null || p.OwnerTag != PlayerTag || p.Control.Garrison.Count == 0)
 			return false;
-		Army a = ArmiesIn(provinceId).Where(x => x.OwnerTag == PlayerTag).OrderByDescending(x => x.Regiments.Count).FirstOrDefault()
+		Army a = ArmiesIn(provinceId).Where(x => x.OwnerTag == PlayerTag && !x.IsFleet).OrderByDescending(x => x.Regiments.Count).FirstOrDefault()
 			?? NewArmy(PlayerCountry, provinceId);
 		Regiment r = p.Control.Garrison[^1];
 		p.Control.Garrison.RemoveAt(p.Control.Garrison.Count - 1);
@@ -292,6 +321,11 @@ public partial class GameState
 				continue;
 			int from = a.ProvinceId;
 			a.ProvinceId = a.Path[0];
+			foreach (Army aboard in _armies.Values)
+			{
+				if (aboard.AboardFleetId == a.Id)
+					aboard.ProvinceId = a.ProvinceId;
+			}
 			a.Path.RemoveAt(0);
 			a.DaysMarched = 0;
 			a.StepDays = a.Moving ? StepDays(a, a.Path[0]) : 0;
@@ -304,7 +338,7 @@ public partial class GameState
 			if (_armies.ContainsKey(a.Id) && a.Regiments.Count > 0)
 			{
 				// an army marching through stops to fight enemies in its way
-				if (ArmiesIn(a.ProvinceId).Any(o => Enemies(a.OwnerTag, o.OwnerTag)))
+				if (ArmiesIn(a.ProvinceId).Any(o => o.IsFleet == a.IsFleet && Enemies(a.OwnerTag, o.OwnerTag)))
 				{
 					var onward = a.Path.ToList();
 					a.Path.Clear();
@@ -329,6 +363,8 @@ public partial class GameState
 		bool any = false;
 		foreach (Army a in _armies.Values)
 		{
+			if (a.IsFleet || a.AboardFleetId != 0)
+				continue;
 			Province p = GetProvince(a.ProvinceId);
 			double share = TerrainRules.Attrition(p, a.Regiments.Count);
 			if (share <= 0)
