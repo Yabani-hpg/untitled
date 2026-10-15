@@ -94,6 +94,11 @@ public partial class GameState : IWorld
 		foreach (Province p in _provinces)
 			p?.ClearForNewGame();
 		DataLoader.LoadProvinceSetup(DataLoader.ProvinceSetupPath, _provinces, Definitions);
+		foreach (Country c in _countries.Values)
+		{
+			foreach (var (id, units) in c.Definition?.ProvincePops ?? new())
+				SetPopulation(_provinces[id], units);
+		}
 
 		Date = StartDate;
 		Paused = true;
@@ -188,6 +193,20 @@ public partial class GameState : IWorld
 			Ensure(t.Provinces.Select(id => _provinces[id]).ToList(), GetProvince(t.CampProvinceId), t.Culture, t.Religion);
 	}
 
+	/// <summary>Scales a province's people to <paramref name="units"/>, keeping their mix; an empty province gets settled peasants of the nearest people.</summary>
+	void SetPopulation(Province p, int units)
+	{
+		int have = p.TotalUnits;
+		if (have == 0)
+		{
+			Culture culture = p.Neighbors.Select(l => l.To.MainCulture).FirstOrDefault(c => c != null) ?? Definitions.Cultures.Values.First();
+			p.AddPeople(culture, Definitions.Religions.Values.First(), Definitions.Occupations["peasants"], units, true);
+			return;
+		}
+		foreach (PopGroup g in p.Pops)
+			g.Units = Math.Max(1, (int)Math.Round(g.Units * (double)units / have));
+	}
+
 	int PickCapital(Country c)
 	{
 		int named = ProvinceIdByName(c.Definition?.CapitalProvince);
@@ -211,7 +230,7 @@ public partial class GameState : IWorld
 			FullName = d.FullName,
 			Dynasty = d.Dynasty,
 			Birth = d.Birth,
-			Portrait = d.Portrait,
+			Portrait = d.Portrait ?? GenericPortrait(d.Culture, c.Tag),
 			ProvinceId = ProvinceIdByName(d.Province) is var id && id > 0 ? id : c.CapitalId,
 			Culture = Definitions.Cultures[d.Culture],
 			Religion = Definitions.Religions[d.Religion],
@@ -223,6 +242,14 @@ public partial class GameState : IWorld
 			home.AddPops(ruler.Culture, ruler.Religion, ruler.Occupation, ruler.Sex, 1);
 		_characters[ruler.Id] = ruler;
 		return ruler;
+	}
+
+	/// <summary>A generic portrait of the culture, picked by the country's tag so it is the same every game.</summary>
+	string GenericPortrait(string cultureId, string tag)
+	{
+		if (cultureId == null || !Definitions.GenericPortraits.TryGetValue(cultureId, out List<string> list) || list.Count == 0)
+			return null;
+		return list[new Random(StableHash($"portrait {tag}")).Next(list.Count)];
 	}
 
 	/// <summary>
@@ -243,7 +270,7 @@ public partial class GameState : IWorld
 		var ruler = new Character
 		{
 			Id = _nextCharacterId++,
-			Name = Pick(Definitions.RulerNames, c.Name),
+			Name = c.RulerNames.Count > 0 ? c.RulerNames[rng.Next(c.RulerNames.Count)] : Pick(Definitions.RulerNames, c.Name),
 			Dynasty = Pick(Definitions.DynastyNames, c.Adjective),
 			Birth = StartDate.AddDays(-(long)(age * 365.2425) - rng.Next(365)),
 			Portrait = Pick(Definitions.GenericPortraits, null),

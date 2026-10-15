@@ -103,6 +103,8 @@ public sealed class CountryDefinition
 	public List<string> Techs { get; } = new();
 	/// <summary>The country's own names for provinces (by province id), used while it owns them.</summary>
 	public Dictionary<int, string> ProvinceNames { get; } = new();
+	/// <summary>Population (in units) set by hand for provinces at the start, by province id, where the generated numbers are wrong.</summary>
+	public Dictionary<int, int> ProvincePops { get; } = new();
 }
 
 /// <summary>A province a country controls at the start. <c>Since</c> null means long before the start.</summary>

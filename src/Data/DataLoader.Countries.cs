@@ -384,6 +384,11 @@ public static partial class DataLoader
 				def.ProvinceNames[ProvinceByName(names, n.Name, $"{path}:province_names")] = n.Value.GetString();
 			}
 		}
+		if (e.TryGetProperty("province_pops", out JsonElement popCounts))
+		{
+			foreach (JsonProperty n in popCounts.EnumerateObject())
+				def.ProvincePops[ProvinceByName(names, n.Name, $"{path}:province_pops")] = n.Value.GetInt32();
+		}
 		foreach (string tech in GetStringList(e, "techs", path))
 		{
 			if (defs.GetTech(tech) == null)

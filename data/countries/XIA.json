@@ -1,0 +1,80 @@
+{
+	"_comment": "Xia in 1800 BC: the bronze-casting court of Erlitou on the Yi-Luo plain, the Xia of tradition, under King Jin.",
+	"tag": "XIA",
+	"name": "Xia",
+	"adjective": "Xia",
+	"color": [
+		200,
+		60,
+		60
+	],
+	"government": "Dynastic kingdom",
+	"ruler_title": "King",
+	"capital": "Henan",
+	"capital_name": "Zhenxun",
+	"gold": 60,
+	"laws": {
+		"government": "monarchy",
+		"succession": "primogeniture",
+		"citizenship": "ruling_culture",
+		"noncitizens": "tributaries",
+		"culture_policy": "tolerance",
+		"religion": "state_cult",
+		"legal_code": "customary",
+		"slavery": "legal",
+		"frontier": "open"
+	},
+	"techs": [
+		"monarchy",
+		"masonry",
+		"pottery",
+		"calendar"
+	],
+	"ruler_names": [
+		"Jin",
+		"Kong Jia",
+		"Gao",
+		"Fa",
+		"Jie",
+		"Jiong",
+		"Bu Jiang",
+		"Xie"
+	],
+	"ruler_name_counts": {
+		"Jin": 0,
+		"Kong Jia": 0,
+		"Gao": 0,
+		"Fa": 0,
+		"Jie": 0,
+		"Jiong": 0,
+		"Bu Jiang": 0,
+		"Xie": 0
+	},
+	"start_provinces": [
+		{
+			"provinces": [
+				"Henan"
+			],
+			"control": "core"
+		},
+		{
+			"provinces": [
+				"Shanxi"
+			],
+			"control": "absorbed",
+			"since": "8151.1.1"
+		}
+	],
+	"ruler": {
+		"name": "Jin",
+		"full_name": "Jin, king of Xia",
+		"dynasty": "Xia dynasty",
+		"birth": "8161.1.1",
+		"population": {
+			"province": "Henan",
+			"culture": "asian",
+			"religion": "pagan",
+			"occupation": "peasants"
+		}
+	}
+}

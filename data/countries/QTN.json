@@ -1,0 +1,71 @@
+{
+	"_comment": "Qatna in 1800 BC: the kingdom of the Orontes, Yamhad's rival and Assyria's friend.",
+	"tag": "QTN",
+	"name": "Qatna",
+	"adjective": "Qatnean",
+	"color": [
+		120,
+		80,
+		160
+	],
+	"government": "Amorite kingdom",
+	"ruler_title": "King",
+	"capital": "Homs (Hims)",
+	"capital_name": "Qatna",
+	"gold": 50,
+	"laws": {
+		"government": "monarchy",
+		"succession": "primogeniture",
+		"citizenship": "ruling_culture",
+		"noncitizens": "tributaries",
+		"culture_policy": "tolerance",
+		"religion": "state_cult",
+		"legal_code": "customary",
+		"slavery": "legal",
+		"frontier": "open"
+	},
+	"techs": [
+		"monarchy",
+		"writing",
+		"masonry",
+		"sailing",
+		"diplomacy"
+	],
+	"ruler_names": [
+		"Ishi-Addu",
+		"Amut-pi-el",
+		"Idanda",
+		"Akizzi"
+	],
+	"ruler_name_counts": {
+		"Ishi-Addu": 1,
+		"Amut-pi-el": 0,
+		"Idanda": 0,
+		"Akizzi": 0
+	},
+	"start_provinces": [
+		{
+			"provinces": [
+				"Homs (Hims)",
+				"Hamah"
+			],
+			"control": "core"
+		}
+	],
+	"ruler": {
+		"name": "Ishi-Addu",
+		"full_name": "Ishi-Addu, king of Qatna",
+		"dynasty": "House of Qatna",
+		"birth": "8161.1.1",
+		"population": {
+			"province": "Homs (Hims)",
+			"culture": "asian",
+			"religion": "pagan",
+			"occupation": "peasants"
+		}
+	},
+	"province_pops": {
+		"Homs (Hims)": 25,
+		"Hamah": 20
+	}
+}

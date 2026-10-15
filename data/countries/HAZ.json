@@ -1,0 +1,67 @@
+{
+	"_comment": "Hazor in 1800 BC: the head of the Canaanite kingdoms, the great tell above the Jordan, trading with Mari.",
+	"tag": "HAZ",
+	"name": "Hazor",
+	"adjective": "Hazorite",
+	"color": [
+		170,
+		120,
+		60
+	],
+	"government": "Canaanite kingdom",
+	"ruler_title": "King",
+	"capital": "HaZafon",
+	"capital_name": "Hazor",
+	"gold": 40,
+	"laws": {
+		"government": "monarchy",
+		"succession": "primogeniture",
+		"citizenship": "ruling_culture",
+		"noncitizens": "tributaries",
+		"culture_policy": "tolerance",
+		"religion": "state_cult",
+		"legal_code": "customary",
+		"slavery": "legal",
+		"frontier": "open"
+	},
+	"techs": [
+		"monarchy",
+		"writing",
+		"masonry",
+		"sailing",
+		"diplomacy"
+	],
+	"ruler_names": [
+		"Ibni-Addu",
+		"Abdi-Tirshi",
+		"Jabin"
+	],
+	"ruler_name_counts": {
+		"Ibni-Addu": 1,
+		"Abdi-Tirshi": 0,
+		"Jabin": 0
+	},
+	"start_provinces": [
+		{
+			"provinces": [
+				"HaZafon"
+			],
+			"control": "core"
+		}
+	],
+	"ruler": {
+		"name": "Ibni-Addu",
+		"full_name": "Ibni-Addu, king of Hazor",
+		"dynasty": "House of Hazor",
+		"birth": "8158.1.1",
+		"population": {
+			"province": "HaZafon",
+			"culture": "asian",
+			"religion": "pagan",
+			"occupation": "peasants"
+		}
+	},
+	"province_pops": {
+		"HaZafon": 25
+	}
+}

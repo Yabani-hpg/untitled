@@ -1,0 +1,62 @@
+{
+	"_comment": "Crete in 1800 BC: the first palaces of Knossos, Phaistos and Malia, the Keftiu of Egyptian texts; its kings are the ones of legend.",
+	"tag": "MIN",
+	"name": "Minoan Crete",
+	"adjective": "Minoan",
+	"color": [
+		80,
+		100,
+		200
+	],
+	"government": "Palace kingdom",
+	"ruler_title": "King",
+	"capital": "Kriti",
+	"capital_name": "Knossos",
+	"gold": 100,
+	"laws": {
+		"government": "monarchy",
+		"succession": "primogeniture",
+		"citizenship": "ruling_culture",
+		"noncitizens": "tributaries",
+		"culture_policy": "tolerance",
+		"religion": "state_cult",
+		"legal_code": "customary",
+		"slavery": "legal",
+		"frontier": "open"
+	},
+	"techs": [
+		"monarchy",
+		"writing",
+		"masonry",
+		"sailing",
+		"diplomacy",
+		"mathematics"
+	],
+	"ruler_names": [
+		"Minos",
+		"Rhadamanthys",
+		"Sarpedon",
+		"Asterion",
+		"Deucalion",
+		"Catreus"
+	],
+	"ruler_name_counts": {
+		"Minos": 0,
+		"Rhadamanthys": 0,
+		"Sarpedon": 0,
+		"Asterion": 0,
+		"Deucalion": 0,
+		"Catreus": 0
+	},
+	"start_provinces": [
+		{
+			"provinces": [
+				"Kriti"
+			],
+			"control": "core"
+		}
+	],
+	"province_pops": {
+		"Kriti": 80
+	}
+}

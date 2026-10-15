@@ -262,7 +262,20 @@ def main_cultures():
         for pop in p["pops"]:
             units.setdefault(tag, {}).setdefault(pop["culture"], 0)
             units[tag][pop["culture"]] += pop["units"]
-    return {tag: max(c, key=c.get) for tag, c in units.items() if c}
+    cultures = {tag: max(c, key=c.get) for tag, c in units.items() if c}
+    # countries set up by a country file take the culture of their capital's people
+    by_name = {}
+    for line in PROVINCES_CSV.read_text(encoding="utf-8").splitlines():
+        if line and line[0].isdigit():
+            cols = line.split(";")
+            by_name[cols[2]] = int(cols[0])
+    pops = {p["id"]: p["pops"] for p in json.loads(SETUP_JSON.read_text(encoding="utf-8"))["provinces"]}
+    for path in COUNTRY_DIR.glob("*.json"):
+        spec = json.loads(path.read_text(encoding="utf-8"))
+        capital = pops.get(by_name.get(spec.get("capital")), [])
+        if capital:
+            cultures[spec["tag"]] = max(capital, key=lambda pop: pop["units"])["culture"]
+    return cultures
 
 
 def main():

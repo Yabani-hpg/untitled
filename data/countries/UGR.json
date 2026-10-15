@@ -1,0 +1,59 @@
+{
+	"_comment": "Ugarit in 1800 BC: the harbour kingdom of the north Syrian coast; its early kings are known only by name.",
+	"tag": "UGR",
+	"name": "Ugarit",
+	"adjective": "Ugaritic",
+	"color": [
+		60,
+		170,
+		170
+	],
+	"government": "Canaanite kingdom",
+	"ruler_title": "King",
+	"capital": "Lattakia",
+	"capital_name": "Ugarit",
+	"gold": 60,
+	"laws": {
+		"government": "monarchy",
+		"succession": "primogeniture",
+		"citizenship": "ruling_culture",
+		"noncitizens": "tributaries",
+		"culture_policy": "tolerance",
+		"religion": "state_cult",
+		"legal_code": "customary",
+		"slavery": "legal",
+		"frontier": "open"
+	},
+	"techs": [
+		"monarchy",
+		"writing",
+		"masonry",
+		"sailing",
+		"diplomacy"
+	],
+	"ruler_names": [
+		"Yaqarum",
+		"Ibiranu",
+		"Niqmaddu",
+		"Ammittamru",
+		"Niqmepa"
+	],
+	"ruler_name_counts": {
+		"Yaqarum": 0,
+		"Ibiranu": 0,
+		"Niqmaddu": 0,
+		"Ammittamru": 0,
+		"Niqmepa": 0
+	},
+	"start_provinces": [
+		{
+			"provinces": [
+				"Lattakia"
+			],
+			"control": "core"
+		}
+	],
+	"province_pops": {
+		"Lattakia": 20
+	}
+}

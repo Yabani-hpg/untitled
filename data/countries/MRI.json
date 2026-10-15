@@ -1,0 +1,71 @@
+{
+	"_comment": "Mari in 1800 BC: the great palace city of the middle Euphrates under Yahdun-Lim, rich on river trade, soon to fall to Shamshi-Adad.",
+	"tag": "MRI",
+	"name": "Mari",
+	"adjective": "Mariote",
+	"color": [
+		90,
+		160,
+		180
+	],
+	"government": "Amorite kingdom",
+	"ruler_title": "King",
+	"capital": "Dayr Az Zawr",
+	"capital_name": "Mari",
+	"gold": 80,
+	"laws": {
+		"government": "monarchy",
+		"succession": "primogeniture",
+		"citizenship": "ruling_culture",
+		"noncitizens": "tributaries",
+		"culture_policy": "tolerance",
+		"religion": "state_cult",
+		"legal_code": "codified",
+		"slavery": "legal",
+		"frontier": "open"
+	},
+	"techs": [
+		"monarchy",
+		"code_of_laws",
+		"writing",
+		"mathematics",
+		"masonry",
+		"sailing",
+		"calendar",
+		"diplomacy",
+		"bureaucracy"
+	],
+	"ruler_names": [
+		"Yahdun-Lim",
+		"Zimri-Lim",
+		"Yaggid-Lim",
+		"Sumu-Yamam"
+	],
+	"ruler_name_counts": {
+		"Yahdun-Lim": 1,
+		"Zimri-Lim": 0,
+		"Yaggid-Lim": 1,
+		"Sumu-Yamam": 0
+	},
+	"start_provinces": [
+		{
+			"provinces": [
+				"Dayr Az Zawr",
+				"Ar Raqqah"
+			],
+			"control": "core"
+		}
+	],
+	"ruler": {
+		"name": "Yahdun-Lim",
+		"full_name": "Yahdun-Lim, king of Mari and the land of the Haneans",
+		"dynasty": "Lim dynasty",
+		"birth": "8151.1.1",
+		"population": {
+			"province": "Dayr Az Zawr",
+			"culture": "asian",
+			"religion": "pagan",
+			"occupation": "peasants"
+		}
+	}
+}

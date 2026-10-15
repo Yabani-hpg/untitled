@@ -1,0 +1,75 @@
+{
+	"_comment": "Eshnunna in 1800 BC: the kingdom of the Diyala valley, rival of Babylon and Assyria for the roads to Iran.",
+	"tag": "ESH",
+	"name": "Eshnunna",
+	"adjective": "Eshnunnan",
+	"color": [
+		180,
+		90,
+		40
+	],
+	"government": "Amorite kingdom",
+	"ruler_title": "King",
+	"capital": "Diyala",
+	"capital_name": "Eshnunna",
+	"gold": 60,
+	"laws": {
+		"government": "monarchy",
+		"succession": "primogeniture",
+		"citizenship": "ruling_culture",
+		"noncitizens": "tributaries",
+		"culture_policy": "tolerance",
+		"religion": "state_cult",
+		"legal_code": "codified",
+		"slavery": "legal",
+		"frontier": "open"
+	},
+	"techs": [
+		"monarchy",
+		"code_of_laws",
+		"writing",
+		"mathematics",
+		"masonry",
+		"sailing",
+		"calendar",
+		"diplomacy",
+		"bureaucracy"
+	],
+	"ruler_names": [
+		"Dadusha",
+		"Ibal-pi-el",
+		"Naram-Sin",
+		"Ipiq-Adad",
+		"Silli-Sin"
+	],
+	"ruler_name_counts": {
+		"Dadusha": 1,
+		"Ibal-pi-el": 1,
+		"Naram-Sin": 1,
+		"Ipiq-Adad": 2,
+		"Silli-Sin": 0
+	},
+	"start_provinces": [
+		{
+			"provinces": [
+				"Diyala"
+			],
+			"control": "core"
+		}
+	],
+	"ruler": {
+		"name": "Dadusha",
+		"full_name": "Dadusha, king of Eshnunna",
+		"dynasty": "Dynasty of Ipiq-Adad",
+		"birth": "8151.1.1",
+		"population": {
+			"province": "Diyala",
+			"culture": "asian",
+			"religion": "pagan",
+			"occupation": "peasants"
+		}
+	},
+	"province_pops": {
+		"Diyala": 60
+	}
+}

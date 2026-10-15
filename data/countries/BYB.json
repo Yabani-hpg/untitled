@@ -1,0 +1,69 @@
+{
+	"_comment": "Byblos in 1800 BC: the cedar port, Egypt's oldest trading partner, under Abishemu I.",
+	"tag": "BYB",
+	"name": "Byblos",
+	"adjective": "Byblian",
+	"color": [
+		80,
+		140,
+		120
+	],
+	"government": "Canaanite city-state",
+	"ruler_title": "King",
+	"capital": "Mount Lebanon",
+	"capital_name": "Gubla",
+	"gold": 90,
+	"laws": {
+		"government": "monarchy",
+		"succession": "primogeniture",
+		"citizenship": "ruling_culture",
+		"noncitizens": "tributaries",
+		"culture_policy": "tolerance",
+		"religion": "state_cult",
+		"legal_code": "customary",
+		"slavery": "legal",
+		"frontier": "open"
+	},
+	"techs": [
+		"monarchy",
+		"writing",
+		"masonry",
+		"sailing",
+		"diplomacy"
+	],
+	"ruler_names": [
+		"Abishemu",
+		"Ip-shemu-abi",
+		"Yakin-ilu",
+		"Yantin-ammu"
+	],
+	"ruler_name_counts": {
+		"Abishemu": 1,
+		"Ip-shemu-abi": 0,
+		"Yakin-ilu": 0,
+		"Yantin-ammu": 0
+	},
+	"start_provinces": [
+		{
+			"provinces": [
+				"Mount Lebanon"
+			],
+			"control": "core"
+		}
+	],
+	"ruler": {
+		"name": "Abishemu I",
+		"full_name": "Abishemu, prince of Gubla",
+		"dynasty": "House of Gubla",
+		"birth": "8161.1.1",
+		"population": {
+			"province": "Mount Lebanon",
+			"culture": "asian",
+			"religion": "pagan",
+			"occupation": "peasants"
+		}
+	},
+	"province_pops": {
+		"Mount Lebanon": 25
+	}
+}

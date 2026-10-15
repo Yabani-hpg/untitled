@@ -1,0 +1,80 @@
+{
+	"_comment": "Isin in 1800 BC: the last king of the old dynasty that followed Ur, down to its home city, with Larsa at the gates.",
+	"tag": "ISN",
+	"name": "Isin",
+	"adjective": "Isinite",
+	"color": [
+		120,
+		200,
+		120
+	],
+	"government": "Sumerian kingdom",
+	"ruler_title": "King",
+	"capital": "Al-Qādisiyyah",
+	"capital_name": "Isin",
+	"gold": 30,
+	"laws": {
+		"government": "monarchy",
+		"succession": "primogeniture",
+		"citizenship": "ruling_culture",
+		"noncitizens": "tributaries",
+		"culture_policy": "tolerance",
+		"religion": "state_cult",
+		"legal_code": "codified",
+		"slavery": "legal",
+		"frontier": "open"
+	},
+	"techs": [
+		"monarchy",
+		"code_of_laws",
+		"writing",
+		"mathematics",
+		"masonry",
+		"sailing",
+		"calendar",
+		"diplomacy",
+		"bureaucracy"
+	],
+	"ruler_names": [
+		"Damiq-ilishu",
+		"Ishbi-Erra",
+		"Shu-Ilishu",
+		"Iddin-Dagan",
+		"Ishme-Dagan",
+		"Lipit-Ishtar",
+		"Ur-Ninurta",
+		"Bur-Sin",
+		"Enlil-bani"
+	],
+	"ruler_name_counts": {
+		"Damiq-ilishu": 1,
+		"Ishbi-Erra": 1,
+		"Shu-Ilishu": 1,
+		"Iddin-Dagan": 1,
+		"Ishme-Dagan": 1,
+		"Lipit-Ishtar": 1,
+		"Ur-Ninurta": 1,
+		"Bur-Sin": 1,
+		"Enlil-bani": 1
+	},
+	"start_provinces": [
+		{
+			"provinces": [
+				"Al-Qādisiyyah"
+			],
+			"control": "core"
+		}
+	],
+	"ruler": {
+		"name": "Damiq-ilishu",
+		"full_name": "Damiq-ilishu, king of Isin",
+		"dynasty": "First Dynasty of Isin",
+		"birth": "8146.1.1",
+		"population": {
+			"province": "Al-Qādisiyyah",
+			"culture": "asian",
+			"religion": "pagan",
+			"occupation": "peasants"
+		}
+	}
+}

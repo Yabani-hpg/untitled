@@ -1,0 +1,61 @@
+{
+	"_comment": "Meluhha in 1800 BC: the late Indus cities, Mohenjo-daro and the Gujarat ports, still great but fading; the Mesopotamians' name for them. Its rulers are unknown; it is run as a council of cities.",
+	"tag": "MEL",
+	"name": "Meluhha",
+	"adjective": "Meluhhan",
+	"color": [
+		120,
+		160,
+		40
+	],
+	"government": "Council of cities",
+	"ruler_title": "Great Elder",
+	"capital": "Sind",
+	"capital_name": "Mohenjo-daro",
+	"gold": 80,
+	"laws": {
+		"government": "chiefdom",
+		"succession": "elective",
+		"citizenship": "settled",
+		"noncitizens": "protected",
+		"culture_policy": "tolerance",
+		"religion": "free_worship",
+		"legal_code": "customary",
+		"slavery": "outlawed",
+		"frontier": "open"
+	},
+	"techs": [
+		"writing",
+		"masonry",
+		"sailing",
+		"mathematics",
+		"pottery"
+	],
+	"ruler_names": [
+		"Ashvattha",
+		"Vasu",
+		"Dhara",
+		"Mehi"
+	],
+	"ruler_name_counts": {
+		"Ashvattha": 0,
+		"Vasu": 0,
+		"Dhara": 0,
+		"Mehi": 0
+	},
+	"start_provinces": [
+		{
+			"provinces": [
+				"Sind"
+			],
+			"control": "core"
+		},
+		{
+			"provinces": [
+				"Gujarat"
+			],
+			"control": "absorbed",
+			"since": "8171.1.1"
+		}
+	]
+}

@@ -1,0 +1,76 @@
+{
+	"_comment": "Yamhad in 1800 BC: the young kingdom of Halab under its founder Sumu-epuh, the coming power of Syria.",
+	"tag": "YAM",
+	"name": "Yamhad",
+	"adjective": "Yamhadite",
+	"color": [
+		200,
+		80,
+		120
+	],
+	"government": "Amorite kingdom",
+	"ruler_title": "King",
+	"capital": "Aleppo",
+	"capital_name": "Halab",
+	"gold": 70,
+	"laws": {
+		"government": "monarchy",
+		"succession": "primogeniture",
+		"citizenship": "ruling_culture",
+		"noncitizens": "tributaries",
+		"culture_policy": "tolerance",
+		"religion": "state_cult",
+		"legal_code": "codified",
+		"slavery": "legal",
+		"frontier": "open"
+	},
+	"techs": [
+		"monarchy",
+		"writing",
+		"masonry",
+		"sailing",
+		"diplomacy",
+		"code_of_laws"
+	],
+	"ruler_names": [
+		"Sumu-epuh",
+		"Yarim-Lim",
+		"Hammurabi",
+		"Abba-El",
+		"Niqmi-epuh",
+		"Irkabtum"
+	],
+	"ruler_name_counts": {
+		"Sumu-epuh": 1,
+		"Yarim-Lim": 0,
+		"Hammurabi": 0,
+		"Abba-El": 0,
+		"Niqmi-epuh": 0,
+		"Irkabtum": 0
+	},
+	"start_provinces": [
+		{
+			"provinces": [
+				"Aleppo",
+				"Idlib"
+			],
+			"control": "core"
+		}
+	],
+	"ruler": {
+		"name": "Sumu-epuh",
+		"full_name": "Sumu-epuh, king of Yamhad",
+		"dynasty": "Yamhad dynasty",
+		"birth": "8156.1.1",
+		"population": {
+			"province": "Aleppo",
+			"culture": "asian",
+			"religion": "pagan",
+			"occupation": "peasants"
+		}
+	},
+	"province_pops": {
+		"Aleppo": 50,
+		"Idlib": 20
+	}
+}

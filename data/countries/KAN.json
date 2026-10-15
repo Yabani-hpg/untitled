@@ -1,0 +1,62 @@
+{
+	"_comment": "Kanesh in 1800 BC: the Anatolian city with the Assyrian merchant colony at its gate, where the Hittites will begin.",
+	"tag": "KAN",
+	"name": "Kanesh",
+	"adjective": "Kaneshite",
+	"color": [
+		200,
+		140,
+		100
+	],
+	"government": "Anatolian city-state",
+	"ruler_title": "King",
+	"capital": "Kayseri",
+	"capital_name": "Kanesh",
+	"gold": 80,
+	"laws": {
+		"government": "monarchy",
+		"succession": "primogeniture",
+		"citizenship": "ruling_culture",
+		"noncitizens": "tributaries",
+		"culture_policy": "tolerance",
+		"religion": "state_cult",
+		"legal_code": "customary",
+		"slavery": "legal",
+		"frontier": "open"
+	},
+	"techs": [
+		"monarchy",
+		"writing",
+		"diplomacy",
+		"masonry"
+	],
+	"ruler_names": [
+		"Inar",
+		"Warshama",
+		"Pithana",
+		"Anitta",
+		"Hurmeli",
+		"Labarna"
+	],
+	"ruler_name_counts": {
+		"Inar": 0,
+		"Warshama": 0,
+		"Pithana": 0,
+		"Anitta": 0,
+		"Hurmeli": 0,
+		"Labarna": 0
+	},
+	"start_provinces": [
+		{
+			"provinces": [
+				"Kayseri",
+				"Nevsehir"
+			],
+			"control": "core"
+		}
+	],
+	"province_pops": {
+		"Kayseri": 30,
+		"Nevsehir": 10
+	}
+}

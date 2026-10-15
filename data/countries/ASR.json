@@ -1,0 +1,89 @@
+{
+	"_comment": "The Kingdom of Upper Mesopotamia in 1800 BC: Shamshi-Adad I, an Amorite adventurer who took Ashur and Ekallatum, ruling from Shubat-Enlil in the Khabur; Mari is his next prize.",
+	"tag": "ASR",
+	"name": "Assyria",
+	"adjective": "Assyrian",
+	"color": [
+		150,
+		150,
+		160
+	],
+	"government": "Amorite kingdom",
+	"ruler_title": "King",
+	"capital": "Hasaka (Al Haksa)",
+	"capital_name": "Shubat-Enlil",
+	"gold": 100,
+	"laws": {
+		"government": "monarchy",
+		"succession": "primogeniture",
+		"citizenship": "ruling_culture",
+		"noncitizens": "tributaries",
+		"culture_policy": "tolerance",
+		"religion": "state_cult",
+		"legal_code": "codified",
+		"slavery": "legal",
+		"frontier": "open"
+	},
+	"techs": [
+		"monarchy",
+		"code_of_laws",
+		"writing",
+		"mathematics",
+		"masonry",
+		"sailing",
+		"calendar",
+		"diplomacy",
+		"bureaucracy"
+	],
+	"ruler_names": [
+		"Shamshi-Adad",
+		"Ishme-Dagan",
+		"Yasmah-Adad",
+		"Puzur-Ashur",
+		"Erishum",
+		"Ilu-shuma",
+		"Ashur-nirari",
+		"Adad-nirari"
+	],
+	"ruler_name_counts": {
+		"Shamshi-Adad": 1,
+		"Ishme-Dagan": 0,
+		"Yasmah-Adad": 0,
+		"Puzur-Ashur": 2,
+		"Erishum": 2,
+		"Ilu-shuma": 1,
+		"Ashur-nirari": 0,
+		"Adad-nirari": 0
+	},
+	"start_provinces": [
+		{
+			"provinces": [
+				"Hasaka (Al Haksa)",
+				"Ninawa",
+				"Sala ad-Din"
+			],
+			"control": "core"
+		},
+		{
+			"provinces": [
+				"At-Ta'mim",
+				"Arbil",
+				"Dihok"
+			],
+			"control": "absorbed",
+			"since": "8192.1.1"
+		}
+	],
+	"ruler": {
+		"name": "Shamshi-Adad I",
+		"full_name": "Shamshi-Adad, king of the universe, king of Upper Mesopotamia",
+		"dynasty": "House of Shamshi-Adad",
+		"birth": "8136.1.1",
+		"population": {
+			"province": "Hasaka (Al Haksa)",
+			"culture": "asian",
+			"religion": "pagan",
+			"occupation": "peasants"
+		}
+	}
+}
