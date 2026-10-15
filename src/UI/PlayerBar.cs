@@ -21,6 +21,7 @@ public partial class PlayerBar : PanelContainer
 	[Export] public NodePath CountryPanelPath { get; set; }
 	[Export] public NodePath ResearchPanelPath { get; set; }
 	[Export] public NodePath DiplomacyPanelPath { get; set; }
+	[Export] public NodePath LedgerPanelPath { get; set; }
 
 	TextureRect _flag;
 	TextureRect _portrait;
@@ -68,7 +69,7 @@ public partial class PlayerBar : PanelContainer
 		row.AddChild(chips);
 		Chip(chips, "gold", "gold", () => CountryPanel()?.Toggle(0), 88);
 		Chip(chips, "population", "population", () => CountryPanel()?.Toggle(0), 88);
-		Chip(chips, "research", "science", () => ResearchPanel()?.Toggle(), 190);
+		Chip(chips, "research", "science", () => ResearchPanel()?.Toggle(), 150);
 		Chip(chips, "army", "army", () => CountryPanel()?.Toggle(2), 84);
 		var diplomacy = HudStyle.Button("Diplomacy", BodyFont, 13);
 		diplomacy.SizeFlagsVertical = SizeFlags.ShrinkCenter;
@@ -76,6 +77,11 @@ public partial class PlayerBar : PanelContainer
 		diplomacy.Pressed += () => GetNodeOrNull<DiplomacyPanel>(DiplomacyPanelPath ?? new NodePath())?.Toggle();
 		chips.AddChild(diplomacy);
 		_diplomacyButton = diplomacy;
+		var ledger = HudStyle.Button("Ledger", BodyFont, 13);
+		ledger.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+		ledger.TooltipText = "Tables of the world: countries, wars, trade and our provinces";
+		ledger.Pressed += () => GetNodeOrNull<LedgerPanel>(LedgerPanelPath ?? new NodePath())?.Toggle();
+		chips.AddChild(ledger);
 
 		GameState gs = GameState.Instance;
 		if (gs == null)

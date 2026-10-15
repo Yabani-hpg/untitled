@@ -1,4 +1,4 @@
-[gd_scene load_steps=47 format=3 uid="uid://cyfurr3kc6nlw"]
+[gd_scene load_steps=49 format=3 uid="uid://cyfurr3kc6nlw"]
 
 [ext_resource type="Script" uid="uid://2unnrnjnrqwe" path="res://scenes/camera_rig.gd" id="1_ig7tw"]
 [ext_resource type="Texture2D" uid="uid://cd4qk132laylx" path="res://map/landmap.png" id="3_jkv2x"]
@@ -40,6 +40,8 @@
 [ext_resource type="Script" path="res://src/UI/ResearchPanel.cs" id="43_researchpanel"]
 [ext_resource type="Script" path="res://src/UI/DiplomacyPanel.cs" id="44_diplomacypanel"]
 [ext_resource type="Script" path="res://src/UI/EventPanel.cs" id="45_eventpanel"]
+[ext_resource type="Script" path="res://src/UI/Outliner.cs" id="46_outliner"]
+[ext_resource type="Script" path="res://src/UI/LedgerPanel.cs" id="47_ledger"]
 [ext_resource type="Script" path="res://src/Map/ProvinceBorders.cs" id="23_borders"]
 [ext_resource type="Shader" path="res://shaders/province_border.gdshader" id="24_bordershader"]
 
@@ -383,6 +385,7 @@ CameraRigPath = NodePath("../../CameraRig")
 CountryPanelPath = NodePath("../CountryPanel")
 ResearchPanelPath = NodePath("../ResearchPanel")
 DiplomacyPanelPath = NodePath("../DiplomacyPanel")
+LedgerPanelPath = NodePath("../LedgerPanel")
 
 [node name="ProvincePanel" type="PanelContainer" parent="HudLayer"]
 visible = false
@@ -518,6 +521,40 @@ grow_vertical = 2
 script = ExtResource("45_eventpanel")
 TitleFont = ExtResource("29_cinzel")
 BodyFont = ExtResource("30_manrope")
+
+
+[node name="Outliner" type="PanelContainer" parent="HudLayer"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -322.0
+offset_top = 70.0
+offset_right = -16.0
+offset_bottom = 440.0
+grow_horizontal = 0
+script = ExtResource("46_outliner")
+TitleFont = ExtResource("29_cinzel")
+BodyFont = ExtResource("30_manrope")
+CameraRigPath = NodePath("../../CameraRig")
+CountryPanelPath = NodePath("../CountryPanel")
+DiplomacyPanelPath = NodePath("../DiplomacyPanel")
+
+[node name="LedgerPanel" type="PanelContainer" parent="HudLayer"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 60.0
+offset_top = 92.0
+offset_right = -60.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("47_ledger")
+TitleFont = ExtResource("29_cinzel")
+BodyFont = ExtResource("30_manrope")
+CameraRigPath = NodePath("../../CameraRig")
+DiplomacyPanelPath = NodePath("../DiplomacyPanel")
 
 [node name="ResearchPanel" type="PanelContainer" parent="HudLayer"]
 visible = false
