@@ -187,6 +187,10 @@ public static class TechRules
 		var armyList = armies.ToList();
 		var (points, _) = MonthlyPoints(c, owned, armyList);
 		c.LastResearch = points;
+		// a share is set aside for ideas
+		double toIdeas = points * Math.Clamp(c.IdeaShare, 0, 1);
+		c.IdeaPoints += toIdeas;
+		points -= toIdeas;
 		if (!player && Current(c, world) == null && Available(c, world).FirstOrDefault() is Tech pick)
 			Queue(c, pick, first: false);
 		double stock = c.ResearchStockpile;

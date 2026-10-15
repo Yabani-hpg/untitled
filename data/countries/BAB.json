@@ -124,5 +124,65 @@
         "research": 40
       }
     }
-  ]
+  ],
+  "national_ideas": {
+    "traditions": {
+      "research": 0.05,
+      "tax": 0.03
+    },
+    "ideas": [
+      {
+        "name": "The Code of the King",
+        "description": "Justice written in stone.",
+        "modifiers": {
+          "uprising": -0.1
+        }
+      },
+      {
+        "name": "Marduk's City",
+        "description": "The gods' own capital.",
+        "modifiers": {
+          "diplomacy_opinion": 5
+        }
+      },
+      {
+        "name": "Canals of Sumer",
+        "description": "Water for every field.",
+        "modifiers": {
+          "tax": 0.05
+        }
+      },
+      {
+        "name": "Astrologers of the Temple",
+        "description": "The stars read for the king.",
+        "modifiers": {
+          "research": 0.05
+        }
+      },
+      {
+        "name": "Merchants of the Rivers",
+        "description": "Trade up and down the Euphrates.",
+        "modifiers": {
+          "trade_power": 0.1
+        }
+      },
+      {
+        "name": "Lord of the Four Quarters",
+        "description": "A claim to all Mesopotamia.",
+        "modifiers": {
+          "aggression": -0.1
+        }
+      },
+      {
+        "name": "The King's Levy",
+        "description": "Every city sends its men.",
+        "modifiers": {
+          "levy_share": 0.03
+        }
+      }
+    ],
+    "ambition": {
+      "years_to_core": -5
+    }
+  }
 }

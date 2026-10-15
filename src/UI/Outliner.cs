@@ -130,6 +130,10 @@ public partial class Outliner : PanelContainer
 		int diplomats = gs.FreeDiplomats(c);
 		if (diplomats > 0 && !gs.AtWar(c.Tag))
 			alerts.Add(($"{diplomats} diplomat{(diplomats > 1 ? "s" : "")} idle", HudStyle.Muted, "Improve relations with a neighbour", () => Diplomacy()?.Toggle()));
+		if (c.IdeaGroups.Count > 0 && c.IdeaGroups.Any(id => gs.BuyObstacle(c, gs.Definitions.GetIdeaGroup(id)) == null))
+			alerts.Add(("An idea can be bought", HudStyle.Gold, "Idea points enough for the next idea", () => GetNodeOrNull<ResearchPanel>("../ResearchPanel")?.ShowIdeas()));
+		else if (c.IdeaGroups.Count < IdeaRules.Slots(c))
+			alerts.Add(("An idea slot is free", HudStyle.Muted, "Take up an idea group", () => GetNodeOrNull<ResearchPanel>("../ResearchPanel")?.ShowIdeas()));
 		if (c.ResearchQueue.Count == 0)
 			alerts.Add(("Nothing is being researched", HudStyle.Bad, "Choose a technology", () => GetNodeOrNull<ResearchPanel>("../ResearchPanel")?.Toggle()));
 		if (alerts.Count > 0)

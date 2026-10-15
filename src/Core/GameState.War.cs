@@ -177,7 +177,8 @@ public partial class GameState
 					p.SiegeProgress = 0;
 				p.SiegerTag = sieger;
 				// ships off the coast cut the province from the sea: the siege goes faster
-				p.SiegeProgress += WarRules.SiegePower(besiegers, p) * (Blockaded(p, sieger) ? 1 + NavalRules.BlockadeSiegeBonus : 1);
+				p.SiegeProgress += WarRules.SiegePower(besiegers, p) * (Blockaded(p, sieger) ? 1 + NavalRules.BlockadeSiegeBonus : 1)
+					* Math.Max(0.2, 1 + LawRules.Mod(GetCountry(sieger), "siege") + Math.Min(0, LawRules.Mod(GetCountry(p.OwnerTag), "siege")));
 				if (p.SiegeProgress >= WarRules.SiegeNeeded(p))
 				{
 					Occupy(p, sieger);

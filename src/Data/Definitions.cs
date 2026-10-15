@@ -174,6 +174,9 @@ public sealed class Definitions
 	public List<Decision> Decisions { get; } = new();
 	public List<TradeNode> TradeNodes { get; } = new();
 	public List<Estate> Estates { get; } = new();
+	public List<IdeaGroup> IdeaGroups { get; } = new();
+	public IdeaGroup GetIdeaGroup(string id) => IdeaGroups.Find(g => g.Id == id);
+	public Idea GetIdea(string id) => IdeaGroups.SelectMany(g => g.Ideas).FirstOrDefault(i => i.Id == id);
 	public Estate GetEstate(string id) => Estates.Find(e => e.Id == id);
 	public Privilege GetPrivilege(string id) => Estates.SelectMany(e => e.Privileges).FirstOrDefault(p => p.Id == id);
 	public GameEvent GetEvent(string id) => Events.Find(e => e.Id == id);

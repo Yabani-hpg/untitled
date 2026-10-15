@@ -29,7 +29,7 @@ public static class StateRules
 
 	/// <summary>Gold to raise stability one point.</summary>
 	public static double StabilityCost(Country c, int provinces) =>
-		StabilityCostBase * (c.Stability + 4) * Math.Max(1, Math.Sqrt(provinces));
+		StabilityCostBase * (c.Stability + 4) * Math.Max(1, Math.Sqrt(provinces)) * Math.Max(0.2, 1 + LawRules.Mod(c, "stability_cost"));
 
 	public static bool CanRaiseStability(Country c, int provinces, out string reason)
 	{

@@ -107,6 +107,11 @@ public sealed class Country
 	public Dictionary<string, double> EstateLoyalty { get; } = new();
 	public HashSet<string> Privileges { get; } = new();
 	public double Crownland { get; set; } = Untitled.Rules.EstateRules.StartCrownland;
+	/// <summary>Idea groups taken up (in order), ideas bought, idea points saved, and the share of research set aside for them.</summary>
+	public List<string> IdeaGroups { get; } = new();
+	public HashSet<string> Ideas { get; } = new();
+	public double IdeaPoints { get; set; }
+	public double IdeaShare { get; set; } = Untitled.Rules.IdeaRules.DefaultShare;
 	/// <summary>Loans taken, oldest first.</summary>
 	public List<Loan> Loans { get; } = new();
 	/// <summary>Until when the crown's credit and tax suffer after a bankruptcy.</summary>
@@ -164,6 +169,7 @@ public sealed class CountryDefinition
 	/// <summary>Event flags the country starts with (e.g. no_horses).</summary>
 	public List<string> StartFlags { get; } = new();
 	public List<Mission> Missions { get; } = new();
+	public NationalIdeas NationalIdeas { get; set; }
 	/// <summary>The country's own names for provinces (by province id), used while it owns them.</summary>
 	public Dictionary<int, string> ProvinceNames { get; } = new();
 	/// <summary>Population (in units) set by hand for provinces at the start, by province id, where the generated numbers are wrong.</summary>

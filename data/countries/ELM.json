@@ -135,5 +135,65 @@
         "gold": 150
       }
     }
-  ]
+  ],
+  "national_ideas": {
+    "traditions": {
+      "army_defense": 0.05,
+      "uprising": -0.05
+    },
+    "ideas": [
+      {
+        "name": "Highland Fastness",
+        "description": "Mountains that shelter the realm.",
+        "modifiers": {
+          "army_defense": 0.05
+        }
+      },
+      {
+        "name": "The Grand Regent",
+        "description": "A settled succession.",
+        "modifiers": {
+          "stability_cost": -0.1
+        }
+      },
+      {
+        "name": "Raiders of Sumer",
+        "description": "The plain's wealth taken by force.",
+        "modifiers": {
+          "army_attack": 0.05
+        }
+      },
+      {
+        "name": "Susa's Craftsmen",
+        "description": "Bronze, stone and glaze.",
+        "modifiers": {
+          "research": 0.03
+        }
+      },
+      {
+        "name": "Tin of the East",
+        "description": "The road to the eastern mines.",
+        "modifiers": {
+          "trade_power": 0.1
+        }
+      },
+      {
+        "name": "Gods of Anshan",
+        "description": "A faith of the hills.",
+        "modifiers": {
+          "uprising": -0.05
+        }
+      },
+      {
+        "name": "Lords of the Plateau",
+        "description": "The high country ours.",
+        "modifiers": {
+          "years_to_core": -3
+        }
+      }
+    ],
+    "ambition": {
+      "army_attack": 0.1
+    }
+  }
 }

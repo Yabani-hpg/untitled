@@ -146,5 +146,65 @@
         "gold": 150
       }
     }
-  ]
+  ],
+  "national_ideas": {
+    "traditions": {
+      "army_attack": 0.05,
+      "trade_power": 0.05
+    },
+    "ideas": [
+      {
+        "name": "The Karum of Kanesh",
+        "description": "Merchant colonies across Anatolia.",
+        "modifiers": {
+          "merchants": 1
+        }
+      },
+      {
+        "name": "Assur's Warriors",
+        "description": "A people that fights.",
+        "modifiers": {
+          "army_attack": 0.05
+        }
+      },
+      {
+        "name": "Kings of the Upper Country",
+        "description": "Rule over the hill peoples.",
+        "modifiers": {
+          "tribe_relations": 10
+        }
+      },
+      {
+        "name": "Siege Craft",
+        "description": "Walls are no obstacle to Assyria.",
+        "modifiers": {
+          "siege": 0.15
+        }
+      },
+      {
+        "name": "Governors of the King",
+        "description": "Provinces held in an iron grip.",
+        "modifiers": {
+          "uprising": -0.1
+        }
+      },
+      {
+        "name": "Roads of the Empire",
+        "description": "Armies that move at speed.",
+        "modifiers": {
+          "army_speed": 0.1
+        }
+      },
+      {
+        "name": "Terror of the Nations",
+        "description": "Enemies who yield before the fight.",
+        "modifiers": {
+          "army_defense": 0.05
+        }
+      }
+    ],
+    "ambition": {
+      "siege": 0.2
+    }
+  }
 }

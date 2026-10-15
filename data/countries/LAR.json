@@ -115,5 +115,65 @@
         "gold": 150
       }
     }
-  ]
+  ],
+  "national_ideas": {
+    "traditions": {
+      "tax": 0.05,
+      "trade_power": 0.05
+    },
+    "ideas": [
+      {
+        "name": "Heirs of Ur",
+        "description": "The old cities' glory.",
+        "modifiers": {
+          "diplomacy_opinion": 5
+        }
+      },
+      {
+        "name": "The Gulf Trade",
+        "description": "Dilmun's copper and Meluhha's beads.",
+        "modifiers": {
+          "merchants": 1
+        }
+      },
+      {
+        "name": "Canals of the South",
+        "description": "The richest fields of Sumer.",
+        "modifiers": {
+          "tax": 0.05
+        }
+      },
+      {
+        "name": "Temples of Shamash",
+        "description": "The sun god's justice.",
+        "modifiers": {
+          "uprising": -0.05
+        }
+      },
+      {
+        "name": "Kings of Sumer and Akkad",
+        "description": "A title to be won.",
+        "modifiers": {
+          "years_to_core": -3
+        }
+      },
+      {
+        "name": "The Southern Levy",
+        "description": "Marsh and plain alike send soldiers.",
+        "modifiers": {
+          "levy_share": 0.03
+        }
+      },
+      {
+        "name": "Masters of the Rivers",
+        "description": "Boats on every channel.",
+        "modifiers": {
+          "trade_power": 0.1
+        }
+      }
+    ],
+    "ambition": {
+      "trade_income": 0.15
+    }
+  }
 }

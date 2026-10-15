@@ -65,6 +65,14 @@ public partial class GameState
 				w.WriteStringValue(t);
 			w.WriteEndArray();
 			w.WriteNumber("research_stockpile", Math.Round(c.ResearchStockpile, 3));
+			w.WriteStartArray("idea_groups");
+			foreach (string id in c.IdeaGroups) w.WriteStringValue(id);
+			w.WriteEndArray();
+			w.WriteStartArray("ideas");
+			foreach (string id in c.Ideas) w.WriteStringValue(id);
+			w.WriteEndArray();
+			w.WriteNumber("idea_points", Math.Round(c.IdeaPoints, 2));
+			w.WriteNumber("idea_share", Math.Round(c.IdeaShare, 3));
 			w.WriteNumber("next_army", c.NextArmyNumber);
 			w.WriteNumber("prestige", Math.Round(c.Prestige, 2));
 			w.WriteNumber("stability", c.Stability);
@@ -465,6 +473,14 @@ public partial class GameState
 					if (Definitions.GetTech(t.Name) != null)
 						c.ResearchProgress[t.Name] = t.Value.GetDouble();
 				}
+				c.IdeaGroups.Clear();
+				if (e.TryGetProperty("idea_groups", out JsonElement ig))
+					foreach (JsonElement id in ig.EnumerateArray()) c.IdeaGroups.Add(id.GetString());
+				c.Ideas.Clear();
+				if (e.TryGetProperty("ideas", out JsonElement ids))
+					foreach (JsonElement id in ids.EnumerateArray()) c.Ideas.Add(id.GetString());
+				c.IdeaPoints = e.TryGetProperty("idea_points", out JsonElement ip) ? ip.GetDouble() : 0;
+				c.IdeaShare = e.TryGetProperty("idea_share", out JsonElement ish) ? ish.GetDouble() : IdeaRules.DefaultShare;
 				if (e.TryGetProperty("research_queue", out JsonElement queue))
 				{
 					foreach (JsonElement t in queue.EnumerateArray())

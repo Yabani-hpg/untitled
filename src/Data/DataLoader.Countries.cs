@@ -396,6 +396,7 @@ public static partial class DataLoader
 				def.ProvincePops[ProvinceByName(names, n.Name, $"{path}:province_pops")] = n.Value.GetInt32();
 		}
 		def.Missions.AddRange(ParseMissions(e, path, defs, names));
+		def.NationalIdeas = ParseNationalIdeas(e, path, def.Tag);
 		if (e.TryGetProperty("start_flags", out JsonElement sf))
 			def.StartFlags.AddRange(sf.EnumerateArray().Select(x => x.GetString()));
 		foreach (string claim in GetStringList(e, "claims", path))

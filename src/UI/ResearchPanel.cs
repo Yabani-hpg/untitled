@@ -19,6 +19,7 @@ public partial class ResearchPanel : PanelContainer
 	[Export] public Font BodyFont { get; set; }
 
 	TabContainer _tabs;
+	VBoxContainer _ideas;
 	HBoxContainer _cards;
 	Label _status;
 	readonly Dictionary<TechCategory, TechTree> _trees = new();
@@ -84,6 +85,11 @@ public partial class ResearchPanel : PanelContainer
 			_tabs.AddChild(scroll);
 			_trees[cat] = tree;
 		}
+		var ideasScroll = new ScrollContainer { Name = "Ideas", SizeFlagsVertical = SizeFlags.ExpandFill, HorizontalScrollMode = ScrollContainer.ScrollMode.Disabled };
+		_ideas = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+		_ideas.AddThemeConstantOverride("separation", 8);
+		ideasScroll.AddChild(_ideas);
+		_tabs.AddChild(ideasScroll);
 
 		var legend = new HBoxContainer();
 		legend.AddThemeConstantOverride("separation", 14);
@@ -122,6 +128,14 @@ public partial class ResearchPanel : PanelContainer
 	/// Opens the window (on a kind of research, or on the one being researched), or closes it if it is
 	/// already showing that.
 	/// </summary>
+	/// <summary>Opens the window on the Ideas tab.</summary>
+	public void ShowIdeas()
+	{
+		Visible = true;
+		_tabs.CurrentTab = TechRules.Categories.Length;
+		Refresh();
+	}
+
 	public void Toggle(TechCategory? category = null)
 	{
 		GameState gs = GameState.Instance;
@@ -178,6 +192,108 @@ public partial class ResearchPanel : PanelContainer
 		_cards.AddChild(QueueCard(gs, c, points, war));
 		foreach (TechCategory cat in TechRules.Categories)
 			_trees[cat].Build(gs, c);
+		FillIdeas(gs, c);
+	}
+
+	// ------------------------------------------------------------------------------------ ideas
+
+	void FillIdeas(GameState gs, Country c)
+	{
+		foreach (Node child in _ideas.GetChildren())
+		{
+			_ideas.RemoveChild(child);
+			child.QueueFree();
+		}
+		Label Text(string text, int size = 13, Color? color = null)
+		{
+			var l = HudStyle.Body(text, BodyFont, size, color ?? HudStyle.Muted);
+			l.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			l.CustomMinimumSize = new Vector2(700, 0);
+			return l;
+		}
+		var head = Card(HudStyle.Gold);
+		var hbox = new VBoxContainer();
+		hbox.AddThemeConstantOverride("separation", 4);
+		head.AddChild(hbox);
+		hbox.AddChild(HudStyle.Title("Ideas", TitleFont, 18));
+		hbox.AddChild(Text($"Idea points: {c.IdeaPoints:0} (+{c.LastResearch * c.IdeaShare:0.0} a month, {c.IdeaShare:P0} of our research). The next idea costs {IdeaRules.Cost(c):0}. "
+			+ $"Slots: {c.IdeaGroups.Count} of {IdeaRules.Slots(c)} taken up (one more for every {IdeaRules.TechsPerSlot} technologies known)."));
+		var sliderRow = new HBoxContainer();
+		sliderRow.AddThemeConstantOverride("separation", 8);
+		hbox.AddChild(sliderRow);
+		sliderRow.AddChild(HudStyle.Body("Share of research set aside for ideas:", BodyFont, 13, HudStyle.Muted));
+		var slider = new HSlider { MinValue = 0, MaxValue = 100, Step = 5, Value = c.IdeaShare * 100, CustomMinimumSize = new Vector2(200, 0), SizeFlagsVertical = SizeFlags.ShrinkCenter };
+		var shareLabel = HudStyle.Body($"{c.IdeaShare:P0}", BodyFont, 13);
+		slider.ValueChanged += v => { shareLabel.Text = $"{v / 100:P0}"; };
+		slider.DragEnded += changed => { if (changed) gs.SetIdeaShare(slider.Value / 100); };
+		sliderRow.AddChild(slider);
+		sliderRow.AddChild(shareLabel);
+		_ideas.AddChild(head);
+
+		NationalIdeas national = c.Definition?.NationalIdeas;
+		if (national != null)
+		{
+			var card = Card(CategoryColors[TechCategory.Admin]);
+			var box = new VBoxContainer();
+			box.AddThemeConstantOverride("separation", 3);
+			card.AddChild(box);
+			box.AddChild(HudStyle.Title($"{c.Adjective} ideas", TitleFont, 17));
+			box.AddChild(Text($"Traditions: {IdeaRules.Describe(national.Traditions)}", 13, HudStyle.Good));
+			int unlocked = IdeaRules.NationalUnlocked(c);
+			for (int i = 0; i < national.Ideas.Count; i++)
+			{
+				Idea idea = national.Ideas[i];
+				bool have = i < unlocked;
+				box.AddChild(Text($"{(have ? "✔" : "·")} {idea.Name}: {IdeaRules.Describe(idea.Modifiers)}" + (have ? "" : $" (after {(i + 1) * IdeaRules.IdeasPerNational} ideas bought)"), 13, have ? HudStyle.Text : HudStyle.Muted));
+			}
+			box.AddChild(Text($"{(unlocked >= 7 ? "✔" : "·")} Ambition: {IdeaRules.Describe(national.Ambition)}", 13, unlocked >= 7 ? HudStyle.Good : HudStyle.Muted));
+			_ideas.AddChild(card);
+		}
+
+		foreach (IdeaGroup g in gs.Definitions.IdeaGroups.OrderByDescending(g => c.IdeaGroups.Contains(g.Id)))
+		{
+			bool taken = c.IdeaGroups.Contains(g.Id);
+			var card = Card(CategoryColors[g.Category]);
+			var box = new VBoxContainer();
+			box.AddThemeConstantOverride("separation", 3);
+			card.AddChild(box);
+			var titleRow = new HBoxContainer();
+			titleRow.AddThemeConstantOverride("separation", 10);
+			box.AddChild(titleRow);
+			var title = HudStyle.Title(g.Name + (taken ? $" · {IdeaRules.Bought(c, g)} of 7" : ""), TitleFont, 17);
+			title.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+			titleRow.AddChild(title);
+			string gid = g.Id;
+			if (taken)
+			{
+				string why = gs.BuyObstacle(c, g);
+				var buy = HudStyle.Button(IdeaRules.NextIdea(c, g) is Idea next ? $"Buy {next.Name} ({IdeaRules.Cost(c):0})" : "Complete", BodyFont, 13);
+				buy.Disabled = why != null;
+				buy.TooltipText = why ?? "Spend idea points on the next idea of the group";
+				buy.Pressed += () => { if (!gs.BuyIdea(gid, out string r)) _status.Text = r; };
+				titleRow.AddChild(buy);
+				var drop = HudStyle.Button("Give up", BodyFont, 12);
+				drop.TooltipText = "Its ideas are lost";
+				drop.Pressed += () => gs.AbandonIdeaGroup(gid);
+				titleRow.AddChild(drop);
+			}
+			else
+			{
+				string why = gs.IdeaGroupObstacle(c, g);
+				var take = HudStyle.Button("Take up", BodyFont, 13);
+				take.Disabled = why != null;
+				take.TooltipText = why ?? "Fill a slot with this group";
+				take.Pressed += () => { if (!gs.ChooseIdeaGroup(gid, out string r)) _status.Text = r; };
+				titleRow.AddChild(take);
+			}
+			box.AddChild(Text(g.Description));
+			foreach (Idea idea in g.Ideas)
+			{
+				bool have = c.Ideas.Contains(idea.Id);
+				box.AddChild(Text($"{(have ? "✔" : "·")} {idea.Name}: {IdeaRules.Describe(idea.Modifiers)} · {idea.Description}", 12, have ? HudStyle.Text : HudStyle.Muted));
+			}
+			_ideas.AddChild(card);
+		}
 	}
 
 	static PanelContainer Card(Color accent, float width = 0)

@@ -118,5 +118,65 @@
   ],
   "start_flags": [
     "no_horses"
-  ]
+  ],
+  "national_ideas": {
+    "traditions": {
+      "army_attack": 0.05,
+      "tribe_relations": 5
+    },
+    "ideas": [
+      {
+        "name": "Archers of Kush",
+        "description": "The bowmen of the south.",
+        "modifiers": {
+          "army_attack": 0.05
+        }
+      },
+      {
+        "name": "The Deffufa",
+        "description": "Great temples of mud brick.",
+        "modifiers": {
+          "uprising": -0.05
+        }
+      },
+      {
+        "name": "Gold of the Desert",
+        "description": "Mines that make kings.",
+        "modifiers": {
+          "tax": 0.05
+        }
+      },
+      {
+        "name": "Friends of the Medjay",
+        "description": "The desert peoples ride with us.",
+        "modifiers": {
+          "tribe_relations": 10
+        }
+      },
+      {
+        "name": "The Cataract Forts",
+        "description": "Hard ground to attack.",
+        "modifiers": {
+          "army_defense": 0.05
+        }
+      },
+      {
+        "name": "Cattle Lords",
+        "description": "Herds that feed an army.",
+        "modifiers": {
+          "levy_share": 0.03
+        }
+      },
+      {
+        "name": "Masters of the Middle Nile",
+        "description": "Trade between Egypt and the south.",
+        "modifiers": {
+          "trade_power": 0.1
+        }
+      }
+    ],
+    "ambition": {
+      "levy_share": 0.05
+    }
+  }
 }

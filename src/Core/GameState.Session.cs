@@ -142,6 +142,10 @@ public partial class GameState : IWorld
 			c.Loans.Clear();
 			c.BankruptUntil = default;
 			c.EstateLoyalty.Clear();
+			c.IdeaGroups.Clear();
+			c.Ideas.Clear();
+			c.IdeaPoints = 0;
+			c.IdeaShare = IdeaRules.DefaultShare;
 			c.Privileges.Clear();
 			c.Crownland = EstateRules.StartCrownland;
 			if (c.Definition == null)

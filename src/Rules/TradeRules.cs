@@ -182,7 +182,7 @@ public static class TradeRules
 			{
 				double gold = collected * r.Power[tag] / collectPower;
 				r.Collected[tag] = gold;
-				report.Income[tag] = report.Income.GetValueOrDefault(tag) + gold * TradeIncomeFactor;
+				report.Income[tag] = report.Income.GetValueOrDefault(tag) + gold * TradeIncomeFactor * Math.Max(0.1, 1 + LawRules.Mod(countries[tag], "trade_income"));
 			}
 			if (terminal)
 				continue;

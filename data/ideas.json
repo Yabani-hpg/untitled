@@ -1,0 +1,517 @@
+{
+ "_comment": "Idea groups, Paradox style. A country takes up groups into its idea slots (one at the start, one more for every eight technologies known) and buys their ideas in order with idea points, a share of its research points. Modifiers use the keys of laws and techs, plus stability_cost, aggression, siege and trade_income.",
+ "groups": [
+  {
+   "id": "administrative",
+   "name": "Administrative Ideas",
+   "category": "admin",
+   "description": "The arts of ruling: records, officials, roads and the measured field.",
+   "ideas": [
+    {
+     "id": "administrative_1",
+     "name": "Royal Granaries",
+     "description": "Stores against the lean years keep the people quiet and the tax flowing.",
+     "modifiers": {
+      "tax": 0.05
+     }
+    },
+    {
+     "id": "administrative_2",
+     "name": "Provincial Governors",
+     "description": "Nomarchs and governors answerable to the crown.",
+     "modifiers": {
+      "years_to_core": -3
+     }
+    },
+    {
+     "id": "administrative_3",
+     "name": "Scribal Schools",
+     "description": "Boys taught to read and reckon in the king's service.",
+     "modifiers": {
+      "research": 0.05
+     }
+    },
+    {
+     "id": "administrative_4",
+     "name": "The Measured Field",
+     "description": "Every field surveyed and its yield known.",
+     "modifiers": {
+      "tax": 0.05
+     }
+    },
+    {
+     "id": "administrative_5",
+     "name": "Royal Messengers",
+     "description": "Runners and way stations carry the king's word.",
+     "modifiers": {
+      "army_speed": 0.1
+     }
+    },
+    {
+     "id": "administrative_6",
+     "name": "Standing Orders",
+     "description": "A settled custom of rule that outlives the king.",
+     "modifiers": {
+      "stability_cost": -0.15
+     }
+    },
+    {
+     "id": "administrative_7",
+     "name": "Census of Souls",
+     "description": "Every household counted for the levy.",
+     "modifiers": {
+      "levy_share": 0.03
+     }
+    }
+   ]
+  },
+  {
+   "id": "diplomatic",
+   "name": "Diplomatic Ideas",
+   "category": "admin",
+   "description": "Envoys, gifts and marriages: the realm's friends abroad.",
+   "ideas": [
+    {
+     "id": "diplomatic_1",
+     "name": "Royal Envoys",
+     "description": "More men to carry the king's letters.",
+     "modifiers": {
+      "diplomats": 1
+     }
+    },
+    {
+     "id": "diplomatic_2",
+     "name": "Gifts of Friendship",
+     "description": "The courts of the world think well of our generosity.",
+     "modifiers": {
+      "diplomacy_opinion": 10
+     }
+    },
+    {
+     "id": "diplomatic_3",
+     "name": "Marriage Alliances",
+     "description": "Daughters wed to foreign kings bind them to us.",
+     "modifiers": {
+      "alliance_chance": 0.15
+     }
+    },
+    {
+     "id": "diplomatic_4",
+     "name": "Measured Ambition",
+     "description": "Our conquests alarm the neighbours less.",
+     "modifiers": {
+      "aggression": -0.15
+     }
+    },
+    {
+     "id": "diplomatic_5",
+     "name": "Friends among the Tribes",
+     "description": "Chiefs of the desert and the steppe sit at our table.",
+     "modifiers": {
+      "tribe_relations": 10
+     }
+    },
+    {
+     "id": "diplomatic_6",
+     "name": "The Brotherhood of Kings",
+     "description": "Great kings address one another as brothers.",
+     "modifiers": {
+      "diplomacy_opinion": 10
+     }
+    },
+    {
+     "id": "diplomatic_7",
+     "name": "Patient Statecraft",
+     "description": "What force cannot take, time and talk may.",
+     "modifiers": {
+      "aggression": -0.15
+     }
+    }
+   ]
+  },
+  {
+   "id": "offensive",
+   "name": "Offensive Ideas",
+   "category": "military",
+   "description": "War carried to the enemy: the charge, the siege and the march.",
+   "ideas": [
+    {
+     "id": "offensive_1",
+     "name": "Drilled Spears",
+     "description": "Ranks that hold their line in the charge.",
+     "modifiers": {
+      "army_attack": 0.05
+     }
+    },
+    {
+     "id": "offensive_2",
+     "name": "Engineers of the Siege",
+     "description": "Sappers and ramps bring walls down sooner.",
+     "modifiers": {
+      "siege": 0.15
+     }
+    },
+    {
+     "id": "offensive_3",
+     "name": "Forced Marches",
+     "description": "Armies that cover ground before the enemy is ready.",
+     "modifiers": {
+      "army_speed": 0.1
+     }
+    },
+    {
+     "id": "offensive_4",
+     "name": "Veteran Captains",
+     "description": "Leaders who have seen the field before.",
+     "modifiers": {
+      "army_attack": 0.05
+     }
+    },
+    {
+     "id": "offensive_5",
+     "name": "Siege Trains",
+     "description": "Engines carried with the army.",
+     "modifiers": {
+      "siege": 0.15
+     }
+    },
+    {
+     "id": "offensive_6",
+     "name": "The Whole People in Arms",
+     "description": "More of the realm answers the levy.",
+     "modifiers": {
+      "levy_share": 0.03
+     }
+    },
+    {
+     "id": "offensive_7",
+     "name": "Thirst for Glory",
+     "description": "Soldiers who fight for the king's name.",
+     "modifiers": {
+      "army_attack": 0.05
+     }
+    }
+   ]
+  },
+  {
+   "id": "defensive",
+   "name": "Defensive Ideas",
+   "category": "military",
+   "description": "The realm held: walls, watch and the loyalty of the provinces.",
+   "ideas": [
+    {
+     "id": "defensive_1",
+     "name": "Border Watch",
+     "description": "Towers and patrols along the frontier.",
+     "modifiers": {
+      "army_defense": 0.05
+     }
+    },
+    {
+     "id": "defensive_2",
+     "name": "Loyal Garrisons",
+     "description": "Soldiers who know the land they hold.",
+     "modifiers": {
+      "uprising": -0.1
+     }
+    },
+    {
+     "id": "defensive_3",
+     "name": "Shield Walls",
+     "description": "Troops drilled to stand and receive.",
+     "modifiers": {
+      "army_defense": 0.05
+     }
+    },
+    {
+     "id": "defensive_4",
+     "name": "Cheap Hire",
+     "description": "Mercenaries take the king's coin gladly.",
+     "modifiers": {
+      "mercenary_pay": -0.15
+     }
+    },
+    {
+     "id": "defensive_5",
+     "name": "Fortress Towns",
+     "description": "Walled cities that hold out for months.",
+     "modifiers": {
+      "siege": -0.15
+     }
+    },
+    {
+     "id": "defensive_6",
+     "name": "Steady Ranks",
+     "description": "An army that does not break.",
+     "modifiers": {
+      "army_defense": 0.05
+     }
+    },
+    {
+     "id": "defensive_7",
+     "name": "The Nation under Arms",
+     "description": "The provinces rally when invaded.",
+     "modifiers": {
+      "uprising": -0.1
+     }
+    }
+   ]
+  },
+  {
+   "id": "trade",
+   "name": "Trade Ideas",
+   "category": "admin",
+   "description": "Caravans, ships and markets: the wealth that passes through our hands.",
+   "ideas": [
+    {
+     "id": "trade_1",
+     "name": "Caravan Masters",
+     "description": "Our traders hold the roads.",
+     "modifiers": {
+      "trade_power": 0.1
+     }
+    },
+    {
+     "id": "trade_2",
+     "name": "Merchant Houses",
+     "description": "More merchants to send abroad.",
+     "modifiers": {
+      "merchants": 1
+     }
+    },
+    {
+     "id": "trade_3",
+     "name": "Royal Warehouses",
+     "description": "Goods stored and sold at the best price.",
+     "modifiers": {
+      "trade_income": 0.1
+     }
+    },
+    {
+     "id": "trade_4",
+     "name": "Harbour Dues",
+     "description": "Every ship pays to lie in our ports.",
+     "modifiers": {
+      "trade_power": 0.1
+     }
+    },
+    {
+     "id": "trade_5",
+     "name": "Trading Colonies",
+     "description": "Our merchants settle in foreign markets.",
+     "modifiers": {
+      "merchants": 1
+     }
+    },
+    {
+     "id": "trade_6",
+     "name": "Weights and Measures",
+     "description": "Honest scales draw trade to our markets.",
+     "modifiers": {
+      "trade_income": 0.1
+     }
+    },
+    {
+     "id": "trade_7",
+     "name": "Masters of the Routes",
+     "description": "The great trade roads bend toward us.",
+     "modifiers": {
+      "trade_power": 0.1
+     }
+    }
+   ]
+  },
+  {
+   "id": "economic",
+   "name": "Economic Ideas",
+   "category": "admin",
+   "description": "Fields, workshops and the king's treasury.",
+   "ideas": [
+    {
+     "id": "economic_1",
+     "name": "Irrigation Works",
+     "description": "Canals and dykes bring more land under the plough.",
+     "modifiers": {
+      "tax": 0.05
+     }
+    },
+    {
+     "id": "economic_2",
+     "name": "Royal Workshops",
+     "description": "The crown builds at better prices.",
+     "modifiers": {
+      "building_cost": -0.15
+     }
+    },
+    {
+     "id": "economic_3",
+     "name": "Craft Guilds",
+     "description": "Artisans who pass their skills on.",
+     "modifiers": {
+      "research": 0.03
+     }
+    },
+    {
+     "id": "economic_4",
+     "name": "Tax Farmers",
+     "description": "Collectors who squeeze every due.",
+     "modifiers": {
+      "tax": 0.05
+     }
+    },
+    {
+     "id": "economic_5",
+     "name": "Quarries and Kilns",
+     "description": "Stone and brick at the king's command.",
+     "modifiers": {
+      "building_cost": -0.15
+     }
+    },
+    {
+     "id": "economic_6",
+     "name": "A Full Treasury",
+     "description": "Gold enough to settle any trouble.",
+     "modifiers": {
+      "stability_cost": -0.15
+     }
+    },
+    {
+     "id": "economic_7",
+     "name": "Prosperous Provinces",
+     "description": "Wealth that pays the crown its share.",
+     "modifiers": {
+      "tax": 0.05
+     }
+    }
+   ]
+  },
+  {
+   "id": "religious",
+   "name": "Religious Ideas",
+   "category": "admin",
+   "description": "The gods and their servants in the service of the state.",
+   "ideas": [
+    {
+     "id": "religious_1",
+     "name": "Temples in Every Town",
+     "description": "The gods watch over the people, and the people keep quiet.",
+     "modifiers": {
+      "uprising": -0.1
+     }
+    },
+    {
+     "id": "religious_2",
+     "name": "Houses of Learning",
+     "description": "Priests who watch the stars and keep the books.",
+     "modifiers": {
+      "research": 0.03
+     }
+    },
+    {
+     "id": "religious_3",
+     "name": "The King's Gods",
+     "description": "Conquered peoples take the king's gods, and the king.",
+     "modifiers": {
+      "years_to_core": -3
+     }
+    },
+    {
+     "id": "religious_4",
+     "name": "Oracles for the Chiefs",
+     "description": "Tribes who consult our gods respect us.",
+     "modifiers": {
+      "tribe_relations": 5
+     }
+    },
+    {
+     "id": "religious_5",
+     "name": "Festivals of the Realm",
+     "description": "Shared feasts bind the provinces to the crown.",
+     "modifiers": {
+      "uprising": -0.1
+     }
+    },
+    {
+     "id": "religious_6",
+     "name": "Divine Favour",
+     "description": "The gods' blessing steadies the throne.",
+     "modifiers": {
+      "stability_cost": -0.15
+     }
+    },
+    {
+     "id": "religious_7",
+     "name": "Brothers in Faith",
+     "description": "Foreign courts that share our gods look kindly on us.",
+     "modifiers": {
+      "diplomacy_opinion": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "expansion",
+   "name": "Expansion Ideas",
+   "category": "admin",
+   "description": "New lands taken and made ours.",
+   "ideas": [
+    {
+     "id": "expansion_1",
+     "name": "Settlers on the Frontier",
+     "description": "Our people move into new lands.",
+     "modifiers": {
+      "years_to_core": -3
+     }
+    },
+    {
+     "id": "expansion_2",
+     "name": "Tribute of the Conquered",
+     "description": "New subjects pay their share.",
+     "modifiers": {
+      "noncitizen_tax": 0.1
+     }
+    },
+    {
+     "id": "expansion_3",
+     "name": "Quiet Conquests",
+     "description": "Our growth alarms the neighbours less.",
+     "modifiers": {
+      "aggression": -0.1
+     }
+    },
+    {
+     "id": "expansion_4",
+     "name": "Levies of the Subjects",
+     "description": "Conquered peoples march with us.",
+     "modifiers": {
+      "noncitizen_manpower": 0.1
+     }
+    },
+    {
+     "id": "expansion_5",
+     "name": "Garrisons of the March",
+     "description": "New lands held firmly.",
+     "modifiers": {
+      "uprising": -0.05
+     }
+    },
+    {
+     "id": "expansion_6",
+     "name": "Colonies of the Crown",
+     "description": "Our people settle the new provinces.",
+     "modifiers": {
+      "years_to_core": -3
+     }
+    },
+    {
+     "id": "expansion_7",
+     "name": "An Empire of Many Peoples",
+     "description": "Every people in the realm pays and serves.",
+     "modifiers": {
+      "tax": 0.03
+     }
+    }
+   ]
+  }
+ ]
+}

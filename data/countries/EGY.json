@@ -311,5 +311,65 @@
   ],
   "start_flags": [
     "no_horses"
-  ]
+  ],
+  "national_ideas": {
+    "traditions": {
+      "tax": 0.05,
+      "uprising": -0.05
+    },
+    "ideas": [
+      {
+        "name": "The Two Lands",
+        "description": "Upper and Lower Egypt under one crown.",
+        "modifiers": {
+          "years_to_core": -5
+        }
+      },
+      {
+        "name": "The Gift of the Nile",
+        "description": "The flood that feeds a kingdom.",
+        "modifiers": {
+          "tax": 0.05
+        }
+      },
+      {
+        "name": "Scribes of the Palace",
+        "description": "The best-kept records in the world.",
+        "modifiers": {
+          "research": 0.05
+        }
+      },
+      {
+        "name": "The Walls of the Ruler",
+        "description": "Forts that close the frontier.",
+        "modifiers": {
+          "siege": -0.1
+        }
+      },
+      {
+        "name": "Chariots of the Pharaoh",
+        "description": "The king's own squadrons.",
+        "modifiers": {
+          "army_attack": 0.05
+        }
+      },
+      {
+        "name": "The Gods of Egypt",
+        "description": "A faith the whole land shares.",
+        "modifiers": {
+          "uprising": -0.1
+        }
+      },
+      {
+        "name": "Monuments for Eternity",
+        "description": "Works that awe every visitor.",
+        "modifiers": {
+          "diplomacy_opinion": 10
+        }
+      }
+    ],
+    "ambition": {
+      "stability_cost": -0.2
+    }
+  }
 }

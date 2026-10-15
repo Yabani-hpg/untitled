@@ -91,7 +91,8 @@ public partial class GameState
 	/// <summary>Land taken in a peace frightens the neighbourhood: each country near the land or its loser remembers it as aggression.</summary>
 	void AddAggression(Country aggressor, Province taken, Country from, bool hadClaim, double scale = 1)
 	{
-		double amount = Math.Max(1, taken.TotalUnits) * DiplomacyRules.AggressionPerUnit * (hadClaim ? DiplomacyRules.ClaimAggressionShare : 1) * scale;
+		double amount = Math.Max(1, taken.TotalUnits) * DiplomacyRules.AggressionPerUnit * (hadClaim ? DiplomacyRules.ClaimAggressionShare : 1) * scale
+			* Math.Max(0.2, 1 + LawRules.Mod(aggressor, "aggression"));
 		Province capital = GetProvince(aggressor.CapitalId);
 		foreach (Country o in SettledCountries)
 		{
