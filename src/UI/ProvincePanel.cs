@@ -296,6 +296,10 @@ public partial class ProvincePanel : PanelContainer
 				dip.Pressed += () => GetNodeOrNull<DiplomacyPanel>(DiplomacyPanelPath ?? new NodePath())?.Open(owner.Tag);
 				row.AddChild(dip);
 			}
+			if (p.FortLevel > 0)
+				Line(FortRules.Describe(p), HudStyle.Text, 13);
+			if (owner != null && owner == player)
+				box.AddChild(FortRow(p, player));
 			if (owner != null && owner == player && NavalRules.IsHarbour(p))
 				box.AddChild(ShipyardRow(p, player));
 			if (!p.IsCore)
@@ -481,6 +485,31 @@ public partial class ProvincePanel : PanelContainer
 	}
 
 	/// <summary>The garrison: regiments of our army here stay behind in it, or leave it to join the army.</summary>
+	/// <summary>The walls: their level, and the next level the player can build.</summary>
+	Control FortRow(Province p, Country player)
+	{
+		GameState gs = GameState.Instance;
+		var row = new HBoxContainer();
+		row.AddThemeConstantOverride("separation", 8);
+		row.AddChild(HudStyle.Body($"Fort: {FortRules.Names[p.FortLevel].ToLowerInvariant()}", BodyFont, 13, HudStyle.Muted));
+		if (p.FortLevel < FortRules.MaxLevel)
+		{
+			string why = gs.FortObstacle(player, p);
+			int next = p.FortLevel + 1;
+			var b = HudStyle.Button($"Build {FortRules.Names[next].ToLowerInvariant()} ({FortRules.Cost[next]:0} gold)", BodyFont, 12);
+			b.Disabled = why != null;
+			b.TooltipText = why ?? $"Sieges here take {next + 1}× as long, defenders roll +{next}, and enemy armies may not march through the provinces around; upkeep {FortRules.UpkeepPerLevel * next:0.0} a month";
+			b.Pressed += () =>
+			{
+				if (!gs.BuildFort(p.Id, out string r))
+					gs.Notify(r);
+				Refresh();
+			};
+			row.AddChild(b);
+		}
+		return row;
+	}
+
 	/// <summary>The harbour: ships the player can build here, at their cost.</summary>
 	Control ShipyardRow(Province p, Country player)
 	{

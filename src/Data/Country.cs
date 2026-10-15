@@ -157,7 +157,7 @@ public sealed class CountryDefinition
 }
 
 /// <summary>A province a country controls at the start. <c>Since</c> null means long before the start.</summary>
-public sealed record StartProvince(int ProvinceId, ControlKind Control, GameDate? Since, int Garrison);
+public sealed record StartProvince(int ProvinceId, ControlKind Control, GameDate? Since, int Garrison, int Fort = 0);
 
 public sealed class RulerDefinition
 {

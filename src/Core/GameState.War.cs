@@ -23,7 +23,7 @@ public partial class GameState
 		if (a == null || to == null || !a.IsFleet && !to.IsPassable)
 			return false;
 		List<int> path = MilitaryRules.FindPath(GetProvince(a.ProvinceId), to, MilitaryRules.Speed(a, GetCountry(a.OwnerTag)), _provinces, ProvinceMap.GetCentroid, ProvinceMap.Width,
-			a.Domain, a.IsFleet ? HarbourTest(a) : null);
+			a.Domain, a.IsFleet ? HarbourTest(a) : null, a.IsFleet ? null : p => InHostileZone(p, a.OwnerTag));
 		if (path == null)
 			return false;
 		a.Path.Clear();
@@ -94,7 +94,7 @@ public partial class GameState
 		var dRegs = defenders.SelectMany(a => a.Regiments).ToList();
 		int aMen = aRegs.Sum(r => r.Men), dMen = dRegs.Sum(r => r.Men);
 		int aDice = fromProvinceId > 0 && !p.IsWater ? CombatRules.AttackerDiceModifier(GetProvince(fromProvinceId), p) : 0;
-		int dDice = p.IsWater ? 0 : TerrainRules.DefenseDice(p) + (p.OwnerTag != null && SameSide(defenders[0].OwnerTag, p.OwnerTag) ? 1 : 0);
+		int dDice = p.IsWater ? 0 : TerrainRules.DefenseDice(p) + (p.OwnerTag != null && SameSide(defenders[0].OwnerTag, p.OwnerTag) ? 1 + FortRules.DefenceDice(p) : 0);
 		var result = ControlRules.Battle(MilitaryRules.ForceOf(aRegs, p, aDice, ao), MilitaryRules.ForceOf(dRegs, p, dDice, dO), _rng);
 		var aGone = MilitaryRules.TakeLosses(aRegs, result.AttackerShare, !result.AttackerWon);
 		var dGone = MilitaryRules.TakeLosses(dRegs, result.DefenderShare, result.AttackerWon);

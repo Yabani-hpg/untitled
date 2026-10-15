@@ -77,7 +77,7 @@ public static class EconomyRules
 		foreach (Province p in owned)
 		{
 			tax += Tax(p, today, c);
-			garrisons += (p.Control?.Garrison.Count ?? 0) * GarrisonUpkeep;
+			garrisons += (p.Control?.Garrison.Count ?? 0) * GarrisonUpkeep + p.FortLevel * FortRules.UpkeepPerLevel;
 		}
 		double upkeep = armies.Where(a => a.OwnerTag == c.Tag).Sum(MilitaryRules.Upkeep);
 		return new Ledger(tax, garrisons, TribeRules.Mercenaries(tribes, c.Tag) * MercenaryPayOf(c), upkeep,

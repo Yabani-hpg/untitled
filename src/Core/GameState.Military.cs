@@ -186,10 +186,10 @@ public partial class GameState
 			return false;
 		// an army on the march turns back from where it stands
 		List<int> path = MilitaryRules.FindPath(GetProvince(a.ProvinceId), to, MilitaryRules.Speed(a, GetCountry(a.OwnerTag)), _provinces, ProvinceMap.GetCentroid, ProvinceMap.Width,
-			a.Domain, a.IsFleet ? HarbourTest(a) : null);
+			a.Domain, a.IsFleet ? HarbourTest(a) : null, a.IsFleet ? null : p => InHostileZone(p, a.OwnerTag));
 		if (path == null)
 		{
-			reason = a.IsFleet ? $"There is no sea road to {to.Name}" : $"There is no way over land to {to.Name}";
+			reason = a.IsFleet ? $"There is no sea road to {to.Name}" : $"There is no way over land to {to.Name} (enemy forts bar the way through the provinces around them)";
 			return false;
 		}
 		a.Path.Clear();
@@ -405,6 +405,8 @@ public partial class GameState
 		foreach (StartProvince sp in c.Definition?.StartProvinces ?? new())
 		{
 			Province p = _provinces[sp.ProvinceId];
+			if (p.OwnerTag == c.Tag)
+				p.FortLevel = Math.Max(p.FortLevel, sp.Fort);
 			if (p.Control == null || p.IsCore || sp.Garrison <= 0)
 				continue;
 			var types = Enumerable.Repeat(MilitaryRules.BasicFoot(Definitions), sp.Garrison).ToList();

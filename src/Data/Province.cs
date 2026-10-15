@@ -34,6 +34,8 @@ public sealed class Province
 	/// <summary>Days of siege the occupier's armies have put in, toward <see cref="Untitled.Rules.WarRules.SiegeDays"/>.</summary>
 	public double SiegeProgress { get; set; }
 	public string SiegerTag { get; set; }
+	/// <summary>Walls: 0 none, 1 walls, 2 citadel, 3 fortress (see FortRules).</summary>
+	public int FortLevel { get; set; }
 
 	/// <summary>The tribe (unsettled country) whose people live here, or 0. Only uncontrolled land has one.</summary>
 	public int TribeId { get; set; }
@@ -189,6 +191,7 @@ public sealed class Province
 		OccupierTag = null;
 		SiegerTag = null;
 		SiegeProgress = 0;
+		FortLevel = 0;
 		TribeId = 0;
 		Pops.Clear();
 		Buildings.Clear();

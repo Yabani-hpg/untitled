@@ -73,7 +73,8 @@
       "control": "subjugated",
       "since": "8141.1.1",
       "garrison": 2,
-      "_comment": "the Batn el-Hajar beyond the fortress line of Semna, fixed as the border by Senusret III, c. 1860 BC"
+      "_comment": "the Batn el-Hajar beyond the fortress line of Semna, fixed as the border by Senusret III, c. 1860 BC",
+      "fort": 1
     },
     {
       "areas": [

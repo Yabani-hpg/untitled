@@ -362,11 +362,12 @@ public static partial class DataLoader
 				};
 				GameDate? since = group.TryGetProperty("since", out JsonElement s) ? Condition.ParseDate(s.GetString(), $"{w}.since") : null;
 				int garrison = (int)GetFloat(group, "garrison", 0f);
+				int fort = System.Math.Clamp((int)GetFloat(group, "fort", 0f), 0, Untitled.Rules.FortRules.MaxLevel);
 				foreach (int id in GroupProvinces(group, w, defs, names))
 				{
 					if (def.StartProvinces.Exists(sp => sp.ProvinceId == id))
 						throw new DataException($"{w}: province {id} is listed twice");
-					def.StartProvinces.Add(new StartProvince(id, control, since, garrison));
+					def.StartProvinces.Add(new StartProvince(id, control, since, garrison, fort));
 				}
 			}
 		}

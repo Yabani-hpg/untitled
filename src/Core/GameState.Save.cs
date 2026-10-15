@@ -271,6 +271,7 @@ public partial class GameState
 				w.WriteString("sieger", p.SiegerTag);
 				w.WriteNumber("siege", Math.Round(p.SiegeProgress, 2));
 			}
+			if (p.FortLevel > 0) w.WriteNumber("fort", p.FortLevel);
 			w.WriteStartArray("features");
 			foreach (string f in p.Features)
 				w.WriteStringValue(f);
@@ -527,6 +528,7 @@ public partial class GameState
 			p.OccupierTag = e.TryGetProperty("occupier", out JsonElement oc) && _countries.ContainsKey(oc.GetString()) ? oc.GetString() : null;
 			p.SiegerTag = e.TryGetProperty("sieger", out JsonElement sg) && _countries.ContainsKey(sg.GetString()) ? sg.GetString() : null;
 			p.SiegeProgress = p.SiegerTag != null && e.TryGetProperty("siege", out JsonElement sp) ? sp.GetDouble() : 0;
+			p.FortLevel = e.TryGetProperty("fort", out JsonElement ft) ? ft.GetInt32() : 0;
 			p.Features.Clear();
 			foreach (JsonElement f in e.GetProperty("features").EnumerateArray())
 				p.Features.Add(f.GetString());

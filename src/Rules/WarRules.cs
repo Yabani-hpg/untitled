@@ -101,7 +101,7 @@ public static class WarRules
 	// ---------------------------------------------------------------------------------- sieges
 
 	/// <summary>Siege days needed to occupy a province.</summary>
-	public static double SiegeNeeded(Province p) => SiegeDays + SiegeDaysPerGarrison * (p.Control?.Garrison.Count ?? 0);
+	public static double SiegeNeeded(Province p) => (SiegeDays + SiegeDaysPerGarrison * (p.Control?.Garrison.Count ?? 0)) * FortRules.SiegeFactor(p);
 
 	/// <summary>An army's siege power a day: 1, plus its engines, less for mountains.</summary>
 	public static double SiegePower(IEnumerable<Army> armies, Province p)
