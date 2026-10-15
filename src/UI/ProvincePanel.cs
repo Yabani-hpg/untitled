@@ -582,8 +582,18 @@ public partial class ProvincePanel : PanelContainer
 			};
 			grid.AddChild(b);
 		}
-		if (grid.GetChildCount() > 0)
-			box.AddChild(grid);
+		string devWhy = WorkRules.DevelopObstacle(p, player);
+		var develop = HudStyle.Button($"Improve the land ({WorkRules.DevelopCost(p, player):0})", BodyFont, 12);
+		develop.Disabled = devWhy != null;
+		develop.TooltipText = $"Irrigation, new fields, a market: {PopGroup.PeoplePerUnit:N0} more peasants settle here" + (devWhy != null ? $"\n{devWhy}" : "");
+		develop.Pressed += () =>
+		{
+			if (!gs.DevelopProvince(p.Id, out string r))
+				gs.Notify(r);
+			Refresh();
+		};
+		grid.AddChild(develop);
+		box.AddChild(grid);
 		return box;
 	}
 

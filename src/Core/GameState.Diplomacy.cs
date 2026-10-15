@@ -137,14 +137,24 @@ public partial class GameState
 	public void BreakAlliance(string tag)
 	{
 		Country c = PlayerCountry, them = GetCountry(tag);
-		if (c == null || them == null || !c.Allies.Remove(tag))
+		if (c == null || them == null || !c.Allies.Contains(tag))
+			return;
+		BreakAllianceFor(c, them);
+		Notify($"Our alliance with {them.Name} is ended.");
+	}
+
+	/// <summary>An alliance is broken by one side: it costs stability, and the other remembers.</summary>
+	void BreakAllianceFor(Country c, Country them)
+	{
+		if (!c.Allies.Remove(them.Tag))
 			return;
 		them.Allies.Remove(c.Tag);
 		StateRules.ChangeStability(c, -1);
 		foreach (Country x in new[] { c, them })
-			x.OpinionModifiers.GetValueOrDefault(x == c ? tag : c.Tag)?.RemoveAll(m => m.Reason == "Allied");
+			x.OpinionModifiers.GetValueOrDefault(x == c ? them.Tag : c.Tag)?.RemoveAll(m => m.Reason == "Allied");
 		DiplomacyRules.AddModifier(them, c.Tag, "Broke our alliance", -40, Date, 10);
-		Notify($"Our alliance with {them.Name} is ended.");
+		if (them.Tag == PlayerTag)
+			Notify($"{c.Name} breaks its alliance with us.");
 		EmitSignal(SignalName.DiplomacyChanged);
 	}
 

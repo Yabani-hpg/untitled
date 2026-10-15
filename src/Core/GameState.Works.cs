@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Godot;
 using Untitled.Data;
@@ -30,6 +31,28 @@ public partial class GameState
 		EmitSignal(SignalName.ProvinceChanged, p.Id);
 	}
 
+	/// <summary>The player improves a province's land: a thousand more peasants settle there.</summary>
+	public bool DevelopProvince(int provinceId, out string reason)
+	{
+		Province p = GetProvince(provinceId);
+		reason = PlayerCountry == null ? "No country" : WorkRules.DevelopObstacle(p, PlayerCountry);
+		if (reason != null)
+			return false;
+		DevelopProvinceFor(PlayerCountry, p);
+		return true;
+	}
+
+	void DevelopProvinceFor(Country c, Province p)
+	{
+		c.Gold -= WorkRules.DevelopCost(p, c);
+		PopGroup like = p.Pops.Where(g => g.Occupation.Id == "peasants").OrderByDescending(g => g.Units).FirstOrDefault()
+			?? p.Pops.OrderByDescending(g => g.Units).First();
+		p.AddPeople(like.Culture, like.Religion, Definitions.Occupations.GetValueOrDefault("peasants") ?? like.Occupation, 1, true);
+		if (c.Tag == PlayerTag)
+			Notify($"{p.Name}: the land is improved and {PopGroup.PeoplePerUnit:N0} more people settle there.");
+		EmitSignal(SignalName.ProvinceChanged, p.Id);
+	}
+
 	/// <summary>A country run by the game spends what it has beyond a reserve on works: its richest provinces first, the cheapest work first.</summary>
 	void AiWorks(Country c)
 	{
@@ -51,6 +74,16 @@ public partial class GameState
 					return;
 				break;
 			}
+		}
+		// nothing left to build: the land itself is improved, where the people are
+		foreach (Province p in provinces)
+		{
+			if (built >= 2 || c.Gold - WorkRules.DevelopCost(p, c) < reserve * 2)
+				return;
+			if (WorkRules.DevelopObstacle(p, c) != null)
+				continue;
+			DevelopProvinceFor(c, p);
+			built++;
 		}
 	}
 }

@@ -21,6 +21,7 @@ Each land province gets:
 Usage: python3 tools/generate_setup.py
 """
 import hashlib
+import math
 import json
 import sys
 
@@ -135,6 +136,14 @@ def read_csv(path):
     return rows
 
 
+# the largest provinces by area would hold millions: beyond this many units, a province keeps only the square root
+POP_SOFT_CAP = 100
+
+
+def soft_cap(units):
+    return units if units <= POP_SOFT_CAP else int(round(POP_SOFT_CAP + 4 * math.sqrt(units - POP_SOFT_CAP)))
+
+
 def culture_of(tag, lon, lat):
     if tag in EUROPE and lon > -30 and lat > 30:     # not the overseas parts (French Guiana, the Canaries)
         return "european"
@@ -228,6 +237,7 @@ def pops_for(p, units):
     if p["food"] == "horses":
         tribal = max(tribal, 0.9)
     tribal = min(max(tribal + (h01(p["id"], "tr") - 0.5) * 0.2, 0.0), 1.0)
+    units = soft_cap(units)
     tribesmen = int(round(units * tribal))
     pops = []
     for occupation, n in (("peasants", units - tribesmen), ("tribesmen", tribesmen)):

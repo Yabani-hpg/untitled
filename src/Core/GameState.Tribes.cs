@@ -262,13 +262,21 @@ public partial class GameState
 		Tribe t = GetTribe(tribeId);
 		if (c == null || t == null || !TribeRules.CanAbsorb(t, c, _provinces, _armies.Values, Date))
 			return false;
+		AbsorbTribeFor(c, t);
+		return true;
+	}
+
+	void AbsorbTribeFor(Country c, Tribe t)
+	{
 		int lands = t.Provinces.Count;
 		TribeRules.Absorb(t, c, _provinces, Date);
 		_tribes.Remove(t.Id);
 		c.ImprovingRelations.Remove(t.Id);
-		Notify($"{Capital(t.TheName)} join {c.Name}: {lands} provinces come under our rule. Held for {ControlRules.YearsToCore} years, they will be ours for good.");
+		if (c.Tag == PlayerTag)
+			Notify($"{Capital(t.TheName)} join {c.Name}: {lands} provinces come under our rule. Held for {ControlRules.YearsToCore} years, they will be ours for good.");
+		else if (AreNeighbours(PlayerTag, c.Tag))
+			Notify($"{Capital(t.TheName)} join {c.Name}.");
 		AfterTribeLandChange();
-		return true;
 	}
 
 	/// <summary>The player's army standing in a nomad horde's lands gives them battle, with the mercenaries sent along.</summary>
@@ -279,24 +287,96 @@ public partial class GameState
 		Army army = GetArmy(armyId);
 		if (c == null || t == null || !TribeRules.CanSubjugate(t, c, army, _tribes.Values, _provinces, mercenaries, out _))
 			return false;
+		return SubjugateTribeFor(c, t, army, mercenaries);
+	}
+
+	bool SubjugateTribeFor(Country c, Tribe t, Army army, int mercenaries)
+	{
 		int lands = t.Provinces.Count;
 		var r = TribeRules.Subjugate(t, c, army, _tribes.Values, _provinces, mercenaries, Date, _rng);
+		bool tell = c.Tag == PlayerTag || AreNeighbours(PlayerTag, c.Tag);
 		if (r.AttackerWon)
 		{
 			_tribes.Remove(t.Id);
 			c.ImprovingRelations.Remove(t.Id);
-			Notify($"The {army.Name} breaks {t.TheName} ({r.AttackerShare:P0} of our men fell). Their {lands} provinces are subjugated, a regiment left in each as its garrison.");
+			if (c.Tag == PlayerTag)
+				Notify($"The {army.Name} breaks {t.TheName} ({r.AttackerShare:P0} of our men fell). Their {lands} provinces are subjugated, a regiment left in each as its garrison.");
+			else if (tell)
+				Notify($"{c.Name} breaks {t.TheName} and subjugates their {lands} provinces.");
 			RemoveEmptyArmies();
 			AfterTribeLandChange();
 		}
 		else
 		{
-			Notify($"{Capital(t.TheName)} beat the {army.Name}: {r.AttackerShare:P0} of our men fell.");
+			if (c.Tag == PlayerTag)
+				Notify($"{Capital(t.TheName)} beat the {army.Name}: {r.AttackerShare:P0} of our men fell.");
 			RemoveEmptyArmies();
 			EmitSignal(SignalName.TribesChanged);
 		}
 		EmitSignal(SignalName.ArmiesChanged);
 		return r.AttackerWon;
+	}
+
+	/// <summary>
+	/// A country run by the game grows into the tribal lands around it, as the player may: its diplomats court the
+	/// bordering tribes, gifts and alliances follow, allies of long standing are absorbed, and a nomad horde is
+	/// given battle by an army sent among them when the odds are good.
+	/// </summary>
+	void AiTribes(Country c)
+	{
+		var bordering = _tribes.Values.Where(t => TribeRules.Borders(t, _provinces, c.Tag)).ToList();
+		if (bordering.Count == 0)
+			return;
+		foreach (Tribe t in bordering.Where(t => t.AlliedTag != c.Tag && t.RelationWith(c.Tag) < TribeRules.MinRelationToAbsorb))
+		{
+			if (!c.ImprovingRelations.Contains(t.Id) && c.ImprovingRelations.Count < TribeRules.Diplomats && FreeDiplomats(c) > 0)
+				c.ImprovingRelations.Add(t.Id);
+			if (c.Gold > 150 && _rng.NextDouble() < 0.1)
+			{
+				c.Gold -= EconomyRules.GiftGold;
+				t.Food += EconomyRules.GiftGold * EconomyRules.FoodPerGold;
+				TribeRules.ChangeRelation(t, c.Tag, EconomyRules.GiftRelations);
+			}
+		}
+		foreach (Tribe t in bordering)
+		{
+			if (TribeRules.CanProposeAlliance(t, c, _provinces, Date, out _) && _rng.NextDouble() < 0.3)
+				TribeRules.ProposeAlliance(t, c, _provinces, Date, _rng);
+			else if (TribeRules.CanAbsorb(t, c, _provinces, _armies.Values, Date))
+			{
+				AbsorbTribeFor(c, t);
+				return;
+			}
+		}
+		// a nomad horde at the border: an army marches among them and gives battle when the odds are good
+		Tribe horde = bordering.Where(t => t.IsNomadic && t.AlliedTag != c.Tag).OrderBy(t => TribeRules.Warriors(t, _provinces)).FirstOrDefault();
+		if (horde == null)
+			return;
+		Army army = ArmiesOf(c.Tag).Where(a => !a.IsFleet).OrderByDescending(a => a.Regiments.Count).FirstOrDefault();
+		int warriors = TribeRules.Warriors(horde, _provinces) + horde.HiredRegiments;
+		if (army == null)
+		{
+			if (c.Gold < 60 || _rng.NextDouble() > 0.1)
+				return;
+			int want = Math.Min(AvailableLevies(c), warriors * 2 + 2);
+			if (want < warriors || RaiseLeviesFor(c, want, out _) is not Army raised)
+				return;
+			army = raised;
+		}
+		if (army.Moving)
+			return;
+		if (horde.Provinces.Contains(army.ProvinceId))
+		{
+			if (TribeRules.CanSubjugate(horde, c, army, _tribes.Values, _provinces, 0, out _) && TribeRules.SubjugationChance(horde, c, army, _provinces, 0) >= 0.6)
+				SubjugateTribeFor(c, horde, army, 0);
+			else if (NearestFriendly(army) is Province home)
+				OrderArmy(army, home.Id);          // the odds are poor: home, and the levies go back to their fields
+		}
+		else if (army.Regiments.Count >= warriors)
+		{
+			int target = horde.Provinces.OrderBy(id => Steps(GetProvince(army.ProvinceId), _provinces[id])).First();
+			OrderArmy(army, target);
+		}
 	}
 
 	void AfterTribeLandChange()

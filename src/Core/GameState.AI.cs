@@ -12,7 +12,9 @@ namespace Untitled.Core;
 public partial class GameState
 {
 	/// <summary>Monthly chance a country with a claim and the strength to press it declares war.</summary>
-	const double AiWarChance = 0.04;
+	const double AiWarChance = 0.08;
+	/// <summary>With a cause (a claim, a holy war, revenge) the game's countries attack at this strength ratio; without one, at AiAttackRatio.</summary>
+	const double AiCauseAttackRatio = 1.1;
 	/// <summary>A country attacks only when its side is this much stronger than the enemy's.</summary>
 	const double AiAttackRatio = 1.3;
 	/// <summary>War score at which a winner offers peace and takes what it can.</summary>
@@ -67,12 +69,17 @@ public partial class GameState
 			c.ImprovingCountryRelations.Add(o.Tag);
 		}
 
-		// an alliance with a neighbour that likes us, if we have fewer than two
+		// an alliance with a country that likes us, if we have fewer than two: never a rival, never one whose land we claim
+		// (or that claims ours); a neighbour, or a neighbour's neighbour; one that shares our rivals first
 		if (c.Allies.Count < 2 && _rng.NextDouble() < 0.03)
 		{
-			Country partner = neighbours.Where(o => o.Tag != PlayerTag && DiplomacyRules.AllianceObstacle(c, o, _wars.Values) == null
-					&& DiplomacyRules.Opinion(c, o.Tag) >= DiplomacyRules.AllianceOpinion)
-				.OrderByDescending(o => DiplomacyRules.Opinion(o, c.Tag)).FirstOrDefault();
+			bool Covets(Country a, Country b) => a.Claims.Any(id => _provinces[id]?.OwnerTag == b.Tag);
+			Country partner = settled.Where(o => o.Tag != PlayerTag && DiplomacyRules.AllianceObstacle(c, o, _wars.Values) == null
+					&& DiplomacyRules.Opinion(c, o.Tag) >= DiplomacyRules.AllianceOpinion
+					&& !c.Rivals.Contains(o.Tag) && !o.Rivals.Contains(c.Tag) && !Covets(c, o) && !Covets(o, c)
+					&& (neighbours.Contains(o) || neighbours.Any(n => AreNeighbours(n.Tag, o.Tag))))
+				.OrderByDescending(o => c.Rivals.Any(r => o.Rivals.Contains(r)) ? 1 : 0)
+				.ThenByDescending(o => DiplomacyRules.Opinion(o, c.Tag)).FirstOrDefault();
 			if (partner != null && DiplomacyRules.AcceptsAlliance(partner, c,
 				WarRules.Strength(c, _provinces, _armies.Values, Date), WarRules.Strength(partner, _provinces, _armies.Values, Date)))
 			{
@@ -93,6 +100,17 @@ public partial class GameState
 		// war: press a claim or take revenge on a neighbour we outmatch (vassals make no war)
 		if (AtWar(c.Tag) || c.Gold < 20 || c.FollowsOverlord)
 			return;
+		// an alliance that stands between us and a rival, or land we claim and could take, is broken now and then
+		foreach (string allyTag in c.Allies.ToList())
+		{
+			Country ally = GetCountry(allyTag);
+			if (ally == null || allyTag == PlayerTag || _rng.NextDouble() > 0.05)
+				continue;
+			bool wanted = c.Rivals.Contains(allyTag) || c.Claims.Any(id => _provinces[id]?.OwnerTag == allyTag)
+				&& WarRules.Strength(c, _provinces, _armies.Values, Date) >= 2 * WarRules.Strength(ally, _provinces, _armies.Values, Date);
+			if (wanted)
+				BreakAllianceFor(c, ally);
+		}
 		foreach (Country target in neighbours.OrderByDescending(o => c.Rivals.Contains(o.Tag) ? 1 : 0).ThenBy(_ => _rng.Next()))
 		{
 			CasusBelli cb = BestCasusBelli(c, target);
@@ -101,7 +119,7 @@ public partial class GameState
 				continue;
 			double ours = WarRules.SideStrength(c.Allies.Append(c.Tag), _countries, _provinces, _armies.Values, Date);
 			double theirs = WarRules.SideStrength(target.Allies.Append(target.Tag), _countries, _provinces, _armies.Values, Date);
-			if (ours < theirs * AiAttackRatio || _rng.NextDouble() >= AiWarChance)
+			if (ours < theirs * (cb == CasusBelli.Conquest ? AiAttackRatio : AiCauseAttackRatio) || _rng.NextDouble() >= AiWarChance)
 				continue;
 			StartWar(c, target, cb);
 			return;
@@ -181,8 +199,9 @@ public partial class GameState
 
 	void AiPeacetime(Country c)
 	{
-		// levies go home when there is no war
-		foreach (Army a in ArmiesOf(c.Tag).Where(a => !a.Moving).ToList())
+		AiTribes(c);
+		// levies go home when there is no war, unless they stand among the tribes
+		foreach (Army a in ArmiesOf(c.Tag).Where(a => !a.Moving && GetProvince(a.ProvinceId)?.TribeId == 0).ToList())
 			Disband(a);
 	}
 

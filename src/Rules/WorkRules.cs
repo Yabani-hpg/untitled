@@ -13,6 +13,26 @@ public static class WorkRules
 {
 	public static Definitions Defs { get; set; }
 
+	/// <summary>Improving the land (irrigation, new fields, a market town) settles a thousand more people: this much gold, plus this per unit already there.</summary>
+	public const double DevelopBase = 25, DevelopPerUnit = 1.5;
+	public static double DevelopCost(Province p, Country owner) => (DevelopBase + DevelopPerUnit * p.TotalUnits) * Math.Max(0.2, 1 + LawRules.Mod(owner, "building_cost"));
+
+	/// <summary>Why the land can't be improved, or null.</summary>
+	public static string DevelopObstacle(Province p, Country owner)
+	{
+		if (p == null || p.IsWater)
+			return "Not on land";
+		if (owner == null || p.OwnerTag != owner.Tag)
+			return "Not our province";
+		if (p.OccupierTag != null)
+			return "Occupied by the enemy";
+		if (p.Pops.Count == 0)
+			return "Nobody lives here to build on";
+		if (owner.Gold < DevelopCost(p, owner))
+			return $"Costs {DevelopCost(p, owner):0} gold; we have {owner.Gold:0}";
+		return null;
+	}
+
 	/// <summary>How many works a province has room for.</summary>
 	public static int Slots(Province p) =>
 		Defs == null ? 1 : Math.Clamp(1 + p.TotalUnits / Math.Max(1, Defs.WorkSlotUnits), 1, Defs.MaxWorkSlots);
