@@ -108,6 +108,8 @@ public partial class Outliner : PanelContainer
 			alerts.Add(($"A coalition of {coalition.Count} stands against us", HudStyle.Bad, string.Join(", ", coalition.Select(m => m.Name)), () => Diplomacy()?.Open(coalition[0].Tag)));
 		if (c.Stability < 0)
 			alerts.Add(($"Stability {c.Stability:+0;-0}", HudStyle.Bad, "Unrest grows and tax falls; raise it in the country window", () => CountryPanel()?.Toggle(0)));
+		if (c.IsBankrupt(gs.Date))
+			alerts.Add(("Bankrupt", HudStyle.Bad, $"Tax suffers and no one lends until {gs.Definitions.DefaultCalendar.Format(c.BankruptUntil)}", () => CountryPanel()?.Toggle(0)));
 		if (c.Gold < 0)
 			alerts.Add(($"The treasury is in debt: {c.Gold:0} gold", HudStyle.Bad, "Mercenaries go unpaid", () => CountryPanel()?.Toggle(0)));
 		else if (c.LastLedger.Balance < 0)

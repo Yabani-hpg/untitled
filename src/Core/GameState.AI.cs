@@ -45,6 +45,7 @@ public partial class GameState
 
 	void AiDiplomacy(Country c)
 	{
+		AiFinances(c);
 		// a steady realm first: stability bought when it is low and the treasury allows
 		int provinces = ProvincesOf(c.Tag).Count();
 		if (c.Stability < 1 && c.Gold > StateRules.StabilityCost(c, provinces) * 2)

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 using Untitled.Core;
 
@@ -102,6 +103,12 @@ public sealed class Country
 	public Dictionary<string, double> Aggression { get; } = new();
 	/// <summary>The country this one stands in a coalition against, or null.</summary>
 	public string CoalitionAgainst { get; set; }
+	/// <summary>Loans taken, oldest first.</summary>
+	public List<Loan> Loans { get; } = new();
+	/// <summary>Until when the crown's credit and tax suffer after a bankruptcy.</summary>
+	public GameDate BankruptUntil { get; set; }
+	public bool IsBankrupt(GameDate today) => BankruptUntil > today;
+	public double Debt => Loans.Sum(l => l.Amount);
 	/// <summary>Stability, -3..+3.</summary>
 	public int Stability { get; set; }
 	/// <summary>The ruler's legitimacy, 0..100.</summary>
@@ -123,6 +130,9 @@ public sealed class Country
 
 /// <summary>A standing change to one country's opinion of another, fading away by <see cref="Until"/>.</summary>
 public sealed record OpinionModifier(string Reason, int Amount, GameDate Until);
+
+/// <summary>A loan: its amount, its yearly interest, and when it falls due (renewed if it can't be paid).</summary>
+public sealed record Loan(double Amount, double Rate, GameDate Due);
 
 /// <summary>One of a country's flags, flown while its condition holds.</summary>
 public sealed record FlagDefinition(string Id, string Name, string ImagePath, Condition Condition);

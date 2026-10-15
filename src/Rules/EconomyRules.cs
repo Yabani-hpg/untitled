@@ -7,10 +7,10 @@ using Untitled.Data;
 namespace Untitled.Rules;
 
 /// <summary>A settled country's monthly accounts, in gold.</summary>
-public readonly record struct Ledger(double Tax, double Garrisons, double Mercenaries, double Armies = 0, double Trade = 0, double Production = 0)
+public readonly record struct Ledger(double Tax, double Garrisons, double Mercenaries, double Armies = 0, double Trade = 0, double Production = 0, double Interest = 0)
 {
 	public double Income => Tax + Trade + Production;
-	public double Balance => Income - Garrisons - Mercenaries - Armies;
+	public double Balance => Income - Garrisons - Mercenaries - Armies - Interest;
 }
 
 /// <summary>An unsettled country's monthly food accounts.</summary>
@@ -37,6 +37,11 @@ public static class EconomyRules
 	/// <summary>Gold for a building's first level; each further level costs this much more.</summary>
 	public const double BuildCostPerLevel = 25;
 	public const double StartingGold = 200;
+	/// <summary>Loans: yearly interest, years until due, how many at once, and what a bankruptcy costs.</summary>
+	public const double LoanRate = 0.04, BankruptTaxFactor = 0.6;
+	public const int LoanYears = 5, MaxLoans = 5, BankruptcyYears = 5;
+	/// <summary>A loan is sized to the realm: this many months of its income, at least a minimum.</summary>
+	public static double LoanSize(Country c) => Math.Max(50, Math.Round(6 * Math.Max(0, c.LastLedger.Income)));
 
 	/// <summary>Share of an unsettled people's food that is surplus, beyond what they eat.</summary>
 	public const double FoodSurplusShare = 0.25;
@@ -68,7 +73,7 @@ public static class EconomyRules
 			if (pop.Occupation.Taxed)
 				tax += pop.Units * TaxPerUnit * (LawRules.IsCitizen(owner, pop) ? 1 : noncitizens);
 		}
-		return Math.Max(0, tax * (1 + LawRules.Mod(owner, "tax")) * StateRules.TaxFactor(owner) * (1 - ControlRules.Separatism(p, today, owner)));
+		return Math.Max(0, tax * (1 + LawRules.Mod(owner, "tax")) * StateRules.TaxFactor(owner) * (1 - ControlRules.Separatism(p, today, owner)) * (owner.IsBankrupt(today) ? BankruptTaxFactor : 1));
 	}
 
 	public static Ledger MonthlyLedger(Country c, IEnumerable<Province> owned, IEnumerable<Tribe> tribes, IEnumerable<Army> armies, GameDate today, TradeReport trade = null)
@@ -81,7 +86,7 @@ public static class EconomyRules
 		}
 		double upkeep = armies.Where(a => a.OwnerTag == c.Tag).Sum(MilitaryRules.Upkeep);
 		return new Ledger(tax, garrisons, TribeRules.Mercenaries(tribes, c.Tag) * MercenaryPayOf(c), upkeep,
-			trade?.Income.GetValueOrDefault(c.Tag) ?? 0, trade?.Production.GetValueOrDefault(c.Tag) ?? 0);
+			trade?.Income.GetValueOrDefault(c.Tag) ?? 0, trade?.Production.GetValueOrDefault(c.Tag) ?? 0, c.Loans.Sum(l => l.Amount * l.Rate / 12));
 	}
 
 	/// <summary>Gold a month a country pays each regiment of mercenaries (its laws may make them cheaper).</summary>
@@ -135,6 +140,20 @@ public static class EconomyRules
 			Ledger ledger = MonthlyLedger(c, list, tribes, armies, today, trade);
 			c.LastLedger = ledger;
 			c.Gold += ledger.Balance;
+			// loans fall due: paid off when the treasury can, else renewed at a higher rate
+			for (int i = 0; i < c.Loans.Count; i++)
+			{
+				Loan loan = c.Loans[i];
+				if (loan.Due > today)
+					continue;
+				if (c.Gold >= loan.Amount)
+				{
+					c.Gold -= loan.Amount;
+					c.Loans.RemoveAt(i--);
+				}
+				else
+					c.Loans[i] = loan with { Rate = loan.Rate + 0.01, Due = today.AddDays((long)(LoanYears * 365.2425)) };
+			}
 			if (c.Gold < 0 && ledger.Mercenaries > 0)
 			{
 				// no pay, no mercenaries

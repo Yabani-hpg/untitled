@@ -139,6 +139,8 @@ public partial class GameState : IWorld
 			c.Rivals.Clear();
 			c.Aggression.Clear();
 			c.CoalitionAgainst = null;
+			c.Loans.Clear();
+			c.BankruptUntil = default;
 			if (c.Definition == null)
 				continue;
 			foreach (string f in c.Definition.StartFlags)

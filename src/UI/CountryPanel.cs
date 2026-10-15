@@ -219,8 +219,10 @@ public partial class CountryPanel : PanelContainer
 		Row("Legitimacy", $"{c.Legitimacy:0} · prestige {c.Prestige:+0;-0;0}", c.Legitimacy >= 60 ? HudStyle.Text : HudStyle.Bad);
 		Row("War exhaustion", $"{c.WarExhaustion:0.0} of {StateRules.MaxExhaustion:0}" + (gs.WarsOf(c.Tag).Any() ? $" · at war ({gs.WarsOf(c.Tag).Count()})" : ""), c.WarExhaustion >= 5 ? HudStyle.Bad : HudStyle.Text);
 		Row("Unrest", $"uprisings x{StateRules.UnrestFactor(c):0.00} · tax x{StateRules.TaxFactor(c):0.00}", StateRules.UnrestFactor(c) > 1.3 ? HudStyle.Bad : HudStyle.Muted);
-		Row("Treasury", $"{c.Gold:0} gold");
-		Row("Each month", $"{ledger.Balance:+0.0;-0.0} gold: +{ledger.Tax:0.0} tax, +{ledger.Trade:0.0} trade, +{ledger.Production:0.0} production, -{ledger.Armies:0.0} armies, -{ledger.Garrisons:0.0} garrisons, -{ledger.Mercenaries:0.0} mercenaries",
+		Row("Treasury", $"{c.Gold:0} gold" + (c.IsBankrupt(gs.Date) ? $" · bankrupt until {gs.Definitions.DefaultCalendar.Format(c.BankruptUntil)}: tax at {EconomyRules.BankruptTaxFactor:P0}" : ""), c.IsBankrupt(gs.Date) ? HudStyle.Bad : HudStyle.Text);
+		if (c.Loans.Count > 0)
+			Row("Debt", $"{c.Loans.Count} loans, {c.Debt:0} gold, {ledger.Interest:0.0} interest a month · the oldest ({c.Loans[0].Amount:0} at {c.Loans[0].Rate:P0}) falls due {gs.Definitions.DefaultCalendar.Format(c.Loans[0].Due)}", HudStyle.Bad);
+		Row("Each month", $"{ledger.Balance:+0.0;-0.0} gold: +{ledger.Tax:0.0} tax, +{ledger.Trade:0.0} trade, +{ledger.Production:0.0} production, -{ledger.Armies:0.0} armies, -{ledger.Garrisons:0.0} garrisons, -{ledger.Mercenaries:0.0} mercenaries" + (ledger.Interest > 0 ? $", -{ledger.Interest:0.0} interest" : ""),
 			ledger.Balance >= 0 ? HudStyle.Good : HudStyle.Bad);
 		long men = owned.Sum(p => p.UnitsOf(Sex.Male)), women = owned.Sum(p => p.UnitsOf(Sex.Female));
 		Row("Men and women", $"{men * PopGroup.PeoplePerUnit:N0} men · {women * PopGroup.PeoplePerUnit:N0} women at home");
@@ -251,6 +253,24 @@ public partial class CountryPanel : PanelContainer
 		relief.TooltipText = "Pay the soldiers' families and the temples: exhaustion falls by one";
 		relief.Pressed += () => _status.Text = gs.RelieveExhaustion(out string r) ? "" : r;
 		actions.AddChild(relief);
+		string loanWhy = gs.LoanObstacle(c);
+		var loan = HudStyle.Button($"Take a loan ({EconomyRules.LoanSize(c):0} gold)", BodyFont, 13);
+		loan.Disabled = loanWhy != null;
+		loan.TooltipText = loanWhy ?? $"Borrow at {EconomyRules.LoanRate + 0.01 * c.Loans.Count:P0} a year, due in {EconomyRules.LoanYears} years (renewed dearer if unpaid); {c.Loans.Count} of {EconomyRules.MaxLoans} loans taken";
+		loan.Pressed += () => _status.Text = gs.TakeLoan(out string r) ? "" : r;
+		actions.AddChild(loan);
+		if (c.Loans.Count > 0)
+		{
+			var repay = HudStyle.Button($"Repay a loan ({c.Loans[0].Amount:0} gold)", BodyFont, 13);
+			repay.Disabled = c.Gold < c.Loans[0].Amount;
+			repay.TooltipText = "Pay off the oldest loan";
+			repay.Pressed += () => _status.Text = gs.RepayLoan(out string r) ? "" : r;
+			actions.AddChild(repay);
+			var bankrupt = HudStyle.Button("Declare bankruptcy", BodyFont, 13);
+			bankrupt.TooltipText = $"Repudiate every loan: stability -3, legitimacy -20, prestige -30, tax at {EconomyRules.BankruptTaxFactor:P0} and no credit for {EconomyRules.BankruptcyYears} years";
+			bankrupt.Pressed += () => _status.Text = gs.DeclareBankruptcy(out string r) ? "" : r;
+			actions.AddChild(bankrupt);
+		}
 	}
 
 	static string Kind(ControlKind? k) => k switch

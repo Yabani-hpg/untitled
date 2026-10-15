@@ -68,6 +68,17 @@ public partial class GameState
 			w.WriteNumber("next_army", c.NextArmyNumber);
 			w.WriteNumber("prestige", Math.Round(c.Prestige, 2));
 			w.WriteNumber("stability", c.Stability);
+			w.WriteStartArray("loans");
+			foreach (Loan l in c.Loans)
+			{
+				w.WriteStartArray();
+				w.WriteNumberValue(Math.Round(l.Amount, 2));
+				w.WriteNumberValue(Math.Round(l.Rate, 4));
+				w.WriteNumberValue(l.Due.Day);
+				w.WriteEndArray();
+			}
+			w.WriteEndArray();
+			if (c.BankruptUntil.Day > 0) w.WriteNumber("bankrupt_until", c.BankruptUntil.Day);
 			if (c.OverlordTag != null)
 			{
 				w.WriteString("overlord", c.OverlordTag);
@@ -367,6 +378,10 @@ public partial class GameState
 			{
 				c.Prestige = e.TryGetProperty("prestige", out JsonElement pr) ? pr.GetDouble() : 0;
 				c.Stability = e.TryGetProperty("stability", out JsonElement st) ? st.GetInt32() : 0;
+				c.Loans.Clear();
+				if (e.TryGetProperty("loans", out JsonElement loans))
+					foreach (JsonElement l in loans.EnumerateArray()) c.Loans.Add(new Loan(l[0].GetDouble(), l[1].GetDouble(), new GameDate(l[2].GetInt64())));
+				c.BankruptUntil = e.TryGetProperty("bankrupt_until", out JsonElement bu) ? new GameDate(bu.GetInt64()) : default;
 				c.OverlordTag = e.TryGetProperty("overlord", out JsonElement ov) && _countries.ContainsKey(ov.GetString()) ? ov.GetString() : null;
 				c.VassalSince = e.TryGetProperty("vassal_since", out JsonElement vs) ? new GameDate(vs.GetInt64()) : default;
 				c.Legitimacy = e.TryGetProperty("legitimacy", out JsonElement lg) ? lg.GetDouble() : 100;
