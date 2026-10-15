@@ -832,6 +832,39 @@ public partial class CountryPanel : PanelContainer
 		if (later.Count > 0)
 			arms.AddChild(Text("Still to come: " + string.Join("; ", later.Select(t => $"{t.Name} (with {t.Tech.Name})")) + "... See the research window."));
 
+		// the leaders
+		var staff = Section("Generals and admirals");
+		staff.AddChild(Text($"Army tradition {c.ArmyTradition:0}, naval tradition {c.NavalTradition:0}: won in battle, fading a point a year; at 100 the armies are {LeaderRules.TraditionBonus:P0} stronger and the generals found are far abler. "
+			+ $"We may keep {LeaderRules.MaxLeaders(c, owned.Count)} leaders (two, and one for every ten provinces)."));
+		foreach (Leader l in c.Leaders)
+		{
+			var row = new HBoxContainer();
+			row.AddThemeConstantOverride("separation", 8);
+			staff.AddChild(row);
+			Army led = gs.ArmiesOf(c.Tag).FirstOrDefault(a => a.LeaderId == l.Id);
+			var info = HudStyle.Body($"{l.Name}, {(l.Kind == LeaderKind.Admiral ? "admiral" : "general")}, {l.AgeOn(gs.Date)} · pips {l.Pips} · {(led != null ? $"leads the {led.Name}" : "without a command")}", BodyFont, 13);
+			info.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+			info.TooltipText = "Fire / shock / manoeuvre / siege";
+			info.MouseFilter = MouseFilterEnum.Pass;
+			row.AddChild(info);
+			var dismiss = HudStyle.Button("Dismiss", BodyFont, 13);
+			int leaderId = l.Id;
+			dismiss.Pressed += () => gs.DismissLeader(leaderId);
+			row.AddChild(dismiss);
+		}
+		var recruitRow = new HBoxContainer();
+		recruitRow.AddThemeConstantOverride("separation", 8);
+		staff.AddChild(recruitRow);
+		foreach (LeaderKind kind in new[] { LeaderKind.General, LeaderKind.Admiral })
+		{
+			string why = LeaderRules.RecruitObstacle(c, owned.Count, kind);
+			var b = HudStyle.Button($"Recruit {(kind == LeaderKind.Admiral ? "an admiral" : "a general")} ({LeaderRules.RecruitCost:0} gold)", BodyFont, 13);
+			b.Disabled = why != null;
+			b.TooltipText = why ?? "Pips are rolled when the leader is found: more with tradition";
+			b.Pressed += () => _status.Text = gs.RecruitLeader(kind, out string r) ? "" : r;
+			recruitRow.AddChild(b);
+		}
+
 		// the armies
 		var field = Section("Armies in the field");
 		var armies = gs.ArmiesOf(c.Tag).ToList();
@@ -848,7 +881,7 @@ public partial class CountryPanel : PanelContainer
 			string where = a.Moving
 				? $"Marching to {gs.GetProvince(a.Destination)?.Name}, {gs.DaysToArrive(a)} days"
 				: $"In {gs.GetProvince(a.ProvinceId)?.Name}";
-			info.AddChild(HudStyle.Body($"{where} · {GameState.Describe(a)} · {MilitaryRules.Upkeep(a):0.0} gold a month", BodyFont, 12, HudStyle.Muted));
+			info.AddChild(HudStyle.Body($"{where} · {GameState.Describe(a)} · {MilitaryRules.Upkeep(a):0.0} gold a month" + (gs.LeaderOf(a) is Leader commander ? $" · led by {commander.Name} ({commander.Pips})" : ""), BodyFont, 12, HudStyle.Muted));
 			var select = HudStyle.Button("Select", BodyFont, 13);
 			int armyId = a.Id;
 			select.Pressed += () =>

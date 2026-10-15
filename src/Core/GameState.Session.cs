@@ -183,6 +183,9 @@ public partial class GameState : IWorld
 			c.Ruler = c.Definition?.Ruler != null ? CreateRuler(c, c.Definition.Ruler) : GenerateRuler(c);
 			c.StateReligion = c.Ruler?.Religion;
 			c.Converting.Clear();
+			c.Leaders.Clear();
+			c.ArmyTradition = 0;
+			c.NavalTradition = 0;
 			c.CurrentFlag = null;
 			RaiseStartGarrisons(c);
 			var owned = ProvincesOf(c.Tag).ToList();

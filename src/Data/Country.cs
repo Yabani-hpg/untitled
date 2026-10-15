@@ -45,6 +45,10 @@ public sealed class Country
 	public Religion StateReligion { get; set; }
 	/// <summary>Provinces where its missionaries are at work.</summary>
 	public HashSet<int> Converting { get; } = new();
+	/// <summary>Its generals and admirals, and the tradition (0..100) that makes them and its armies better.</summary>
+	public List<Leader> Leaders { get; } = new();
+	public double ArmyTradition { get; set; }
+	public double NavalTradition { get; set; }
 	/// <summary>How its levies are armed: percent of the regiments for each unit type id. Empty: the defaults of data/units.json.</summary>
 	public Dictionary<string, int> LevyTemplate { get; } = new();
 	/// <summary>The number the next army it raises takes ("3rd Army").</summary>

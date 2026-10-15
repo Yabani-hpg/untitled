@@ -105,6 +105,23 @@ public partial class GameState
 			w.WriteStartArray("converting");
 			foreach (int id in c.Converting) w.WriteNumberValue(id);
 			w.WriteEndArray();
+			w.WriteNumber("army_tradition", Math.Round(c.ArmyTradition, 2));
+			w.WriteNumber("naval_tradition", Math.Round(c.NavalTradition, 2));
+			w.WriteStartArray("leaders");
+			foreach (Leader l in c.Leaders)
+			{
+				w.WriteStartObject();
+				w.WriteNumber("id", l.Id);
+				w.WriteString("name", l.Name);
+				w.WriteString("kind", l.Kind.ToString().ToLowerInvariant());
+				w.WriteNumber("fire", l.Fire);
+				w.WriteNumber("shock", l.Shock);
+				w.WriteNumber("manoeuvre", l.Manoeuvre);
+				w.WriteNumber("siege", l.Siege);
+				w.WriteNumber("birth", l.Birth.Day);
+				w.WriteEndObject();
+			}
+			w.WriteEndArray();
 			w.WriteNumber("war_exhaustion", Math.Round(c.WarExhaustion, 2));
 			w.WriteStartArray("event_flags");
 			foreach (string f in c.EventFlags) w.WriteStringValue(f);
@@ -251,6 +268,7 @@ public partial class GameState
 			w.WriteNumber("marched", a.DaysMarched);
 			w.WriteNumber("step_days", a.StepDays);
 			if (a.AboardFleetId != 0) w.WriteNumber("aboard", a.AboardFleetId);
+			if (a.LeaderId != 0) w.WriteNumber("leader", a.LeaderId);
 			WriteRegiments(w, "regiments", a.Regiments);
 			w.WriteEndObject();
 		}
@@ -472,6 +490,29 @@ public partial class GameState
 				c.Converting.Clear();
 				if (e.TryGetProperty("converting", out JsonElement cv))
 					foreach (JsonElement id in cv.EnumerateArray()) c.Converting.Add(id.GetInt32());
+				c.ArmyTradition = e.TryGetProperty("army_tradition", out JsonElement at) ? at.GetDouble() : 0;
+				c.NavalTradition = e.TryGetProperty("naval_tradition", out JsonElement nt) ? nt.GetDouble() : 0;
+				c.Leaders.Clear();
+				if (e.TryGetProperty("leaders", out JsonElement ls))
+				{
+					foreach (JsonElement l in ls.EnumerateArray())
+					{
+						var leader = new Leader
+						{
+							Id = l.GetProperty("id").GetInt32(),
+							Name = l.GetProperty("name").GetString(),
+							OwnerTag = c.Tag,
+							Kind = Enum.TryParse(l.GetProperty("kind").GetString(), true, out LeaderKind lk) ? lk : LeaderKind.General,
+							Fire = l.GetProperty("fire").GetInt32(),
+							Shock = l.GetProperty("shock").GetInt32(),
+							Manoeuvre = l.GetProperty("manoeuvre").GetInt32(),
+							Siege = l.GetProperty("siege").GetInt32(),
+							Birth = new GameDate(l.GetProperty("birth").GetInt64()),
+						};
+						c.Leaders.Add(leader);
+						_nextLeaderId = Math.Max(_nextLeaderId, leader.Id + 1);
+					}
+				}
 				c.WarExhaustion = e.TryGetProperty("war_exhaustion", out JsonElement we) ? we.GetDouble() : 0;
 				c.EventFlags.Clear();
 				if (e.TryGetProperty("event_flags", out JsonElement ef))
@@ -801,6 +842,7 @@ public partial class GameState
 					DaysMarched = e.GetProperty("marched").GetInt32(),
 					StepDays = e.GetProperty("step_days").GetInt32(),
 					AboardFleetId = e.TryGetProperty("aboard", out JsonElement aboard) ? aboard.GetInt32() : 0,
+					LeaderId = e.TryGetProperty("leader", out JsonElement leaderId) ? leaderId.GetInt32() : 0,
 				};
 				foreach (JsonElement id in e.GetProperty("path").EnumerateArray())
 				{

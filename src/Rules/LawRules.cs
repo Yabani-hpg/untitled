@@ -23,7 +23,7 @@ public static class LawRules
 	{
 		if (c == null || Defs == null)
 			return 0;
-		double sum = TechRules.Mod(c, key) + EstateRules.Mod(c, key, Defs) + IdeaRules.Mod(c, key, Defs) + AdvisorRules.Mod(c, key) + ReformRules.Mod(c, key, Defs) + DisasterRules.Mod(c, key, Defs) + SubjectRules.Mod(c, key);
+		double sum = TechRules.Mod(c, key) + EstateRules.Mod(c, key, Defs) + IdeaRules.Mod(c, key, Defs) + AdvisorRules.Mod(c, key) + ReformRules.Mod(c, key, Defs) + DisasterRules.Mod(c, key, Defs) + SubjectRules.Mod(c, key) + LeaderRules.Mod(c, key);
 		foreach (LawOption o in InForce(c, Defs))
 			sum += o.Modifiers.GetValueOrDefault(key);
 		return sum;

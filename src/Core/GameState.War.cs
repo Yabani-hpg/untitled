@@ -95,6 +95,9 @@ public partial class GameState
 		int aMen = aRegs.Sum(r => r.Men), dMen = dRegs.Sum(r => r.Men);
 		int aDice = fromProvinceId > 0 && !p.IsWater ? CombatRules.AttackerDiceModifier(GetProvince(fromProvinceId), p) : 0;
 		int dDice = p.IsWater ? 0 : TerrainRules.DefenseDice(p) + (p.OwnerTag != null && SameSide(defenders[0].OwnerTag, p.OwnerTag) ? 1 + FortRules.DefenceDice(p) : 0);
+		Leader aLeader = LeaderRules.Best(attackers.Select(LeaderOf)), dLeader = LeaderRules.Best(defenders.Select(LeaderOf));
+		aDice += aLeader?.BattlePips ?? 0;
+		dDice += dLeader?.BattlePips ?? 0;
 		var result = ControlRules.Battle(MilitaryRules.ForceOf(aRegs, p, aDice, ao), MilitaryRules.ForceOf(dRegs, p, dDice, dO), _rng);
 		var aGone = MilitaryRules.TakeLosses(aRegs, result.AttackerShare, !result.AttackerWon);
 		var dGone = MilitaryRules.TakeLosses(dRegs, result.DefenderShare, result.AttackerWon);
@@ -113,6 +116,7 @@ public partial class GameState
 			war.Battles.Add(new BattleRecord(Date, p.Id, ao.Tag, dO.Tag, result.AttackerWon, aMen, dMen, aLost, dLost));
 			WarRules.UpdateScore(war, _countries, _provinces);
 			Country winner = result.AttackerWon ? ao : dO, loser = result.AttackerWon ? dO : ao;
+			AwardTradition(winner, loser, p.IsWater);
 			winner.Prestige = Math.Clamp(winner.Prestige + 3, -100, 100);
 			loser.Prestige = Math.Clamp(loser.Prestige - 3, -100, 100);
 			StateRules.BattleExhaustion(ao, aLost, _armies.Values.Where(x => x.OwnerTag == ao.Tag).Sum(x => x.Men) + aLost);
@@ -125,7 +129,7 @@ public partial class GameState
 		{
 			bool weAttacked = attackers.Any(a => a.OwnerTag == PlayerTag);
 			bool weWon = weAttacked == result.AttackerWon;
-			Notify($"Battle of {p.Name}: {(weWon ? "victory" : "defeat")}. {ao.Adjective} {aMen:N0} against {dO.Adjective} {dMen:N0}; "
+			Notify($"Battle of {p.Name}: {(weWon ? "victory" : "defeat")}. {ao.Adjective} {aMen:N0}{(aLeader != null ? $" under {aLeader.Name}" : "")} against {dO.Adjective} {dMen:N0}{(dLeader != null ? $" under {dLeader.Name}" : "")}; "
 				+ $"{ao.Adjective} losses {aLost:N0}, {dO.Adjective} losses {dLost:N0}. The {(result.AttackerWon ? dO.Adjective : ao.Adjective)} {(p.IsWater ? "fleet" : "army")} falls back.");
 		}
 		EmitSignal(SignalName.ArmiesChanged);
@@ -177,7 +181,7 @@ public partial class GameState
 					p.SiegeProgress = 0;
 				p.SiegerTag = sieger;
 				// ships off the coast cut the province from the sea: the siege goes faster
-				p.SiegeProgress += WarRules.SiegePower(besiegers, p) * (Blockaded(p, sieger) ? 1 + NavalRules.BlockadeSiegeBonus : 1)
+				p.SiegeProgress += WarRules.SiegePower(besiegers, p) * (1 + LeaderRules.SiegePerPip * (LeaderRules.Best(besiegers.Select(LeaderOf))?.Siege ?? 0)) * (Blockaded(p, sieger) ? 1 + NavalRules.BlockadeSiegeBonus : 1)
 					* Math.Max(0.2, 1 + LawRules.Mod(GetCountry(sieger), "siege") + Math.Min(0, LawRules.Mod(GetCountry(p.OwnerTag), "siege")));
 				if (p.SiegeProgress >= WarRules.SiegeNeeded(p))
 				{

@@ -35,6 +35,51 @@ public partial class ArmyPanel : PanelContainer
 		gs.TribesChanged += Refresh;
 	}
 
+	/// <summary>Who leads the army, and for the player's own, whom it could be given to.</summary>
+	Control LeaderRow(Army a, Country owner, bool ours)
+	{
+		GameState gs = GameState.Instance;
+		var row = new HBoxContainer();
+		row.AddThemeConstantOverride("separation", 8);
+		Leader led = gs.LeaderOf(a);
+		string kindWord = a.IsFleet ? "admiral" : "general";
+		var text = HudStyle.Body(led != null ? $"Led by {led.Name} ({led.Pips})" : $"No {kindWord}", BodyFont, 13, led != null ? HudStyle.Gold : HudStyle.Muted);
+		text.TooltipText = "Pips: fire / shock / manoeuvre / siege. Fire and shock sharpen the dice in battle, manoeuvre spares the men on the march, siege hastens sieges.";
+		text.MouseFilter = MouseFilterEnum.Pass;
+		row.AddChild(text);
+		if (!ours || owner == null)
+			return row;
+		var free = gs.FreeLeaders(owner).Where(l => (l.Kind == LeaderKind.Admiral) == a.IsFleet).ToList();
+		if (free.Count > 0 || led != null)
+		{
+			var pick = new OptionButton { FocusMode = FocusModeEnum.None };
+			if (BodyFont != null) pick.AddThemeFontOverride("font", BodyFont);
+			pick.AddThemeFontSizeOverride("font_size", 12);
+			pick.AddItem(led != null ? "Relieve of command" : $"Give a {kindWord}...", 0);
+			foreach (Leader l in free)
+				pick.AddItem($"{l.Name} ({l.Pips})", l.Id);
+			pick.ItemSelected += i =>
+			{
+				if (!gs.AssignLeader(a.Id, (int)pick.GetItemId((int)i), out string r))
+					gs.Notify(r);
+			};
+			row.AddChild(pick);
+		}
+		string why = LeaderRules.RecruitObstacle(owner, gs.ProvincesOf(owner.Tag).Count(), a.IsFleet ? LeaderKind.Admiral : LeaderKind.General);
+		var recruit = HudStyle.Button($"Recruit a {kindWord} ({LeaderRules.RecruitCost:0} gold)", BodyFont, 12);
+		recruit.Disabled = why != null;
+		recruit.TooltipText = why ?? $"A new {kindWord} takes command here; better ones come with tradition ({(a.IsFleet ? owner.NavalTradition : owner.ArmyTradition):0} now)";
+		recruit.Pressed += () =>
+		{
+			if (gs.RecruitLeader(a.IsFleet ? LeaderKind.Admiral : LeaderKind.General, out string r))
+				gs.AssignLeader(a.Id, owner.Leaders[^1].Id, out _);
+			else
+				gs.Notify(r);
+		};
+		row.AddChild(recruit);
+		return row;
+	}
+
 	public override void _ExitTree()
 	{
 		GameState gs = GameState.Instance;
@@ -89,6 +134,7 @@ public partial class ArmyPanel : PanelContainer
 			? $"{(a.IsFleet ? "Sailing" : "Marching")} to {gs.GetProvince(a.Destination)?.Name}: {gs.DaysToArrive(a)} days (now near {here?.Name})"
 			: a.IsFleet && here?.IsWater == true ? $"At sea in the {here.Name}" : a.IsFleet ? $"In harbour at {here?.Name}" : $"In {here?.Name}";
 		_box.AddChild(HudStyle.Body($"{where} · {MilitaryRules.Speed(a, owner):0} km a day", BodyFont, 14));
+		_box.AddChild(LeaderRow(a, owner, ours));
 		if (a.IsFleet)
 			_box.AddChild(HudStyle.Body($"{a.Regiments.Count} ships · room for {a.Capacity} regiments, {gs.CargoUsed(a)} aboard · {MilitaryRules.Upkeep(a):0.0} gold a month",
 				BodyFont, 13, HudStyle.Muted));

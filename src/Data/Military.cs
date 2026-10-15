@@ -92,6 +92,8 @@ public sealed class Army
 	public bool Moving => Path.Count > 0;
 	/// <summary>The fleet this army rides aboard, or 0.</summary>
 	public int AboardFleetId { get; set; }
+	/// <summary>The leader in command (its owner's), or 0.</summary>
+	public int LeaderId { get; set; }
 	/// <summary>A fleet: an army made of ships.</summary>
 	public bool IsFleet => Regiments.Count > 0 && Regiments.TrueForAll(r => r.Type.IsShip);
 	public Untitled.Rules.UnitDomain Domain => !IsFleet ? Untitled.Rules.UnitDomain.Land

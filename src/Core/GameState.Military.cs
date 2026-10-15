@@ -366,7 +366,7 @@ public partial class GameState
 			if (a.IsFleet || a.AboardFleetId != 0)
 				continue;
 			Province p = GetProvince(a.ProvinceId);
-			double share = TerrainRules.Attrition(p, a.Regiments.Count);
+			double share = TerrainRules.Attrition(p, a.Regiments.Count) * Math.Max(0.4, 1 - LeaderRules.AttritionPerPip * (LeaderOf(a)?.Manoeuvre ?? 0));
 			if (share <= 0)
 				continue;
 			int before = a.Men;

@@ -307,6 +307,7 @@ public partial class GameState : Node
 		RunDisasterStep();
 		RunInstitutionStep();
 		RunReligionStep();
+		RunLeaderStep();
 		RunResearchStep();
 		RunIdeaStep();
 		RunDiplomacyStep();
