@@ -196,6 +196,10 @@ public partial class GameState
 		var war = new War { Id = _nextWarId++, AttackerTag = attacker.Tag, DefenderTag = defender.Tag, CasusBelli = cb, Started = Date };
 		war.Attackers.Add(attacker.Tag);
 		war.Defenders.Add(defender.Tag);
+		// the war goal: the claimed land, else the enemy's capital
+		war.GoalProvinceId = cb == CasusBelli.Claim ? attacker.Claims.FirstOrDefault(id => _provinces[id]?.OwnerTag == defender.Tag) : 0;
+		if (war.GoalProvinceId <= 0)
+			war.GoalProvinceId = defender.CapitalId;
 		_wars[war.Id] = war;
 		DiplomacyRules.AddModifier(defender, attacker.Tag, "Attacked us", -60, Date);
 		if (cb == CasusBelli.Conquest)
@@ -350,6 +354,33 @@ public partial class GameState
 				if (GetCountry(a) is Country ca) ca.Truces[b] = truce;
 				if (GetCountry(b) is Country cb) cb.Truces[a] = truce;
 			}
+		GameDate treatyEnd = Date.AddDays((long)(WarRules.TreatyYears * 365.2425));
+		if (terms.AnnulAlliances)
+		{
+			foreach (string ally in loser.Allies.ToList())
+			{
+				loser.Allies.Remove(ally);
+				GetCountry(ally)?.Allies.Remove(loser.Tag);
+			}
+			if (loser.Tag == PlayerTag)
+				Notify("Our alliances are annulled by the treaty.");
+		}
+		if (terms.RevokeClaims)
+			loser.Claims.RemoveWhere(id => _provinces[id]?.OwnerTag != null && winners.Contains(_provinces[id].OwnerTag));
+		if (terms.Reparations)
+			loser.Reparations[winner.Tag] = treatyEnd;
+		if (terms.TradePower)
+			loser.TradePowerCeded[winner.Tag] = treatyEnd;
+		if (terms.ReleaseVassals)
+		{
+			foreach (Country v in VassalsOf(loser.Tag).ToList())
+			{
+				v.OverlordTag = null;
+				DiplomacyRules.AddModifier(v, winner.Tag, "Freed us from our overlord", 30, Date, 15);
+				if (v.Tag == PlayerTag)
+					Notify($"The treaty frees us from {loser.Name}.");
+			}
+		}
 		if (terms.Humiliate)
 		{
 			winner.Prestige = Math.Clamp(winner.Prestige + WarRules.HumiliatePrestige, -100, 100);
@@ -524,6 +555,33 @@ public partial class GameState
 		}
 		RunCoalitionStep();
 		RunFabricationStep();
+		// war goals tick; reparations are paid; treaties lapse
+		foreach (War w in _wars.Values)
+		{
+			Province goal = GetProvince(w.GoalProvinceId);
+			if (goal == null)
+				continue;
+			if (goal.OccupierTag != null && w.SideOf(goal.OccupierTag) > 0)
+				w.TickingScore = Math.Min(WarRules.TickingMax, w.TickingScore + WarRules.TickingPerMonth);
+			else if (goal.OccupierTag == null && (Date.Day - w.Started.Day) / 365.2425 >= 1)
+				w.TickingScore = Math.Max(WarRules.TickingMin, w.TickingScore - WarRules.TickingDownPerMonth);
+		}
+		foreach (Country c in settled)
+		{
+			foreach (var (toTag, until) in c.Reparations.ToList())
+			{
+				if (until <= Date || GetCountry(toTag) is not Country to || to.CapitalId <= 0)
+				{
+					c.Reparations.Remove(toTag);
+					continue;
+				}
+				double paid = Math.Max(0, c.LastLedger.Income) * WarRules.ReparationsShare;
+				c.Gold -= paid;
+				to.Gold += paid;
+			}
+			foreach (string toTag in c.TradePowerCeded.Where(kv => kv.Value <= Date).Select(kv => kv.Key).ToList())
+				c.TradePowerCeded.Remove(toTag);
+		}
 		foreach (War w in _wars.Values)
 			WarRules.UpdateScore(w, _countries, _provinces);
 		EmitSignal(SignalName.DiplomacyChanged);

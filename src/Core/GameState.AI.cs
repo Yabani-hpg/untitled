@@ -284,6 +284,26 @@ public partial class GameState
 		Country loserLeader = GetCountry(winnerSide > 0 ? war.DefenderTag : war.AttackerTag);
 		if (left >= 2 && loserLeader != null)
 			terms.Gold = Math.Min(Math.Max(0, loserLeader.Gold) * 0.8, Math.Floor(left) * WarRules.GoldPerScorePoint);
+		// the rest of the score buys the lesser terms: claims revoked, reparations, the loser's friends
+		if (loserLeader != null)
+		{
+			left = budget - WarRules.TermsCost(terms, winner, losers, _countries, _provinces);
+			if (left >= WarRules.RevokeClaimsCost && loserLeader.Claims.Any(id => _provinces[id]?.OwnerTag == winner.Tag))
+			{
+				terms.RevokeClaims = true;
+				left -= WarRules.RevokeClaimsCost;
+			}
+			if (left >= WarRules.ReparationsCost && loserLeader.LastLedger.Income > 10)
+			{
+				terms.Reparations = true;
+				left -= WarRules.ReparationsCost;
+			}
+			if (left >= WarRules.AnnulCost && loserLeader.Allies.Count > 0 && winner.Rivals.Contains(loserLeader.Tag))
+			{
+				terms.AnnulAlliances = true;
+				left -= WarRules.AnnulCost;
+			}
+		}
 		return terms;
 	}
 
@@ -298,6 +318,11 @@ public partial class GameState
 			parts.Add($"{terms.Gold:0} gold");
 		if (terms.Humiliate)
 			parts.Add("a humbling before the world");
+		if (terms.AnnulAlliances) parts.Add("the annulment of their alliances");
+		if (terms.RevokeClaims) parts.Add("their claims revoked");
+		if (terms.Reparations) parts.Add($"reparations for {WarRules.TreatyYears} years");
+		if (terms.TradePower) parts.Add($"half their trade power for {WarRules.TreatyYears} years");
+		if (terms.ReleaseVassals) parts.Add("their vassals set free");
 		return string.Join(" and ", parts);
 	}
 

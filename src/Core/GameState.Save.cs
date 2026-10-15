@@ -133,6 +133,12 @@ public partial class GameState
 			foreach (string id in c.Reforms) w.WriteStringValue(id);
 			w.WriteEndArray();
 			w.WriteNumber("reform_progress", Math.Round(c.ReformProgress, 2));
+			w.WriteStartObject("reparations");
+			foreach (var (t, until) in c.Reparations) w.WriteNumber(t, until.Day);
+			w.WriteEndObject();
+			w.WriteStartObject("trade_power_ceded");
+			foreach (var (t, until) in c.TradePowerCeded) w.WriteNumber(t, until.Day);
+			w.WriteEndObject();
 			w.WriteStartObject("fabricating");
 			foreach (var (id, progress) in c.Fabricating) w.WriteNumber(id.ToString(), Math.Round(progress, 2));
 			w.WriteEndObject();
@@ -253,6 +259,8 @@ public partial class GameState
 			w.WriteString("cb", war.CasusBelli.ToString().ToLowerInvariant());
 			w.WriteNumber("started", war.Started.Day);
 			w.WriteNumber("battle_score", Math.Round(war.BattleScore, 3));
+			w.WriteNumber("goal", war.GoalProvinceId);
+			w.WriteNumber("ticking", Math.Round(war.TickingScore, 3));
 			w.WriteStartArray("attackers");
 			foreach (string t in war.Attackers) w.WriteStringValue(t);
 			w.WriteEndArray();
@@ -482,6 +490,12 @@ public partial class GameState
 				if (e.TryGetProperty("reforms", out JsonElement rf))
 					foreach (JsonElement id in rf.EnumerateArray()) c.Reforms.Add(id.GetString());
 				c.ReformProgress = e.TryGetProperty("reform_progress", out JsonElement rp) ? rp.GetDouble() : 0;
+				c.Reparations.Clear();
+				if (e.TryGetProperty("reparations", out JsonElement rep))
+					foreach (JsonProperty kv in rep.EnumerateObject()) c.Reparations[kv.Name] = new GameDate(kv.Value.GetInt64());
+				c.TradePowerCeded.Clear();
+				if (e.TryGetProperty("trade_power_ceded", out JsonElement tpc))
+					foreach (JsonProperty kv in tpc.EnumerateObject()) c.TradePowerCeded[kv.Name] = new GameDate(kv.Value.GetInt64());
 				c.Fabricating.Clear();
 				if (e.TryGetProperty("fabricating", out JsonElement fb))
 					foreach (JsonProperty kv in fb.EnumerateObject()) c.Fabricating[int.Parse(kv.Name)] = kv.Value.GetDouble();
@@ -782,6 +796,8 @@ public partial class GameState
 					CasusBelli = Enum.TryParse(e.GetProperty("cb").GetString(), true, out CasusBelli cb) ? cb : CasusBelli.Conquest,
 					Started = new GameDate(e.GetProperty("started").GetInt64()),
 					BattleScore = e.GetProperty("battle_score").GetDouble(),
+					GoalProvinceId = e.TryGetProperty("goal", out JsonElement goal) ? goal.GetInt32() : 0,
+					TickingScore = e.TryGetProperty("ticking", out JsonElement tick) ? tick.GetDouble() : 0,
 				};
 				if (GetCountry(war.AttackerTag) == null || GetCountry(war.DefenderTag) == null)
 					continue;

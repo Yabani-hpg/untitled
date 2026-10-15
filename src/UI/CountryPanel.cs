@@ -237,6 +237,10 @@ public partial class CountryPanel : PanelContainer
 		long men = owned.Sum(p => p.UnitsOf(Sex.Male)), women = owned.Sum(p => p.UnitsOf(Sex.Female));
 		Row("Men and women", $"{men * PopGroup.PeoplePerUnit:N0} men · {women * PopGroup.PeoplePerUnit:N0} women at home");
 		Row("Under arms", $"{MilitaryRules.UnderArms(c, gs.Armies.Values, owned)} regiments · {gs.AvailableLevies(c)} more to levy · {TribeRules.Mercenaries(gs.Tribes.Values, c.Tag)} mercenaries");
+		foreach (var (toTag, until) in c.Reparations)
+			Row("Reparations", $"we pay {gs.GetCountry(toTag)?.Name} {Math.Max(0, ledger.Income) * WarRules.ReparationsShare:0.0} gold a month until {gs.Definitions.DefaultCalendar.Format(until)}", HudStyle.Bad);
+		foreach (var (toTag, until) in c.TradePowerCeded)
+			Row("Trade power", $"half of ours goes to {gs.GetCountry(toTag)?.Name} until {gs.Definitions.DefaultCalendar.Format(until)}", HudStyle.Bad);
 		Row("Rivals", c.Rivals.Count > 0 ? string.Join(", ", c.Rivals.Select(t => gs.GetCountry(t)?.Name)) : "none named", HudStyle.Muted);
 		var against = gs.CoalitionAgainst(c.Tag).ToList();
 		if (against.Count > 0)

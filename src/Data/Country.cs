@@ -127,6 +127,9 @@ public sealed class Country
 	/// <summary>Disasters brewing (progress toward 100) and running (since when).</summary>
 	public Dictionary<string, double> DisasterProgress { get; } = new();
 	public Dictionary<string, GameDate> ActiveDisasters { get; } = new();
+	/// <summary>War reparations owed (to whom, until when): a tenth of income a month. Trade power ceded (to whom, until when): half of ours in every node.</summary>
+	public Dictionary<string, GameDate> Reparations { get; } = new();
+	public Dictionary<string, GameDate> TradePowerCeded { get; } = new();
 	/// <summary>Loans taken, oldest first.</summary>
 	public List<Loan> Loans { get; } = new();
 	/// <summary>Until when the crown's credit and tax suffer after a bankruptcy.</summary>

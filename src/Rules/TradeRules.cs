@@ -159,6 +159,23 @@ public static class TradeRules
 			if (report.Nodes.TryGetValue(at.Id, out NodeReport r))
 				r.Power[f.OwnerTag] = r.Power.GetValueOrDefault(f.OwnerTag) + NavalRules.TradePower(f) * Math.Max(0.1, 1 + TechRules.Mod(o, "trade_power") + LawRules.Mod(o, "trade_power"));
 		}
+		// trade power ceded by treaty: half of the loser's power in every node goes to the winner
+		foreach (Country c in countries.Values)
+		{
+			foreach (var (toTag, _) in c.TradePowerCeded)
+			{
+				if (!countries.ContainsKey(toTag))
+					continue;
+				foreach (NodeReport r in report.Nodes.Values)
+				{
+					if (!r.Power.TryGetValue(c.Tag, out double power) || power <= 0)
+						continue;
+					double moved = power * WarRules.CededTradeShare;
+					r.Power[c.Tag] = power - moved;
+					r.Power[toTag] = r.Power.GetValueOrDefault(toTag) + moved;
+				}
+			}
+		}
 		// value flows downstream, node by node
 		foreach (TradeNode node in nodes)
 		{

@@ -32,6 +32,9 @@ public sealed class War
 	public double Score { get; set; }
 	/// <summary>Score from battles alone (occupation is counted live).</summary>
 	public double BattleScore { get; set; }
+	/// <summary>The province the war is fought over: holding it ticks the score up month by month.</summary>
+	public int GoalProvinceId { get; set; }
+	public double TickingScore { get; set; }
 	/// <summary>Battles fought, most recent last.</summary>
 	public List<BattleRecord> Battles { get; } = new();
 	/// <summary>A peace a country run by the game has offered the player, awaiting an answer; null if none.</summary>
@@ -62,5 +65,11 @@ public sealed class PeaceTerms
 	public bool Vassalize { get; set; }
 	/// <summary>The loser is humbled before the world: prestige passes from it to the winner.</summary>
 	public bool Humiliate { get; set; }
-	public bool IsWhitePeace => Provinces.Count == 0 && Gold <= 0 && !Vassalize && !Humiliate;
+	/// <summary>The loser gives up its alliances; its claims on the winners' land; a tenth of its income for ten years; half its trade power to the winner for ten years; its vassals.</summary>
+	public bool AnnulAlliances { get; set; }
+	public bool RevokeClaims { get; set; }
+	public bool Reparations { get; set; }
+	public bool TradePower { get; set; }
+	public bool ReleaseVassals { get; set; }
+	public bool IsWhitePeace => Provinces.Count == 0 && Gold <= 0 && !Vassalize && !Humiliate && !AnnulAlliances && !RevokeClaims && !Reparations && !TradePower && !ReleaseVassals;
 }

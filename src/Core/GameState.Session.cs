@@ -142,6 +142,8 @@ public partial class GameState : IWorld
 			c.Loans.Clear();
 			c.BankruptUntil = default;
 			c.Fabricating.Clear();
+			c.Reparations.Clear();
+			c.TradePowerCeded.Clear();
 			c.Advisors.Clear();
 			c.Reforms.Clear();
 			c.DisasterProgress.Clear();

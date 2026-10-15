@@ -420,6 +420,11 @@ public partial class DiplomacyPanel : PanelContainer
 		double score = w.Score * side;
 		_detail.AddChild(HudStyle.Title(w.Name(gs.Countries), TitleFont, 22));
 		_detail.AddChild(HudStyle.Body($"Since {gs.Definitions.DefaultCalendar.Format(w.Started)} · {w.CasusBelli switch { CasusBelli.Claim => "pressing claims", CasusBelli.Revenge => "revenge", _ => "without cause" }}", BodyFont, 13, HudStyle.Muted));
+		if (gs.GetProvince(w.GoalProvinceId) is Province goal)
+		{
+			string held = goal.OccupierTag != null ? $"held by {gs.GetCountry(goal.OccupierTag)?.Adjective} troops" : $"held by its owner, {gs.GetCountry(goal.OwnerTag)?.Name}";
+			_detail.AddChild(HudStyle.Body($"War goal: {goal.Name}, {held} · ticking {w.TickingScore * side:+0.0;-0.0;0} (the attacker gains {WarRules.TickingPerMonth:0} a month holding it, up to {WarRules.TickingMax:0})", BodyFont, 13, HudStyle.Gold));
+		}
 		var sides = new HBoxContainer();
 		sides.AddThemeConstantOverride("separation", 30);
 		_detail.AddChild(sides);
@@ -435,7 +440,7 @@ public partial class DiplomacyPanel : PanelContainer
 			}
 		}
 		var scoreLabel = HudStyle.Body($"War score: {score:+0;-0;0}", BodyFont, 18, score >= 0 ? HudStyle.Good : HudStyle.Bad);
-		scoreLabel.TooltipText = $"Battles: {w.BattleScore * side:+0;-0;0}\nLand we hold: +{WarRules.OccupationScore(w, side, gs.Countries, gs.Provinces):0}\nLand they hold: -{WarRules.OccupationScore(w, -side, gs.Countries, gs.Provinces):0}";
+		scoreLabel.TooltipText = $"Battles: {w.BattleScore * side:+0;-0;0}\nLand we hold: +{WarRules.OccupationScore(w, side, gs.Countries, gs.Provinces):0}\nLand they hold: -{WarRules.OccupationScore(w, -side, gs.Countries, gs.Provinces):0}\nWar goal: {w.TickingScore * side:+0;-0;0}";
 		scoreLabel.MouseFilter = MouseFilterEnum.Pass;
 		_detail.AddChild(scoreLabel);
 		_detail.AddChild(new ProgressBar { MinValue = -100, MaxValue = 100, Value = score, ShowPercentage = false, CustomMinimumSize = new Vector2(0, 8) });
@@ -498,9 +503,27 @@ public partial class DiplomacyPanel : PanelContainer
 		humbleTick.AddThemeFontSizeOverride("font_size", 13);
 		humbleTick.Visible = enemyLeader != null && (us.Rivals.Contains(enemyLeader.Tag) || w.CasusBelli == CasusBelli.Coalition);
 		humbleTick.TooltipText = $"Costs {WarRules.HumiliateCost:0} score: {WarRules.HumiliatePrestige:0} prestige passes from them to us";
+		// the lesser terms, where they apply
+		var extraTicks = new List<(CheckBox Tick, Action<PeaceTerms, bool> Set)>();
+		void Extra(string text, string tip, bool applies, Action<PeaceTerms, bool> set)
+		{
+			if (!applies)
+				return;
+			var tick = new CheckBox { Text = text, FocusMode = FocusModeEnum.None, TooltipText = tip };
+			if (BodyFont != null) tick.AddThemeFontOverride("font", BodyFont);
+			tick.AddThemeFontSizeOverride("font_size", 13);
+			extraTicks.Add((tick, set));
+		}
+		Extra("Annul their alliances", $"They lose every ally · costs {WarRules.AnnulCost:0} score", enemyLeader?.Allies.Count > 0, (t, on) => t.AnnulAlliances = on);
+		Extra("Revoke their claims on our land", $"Their claims on our side's provinces are gone · costs {WarRules.RevokeClaimsCost:0} score", enemyLeader != null && enemyLeader.Claims.Any(id => gs.Provinces[id]?.OwnerTag != null && w.SideOf(gs.Provinces[id].OwnerTag) == side), (t, on) => t.RevokeClaims = on);
+		Extra("War reparations", $"A tenth of their income for {WarRules.TreatyYears} years · costs {WarRules.ReparationsCost:0} score", enemyLeader != null, (t, on) => t.Reparations = on);
+		Extra("Half their trade power", $"Half of their trade power in every node is ours for {WarRules.TreatyYears} years · costs {WarRules.TradePowerCost:0} score", enemyLeader != null, (t, on) => t.TradePower = on);
+		Extra("Free their vassals", $"Their vassals go free and think well of us · costs {WarRules.ReleaseVassalsCost:0} score", enemyLeader != null && gs.VassalsOf(enemyLeader.Tag).Any(), (t, on) => t.ReleaseVassals = on);
 		PeaceTerms Terms()
 		{
 			var t = new PeaceTerms { Gold = goldBox.Value, Vassalize = vassalTick.ButtonPressed, Humiliate = humbleTick.ButtonPressed };
+			foreach (var (tick, set) in extraTicks)
+				set(t, tick.ButtonPressed);
 			t.Provinces.AddRange(chosen.Where(id => demandable.Any(p => p.Id == id)));
 			return t;
 		}
@@ -529,6 +552,11 @@ public partial class DiplomacyPanel : PanelContainer
 		peace.AddChild(vassalTick);
 		humbleTick.Toggled += _ => UpdateCost();
 		peace.AddChild(humbleTick);
+		foreach (var (tick, _) in extraTicks)
+		{
+			tick.Toggled += _ => UpdateCost();
+			peace.AddChild(tick);
+		}
 		var goldRow = new HBoxContainer();
 		goldRow.AddThemeConstantOverride("separation", 8);
 		goldRow.AddChild(HudStyle.Body("Gold:", BodyFont, 13, HudStyle.Muted));

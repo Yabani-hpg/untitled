@@ -38,6 +38,12 @@ public static class WarRules
 	public const double GoldPerScorePoint = 10;
 	/// <summary>Score cost of humbling the loser, and the prestige that passes from it to the winner.</summary>
 	public const double HumiliateCost = 10, HumiliatePrestige = 25;
+	/// <summary>Score costs of the other terms, and how long reparations and ceded trade power last.</summary>
+	public const double AnnulCost = 10, RevokeClaimsCost = 5, ReparationsCost = 10, TradePowerCost = 10, ReleaseVassalsCost = 15;
+	public const int TreatyYears = 10;
+	public const double ReparationsShare = 0.1, CededTradeShare = 0.5;
+	/// <summary>Holding the war goal ticks the score up by this a month, to a limit; the defender keeping it unoccupied ticks it down after a year.</summary>
+	public const double TickingPerMonth = 1, TickingMax = 25, TickingDownPerMonth = 0.5, TickingMin = -15;
 	/// <summary>Months of war before a losing country (run by the game) will consider peace.</summary>
 	public const int MonthsBeforePeace = 12;
 	/// <summary>Opinion lost with the neighbours of a country that takes land without a claim, per province.</summary>
@@ -89,7 +95,7 @@ public static class WarRules
 	/// <summary>Recomputes the war's score: occupations on both sides, and the battles.</summary>
 	public static double UpdateScore(War war, IReadOnlyDictionary<string, Country> countries, IReadOnlyList<Province> provinces)
 	{
-		double s = OccupationScore(war, 1, countries, provinces) - OccupationScore(war, -1, countries, provinces) + war.BattleScore;
+		double s = OccupationScore(war, 1, countries, provinces) - OccupationScore(war, -1, countries, provinces) + war.BattleScore + war.TickingScore;
 		war.Score = Math.Clamp(s, -100, 100);
 		return war.Score;
 	}
@@ -121,6 +127,11 @@ public static class WarRules
 		double cost = terms.Gold / GoldPerScorePoint;
 		if (terms.Humiliate)
 			cost += HumiliateCost;
+		if (terms.AnnulAlliances) cost += AnnulCost;
+		if (terms.RevokeClaims) cost += RevokeClaimsCost;
+		if (terms.Reparations) cost += ReparationsCost;
+		if (terms.TradePower) cost += TradePowerCost;
+		if (terms.ReleaseVassals) cost += ReleaseVassalsCost;
 		if (terms.Vassalize)
 			cost += VassalizeCostBase + VassalizeCostPerProvince * provinces.Count(p => p?.OwnerTag != null && loserSide.Contains(p.OwnerTag));
 		foreach (int id in terms.Provinces)
