@@ -101,6 +101,10 @@ public partial class GameState
 				w.WriteNumber("vassal_since", c.VassalSince.Day);
 			}
 			w.WriteNumber("legitimacy", Math.Round(c.Legitimacy, 2));
+			if (c.StateReligion != null) w.WriteString("state_religion", c.StateReligion.Id);
+			w.WriteStartArray("converting");
+			foreach (int id in c.Converting) w.WriteNumberValue(id);
+			w.WriteEndArray();
 			w.WriteNumber("war_exhaustion", Math.Round(c.WarExhaustion, 2));
 			w.WriteStartArray("event_flags");
 			foreach (string f in c.EventFlags) w.WriteStringValue(f);
@@ -464,6 +468,10 @@ public partial class GameState
 				c.VassalSince = e.TryGetProperty("vassal_since", out JsonElement vs) ? new GameDate(vs.GetInt64()) : default;
 				c.Subject = e.TryGetProperty("subject", out JsonElement sk) && Enum.TryParse(sk.GetString(), true, out SubjectKind kind) ? kind : SubjectKind.Vassal;
 				c.Legitimacy = e.TryGetProperty("legitimacy", out JsonElement lg) ? lg.GetDouble() : 100;
+				c.StateReligion = e.TryGetProperty("state_religion", out JsonElement sr) && Definitions.Religions.TryGetValue(sr.GetString(), out Religion stateFaith) ? stateFaith : null;
+				c.Converting.Clear();
+				if (e.TryGetProperty("converting", out JsonElement cv))
+					foreach (JsonElement id in cv.EnumerateArray()) c.Converting.Add(id.GetInt32());
 				c.WarExhaustion = e.TryGetProperty("war_exhaustion", out JsonElement we) ? we.GetDouble() : 0;
 				c.EventFlags.Clear();
 				if (e.TryGetProperty("event_flags", out JsonElement ef))

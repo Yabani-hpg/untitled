@@ -232,7 +232,7 @@ public partial class CountryPanel : PanelContainer
 		Row("Treasury", $"{c.Gold:0} gold" + (c.IsBankrupt(gs.Date) ? $" · bankrupt until {gs.Definitions.DefaultCalendar.Format(c.BankruptUntil)}: tax at {EconomyRules.BankruptTaxFactor:P0}" : ""), c.IsBankrupt(gs.Date) ? HudStyle.Bad : HudStyle.Text);
 		if (c.Loans.Count > 0)
 			Row("Debt", $"{c.Loans.Count} loans, {c.Debt:0} gold, {ledger.Interest:0.0} interest a month · the oldest ({c.Loans[0].Amount:0} at {c.Loans[0].Rate:P0}) falls due {gs.Definitions.DefaultCalendar.Format(c.Loans[0].Due)}", HudStyle.Bad);
-		Row("Each month", $"{ledger.Balance:+0.0;-0.0} gold: +{ledger.Tax:0.0} tax, +{ledger.Trade:0.0} trade, +{ledger.Production:0.0} production, -{ledger.Armies:0.0} armies, -{ledger.Garrisons:0.0} garrisons, -{ledger.Mercenaries:0.0} mercenaries" + (ledger.Interest > 0 ? $", -{ledger.Interest:0.0} interest" : "") + (ledger.Advisors > 0 ? $", -{ledger.Advisors:0.0} advisors" : ""),
+		Row("Each month", $"{ledger.Balance:+0.0;-0.0} gold: +{ledger.Tax:0.0} tax, +{ledger.Trade:0.0} trade, +{ledger.Production:0.0} production, -{ledger.Armies:0.0} armies, -{ledger.Garrisons:0.0} garrisons, -{ledger.Mercenaries:0.0} mercenaries" + (ledger.Interest > 0 ? $", -{ledger.Interest:0.0} interest" : "") + (ledger.Advisors > 0 ? $", -{ledger.Advisors:0.0} advisors" : "") + (ledger.Missionaries > 0 ? $", -{ledger.Missionaries:0.0} missionaries" : ""),
 			ledger.Balance >= 0 ? HudStyle.Good : HudStyle.Bad);
 		long men = owned.Sum(p => p.UnitsOf(Sex.Male)), women = owned.Sum(p => p.UnitsOf(Sex.Female));
 		Row("Men and women", $"{men * PopGroup.PeoplePerUnit:N0} men · {women * PopGroup.PeoplePerUnit:N0} women at home");
@@ -247,6 +247,12 @@ public partial class CountryPanel : PanelContainer
 			Row("Coalition", $"{against.Count} stand against our aggression: {string.Join(", ", against.Select(m => m.Name))}", HudStyle.Bad);
 		if (c.CoalitionAgainst != null)
 			Row("Coalition", $"we stand against {gs.GetCountry(c.CoalitionAgainst)?.Name} with {gs.CoalitionAgainst(c.CoalitionAgainst).Count() - 1} others", HudStyle.Gold);
+		if (ReligionRules.Of(c) is Religion faith)
+		{
+			double unity = ReligionRules.Unity(c, gs.ProvincesOf(c.Tag));
+			Row("Faith", $"{faith.Name} · religious unity {unity:P0} · {c.Converting.Count} of {ReligionRules.Missionaries(c)} missionaries at work"
+				+ (unity < 1 ? $" · provinces of other gods are {ReligionRules.HereticUnrest * Math.Max(0, 1 - LawRules.Mod(c, "tolerance")):P0} more restless" : ""), unity >= 0.8 ? HudStyle.Good : HudStyle.Bad);
+		}
 		if (c.OverlordTag != null)
 			Row("Overlord", $"{gs.GetCountry(c.OverlordTag)?.Name} · we are its {SubjectRules.Word(c.Subject)}{(gs.TributeOf(c) > 0 ? $", paying {gs.TributeOf(c):0.0} gold a month" : "")}", HudStyle.Bad);
 		var vassals = gs.VassalsOf(c.Tag).ToList();
@@ -256,6 +262,16 @@ public partial class CountryPanel : PanelContainer
 		var actions = new HBoxContainer();
 		actions.AddThemeConstantOverride("separation", 6);
 		_overview.AddChild(actions);
+		foreach (Religion other in gs.AdoptableReligions(c))
+		{
+			string adoptWhy = gs.ConvertObstacle(c, other);
+			var adopt = HudStyle.Button($"Adopt the {other.Name}", BodyFont, 13);
+			adopt.Disabled = adoptWhy != null;
+			adopt.TooltipText = adoptWhy ?? $"The state takes the gods of {ReligionRules.Share(c, owned, other):P0} of its people: stability -{ReligionRules.ConvertStability}, legitimacy -{ReligionRules.ConvertLegitimacy}, prestige -{ReligionRules.ConvertPrestige}; those who follow the old gods grow restless";
+			string id = other.Id;
+			adopt.Pressed += () => _status.Text = gs.ConvertStateReligion(id, out string r) ? "" : r;
+			actions.AddChild(adopt);
+		}
 		double stabCost = StateRules.StabilityCost(c, owned.Count);
 		var stab = HudStyle.Button($"Raise stability ({stabCost:0} gold)", BodyFont, 13);
 		stab.Disabled = !StateRules.CanRaiseStability(c, owned.Count, out string why);

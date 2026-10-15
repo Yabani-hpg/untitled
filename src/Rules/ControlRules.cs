@@ -169,7 +169,7 @@ public static class ControlRules
 	public static double UprisingChance(Province p, Country owner, GameDate today)
 	{
 		double separatism = Separatism(p, today, owner);
-		double works = Math.Max(0, 1 + WorkRules.Mod(p, "unrest"));
+		double works = Math.Max(0, 1 + WorkRules.Mod(p, "unrest")) * ReligionRules.UnrestFactor(p, owner);
 		double laws = Math.Max(0, 1 + LawRules.Mod(owner, "uprising")) * StateRules.UnrestFactor(owner) * works;
 		if (separatism <= 0)
 			return p.IsCore ? StateRules.CoreUprisingChance(owner) * Math.Max(0, 1 + LawRules.Mod(owner, "uprising")) * works : 0;

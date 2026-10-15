@@ -13,7 +13,7 @@ Each land province gets:
   biome      its vegetation zone (data/terrain.json biomes), from the vegetation map; river valleys in
              dry land become floodplain, and regions files may set oases and valleys by hand
   features   forest, steppe, desert or tundra (from the biome), mountains, hills, river, coast
-  pops       population groups of 1000 people ({culture, religion, occupation, units}): culture by
+  pops       population groups of 1000 people ({culture, religion, occupation, units}): culture by continent, religion by region,
              continent, peasants or tribesmen by how farmable the land is
   resources  {non_renewable, food}: one deposit (or none) and one food resource
   buildings  a few production buildings the population has already put up
@@ -39,7 +39,45 @@ SETUP_JSON = ROOT / "data" / "province_setup.json"
 
 WORLD_POPULATION = 50_000_000       # roughly the world around 1000 BC
 UNIT = 1000                         # people per population unit
-RELIGION = "pagan"
+# --- religion by region (the faiths of data/religions.json) ----------------------------------------------
+MESOPOTAMIA = set("IRQ KWT".split())
+CANAAN = set("ISR PSE LBN JOR".split())
+ANATOLIA = set("ARM GEO AZE".split())
+INDUS = set("IND PAK BGD NPL LKA BTN".split())
+EAST_ASIA = set("CHN TWN KOR PRK JPN VNM".split())
+STEPPE = set("KAZ MNG KGZ TJK UZB TKM".split())
+ARABIA = set("SAU YEM OMN ARE QAT BHR".split())
+
+
+def religion_of(tag, lon, lat):
+    if tag == "EGY":
+        return "kemetic"
+    if tag == "SDN" and lat > 15:
+        return "kushite"
+    if tag in MESOPOTAMIA or tag == "SYR" and lon >= 38.5:
+        return "mesopotamian"
+    if tag == "IRN":
+        return "elamite" if lon < 52 and lat < 34 else "sky_worship"
+    if tag in CANAAN or tag == "SYR":
+        return "canaanite"
+    if tag == "TUR":
+        return "aegean" if lon < 29.5 else "anatolian"
+    if tag in ANATOLIA:
+        return "anatolian"
+    if tag in ("GRC", "CYP", "MLT"):
+        return "aegean"
+    if tag in EUROPE or tag == "RUS" and lon < 60:
+        return "old_european"
+    if tag in INDUS or tag == "AFG" and lon > 66:
+        return "indic"
+    if tag in EAST_ASIA:
+        return "ancestral"
+    if tag in STEPPE or tag == "RUS" or tag == "AFG":
+        return "sky_worship"
+    if tag in ARABIA:
+        return "arabian"
+    return "animism"
+
 
 # --- culture by continent -------------------------------------------------------------------------------
 EUROPE = set("""ALB ALD AND AUT BEL BGR BIH BLR CHE CYN CYP CZE DEU DNK ESP EST FIN FRA FRO GBR GRC HRV HUN IMN
@@ -194,7 +232,7 @@ def pops_for(p, units):
     pops = []
     for occupation, n in (("peasants", units - tribesmen), ("tribesmen", tribesmen)):
         if n > 0:
-            pops.append({"culture": p["culture"], "religion": RELIGION, "occupation": occupation, "units": n})
+            pops.append({"culture": p["culture"], "religion": p["religion"], "occupation": occupation, "units": n})
     return pops
 
 
@@ -326,6 +364,7 @@ def main():
             features.append("coast")
         p["features"] = features
         p["culture"] = culture_of(tag, p["lon"], p["lat"])
+        p["religion"] = religion_of(tag, p["lon"], p["lat"])
         p["food"] = food_for(p)
         p["deposit"] = deposit_for(p)
 

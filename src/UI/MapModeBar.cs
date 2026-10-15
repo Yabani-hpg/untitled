@@ -42,6 +42,7 @@ public partial class MapModeBar : VBoxContainer
 		AddModeButton(row, MapMode.Natural, "Natural", "The land as it is");
 		AddModeButton(row, MapMode.Political, "Political", "Who owns each province");
 		AddModeButton(row, MapMode.Culture, "Culture", "The main culture of each province");
+		AddModeButton(row, MapMode.Religion, "Religion", "The faith most of each province's people follow");
 		AddModeButton(row, MapMode.Terrain, "Terrain", "Each province's biome, with hills, mountains and impassable peaks in stripes");
 		AddModeButton(row, MapMode.Trade, "Trade", "Trade nodes: where each province's goods are sold, and how the value flows");
 		var resources = HudStyle.Button("Resources", BodyFont, 13);
@@ -95,6 +96,7 @@ public partial class MapModeBar : VBoxContainer
 		IEnumerable<(string Name, Color Color)> entries = mode switch
 		{
 			MapMode.Culture => defs.Cultures.Values.Select(c => (c.Name, c.Color)),
+			MapMode.Religion => defs.Religions.Values.Select(r => (r.Name, r.Color)),
 			MapMode.Food => defs.Resources.Values.Where(r => r.Category == ResourceCategory.Food).Select(r => (r.Name, r.Color)),
 			MapMode.Deposits => defs.Resources.Values.Where(r => r.Category == ResourceCategory.NonRenewable).Select(r => (r.Name, r.Color)),
 			MapMode.Terrain => defs.Biomes.Select(b => (b.Name, b.Color))

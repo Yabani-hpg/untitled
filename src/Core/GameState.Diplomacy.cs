@@ -155,6 +155,8 @@ public partial class GameState
 			return CasusBelli.Claim;
 		if (us.OpinionModifiers.GetValueOrDefault(them.Tag)?.Any(m => m.Reason is "Attacked us" or "Took our land") == true)
 			return CasusBelli.Revenge;
+		if (ReligionRules.CanHolyWar(us, them))
+			return CasusBelli.HolyWar;
 		return CasusBelli.Conquest;
 	}
 
@@ -204,6 +206,11 @@ public partial class GameState
 			war.GoalProvinceId = defender.CapitalId;
 		_wars[war.Id] = war;
 		DiplomacyRules.AddModifier(defender, attacker.Tag, "Attacked us", -60, Date);
+		if (cb == CasusBelli.HolyWar)
+		{
+			foreach (Country o in SettledCountries.Where(o => o != attacker && o != defender && ReligionRules.Of(o) == ReligionRules.Of(defender) && AreNeighbours(o.Tag, attacker.Tag)))
+				DiplomacyRules.AddModifier(o, attacker.Tag, "Made holy war on our gods", -20, Date, 10);
+		}
 		if (cb == CasusBelli.Conquest)
 		{
 			StateRules.ChangeStability(attacker, -2);          // war without cause shakes the realm
@@ -245,7 +252,7 @@ public partial class GameState
 					Notify($"Our ally {leader.Name} calls us to war against {(side == war.Defenders ? attacker : defender).Name}, and we answer.");
 			}
 		}
-		string cause = cb switch { CasusBelli.Claim => "to press its claims", CasusBelli.Revenge => "in revenge", CasusBelli.Coalition => "at the head of a coalition", _ => "without cause" };
+		string cause = cb switch { CasusBelli.Claim => "to press its claims", CasusBelli.Revenge => "in revenge", CasusBelli.Coalition => "at the head of a coalition", CasusBelli.HolyWar => "in a holy war", _ => "without cause" };
 		if (war.Includes(PlayerTag) || AreNeighbours(PlayerTag, attacker.Tag) || AreNeighbours(PlayerTag, defender.Tag))
 			Notify($"{attacker.Name} declares war on {defender.Name} {cause}."
 				+ (war.Attackers.Count + war.Defenders.Count > 2 ? $" Allies join: {string.Join(", ", war.Attackers.Skip(1).Concat(war.Defenders.Skip(1)).Select(t => GetCountry(t)?.Name))}." : ""));
@@ -381,6 +388,11 @@ public partial class GameState
 			loser.Reparations[winner.Tag] = treatyEnd;
 		if (terms.TradePower)
 			loser.TradePowerCeded[winner.Tag] = treatyEnd;
+		if (terms.ForceReligion && ReligionRules.Of(winner) is Religion winnerFaith && ReligionRules.Of(loser) != winnerFaith)
+		{
+			ConvertStateReligionOf(loser, winnerFaith, forced: true);
+			DiplomacyRules.AddModifier(loser, winner.Tag, "Forced their gods on us", -40, Date);
+		}
 		if (terms.ReleaseVassals)
 		{
 			foreach (Country v in VassalsOf(loser.Tag).ToList())

@@ -94,7 +94,7 @@ public static class LawRules
 	{
 		double assimilation = Effect(c, "assimilation") / 12, conversion = Effect(c, "conversion") / 12;
 		Culture culture = c.Ruler?.Culture;
-		Religion religion = c.Ruler?.Religion;
+		Religion religion = ReligionRules.Of(c);
 		if (culture == null || assimilation <= 0 && conversion <= 0)
 			return 0;
 		int changed = 0;

@@ -184,9 +184,13 @@ public partial class ProvincePanel : PanelContainer
 				Row(grid, "Main culture", main.Name);
 				Row(grid, "Language", $"{main.Language.Name} ({main.Language.Family.Name})");
 			}
-			var religions = p.Pops.Select(g => g.Religion.Name).Distinct().ToList();
-			if (religions.Count > 0)
-				Row(grid, "Religion", string.Join(", ", religions));
+			if (p.MainReligion is Religion mainFaith)
+			{
+				var others = p.Pops.Where(g => g.Religion != mainFaith).GroupBy(g => g.Religion).Select(g => $"{g.Key.Name} {g.Sum(x => x.Units) * PopGroup.PeoplePerUnit:N0}").ToList();
+				Country holder = p.OwnerTag != null ? GameState.Instance.GetCountry(p.OwnerTag) : null;
+				string note = holder != null && ReligionRules.Of(holder) != null ? (mainFaith == ReligionRules.Of(holder) ? " (the state's gods)" : $" (the state follows the {ReligionRules.Of(holder).Name})") : "";
+				Row(grid, "Religion", mainFaith.Name + note + (others.Count > 0 ? $" · also {string.Join(", ", others)}" : ""));
+			}
 			if (p.Name != p.BaseName)
 				Row(grid, "Also called", $"{p.BaseName}, by others");
 			Row(grid, "Terrain", TerrainRules.Describe(p));
@@ -304,6 +308,8 @@ public partial class ProvincePanel : PanelContainer
 				box.AddChild(ShipyardRow(p, player));
 			if (p.Works.Count > 0 || owner != null && owner == player)
 				box.AddChild(WorksBlock(p, owner, player));
+			if (owner != null && ReligionRules.Of(owner) != null && (ReligionRules.Heretics(p, owner) > 0 || owner.Converting.Contains(p.Id)))
+				box.AddChild(MissionaryRow(p, owner, player));
 			if (!p.IsCore)
 			{
 				double separatism = ControlRules.Separatism(p, gs.Date, owner);
@@ -504,6 +510,41 @@ public partial class ProvincePanel : PanelContainer
 			b.Pressed += () =>
 			{
 				if (!gs.BuildFort(p.Id, out string r))
+					gs.Notify(r);
+				Refresh();
+			};
+			row.AddChild(b);
+		}
+		return row;
+	}
+
+	/// <summary>People of other gods here, and the missionary the player may send them.</summary>
+	Control MissionaryRow(Province p, Country owner, Country player)
+	{
+		GameState gs = GameState.Instance;
+		var row = new HBoxContainer();
+		row.AddThemeConstantOverride("separation", 8);
+		int heretics = ReligionRules.Heretics(p, owner);
+		bool working = owner.Converting.Contains(p.Id);
+		row.AddChild(HudStyle.Body(working ? $"A missionary is at work: {heretics * PopGroup.PeoplePerUnit:N0} people still of other gods, {ReligionRules.UnitsPerMonth * PopGroup.PeoplePerUnit:N0} turn a month"
+			: $"{heretics * PopGroup.PeoplePerUnit:N0} people follow other gods than the {ReligionRules.Of(owner).Name}", BodyFont, 13, HudStyle.Muted));
+		if (owner != player)
+			return row;
+		if (working)
+		{
+			var b = HudStyle.Button("Recall the missionary", BodyFont, 12);
+			b.Pressed += () => { gs.RecallMissionary(p.Id); Refresh(); };
+			row.AddChild(b);
+		}
+		else
+		{
+			string why = ReligionRules.MissionaryObstacle(p, player);
+			var b = HudStyle.Button($"Send a missionary ({ReligionRules.MissionaryUpkeep:0} gold a month)", BodyFont, 12);
+			b.Disabled = why != null;
+			b.TooltipText = why ?? $"Converts {ReligionRules.UnitsPerMonth * PopGroup.PeoplePerUnit:N0} people a month to the {ReligionRules.Of(player).Name}; about {Math.Ceiling((double)heretics / ReligionRules.UnitsPerMonth)} months here";
+			b.Pressed += () =>
+			{
+				if (!gs.SendMissionary(p.Id, out string r))
 					gs.Notify(r);
 				Refresh();
 			};

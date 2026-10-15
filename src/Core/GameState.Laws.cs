@@ -86,7 +86,7 @@ public partial class GameState
 			Portrait = portraits is { Count: > 0 } ? portraits[_rng.Next(portraits.Count)] : old?.Portrait,
 			ProvinceId = people != null ? (capital?.Pops.Contains(people) == true ? capital.Id : old?.ProvinceId ?? c.CapitalId) : c.CapitalId,
 			Culture = culture,
-			Religion = people?.Religion ?? old?.Religion,
+			Religion = c.StateReligion ?? people?.Religion ?? old?.Religion,
 			Occupation = people?.Occupation ?? old?.Occupation,
 		};
 		_characters[heir.Id] = heir;

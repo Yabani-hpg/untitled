@@ -41,6 +41,10 @@ public sealed class Country
 	/// <summary>Name of the capital city, if it differs from the province's ("Pi-Ramesses").</summary>
 	public string CapitalName { get; set; }
 	public Character Ruler { get; set; }
+	/// <summary>The gods of the state: its ruler's at the start, kept through successions.</summary>
+	public Religion StateReligion { get; set; }
+	/// <summary>Provinces where its missionaries are at work.</summary>
+	public HashSet<int> Converting { get; } = new();
 	/// <summary>How its levies are armed: percent of the regiments for each unit type id. Empty: the defaults of data/units.json.</summary>
 	public Dictionary<string, int> LevyTemplate { get; } = new();
 	/// <summary>The number the next army it raises takes ("3rd Army").</summary>

@@ -154,6 +154,23 @@ public sealed class Province
 	}
 
 	/// <summary>The culture with the most people, or null for an empty province.</summary>
+	/// <summary>The faith most of the province's people follow, or null with nobody.</summary>
+	public Religion MainReligion
+	{
+		get
+		{
+			var units = new Dictionary<Religion, int>();
+			Religion best = null;
+			foreach (PopGroup pop in Pops)
+			{
+				units[pop.Religion] = units.GetValueOrDefault(pop.Religion) + pop.Units;
+				if (best == null || units[pop.Religion] > units[best])
+					best = pop.Religion;
+			}
+			return best;
+		}
+	}
+
 	public Culture MainCulture
 	{
 		get

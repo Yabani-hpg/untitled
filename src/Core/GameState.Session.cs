@@ -23,6 +23,8 @@ public enum MapMode
 	Natural,
 	Political,
 	Culture,
+	/// <summary>The faith most of each province's people follow.</summary>
+	Religion,
 	/// <summary>Resources: each province's food slot.</summary>
 	Food,
 	/// <summary>Resources: each province's non-renewable deposit.</summary>
@@ -179,6 +181,8 @@ public partial class GameState : IWorld
 			SeedOccupations(c);
 			c.CapitalName = c.Definition?.CapitalName;
 			c.Ruler = c.Definition?.Ruler != null ? CreateRuler(c, c.Definition.Ruler) : GenerateRuler(c);
+			c.StateReligion = c.Ruler?.Religion;
+			c.Converting.Clear();
 			c.CurrentFlag = null;
 			RaiseStartGarrisons(c);
 			var owned = ProvincesOf(c.Tag).ToList();

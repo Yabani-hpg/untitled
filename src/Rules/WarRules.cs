@@ -41,7 +41,7 @@ public static class WarRules
 	/// <summary>Score cost of humbling the loser, and the prestige that passes from it to the winner.</summary>
 	public const double HumiliateCost = 10, HumiliatePrestige = 25;
 	/// <summary>Score costs of the other terms, and how long reparations and ceded trade power last.</summary>
-	public const double AnnulCost = 10, RevokeClaimsCost = 5, ReparationsCost = 10, TradePowerCost = 10, ReleaseVassalsCost = 15;
+	public const double AnnulCost = 10, RevokeClaimsCost = 5, ReparationsCost = 10, TradePowerCost = 10, ReleaseVassalsCost = 15, ForceReligionCost = 25;
 	public const int TreatyYears = 10;
 	public const double ReparationsShare = 0.1, CededTradeShare = 0.5;
 	/// <summary>Holding the war goal ticks the score up by this a month, to a limit; the defender keeping it unoccupied ticks it down after a year.</summary>
@@ -134,6 +134,7 @@ public static class WarRules
 		if (terms.Reparations) cost += ReparationsCost;
 		if (terms.TradePower) cost += TradePowerCost;
 		if (terms.ReleaseVassals) cost += ReleaseVassalsCost;
+		if (terms.ForceReligion) cost += ForceReligionCost;
 		if (terms.Vassalize)
 			cost += VassalizeCostBase + VassalizeCostPerProvince * provinces.Count(p => p?.OwnerTag != null && loserSide.Contains(p.OwnerTag));
 		if (terms.Tributary)

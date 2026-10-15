@@ -308,6 +308,11 @@ public partial class GameState
 				terms.Reparations = true;
 				left -= WarRules.ReparationsCost;
 			}
+			if (war.CasusBelli == CasusBelli.HolyWar && left >= WarRules.ForceReligionCost && ReligionRules.Of(winner) != null && ReligionRules.Of(loserLeader) != ReligionRules.Of(winner))
+			{
+				terms.ForceReligion = true;
+				left -= WarRules.ForceReligionCost;
+			}
 			if (left >= WarRules.AnnulCost && loserLeader.Allies.Count > 0 && winner.Rivals.Contains(loserLeader.Tag))
 			{
 				terms.AnnulAlliances = true;
@@ -335,6 +340,7 @@ public partial class GameState
 		if (terms.Reparations) parts.Add($"reparations for {WarRules.TreatyYears} years");
 		if (terms.TradePower) parts.Add($"half their trade power for {WarRules.TreatyYears} years");
 		if (terms.ReleaseVassals) parts.Add("their vassals set free");
+		if (terms.ForceReligion) parts.Add("the worship of our gods");
 		return string.Join(" and ", parts);
 	}
 

@@ -44,8 +44,8 @@ public static class DiplomacyRules
 	{
 		double affinity = PopulationRules.Affinity(of.Ruler?.Culture, other.Ruler?.Culture);
 		int o = (int)(40 * affinity) - 10;
-		if (of.Ruler?.Religion != null && of.Ruler.Religion == other.Ruler?.Religion)
-			o += 10;
+		if (ReligionRules.Of(of) != null && ReligionRules.Of(other) != null)
+			o += ReligionRules.Of(of) == ReligionRules.Of(other) ? 10 : -10;   // the same gods, or strange ones
 		if (neighbours)
 			o -= 15;                       // neighbours have borders to quarrel over
 		o += (int)(other.Prestige / 5);

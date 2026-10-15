@@ -55,6 +55,7 @@ public abstract class Condition
 					v.TryGetProperty("max", out JsonElement max) ? max.GetInt32() : int.MaxValue),
 				"ruler_culture" => RulerCulture(v.GetString()),
 				"ruler_religion" => RulerReligion(v.GetString()),
+				"religion" => StateReligion(v.GetString()),
 				"world_flag" => new WorldFlag(v.GetString()),
 				"law" => HasLaw(v.GetString(), w),
 				"tech" => KnowsTech(v.GetString()),
@@ -139,6 +140,7 @@ public abstract class Condition
 
 	static Condition RulerCulture(string id) => new Test(c => c.Ruler?.Culture?.Id == id);
 	static Condition RulerReligion(string id) => new Test(c => c.Ruler?.Religion?.Id == id);
+	static Condition StateReligion(string id) => new Test(c => (c.StateReligion ?? c.Ruler?.Religion)?.Id == id);
 
 	static List<Condition> ParseList(JsonElement v, string where, Func<string, IReadOnlyList<int>> areas, Func<string, int> provinceByName)
 	{

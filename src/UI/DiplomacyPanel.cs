@@ -307,12 +307,13 @@ public partial class DiplomacyPanel : PanelContainer
 		}
 		string obstacle = gs.WarObstacle(us, c);
 		CasusBelli cb = gs.BestCasusBelli(us, c);
-		var war = HudStyle.Button($"Declare war ({cb switch { CasusBelli.Claim => "claim", CasusBelli.Revenge => "revenge", CasusBelli.Coalition => "coalition", _ => "no cause" }})", BodyFont, 13);
+		var war = HudStyle.Button($"Declare war ({cb switch { CasusBelli.Claim => "claim", CasusBelli.Revenge => "revenge", CasusBelli.Coalition => "coalition", CasusBelli.HolyWar => "holy war", _ => "no cause" }})", BodyFont, 13);
 		war.Disabled = obstacle != null;
 		war.TooltipText = obstacle ?? cb switch
 		{
 			CasusBelli.Claim => "We press our claims: their land is cheaper to take, and the neighbours understand.",
 			CasusBelli.Revenge => "They wronged us: the neighbours understand.",
+			CasusBelli.HolyWar => "They follow strange gods: our priests bless the war, though those who share their gods will not.",
 			_ => "War without cause: our neighbours will think worse of us, and taking land costs more.",
 		};
 		war.Pressed += () =>
@@ -444,7 +445,7 @@ public partial class DiplomacyPanel : PanelContainer
 		int side = w.SideOf(us.Tag);
 		double score = w.Score * side;
 		_detail.AddChild(HudStyle.Title(w.Name(gs.Countries), TitleFont, 22));
-		_detail.AddChild(HudStyle.Body($"Since {gs.Definitions.DefaultCalendar.Format(w.Started)} · {w.CasusBelli switch { CasusBelli.Claim => "pressing claims", CasusBelli.Revenge => "revenge", _ => "without cause" }}", BodyFont, 13, HudStyle.Muted));
+		_detail.AddChild(HudStyle.Body($"Since {gs.Definitions.DefaultCalendar.Format(w.Started)} · {w.CasusBelli switch { CasusBelli.Claim => "pressing claims", CasusBelli.Revenge => "revenge", CasusBelli.Coalition => "a coalition", CasusBelli.HolyWar => "a holy war", _ => "without cause" }}", BodyFont, 13, HudStyle.Muted));
 		if (gs.GetProvince(w.GoalProvinceId) is Province goal)
 		{
 			string held = goal.OccupierTag != null ? $"held by {gs.GetCountry(goal.OccupierTag)?.Adjective} troops" : $"held by its owner, {gs.GetCountry(goal.OwnerTag)?.Name}";
@@ -548,6 +549,7 @@ public partial class DiplomacyPanel : PanelContainer
 		Extra("War reparations", $"A tenth of their income for {WarRules.TreatyYears} years · costs {WarRules.ReparationsCost:0} score", enemyLeader != null, (t, on) => t.Reparations = on);
 		Extra("Half their trade power", $"Half of their trade power in every node is ours for {WarRules.TreatyYears} years · costs {WarRules.TradePowerCost:0} score", enemyLeader != null, (t, on) => t.TradePower = on);
 		Extra("Free their vassals", $"Their vassals go free and think well of us · costs {WarRules.ReleaseVassalsCost:0} score", enemyLeader != null && gs.VassalsOf(enemyLeader.Tag).Any(), (t, on) => t.ReleaseVassals = on);
+		Extra("Force our gods on them", $"They take the {ReligionRules.Of(us)?.Name} as their state religion · costs {WarRules.ForceReligionCost:0} score", enemyLeader != null && ReligionRules.Of(us) != null && ReligionRules.Of(enemyLeader) != ReligionRules.Of(us), (t, on) => t.ForceReligion = on);
 		PeaceTerms Terms()
 		{
 			var t = new PeaceTerms { Gold = goldBox.Value, Vassalize = vassalTick.ButtonPressed, Tributary = tributaryTick.ButtonPressed && !vassalTick.ButtonPressed, Humiliate = humbleTick.ButtonPressed };

@@ -14,6 +14,8 @@ public enum CasusBelli
 	Revenge,
 	/// <summary>A coalition curbing an aggressor: no cause needed, and the land it takes frightens no one.</summary>
 	Coalition,
+	/// <summary>A holy war on a country of other gods: no cause needed and no shame in it, for those with a priesthood.</summary>
+	HolyWar,
 }
 
 /// <summary>A war between settled countries, with the allies each side called in.</summary>
@@ -72,5 +74,7 @@ public sealed class PeaceTerms
 	public bool Reparations { get; set; }
 	public bool TradePower { get; set; }
 	public bool ReleaseVassals { get; set; }
-	public bool IsWhitePeace => Provinces.Count == 0 && Gold <= 0 && !Vassalize && !Tributary && !Humiliate && !AnnulAlliances && !RevokeClaims && !Reparations && !TradePower && !ReleaseVassals;
+	/// <summary>The loser takes the winner's gods as its state religion.</summary>
+	public bool ForceReligion { get; set; }
+	public bool IsWhitePeace => Provinces.Count == 0 && Gold <= 0 && !Vassalize && !Tributary && !Humiliate && !AnnulAlliances && !RevokeClaims && !Reparations && !TradePower && !ReleaseVassals && !ForceReligion;
 }

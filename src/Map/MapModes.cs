@@ -187,6 +187,9 @@ public partial class MapModes : Node
 			case MapMode.Culture:
 				Culture culture = p.MainCulture;
 				return culture == null ? new Color(Unowned, 0.35f) : new Color(culture.Color, Opacity);
+			case MapMode.Religion:
+				Religion religion = p.MainReligion;
+				return religion == null ? new Color(Unowned, 0.35f) : new Color(religion.Color, Opacity);
 			case MapMode.Food:
 				return p.Food == null ? new Color(Unowned, 0.35f) : new Color(p.Food.Color, Opacity);
 			case MapMode.Terrain:

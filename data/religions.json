@@ -1,3 +1,15 @@
 [
-	{ "id": "pagan", "name": "Paganism", "color": "#8a6d3b" }
+	{ "id": "kemetic", "name": "Egyptian gods", "color": "#d4a017" },
+	{ "id": "kushite", "name": "Kushite gods", "color": "#8b4513" },
+	{ "id": "mesopotamian", "name": "Mesopotamian gods", "color": "#b03a2e" },
+	{ "id": "elamite", "name": "Elamite gods", "color": "#6a5acd" },
+	{ "id": "canaanite", "name": "Canaanite gods", "color": "#2e86c1" },
+	{ "id": "anatolian", "name": "Anatolian gods", "color": "#a569bd" },
+	{ "id": "aegean", "name": "Aegean gods", "color": "#1abc9c" },
+	{ "id": "old_european", "name": "Old European gods", "color": "#5d6d7e" },
+	{ "id": "indic", "name": "Indus gods", "color": "#e67e22" },
+	{ "id": "ancestral", "name": "Ancestral rites", "color": "#c0392b" },
+	{ "id": "sky_worship", "name": "Sky worship", "color": "#85c1e9" },
+	{ "id": "arabian", "name": "Arabian gods", "color": "#cd853f" },
+	{ "id": "animism", "name": "Spirits of the land", "color": "#6b8e23" }
 ]
