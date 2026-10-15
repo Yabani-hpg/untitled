@@ -1,0 +1,210 @@
+{
+ "_comment": "Estates: the great orders of the realm. influence: base_influence plus per_share x the share of the people in the estate's occupation, plus its privileges, plus land the crown has let slip; loyalty drifts to 40 plus its privileges' loyalty. loyal (60 and up) and disloyal (under 30) give modifiers (the keys laws and techs use). Privileges are granted and revoked by the crown.",
+ "estates": [
+  {
+   "id": "temples",
+   "name": "The Temples",
+   "occupation": "priests",
+   "base_influence": 15,
+   "per_share": 500,
+   "color": "#e8e2d0",
+   "description": "The priesthoods of the great gods: landowners, scholars and the keepers of the king's legitimacy.",
+   "loyal": {
+    "research": 0.05,
+    "uprising": -0.05
+   },
+   "disloyal": {
+    "tax": -0.1,
+    "uprising": 0.15
+   },
+   "privileges": [
+    {
+     "id": "temple_lands",
+     "name": "Temple estates",
+     "description": "The temples hold their lands free of tax.",
+     "influence": 10,
+     "loyalty": 15,
+     "modifiers": {
+      "tax": -0.06
+     }
+    },
+    {
+     "id": "temple_schools",
+     "name": "Temple schools",
+     "description": "The temples teach the sons of the great families.",
+     "influence": 5,
+     "loyalty": 5,
+     "modifiers": {
+      "research": 0.05,
+      "tax": -0.02
+     }
+    },
+    {
+     "id": "festival_calendar",
+     "name": "The festival calendar",
+     "description": "The crown keeps the feasts of the gods at its own cost.",
+     "influence": 5,
+     "loyalty": 10,
+     "modifiers": {
+      "uprising": -0.05,
+      "tax": -0.02
+     }
+    }
+   ]
+  },
+  {
+   "id": "nobles",
+   "name": "The Nobles",
+   "occupation": null,
+   "base_influence": 30,
+   "per_share": 0,
+   "color": "#b03a3a",
+   "description": "The great families, the chariot-owners and the lords of the nomes: they lead the levies and hold the provinces.",
+   "loyal": {
+    "levy_share": 0.05,
+    "army_attack": 0.05
+   },
+   "disloyal": {
+    "levy_share": -0.1,
+    "uprising": 0.2
+   },
+   "privileges": [
+    {
+     "id": "noble_levies",
+     "name": "Noble command of the levies",
+     "description": "The lords lead the regiments of their own lands.",
+     "influence": 10,
+     "loyalty": 15,
+     "modifiers": {
+      "levy_share": 0.05,
+      "army_speed": 0.05,
+      "tax": -0.03
+     }
+    },
+    {
+     "id": "hereditary_offices",
+     "name": "Hereditary offices",
+     "description": "Governorships pass from father to son.",
+     "influence": 10,
+     "loyalty": 10,
+     "modifiers": {
+      "years_to_core": 5,
+      "uprising": -0.05
+     }
+    },
+    {
+     "id": "noble_exemption",
+     "name": "Exemption from tribute",
+     "description": "The great estates pay no tribute to the crown.",
+     "influence": 5,
+     "loyalty": 15,
+     "modifiers": {
+      "tax": -0.08
+     }
+    }
+   ]
+  },
+  {
+   "id": "artisans",
+   "name": "The Artisans and Merchants",
+   "occupation": "artisans",
+   "base_influence": 10,
+   "per_share": 200,
+   "color": "#c0703a",
+   "description": "The workshops, the caravan masters and the shipowners of the towns.",
+   "loyal": {
+    "trade_power": 0.1
+   },
+   "disloyal": {
+    "trade_power": -0.15,
+    "uprising": 0.1
+   },
+   "privileges": [
+    {
+     "id": "guild_charters",
+     "name": "Guild charters",
+     "description": "The crafts rule their own trades.",
+     "influence": 10,
+     "loyalty": 15,
+     "modifiers": {
+      "trade_power": 0.1,
+      "tax": -0.03
+     }
+    },
+    {
+     "id": "merchant_courts",
+     "name": "Merchant courts",
+     "description": "Disputes of trade are judged by the merchants themselves.",
+     "influence": 5,
+     "loyalty": 10,
+     "modifiers": {
+      "merchants": 1,
+      "tax": -0.02
+     }
+    },
+    {
+     "id": "caravan_protection",
+     "name": "Protection of the caravans",
+     "description": "The crown guards the roads at its cost.",
+     "influence": 5,
+     "loyalty": 10,
+     "modifiers": {
+      "trade_power": 0.05,
+      "tax": -0.02
+     }
+    }
+   ]
+  },
+  {
+   "id": "scribes",
+   "name": "The Scribes",
+   "occupation": "scribes",
+   "base_influence": 10,
+   "per_share": 500,
+   "color": "#d8c690",
+   "description": "The officials, the overseers and the keepers of the accounts: the state's own hands.",
+   "loyal": {
+    "tax": 0.05
+   },
+   "disloyal": {
+    "tax": -0.1,
+    "research": -0.05
+   },
+   "privileges": [
+    {
+     "id": "scribal_tenure",
+     "name": "Tenure of office",
+     "description": "Officials cannot be removed at the king's whim.",
+     "influence": 10,
+     "loyalty": 15,
+     "modifiers": {
+      "tax": 0.03,
+      "uprising": 0.05
+     }
+    },
+    {
+     "id": "house_of_life",
+     "name": "The House of Life",
+     "description": "A royal school for scribes, at the crown's cost.",
+     "influence": 5,
+     "loyalty": 10,
+     "modifiers": {
+      "research": 0.08,
+      "tax": -0.03
+     }
+    },
+    {
+     "id": "scribal_estates",
+     "name": "Estates for the officials",
+     "description": "Land grants to those who serve.",
+     "influence": 5,
+     "loyalty": 15,
+     "modifiers": {
+      "tax": -0.05,
+      "years_to_core": -3
+     }
+    }
+   ]
+  }
+ ]
+}

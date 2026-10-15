@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Godot;
 
 namespace Untitled.Data;
@@ -172,6 +173,9 @@ public sealed class Definitions
 	public List<GameEvent> Events { get; } = new();
 	public List<Decision> Decisions { get; } = new();
 	public List<TradeNode> TradeNodes { get; } = new();
+	public List<Estate> Estates { get; } = new();
+	public Estate GetEstate(string id) => Estates.Find(e => e.Id == id);
+	public Privilege GetPrivilege(string id) => Estates.SelectMany(e => e.Privileges).FirstOrDefault(p => p.Id == id);
 	public GameEvent GetEvent(string id) => Events.Find(e => e.Id == id);
 	public Decision GetDecision(string id) => Decisions.Find(d => d.Id == id);
 

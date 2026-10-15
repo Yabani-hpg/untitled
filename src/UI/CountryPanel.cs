@@ -26,6 +26,7 @@ public partial class CountryPanel : PanelContainer
 	VBoxContainer _military;
 	VBoxContainer _decisions;
 	VBoxContainer _trade;
+	VBoxContainer _estates;
 	Label _title;
 	Label _status;
 
@@ -90,6 +91,7 @@ public partial class CountryPanel : PanelContainer
 		_military = AddTab("Military");
 		_decisions = AddTab("Decisions");
 		_trade = AddTab("Trade");
+		_estates = AddTab("Estates");
 
 		_status = HudStyle.Body("", BodyFont, 13, HudStyle.Muted);
 		root.AddChild(_status);
@@ -158,6 +160,7 @@ public partial class CountryPanel : PanelContainer
 		FillMilitary(gs, c);
 		FillDecisions(gs, c);
 		FillTrade(gs, c);
+		FillEstates(gs, c);
 	}
 
 	// ------------------------------------------------------------------------------------ Overview
@@ -521,6 +524,69 @@ public partial class CountryPanel : PanelContainer
 				var b = HudStyle.Button("Recall", BodyFont, 12);
 				b.Pressed += () => { gs.RecallMerchant(c.Tag, id); Refresh(); };
 				buttons.AddChild(b);
+			}
+		}
+	}
+
+	// ------------------------------------------------------------------------------------ Estates
+
+	void FillEstates(GameState gs, Country c)
+	{
+		Clear(_estates);
+		Label Text(string text, int size = 13, Color? color = null)
+		{
+			var l = HudStyle.Body(text, BodyFont, size, color ?? HudStyle.Muted);
+			l.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			l.CustomMinimumSize = new Vector2(560, 0);
+			return l;
+		}
+		VBoxContainer Section(string title)
+		{
+			var panel = new PanelContainer();
+			panel.AddThemeStyleboxOverride("panel", HudStyle.Section());
+			_estates.AddChild(panel);
+			var box = new VBoxContainer();
+			box.AddThemeConstantOverride("separation", 4);
+			panel.AddChild(box);
+			box.AddChild(HudStyle.Title(title, TitleFont, 17));
+			return box;
+		}
+		var crown = Section("The crown and the estates");
+		double total = gs.EstatesInfluence(c);
+		crown.AddChild(Text($"The crown holds {c.Crownland:0}% of the land (tax {(c.Crownland - EstateRules.StartCrownland) / 200:+0%;-0%;0%}); the estates together have {total:0} influence"
+			+ (total > EstateRules.DangerInfluence ? ": too much, and the realm stirs." : "."), 13, total > EstateRules.DangerInfluence ? HudStyle.Bad : HudStyle.Muted));
+		string seizeWhy = gs.SeizeObstacle(c);
+		var seize = HudStyle.Button($"Seize land (+{EstateRules.SeizeCrownland:0}% crown land)", BodyFont, 13);
+		seize.Disabled = seizeWhy != null;
+		seize.TooltipText = seizeWhy ?? $"Every estate loses {-EstateRules.SeizeLoyalty:0} loyalty";
+		seize.Pressed += () => { if (!gs.SeizeLand(out string r)) _status.Text = r; };
+		crown.AddChild(seize);
+		foreach (Estate e in gs.Definitions.Estates)
+		{
+			double loyalty = EstateRules.Loyalty(c, e), influence = gs.EstateInfluence(c, e);
+			string standing = EstateRules.Standing(c, e);
+			var box = Section(e.Name);
+			box.AddChild(Text(e.Description));
+			var mods = EstateRules.IsLoyal(c, e) ? e.Loyal : EstateRules.IsDisloyal(c, e) ? e.Disloyal : null;
+			string effects = mods == null ? "neither helps nor hinders" : string.Join(", ", mods.Select(kv => $"{kv.Key.Replace('_', ' ')} {kv.Value:+0%;-0%}"));
+			box.AddChild(Text($"Loyalty {loyalty:0} ({standing}; settles at {EstateRules.Equilibrium(c, e):0}) · influence {influence:0} · {effects}", 13,
+				EstateRules.IsLoyal(c, e) ? HudStyle.Good : EstateRules.IsDisloyal(c, e) ? HudStyle.Bad : HudStyle.Text));
+			foreach (Privilege p in e.Privileges)
+			{
+				bool granted = c.Privileges.Contains(p.Id);
+				var row = new HBoxContainer();
+				row.AddThemeConstantOverride("separation", 8);
+				box.AddChild(row);
+				var col = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+				row.AddChild(col);
+				col.AddChild(HudStyle.Body(p.Name + (granted ? " · granted" : ""), BodyFont, 14, granted ? HudStyle.Gold : Colors.White));
+				col.AddChild(Text($"{p.Description} Loyalty +{p.Loyalty:0}, influence +{p.Influence:0}; {string.Join(", ", p.Modifiers.Select(kv => $"{kv.Key.Replace('_', ' ')} {(kv.Key == "merchants" || kv.Key == "years_to_core" ? kv.Value.ToString("+0;-0") : kv.Value.ToString("+0%;-0%"))}"))}", 12));
+				var b = HudStyle.Button(granted ? "Revoke" : "Grant", BodyFont, 12);
+				b.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+				b.TooltipText = granted ? $"They lose {-EstateRules.RevokeLoyalty:0} loyalty" : "Pleases them and strengthens them";
+				string id = p.Id;
+				b.Pressed += () => { if (!(granted ? gs.RevokePrivilege(id, out string r) : gs.GrantPrivilege(id, out r))) _status.Text = r; };
+				row.AddChild(b);
 			}
 		}
 	}

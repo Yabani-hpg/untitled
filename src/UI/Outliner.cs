@@ -90,7 +90,9 @@ public partial class Outliner : PanelContainer
 	{
 		GameState gs = GameState.Instance;
 		Country c = gs?.PlayerCountry;
-		Visible = c != null && gs.Phase == GamePhase.Playing;
+		// it steps aside while one of the big windows is open
+		bool windowOpen = CountryPanel()?.Visible == true || Diplomacy()?.Visible == true || GetNodeOrNull<Control>("../LedgerPanel")?.Visible == true || GetNodeOrNull<Control>("../ResearchPanel")?.Visible == true;
+		Visible = c != null && gs.Phase == GamePhase.Playing && !windowOpen;
 		foreach (Node child in _box.GetChildren())
 		{
 			_box.RemoveChild(child);
@@ -108,6 +110,8 @@ public partial class Outliner : PanelContainer
 			alerts.Add(($"A coalition of {coalition.Count} stands against us", HudStyle.Bad, string.Join(", ", coalition.Select(m => m.Name)), () => Diplomacy()?.Open(coalition[0].Tag)));
 		if (c.Stability < 0)
 			alerts.Add(($"Stability {c.Stability:+0;-0}", HudStyle.Bad, "Unrest grows and tax falls; raise it in the country window", () => CountryPanel()?.Toggle(0)));
+		foreach (Estate e in gs.Definitions.Estates.Where(e => EstateRules.IsDisloyal(c, e)))
+			alerts.Add(($"{e.Name} are disloyal", HudStyle.Bad, "Grant them a privilege in the Estates tab", () => CountryPanel()?.Toggle(5)));
 		if (c.IsBankrupt(gs.Date))
 			alerts.Add(("Bankrupt", HudStyle.Bad, $"Tax suffers and no one lends until {gs.Definitions.DefaultCalendar.Format(c.BankruptUntil)}", () => CountryPanel()?.Toggle(0)));
 		if (c.Gold < 0)

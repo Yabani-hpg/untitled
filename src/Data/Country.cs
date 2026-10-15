@@ -103,6 +103,10 @@ public sealed class Country
 	public Dictionary<string, double> Aggression { get; } = new();
 	/// <summary>The country this one stands in a coalition against, or null.</summary>
 	public string CoalitionAgainst { get; set; }
+	/// <summary>Each estate's loyalty (0..100), privileges granted, and the share of the land the crown holds.</summary>
+	public Dictionary<string, double> EstateLoyalty { get; } = new();
+	public HashSet<string> Privileges { get; } = new();
+	public double Crownland { get; set; } = Untitled.Rules.EstateRules.StartCrownland;
 	/// <summary>Loans taken, oldest first.</summary>
 	public List<Loan> Loans { get; } = new();
 	/// <summary>Until when the crown's credit and tax suffer after a bankruptcy.</summary>

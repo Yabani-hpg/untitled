@@ -141,6 +141,9 @@ public partial class GameState : IWorld
 			c.CoalitionAgainst = null;
 			c.Loans.Clear();
 			c.BankruptUntil = default;
+			c.EstateLoyalty.Clear();
+			c.Privileges.Clear();
+			c.Crownland = EstateRules.StartCrownland;
 			if (c.Definition == null)
 				continue;
 			foreach (string f in c.Definition.StartFlags)

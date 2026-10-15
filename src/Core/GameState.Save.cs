@@ -79,6 +79,13 @@ public partial class GameState
 			}
 			w.WriteEndArray();
 			if (c.BankruptUntil.Day > 0) w.WriteNumber("bankrupt_until", c.BankruptUntil.Day);
+			w.WriteStartObject("estates");
+			foreach (var (id, loyalty) in c.EstateLoyalty) w.WriteNumber(id, Math.Round(loyalty, 1));
+			w.WriteEndObject();
+			w.WriteStartArray("privileges");
+			foreach (string id in c.Privileges) w.WriteStringValue(id);
+			w.WriteEndArray();
+			w.WriteNumber("crownland", Math.Round(c.Crownland, 1));
 			if (c.OverlordTag != null)
 			{
 				w.WriteString("overlord", c.OverlordTag);
@@ -382,6 +389,13 @@ public partial class GameState
 				if (e.TryGetProperty("loans", out JsonElement loans))
 					foreach (JsonElement l in loans.EnumerateArray()) c.Loans.Add(new Loan(l[0].GetDouble(), l[1].GetDouble(), new GameDate(l[2].GetInt64())));
 				c.BankruptUntil = e.TryGetProperty("bankrupt_until", out JsonElement bu) ? new GameDate(bu.GetInt64()) : default;
+				c.EstateLoyalty.Clear();
+				if (e.TryGetProperty("estates", out JsonElement est))
+					foreach (JsonProperty kv in est.EnumerateObject()) c.EstateLoyalty[kv.Name] = kv.Value.GetDouble();
+				c.Privileges.Clear();
+				if (e.TryGetProperty("privileges", out JsonElement pv))
+					foreach (JsonElement id in pv.EnumerateArray()) c.Privileges.Add(id.GetString());
+				c.Crownland = e.TryGetProperty("crownland", out JsonElement cl) ? cl.GetDouble() : EstateRules.StartCrownland;
 				c.OverlordTag = e.TryGetProperty("overlord", out JsonElement ov) && _countries.ContainsKey(ov.GetString()) ? ov.GetString() : null;
 				c.VassalSince = e.TryGetProperty("vassal_since", out JsonElement vs) ? new GameDate(vs.GetInt64()) : default;
 				c.Legitimacy = e.TryGetProperty("legitimacy", out JsonElement lg) ? lg.GetDouble() : 100;
