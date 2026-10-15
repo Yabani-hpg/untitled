@@ -121,6 +121,9 @@ public sealed class Country
 	/// <summary>Advisors at court, and the candidates waiting to be hired.</summary>
 	public List<Advisor> Advisors { get; } = new();
 	public List<Advisor> Candidates { get; } = new();
+	/// <summary>Government reforms enacted, and the progress toward the next.</summary>
+	public List<string> Reforms { get; } = new();
+	public double ReformProgress { get; set; }
 	/// <summary>Loans taken, oldest first.</summary>
 	public List<Loan> Loans { get; } = new();
 	/// <summary>Until when the crown's credit and tax suffer after a bankruptcy.</summary>

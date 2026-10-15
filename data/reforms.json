@@ -1,0 +1,214 @@
+{
+ "_comment": "Government reforms, Paradox style: tiers unlocked in order as reform progress accrues (base 2 a month, more with stability and legitimacy); each tier offers a choice. requires_government: the government law options the reform is open to.",
+ "tiers": [
+  {
+   "id": "foundation",
+   "name": "The foundation of rule",
+   "reforms": [
+    {
+     "id": "hereditary_kingship",
+     "name": "Hereditary kingship",
+     "description": "The crown passes from father to son; no one disputes it.",
+     "modifiers": {
+      "stability_cost": -0.1,
+      "uprising": -0.05
+     }
+    },
+    {
+     "id": "council_of_elders",
+     "name": "Council of elders",
+     "description": "The great men sit with the king and share his counsel.",
+     "modifiers": {
+      "research": 0.05,
+      "tax": -0.03
+     }
+    },
+    {
+     "id": "priest_king",
+     "name": "The priest-king",
+     "description": "The king is the god's own servant, and his word the god's.",
+     "modifiers": {
+      "uprising": -0.1,
+      "research": 0.03
+     },
+     "requires_government": [
+      "god_king",
+      "monarchy"
+     ]
+    },
+    {
+     "id": "assembly_of_citizens",
+     "name": "Assembly of citizens",
+     "description": "The free men of the city decide in assembly.",
+     "modifiers": {
+      "research": 0.05,
+      "trade_power": 0.05
+     },
+     "requires_government": [
+      "republic"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "provinces",
+   "name": "The provinces",
+   "reforms": [
+    {
+     "id": "royal_governors",
+     "name": "Royal governors",
+     "description": "Men of the king's choosing rule each province.",
+     "modifiers": {
+      "years_to_core": -3,
+      "tax": 0.03
+     }
+    },
+    {
+     "id": "tributary_lords",
+     "name": "Tributary lords",
+     "description": "The local lords keep their lands and send their levies.",
+     "modifiers": {
+      "levy_share": 0.03,
+      "tax": -0.03
+     }
+    },
+    {
+     "id": "temple_estates",
+     "name": "Temple provinces",
+     "description": "The temples hold and govern whole districts.",
+     "modifiers": {
+      "research": 0.05,
+      "uprising": -0.05
+     }
+    }
+   ]
+  },
+  {
+   "id": "treasury",
+   "name": "The treasury",
+   "reforms": [
+    {
+     "id": "royal_monopolies",
+     "name": "Royal monopolies",
+     "description": "The crown alone trades in the richest goods.",
+     "modifiers": {
+      "trade_income": 0.1
+     }
+    },
+    {
+     "id": "tax_in_kind",
+     "name": "Tax in kind",
+     "description": "Grain and cattle, measured and stored.",
+     "modifiers": {
+      "tax": 0.06
+     }
+    },
+    {
+     "id": "granary_law",
+     "name": "The granary law",
+     "description": "Stores against famine keep the realm steady.",
+     "modifiers": {
+      "stability_cost": -0.15
+     }
+    }
+   ]
+  },
+  {
+   "id": "army",
+   "name": "The army",
+   "reforms": [
+    {
+     "id": "standing_guard",
+     "name": "The standing guard",
+     "description": "A permanent force at the king's side.",
+     "modifiers": {
+      "army_defense": 0.05
+     }
+    },
+    {
+     "id": "chariot_nobility",
+     "name": "Chariot nobility",
+     "description": "The great families keep the chariots.",
+     "modifiers": {
+      "army_attack": 0.05,
+      "levy_share": -0.02
+     }
+    },
+    {
+     "id": "levy_of_the_land",
+     "name": "Levy of the land",
+     "description": "Every village sends its men when the king calls.",
+     "modifiers": {
+      "levy_share": 0.04
+     }
+    }
+   ]
+  },
+  {
+   "id": "law",
+   "name": "The law",
+   "reforms": [
+    {
+     "id": "written_code",
+     "name": "A written code",
+     "description": "The law set in stone for all to see.",
+     "modifiers": {
+      "uprising": -0.1,
+      "research": 0.03
+     }
+    },
+    {
+     "id": "royal_judges",
+     "name": "Royal judges",
+     "description": "The king's men judge in every town.",
+     "modifiers": {
+      "tax": 0.04,
+      "years_to_core": -2
+     }
+    },
+    {
+     "id": "sacred_law",
+     "name": "Sacred law",
+     "description": "The gods' commandments are the realm's law.",
+     "modifiers": {
+      "uprising": -0.08,
+      "diplomacy_opinion": 5
+     }
+    }
+   ]
+  },
+  {
+   "id": "empire",
+   "name": "The empire",
+   "reforms": [
+    {
+     "id": "king_of_kings",
+     "name": "King of kings",
+     "description": "Lesser kings do homage; the neighbours fear less a lord who already has many.",
+     "modifiers": {
+      "aggression": -0.1,
+      "diplomacy_opinion": 5
+     }
+    },
+    {
+     "id": "league_of_cities",
+     "name": "League of cities",
+     "description": "The cities of the realm trade as one.",
+     "modifiers": {
+      "trade_power": 0.1,
+      "merchants": 1
+     }
+    },
+    {
+     "id": "divine_empire",
+     "name": "Divine empire",
+     "description": "The realm itself is holy.",
+     "modifiers": {
+      "stability_cost": -0.2,
+      "uprising": -0.05
+     }
+    }
+   ]
+  }
+ ]
+}

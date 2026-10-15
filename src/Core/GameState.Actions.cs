@@ -142,7 +142,7 @@ public partial class GameState
 			return "No such country";
 		if (us.Marriages.ContainsKey(them.Tag))
 			return "Our houses are joined already";
-		if (LawRules.Choice(us, "government") == "republic" || LawRules.Choice(them, "government") == "republic")
+		if (LawRules.OptionId(us, "government") == "republic" || LawRules.OptionId(them, "government") == "republic")
 			return "A republic has no royal house to marry";
 		if (us.Rivals.Contains(them.Tag) || them.Rivals.Contains(us.Tag))
 			return "Not between rivals";

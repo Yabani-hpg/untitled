@@ -294,6 +294,46 @@ public partial class CountryPanel : PanelContainer
 	{
 		Clear(_laws);
 		var defs = gs.Definitions;
+		// government reforms, tier by tier
+		{
+			var panel = new PanelContainer();
+			panel.AddThemeStyleboxOverride("panel", HudStyle.Section());
+			_laws.AddChild(panel);
+			var box = new VBoxContainer();
+			box.AddThemeConstantOverride("separation", 4);
+			panel.AddChild(box);
+			ReformTier next = ReformRules.NextTier(c, defs);
+			box.AddChild(HudStyle.Title("Government reforms", TitleFont, 17));
+			var intro2 = HudStyle.Body(next == null ? "Every tier of reform is enacted." : $"Reform progress {c.ReformProgress:0} of {ReformRules.Cost(next.Index):0} for the next tier, {next.Name} (+{ReformRules.MonthlyProgress(c):0.0} a month). Enacted: "
+				+ (c.Reforms.Count > 0 ? string.Join(", ", c.Reforms.Select(id => defs.GetReform(id)?.Name)) : "none yet") + ".", BodyFont, 13, HudStyle.Muted);
+			intro2.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			intro2.CustomMinimumSize = new Vector2(560, 0);
+			box.AddChild(intro2);
+			if (next != null)
+			{
+				foreach (Reform r in next.Reforms)
+				{
+					var row = new HBoxContainer();
+					row.AddThemeConstantOverride("separation", 8);
+					box.AddChild(row);
+					var col = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+					row.AddChild(col);
+					col.AddChild(HudStyle.Body(r.Name, BodyFont, 14, ReformRules.Open(c, r) ? Colors.White : HudStyle.Muted));
+					var d = HudStyle.Body($"{r.Description} {IdeaRules.Describe(r.Modifiers)}.", BodyFont, 12, HudStyle.Muted);
+					d.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+					d.CustomMinimumSize = new Vector2(480, 0);
+					col.AddChild(d);
+					string why = gs.ReformObstacle(c, r);
+					var b = HudStyle.Button("Enact", BodyFont, 12);
+					b.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+					b.Disabled = why != null;
+					b.TooltipText = why ?? "Spend the progress on this reform";
+					string id = r.Id;
+					b.Pressed += () => { if (!gs.EnactReform(id, out string reason)) _status.Text = reason; };
+					row.AddChild(b);
+				}
+			}
+		}
 		var intro = HudStyle.Body($"Our laws and code. Changing a law costs {LawRules.ChangeCost(c, defs):0} gold, and it can't change again for {defs.LawChangeCooldownYears:0} years. We have {c.Gold:0} gold.",
 			BodyFont, 13, HudStyle.Muted);
 		intro.AutowrapMode = TextServer.AutowrapMode.WordSmart;

@@ -137,6 +137,8 @@ public partial class Outliner : PanelContainer
 		int emptySlots = AdvisorRules.Categories.Count(cat => AdvisorRules.Hired(c, cat) == null && c.Candidates.Any(a => a.Type.Category == cat && gs.HireObstacle(c, a) == null));
 		if (emptySlots > 0)
 			alerts.Add(($"{emptySlots} advisor seat{(emptySlots > 1 ? "s" : "")} empty", HudStyle.Muted, "Candidates wait in the Court tab", () => CountryPanel()?.Toggle(6)));
+		if (ReformRules.NextTier(c, gs.Definitions) is ReformTier tier && c.ReformProgress >= ReformRules.Cost(tier.Index))
+			alerts.Add(($"A reform can be enacted: {tier.Name}", HudStyle.Gold, "Choose it in the Laws tab", () => CountryPanel()?.Toggle(1)));
 		if (c.ResearchQueue.Count == 0)
 			alerts.Add(("Nothing is being researched", HudStyle.Bad, "Choose a technology", () => GetNodeOrNull<ResearchPanel>("../ResearchPanel")?.Toggle()));
 		if (alerts.Count > 0)

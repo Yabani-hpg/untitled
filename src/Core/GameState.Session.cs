@@ -143,6 +143,8 @@ public partial class GameState : IWorld
 			c.BankruptUntil = default;
 			c.Fabricating.Clear();
 			c.Advisors.Clear();
+			c.Reforms.Clear();
+			c.ReformProgress = 0;
 			c.Candidates.Clear();
 			c.Guarantees.Clear();
 			c.Marriages.Clear();

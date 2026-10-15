@@ -123,6 +123,10 @@ public partial class GameState
 				}
 				w.WriteEndArray();
 			}
+			w.WriteStartArray("reforms");
+			foreach (string id in c.Reforms) w.WriteStringValue(id);
+			w.WriteEndArray();
+			w.WriteNumber("reform_progress", Math.Round(c.ReformProgress, 2));
 			w.WriteStartObject("fabricating");
 			foreach (var (id, progress) in c.Fabricating) w.WriteNumber(id.ToString(), Math.Round(progress, 2));
 			w.WriteEndObject();
@@ -462,6 +466,10 @@ public partial class GameState
 						_nextAdvisorId = Math.Max(_nextAdvisorId, advisor.Id + 1);
 					}
 				}
+				c.Reforms.Clear();
+				if (e.TryGetProperty("reforms", out JsonElement rf))
+					foreach (JsonElement id in rf.EnumerateArray()) c.Reforms.Add(id.GetString());
+				c.ReformProgress = e.TryGetProperty("reform_progress", out JsonElement rp) ? rp.GetDouble() : 0;
 				c.Fabricating.Clear();
 				if (e.TryGetProperty("fabricating", out JsonElement fb))
 					foreach (JsonProperty kv in fb.EnumerateObject()) c.Fabricating[int.Parse(kv.Name)] = kv.Value.GetDouble();

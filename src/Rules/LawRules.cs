@@ -23,7 +23,7 @@ public static class LawRules
 	{
 		if (c == null || Defs == null)
 			return 0;
-		double sum = TechRules.Mod(c, key) + EstateRules.Mod(c, key, Defs) + IdeaRules.Mod(c, key, Defs) + AdvisorRules.Mod(c, key);
+		double sum = TechRules.Mod(c, key) + EstateRules.Mod(c, key, Defs) + IdeaRules.Mod(c, key, Defs) + AdvisorRules.Mod(c, key) + ReformRules.Mod(c, key, Defs);
 		foreach (LawOption o in InForce(c, Defs))
 			sum += o.Modifiers.GetValueOrDefault(key);
 		return sum;
@@ -31,6 +31,10 @@ public static class LawRules
 
 	public static double Effect(Country c, string key) =>
 		c == null || Defs == null ? 0 : InForce(c, Defs).Sum(o => o.Effects.GetValueOrDefault(key));
+
+	/// <summary>The id of the option in force for a law.</summary>
+	public static string OptionId(Country c, string lawId) =>
+		c == null || Defs == null || Defs.GetLaw(lawId) is not LawDefinition law ? null : Option(c, law)?.Id;
 
 	public static string Choice(Country c, string key) =>
 		c == null || Defs == null ? null : InForce(c, Defs).Select(o => o.Choices.GetValueOrDefault(key)).FirstOrDefault(v => v != null);

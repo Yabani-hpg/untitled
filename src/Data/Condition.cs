@@ -68,12 +68,13 @@ public abstract class Condition
 				"war_exhaustion" => Range(v, c => c.WarExhaustion),
 				"gold" => Range(v, c => c.Gold),
 				"ruler_age" => RulerAge(v),
-				"at_war" => new WorldTest((world, c) => world.IsAtWar(c.Tag) == v.GetBoolean()),
-				"is_player" => new WorldTest((world, c) => world.IsPlayer(c.Tag) == v.GetBoolean()),
-				"is_vassal" => new Test(c => (c.OverlordTag != null) == v.GetBoolean()),
-				"has_vassals" => new WorldTest((world, c) => world.HasVassals(c.Tag) == v.GetBoolean()),
-				"tag" => new Test(c => c.Tag == v.GetString()),
-				"government" => new Test(c => c.Laws.TryGetValue("government", out string g) && g == v.GetString()),
+				// values are read now: the document may be gone by the time the test runs
+				"at_war" => AtWar(v.GetBoolean()),
+				"is_player" => IsPlayer(v.GetBoolean()),
+				"is_vassal" => IsVassal(v.GetBoolean()),
+				"has_vassals" => HasVassals(v.GetBoolean()),
+				"tag" => IsTag(v.GetString()),
+				"government" => HasGovernment(v.GetString()),
 				_ => throw new DataException($"{w}: unknown condition '{p.Name}'"),
 			});
 		}
@@ -102,6 +103,12 @@ public abstract class Condition
 	}
 
 	static Condition KnowsTech(string id) => new Test(c => c.Techs.Contains(id));
+	static Condition AtWar(bool value) => new WorldTest((world, c) => world.IsAtWar(c.Tag) == value);
+	static Condition IsPlayer(bool value) => new WorldTest((world, c) => world.IsPlayer(c.Tag) == value);
+	static Condition IsVassal(bool value) => new Test(c => (c.OverlordTag != null) == value);
+	static Condition HasVassals(bool value) => new WorldTest((world, c) => world.HasVassals(c.Tag) == value);
+	static Condition IsTag(string tag) => new Test(c => c.Tag == tag);
+	static Condition HasGovernment(string option) => new Test(c => c.Laws.TryGetValue("government", out string g) && g == option);
 
 	static Condition HasCountryFlag(string flag) => new Test(c => c.EventFlags.Contains(flag));
 
