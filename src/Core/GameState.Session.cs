@@ -77,6 +77,9 @@ public partial class GameState : IWorld
 	public Country PlayerCountry => GetCountry(PlayerTag);
 
 	GameDate IWorld.Date => Date;
+	bool IWorld.IsAtWar(string tag) => AtWar(tag);
+	bool IWorld.IsPlayer(string tag) => tag == PlayerTag;
+	bool IWorld.HasVassals(string tag) => VassalsOf(tag).Any();
 
 	public IReadOnlyList<int> GetArea(string id) => Definitions.Areas.TryGetValue(id, out List<int> a) ? a : null;
 
@@ -128,8 +131,12 @@ public partial class GameState : IWorld
 			c.Stability = c.Definition != null ? 1 : 0;
 			c.Legitimacy = 100;
 			c.WarExhaustion = 0;
+			c.EventFlags.Clear();
+			c.Done.Clear();
 			if (c.Definition == null)
 				continue;
+			foreach (string f in c.Definition.StartFlags)
+				c.EventFlags.Add(f);
 			foreach (StartProvince sp in c.Definition.StartProvinces)
 			{
 				Province p = _provinces[sp.ProvinceId];
@@ -153,6 +160,7 @@ public partial class GameState : IWorld
 		}
 		CreateTribes();
 		SetUpTribeRelations();
+		_pendingEvents.Clear();
 		SetUpDiplomacy();
 		EnsureMenAndWomen();
 		foreach (Tribe t in _tribes.Values)

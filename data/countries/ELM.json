@@ -1,91 +1,139 @@
 {
-	"_comment": "Elam in 1800 BC: Susa and Anshan under the sukkalmahs, the 'grand regents', the power of the Iranian plateau.",
-	"tag": "ELM",
-	"name": "Elam",
-	"adjective": "Elamite",
-	"color": [
-		160,
-		60,
-		60
-	],
-	"government": "Sukkalmah dynasty",
-	"ruler_title": "Grand Regent",
-	"capital": "Khuzestan",
-	"capital_name": "Susa",
-	"gold": 110,
-	"laws": {
-		"government": "monarchy",
-		"succession": "primogeniture",
-		"citizenship": "ruling_culture",
-		"noncitizens": "tributaries",
-		"culture_policy": "tolerance",
-		"religion": "state_cult",
-		"legal_code": "codified",
-		"slavery": "legal",
-		"frontier": "open"
-	},
-	"techs": [
-		"monarchy",
-		"code_of_laws",
-		"writing",
-		"mathematics",
-		"masonry",
-		"diplomacy"
-	],
-	"ruler_names": [
-		"Siruktuh",
-		"Siwe-palar-khuppak",
-		"Kuduzulush",
-		"Kutir-Nahhunte",
-		"Temti-agun",
-		"Ebarat",
-		"Shilhaha"
-	],
-	"ruler_name_counts": {
-		"Siruktuh": 1,
-		"Siwe-palar-khuppak": 0,
-		"Kuduzulush": 0,
-		"Kutir-Nahhunte": 0,
-		"Temti-agun": 0,
-		"Ebarat": 2,
-		"Shilhaha": 1
-	},
-	"start_provinces": [
-		{
-			"provinces": [
-				"Khuzestan",
-				"Fars",
-				"Kohgiluyeh and Buyer Ahmad",
-				"Bushehr"
-			],
-			"control": "core"
-		},
-		{
-			"provinces": [
-				"Ilam",
-				"Lorestan"
-			],
-			"control": "absorbed",
-			"since": "8176.1.1"
-		}
-	],
-	"ruler": {
-		"name": "Siruktuh",
-		"full_name": "Siruktuh, sukkalmah of Elam, Shimashki and Susa",
-		"dynasty": "Sukkalmah dynasty",
-		"birth": "8148.1.1",
-		"population": {
-			"province": "Khuzestan",
-			"culture": "asian",
-			"religion": "pagan",
-			"occupation": "peasants"
-		}
-	},
-	"claims": [
-		"Dhi-Qar",
-		"Diyala",
-		"Maysan",
-		"Ilam",
-		"Lorestan"
-	]
+  "_comment": "Elam in 1800 BC: Susa and Anshan under the sukkalmahs, the 'grand regents', the power of the Iranian plateau.",
+  "tag": "ELM",
+  "name": "Elam",
+  "adjective": "Elamite",
+  "color": [
+    160,
+    60,
+    60
+  ],
+  "government": "Sukkalmah dynasty",
+  "ruler_title": "Grand Regent",
+  "capital": "Khuzestan",
+  "capital_name": "Susa",
+  "gold": 110,
+  "laws": {
+    "government": "monarchy",
+    "succession": "primogeniture",
+    "citizenship": "ruling_culture",
+    "noncitizens": "tributaries",
+    "culture_policy": "tolerance",
+    "religion": "state_cult",
+    "legal_code": "codified",
+    "slavery": "legal",
+    "frontier": "open"
+  },
+  "techs": [
+    "monarchy",
+    "code_of_laws",
+    "writing",
+    "mathematics",
+    "masonry",
+    "diplomacy"
+  ],
+  "ruler_names": [
+    "Siruktuh",
+    "Siwe-palar-khuppak",
+    "Kuduzulush",
+    "Kutir-Nahhunte",
+    "Temti-agun",
+    "Ebarat",
+    "Shilhaha"
+  ],
+  "ruler_name_counts": {
+    "Siruktuh": 1,
+    "Siwe-palar-khuppak": 0,
+    "Kuduzulush": 0,
+    "Kutir-Nahhunte": 0,
+    "Temti-agun": 0,
+    "Ebarat": 2,
+    "Shilhaha": 1
+  },
+  "start_provinces": [
+    {
+      "provinces": [
+        "Khuzestan",
+        "Fars",
+        "Kohgiluyeh and Buyer Ahmad",
+        "Bushehr"
+      ],
+      "control": "core"
+    },
+    {
+      "provinces": [
+        "Ilam",
+        "Lorestan"
+      ],
+      "control": "absorbed",
+      "since": "8176.1.1"
+    }
+  ],
+  "ruler": {
+    "name": "Siruktuh",
+    "full_name": "Siruktuh, sukkalmah of Elam, Shimashki and Susa",
+    "dynasty": "Sukkalmah dynasty",
+    "birth": "8148.1.1",
+    "population": {
+      "province": "Khuzestan",
+      "culture": "asian",
+      "religion": "pagan",
+      "occupation": "peasants"
+    }
+  },
+  "claims": [
+    "Dhi-Qar",
+    "Diyala",
+    "Maysan",
+    "Ilam",
+    "Lorestan"
+  ],
+  "missions": [
+    {
+      "id": "elm_lowlands",
+      "title": "Hold the Lowlands",
+      "text": "Susa and the Zagros foothills are one land under the grand regent.",
+      "requires": {
+        "all": [
+          {
+            "owns_province": "Ilam"
+          },
+          {
+            "owns_province": "Lorestan"
+          },
+          {
+            "stability": {
+              "min": 1
+            }
+          }
+        ]
+      },
+      "requires_text": "Own Ilam and Lorestan at stability 1 or more",
+      "reward": {
+        "legitimacy": 10,
+        "research": 30
+      }
+    },
+    {
+      "id": "elm_sumer",
+      "title": "Into Sumer",
+      "text": "Elam has sacked Ur before. The cities of the plain are rich and near.",
+      "after": "elm_lowlands",
+      "requires": {
+        "any": [
+          {
+            "owns_province": "Dhi-Qar"
+          },
+          {
+            "owns_province": "Maysan"
+          }
+        ]
+      },
+      "requires_text": "Own Dhi-Qar or Maysan",
+      "reward": {
+        "prestige": 15,
+        "gold": 150
+      }
+    }
+  ]
 }

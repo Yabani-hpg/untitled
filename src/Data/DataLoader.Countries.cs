@@ -389,6 +389,9 @@ public static partial class DataLoader
 			foreach (JsonProperty n in popCounts.EnumerateObject())
 				def.ProvincePops[ProvinceByName(names, n.Name, $"{path}:province_pops")] = n.Value.GetInt32();
 		}
+		def.Missions.AddRange(ParseMissions(e, path, defs, names));
+		if (e.TryGetProperty("start_flags", out JsonElement sf))
+			def.StartFlags.AddRange(sf.EnumerateArray().Select(x => x.GetString()));
 		foreach (string claim in GetStringList(e, "claims", path))
 			def.Claims.Add(ProvinceByName(names, claim, $"{path}:claims"));
 		def.Allies.AddRange(GetStringList(e, "allies", path));

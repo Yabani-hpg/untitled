@@ -75,6 +75,12 @@ public partial class GameState
 			}
 			w.WriteNumber("legitimacy", Math.Round(c.Legitimacy, 2));
 			w.WriteNumber("war_exhaustion", Math.Round(c.WarExhaustion, 2));
+			w.WriteStartArray("event_flags");
+			foreach (string f in c.EventFlags) w.WriteStringValue(f);
+			w.WriteEndArray();
+			w.WriteStartArray("done");
+			foreach (string f in c.Done) w.WriteStringValue(f);
+			w.WriteEndArray();
 			w.WriteStartObject("opinions");
 			foreach (var (tag, o) in c.Opinions)
 				w.WriteNumber(tag, o);
@@ -154,6 +160,9 @@ public partial class GameState
 		}
 		w.WriteEndArray();
 
+		w.WriteStartArray("pending_events");
+		foreach (GameEvent ev in _pendingEvents) w.WriteStringValue(ev.Id);
+		w.WriteEndArray();
 		w.WriteNumber("next_war", _nextWarId);
 		w.WriteStartArray("wars");
 		foreach (War war in _wars.Values)
@@ -343,6 +352,12 @@ public partial class GameState
 				c.VassalSince = e.TryGetProperty("vassal_since", out JsonElement vs) ? new GameDate(vs.GetInt64()) : default;
 				c.Legitimacy = e.TryGetProperty("legitimacy", out JsonElement lg) ? lg.GetDouble() : 100;
 				c.WarExhaustion = e.TryGetProperty("war_exhaustion", out JsonElement we) ? we.GetDouble() : 0;
+				c.EventFlags.Clear();
+				if (e.TryGetProperty("event_flags", out JsonElement ef))
+					foreach (JsonElement f in ef.EnumerateArray()) c.EventFlags.Add(f.GetString());
+				c.Done.Clear();
+				if (e.TryGetProperty("done", out JsonElement dn))
+					foreach (JsonElement f in dn.EnumerateArray()) c.Done.Add(f.GetString());
 				c.Opinions.Clear();
 				foreach (JsonProperty o in opinions.EnumerateObject())
 					c.Opinions[o.Name] = o.Value.GetInt32();
@@ -584,6 +599,15 @@ public partial class GameState
 					_armies[a.Id] = a;
 			}
 			_nextArmyId = save.GetProperty("next_army").GetInt32();
+		}
+		_pendingEvents.Clear();
+		if (save.TryGetProperty("pending_events", out JsonElement pending))
+		{
+			foreach (JsonElement id in pending.EnumerateArray())
+			{
+				if (Definitions.GetEvent(id.GetString()) is GameEvent ev)
+					_pendingEvents.Add(ev);
+			}
 		}
 		_wars.Clear();
 		if (save.TryGetProperty("wars", out JsonElement wars))

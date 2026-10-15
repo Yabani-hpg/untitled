@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using Untitled.Core;
 
@@ -13,6 +14,9 @@ public interface IWorld
 	IReadOnlySet<string> WorldFlags { get; }
 	/// <summary>Province ids of a named area from data/areas.json, or null.</summary>
 	IReadOnlyList<int> GetArea(string id);
+	bool IsAtWar(string tag);
+	bool IsPlayer(string tag);
+	bool HasVassals(string tag);
 }
 
 /// <summary>
@@ -57,6 +61,19 @@ public abstract class Condition
 				"owns_feature" => new OwnsFeature(v.GetString()),
 				"date_from" => new DateTest(ParseDate(v.GetString(), w), from: true),
 				"date_before" => new DateTest(ParseDate(v.GetString(), w), from: false),
+				"country_flag" => HasCountryFlag(v.GetString()),
+				"stability" => Range(v, c => c.Stability),
+				"legitimacy" => Range(v, c => c.Legitimacy),
+				"prestige" => Range(v, c => c.Prestige),
+				"war_exhaustion" => Range(v, c => c.WarExhaustion),
+				"gold" => Range(v, c => c.Gold),
+				"ruler_age" => RulerAge(v),
+				"at_war" => new WorldTest((world, c) => world.IsAtWar(c.Tag) == v.GetBoolean()),
+				"is_player" => new WorldTest((world, c) => world.IsPlayer(c.Tag) == v.GetBoolean()),
+				"is_vassal" => new Test(c => (c.OverlordTag != null) == v.GetBoolean()),
+				"has_vassals" => new WorldTest((world, c) => world.HasVassals(c.Tag) == v.GetBoolean()),
+				"tag" => new Test(c => c.Tag == v.GetString()),
+				"government" => new Test(c => c.Laws.TryGetValue("government", out string g) && g == v.GetString()),
 				_ => throw new DataException($"{w}: unknown condition '{p.Name}'"),
 			});
 		}
@@ -85,6 +102,23 @@ public abstract class Condition
 	}
 
 	static Condition KnowsTech(string id) => new Test(c => c.Techs.Contains(id));
+
+	static Condition HasCountryFlag(string flag) => new Test(c => c.EventFlags.Contains(flag));
+
+	/// <summary>{ "min": x, "max": y } on a number of the country.</summary>
+	static Condition Range(JsonElement v, Func<Country, double> value)
+	{
+		double min = v.TryGetProperty("min", out JsonElement mn) ? mn.GetDouble() : double.NegativeInfinity;
+		double max = v.TryGetProperty("max", out JsonElement mx) ? mx.GetDouble() : double.PositiveInfinity;
+		return new Test(c => value(c) >= min && value(c) <= max);
+	}
+
+	static Condition RulerAge(JsonElement v)
+	{
+		int min = v.TryGetProperty("min", out JsonElement mn) ? mn.GetInt32() : 0;
+		int max = v.TryGetProperty("max", out JsonElement mx) ? mx.GetInt32() : 999;
+		return new WorldTest((world, c) => c.Ruler != null && c.Ruler.AgeOn(world.Date) >= min && c.Ruler.AgeOn(world.Date) <= max);
+	}
 
 	static Condition RulerCulture(string id) => new Test(c => c.Ruler?.Culture?.Id == id);
 	static Condition RulerReligion(string id) => new Test(c => c.Ruler?.Religion?.Id == id);
@@ -161,6 +195,11 @@ public abstract class Condition
 	sealed class Test(Func<Country, bool> test) : Condition
 	{
 		public override bool Holds(IWorld w, Country c) => test(c);
+	}
+
+	sealed class WorldTest(Func<IWorld, Country, bool> test) : Condition
+	{
+		public override bool Holds(IWorld w, Country c) => test(w, c);
 	}
 
 	sealed class WorldFlag(string flag) : Condition

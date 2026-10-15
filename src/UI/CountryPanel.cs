@@ -24,6 +24,7 @@ public partial class CountryPanel : PanelContainer
 	VBoxContainer _overview;
 	VBoxContainer _laws;
 	VBoxContainer _military;
+	VBoxContainer _decisions;
 	Label _title;
 	Label _status;
 
@@ -86,6 +87,7 @@ public partial class CountryPanel : PanelContainer
 		_overview = AddTab("Overview");
 		_laws = AddTab("Laws");
 		_military = AddTab("Military");
+		_decisions = AddTab("Decisions");
 
 		_status = HudStyle.Body("", BodyFont, 13, HudStyle.Muted);
 		root.AddChild(_status);
@@ -98,6 +100,7 @@ public partial class CountryPanel : PanelContainer
 		gs.RulerChanged += OnRulerChanged;
 		gs.TribesChanged += Refresh;
 		gs.ArmiesChanged += Refresh;
+		gs.DecisionsChanged += Refresh;
 	}
 
 	public override void _ExitTree()
@@ -110,6 +113,7 @@ public partial class CountryPanel : PanelContainer
 		gs.RulerChanged -= OnRulerChanged;
 		gs.TribesChanged -= Refresh;
 		gs.ArmiesChanged -= Refresh;
+		gs.DecisionsChanged -= Refresh;
 	}
 
 	void OnRulerChanged(string tag) => Refresh();
@@ -148,6 +152,7 @@ public partial class CountryPanel : PanelContainer
 		FillOverview(gs, c);
 		FillLaws(gs, c);
 		FillMilitary(gs, c);
+		FillDecisions(gs, c);
 	}
 
 	// ------------------------------------------------------------------------------------ Overview
@@ -319,6 +324,89 @@ public partial class CountryPanel : PanelContainer
 					options.AddChild(b);
 				}
 			}
+		}
+	}
+
+	// ------------------------------------------------------------------------------------ Decisions
+
+	void FillDecisions(GameState gs, Country c)
+	{
+		Clear(_decisions);
+		Label Text(string text, int size = 13, Color? color = null)
+		{
+			var l = HudStyle.Body(text, BodyFont, size, color ?? HudStyle.Muted);
+			l.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			l.CustomMinimumSize = new Vector2(580, 0);
+			return l;
+		}
+		VBoxContainer Section(string title)
+		{
+			var panel = new PanelContainer();
+			panel.AddThemeStyleboxOverride("panel", HudStyle.Section());
+			_decisions.AddChild(panel);
+			var box = new VBoxContainer();
+			box.AddThemeConstantOverride("separation", 4);
+			panel.AddChild(box);
+			box.AddChild(HudStyle.Title(title, TitleFont, 17));
+			return box;
+		}
+
+		// missions: the country's own goals, in their chains
+		var missions = c.Definition?.Missions ?? new List<Mission>();
+		var mBox = Section("Missions");
+		if (missions.Count == 0)
+			mBox.AddChild(Text("Our house has set itself no particular goals."));
+		foreach (Mission m in missions)
+		{
+			bool done = c.Done.Contains(m.Id);
+			bool open = !done && (m.After == null || c.Done.Contains(m.After));
+			var row = new HBoxContainer();
+			row.AddThemeConstantOverride("separation", 8);
+			mBox.AddChild(row);
+			var mark = HudStyle.Body(done ? "✔" : open ? "◯" : "·", BodyFont, 15, done ? new Color(0.55f, 0.85f, 0.45f) : open ? HudStyle.Gold : HudStyle.Muted);
+			mark.CustomMinimumSize = new Vector2(22, 0);
+			row.AddChild(mark);
+			var col = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+			row.AddChild(col);
+			col.AddChild(HudStyle.Body(m.Title, BodyFont, 14, done ? HudStyle.Muted : Colors.White));
+			if (!done)
+			{
+				col.AddChild(Text(m.Text));
+				string need = open ? m.RequiresText ?? "Meet its conditions" : $"After: {missions.Find(x => x.Id == m.After)?.Title}";
+				var needLabel = Text($"Requires: {need}", 12, open ? HudStyle.Gold : HudStyle.Muted);
+				needLabel.TooltipText = "Reward:\n" + EventPanel.Describe(m.Reward, gs);
+				col.AddChild(needLabel);
+			}
+		}
+
+		// decisions open to us
+		var dBox = Section("Decisions");
+		var visible = gs.VisibleDecisions(c).ToList();
+		if (visible.Count == 0)
+			dBox.AddChild(Text("Nothing to decide for now."));
+		foreach (Decision d in visible)
+		{
+			bool can = gs.CanTakeDecision(c, d, out string why);
+			var row = new HBoxContainer();
+			row.AddThemeConstantOverride("separation", 10);
+			dBox.AddChild(row);
+			var col = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+			row.AddChild(col);
+			col.AddChild(HudStyle.Body(d.Title, BodyFont, 14, Colors.White));
+			col.AddChild(Text(d.Text));
+			col.AddChild(Text(can ? EventPanel.Describe(d.Effects, gs).Replace("\n", ", ") : why, 12, can ? HudStyle.Gold : HudStyle.Muted));
+			var b = HudStyle.Button("Decide", BodyFont, 13);
+			b.Disabled = !can;
+			b.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+			b.TooltipText = can ? EventPanel.Describe(d.Effects, gs) : why;
+			string id = d.Id;
+			b.Pressed += () =>
+			{
+				if (!gs.TakeDecision(id, out string reason))
+					_status.Text = reason;
+				Refresh();
+			};
+			row.AddChild(b);
 		}
 	}
 

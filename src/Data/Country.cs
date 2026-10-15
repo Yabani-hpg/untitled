@@ -90,6 +90,10 @@ public sealed class Country
 	public string OverlordTag { get; set; }
 	/// <summary>Since when it has been a vassal.</summary>
 	public GameDate VassalSince { get; set; }
+	/// <summary>Flags set by events and decisions ("hyksos_arrived").</summary>
+	public HashSet<string> EventFlags { get; } = new();
+	/// <summary>Events that fire once and have fired, decisions taken, missions done.</summary>
+	public HashSet<string> Done { get; } = new();
 	/// <summary>Stability, -3..+3.</summary>
 	public int Stability { get; set; }
 	/// <summary>The ruler's legitimacy, 0..100.</summary>
@@ -134,6 +138,10 @@ public sealed class CountryDefinition
 	public List<int> Claims { get; } = new();
 	/// <summary>Countries allied with it at the start.</summary>
 	public List<string> Allies { get; } = new();
+	/// <summary>Its missions, in order.</summary>
+	/// <summary>Event flags the country starts with (e.g. no_horses).</summary>
+	public List<string> StartFlags { get; } = new();
+	public List<Mission> Missions { get; } = new();
 	/// <summary>The country's own names for provinces (by province id), used while it owns them.</summary>
 	public Dictionary<int, string> ProvinceNames { get; } = new();
 	/// <summary>Population (in units) set by hand for provinces at the start, by province id, where the generated numbers are wrong.</summary>

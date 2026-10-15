@@ -116,6 +116,8 @@ public partial class GameState : Node
 		DataLoader.LoadTechs(Definitions, _provinceNames);
 		DataLoader.LoadLaws(Definitions, _provinceNames);
 		DataLoader.LoadUnits(Definitions, _provinceNames);
+		DataLoader.LoadEvents(Definitions, _provinceNames);
+		DataLoader.LoadDecisions(Definitions, _provinceNames);
 		LawRules.Defs = Definitions;
 		TechRules.Defs = Definitions;
 		int countryFiles = DataLoader.LoadCountryFiles(_countries, Definitions, _provinceNames);
@@ -293,6 +295,7 @@ public partial class GameState : Node
 		RunResearchStep();
 		RunDiplomacyStep();
 		RunAiStep();
+		RunEventStep();
 		foreach (Country c in EconomyRules.MonthlyStep(_countries, _provinces, _tribes.Values, _armies.Values, Definitions, Date))
 		{
 			if (c.Tag == PlayerTag)

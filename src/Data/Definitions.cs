@@ -166,6 +166,12 @@ public sealed class Definitions
 
 	public Tech GetTech(string id) => Techs.Find(t => t.Id == id);
 
+	/// <summary>Events and decisions (data/events.json, data/decisions.json), in file order.</summary>
+	public List<GameEvent> Events { get; } = new();
+	public List<Decision> Decisions { get; } = new();
+	public GameEvent GetEvent(string id) => Events.Find(e => e.Id == id);
+	public Decision GetDecision(string id) => Decisions.Find(d => d.Id == id);
+
 	/// <summary>Kinds of regiments (data/units.json), in file order.</summary>
 	public List<UnitType> UnitTypes { get; } = new();
 

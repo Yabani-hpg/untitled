@@ -1,0 +1,248 @@
+{
+ "_comment": "Decisions a settled country may take when it meets their requirements. visible: who sees it (a condition; none: everyone). requires: what must hold to take it, described by requires_text. effects: as events'. once: taken once (default).",
+ "decisions": [
+  {
+   "id": "two_lands",
+   "title": "Proclaim the union of the Two Lands",
+   "visible": {
+    "any": [
+     {
+      "owns_area": {
+       "area": "upper_egypt",
+       "min_share": 0.3
+      }
+     },
+     {
+      "owns_area": {
+       "area": "lower_egypt",
+       "min_share": 0.3
+      }
+     }
+    ]
+   },
+   "requires": {
+    "all": [
+     {
+      "owns_area": {
+       "area": "upper_egypt",
+       "min_share": 0.9
+      }
+     },
+     {
+      "owns_area": {
+       "area": "lower_egypt",
+       "min_share": 0.9
+      }
+     }
+    ]
+   },
+   "requires_text": "Rule nearly all of Upper and Lower Egypt",
+   "text": "The sedge and the bee, the white crown and the red: let the ruler be crowned again at Memphis as lord of the Two Lands.",
+   "effects": {
+    "prestige": 20,
+    "legitimacy": 20,
+    "stability": 1
+   }
+  },
+  {
+   "id": "king_sumer_akkad",
+   "title": "Take the title King of Sumer and Akkad",
+   "visible": {
+    "any": [
+     {
+      "owns_province": "Babil"
+     },
+     {
+      "owns_province": "Dhi-Qar"
+     },
+     {
+      "owns_province": "Al-Qādisiyyah"
+     }
+    ]
+   },
+   "requires": {
+    "all": [
+     {
+      "owns_province": "Babil"
+     },
+     {
+      "owns_province": "Dhi-Qar"
+     },
+     {
+      "owns_province": "Al-Qādisiyyah"
+     },
+     {
+      "owns_province": "Baghdad"
+     }
+    ]
+   },
+   "requires_text": "Rule Babylon, Sippar, Isin and Larsa",
+   "text": "Enlil has given the four quarters into our hand: let the scribes write the ancient title of Ur-Nammu and Hammurabi's ancestors on every tablet.",
+   "effects": {
+    "prestige": 25,
+    "legitimacy": 15,
+    "claims": [
+     "Diyala",
+     "Al-Basrah",
+     "Maysan",
+     "Wasit"
+    ]
+   }
+  },
+  {
+   "id": "great_works",
+   "title": "Raise a great monument",
+   "once": false,
+   "requires": {
+    "gold": {
+     "min": 300
+    }
+   },
+   "requires_text": "300 gold",
+   "text": "A pyramid, a ziggurat, a palace of a thousand rooms: a work that will carry the ruler's name to the end of time, and keep the levies busy between the harvests.",
+   "effects": {
+    "gold": -300,
+    "prestige": 15,
+    "stability": 1
+   }
+  },
+  {
+   "id": "found_karum",
+   "title": "Found a merchant colony abroad",
+   "requires": {
+    "all": [
+     {
+      "tech": "diplomacy"
+     },
+     {
+      "gold": {
+       "min": 150
+      }
+     }
+    ]
+   },
+   "requires_text": "Diplomacy, and 150 gold",
+   "text": "Send our merchants with silver and a charter to set up a trading quarter in a foreign city, with our judges and our gods, and a share of all they sell for the palace.",
+   "effects": {
+    "gold": -150,
+    "research": 150,
+    "set_flag": [
+     "merchant_colony"
+    ],
+    "message": "Our merchants have founded a colony abroad: silver, tin and new ideas will flow home."
+   }
+  },
+  {
+   "id": "reform_calendar",
+   "title": "Reform the calendar",
+   "requires": {
+    "all": [
+     {
+      "tech": "astronomy"
+     },
+     {
+      "stability": {
+       "min": 0
+      }
+     }
+    ]
+   },
+   "requires_text": "Astronomy, and stability 0 or better",
+   "text": "The priests have measured the year against the rising of the stars: the festivals and the tax-days will be fixed anew.",
+   "effects": {
+    "gold": 40,
+    "research": 50,
+    "prestige": 5
+   }
+  },
+  {
+   "id": "royal_road",
+   "title": "Build a royal road",
+   "requires": {
+    "all": [
+     {
+      "tech": "engineering"
+     },
+     {
+      "gold": {
+       "min": 200
+      }
+     },
+     {
+      "province_count": {
+       "min": 6
+      }
+     }
+    ]
+   },
+   "requires_text": "Engineering, 200 gold and 6 provinces",
+   "text": "A road of stone from the capital to the frontier, with way stations and wells: the levies will march in days where they marched in weeks.",
+   "effects": {
+    "gold": -200,
+    "tech": "road_network",
+    "prestige": 5
+   }
+  },
+  {
+   "id": "adopt_chariots",
+   "title": "Train a chariot corps",
+   "requires": {
+    "all": [
+     {
+      "not": {
+       "country_flag": "no_horses"
+      }
+     },
+     {
+      "tech": "horse_domestication"
+     },
+     {
+      "tech": "bronze_working"
+     },
+     {
+      "gold": {
+       "min": 120
+      }
+     },
+     {
+      "not": {
+       "tech": "chariotry"
+      }
+     }
+    ]
+   },
+   "requires_text": "Horses in the land, Horse domestication, Bronze working, 120 gold",
+   "text": "Buy horses and chariots from the north, and wrights to build more: the king's own chariotry, as the kings of the east have.",
+   "effects": {
+    "gold": -120,
+    "tech": "chariotry"
+   }
+  },
+  {
+   "id": "amnesty",
+   "title": "Proclaim a general amnesty",
+   "once": false,
+   "requires": {
+    "all": [
+     {
+      "stability": {
+       "max": 0
+      }
+     },
+     {
+      "gold": {
+       "min": 60
+      }
+     }
+    ]
+   },
+   "requires_text": "Stability 0 or worse, and 60 gold",
+   "text": "Open the prisons, forgive the debts of the poor and the taxes in arrears: the land settles, and the treasury pays.",
+   "effects": {
+    "gold": -60,
+    "stability": 1,
+    "war_exhaustion": -1
+   }
+  }
+ ]
+}

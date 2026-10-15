@@ -1,0 +1,694 @@
+{
+ "_comment": "Events that happen to settled countries. trigger: a condition (see data/countries/EGY.json flags, plus stability/legitimacy/prestige/war_exhaustion/gold {min,max}, ruler_age {min,max}, at_war, is_player, is_vassal, tag, government, country_flag, owns_feature, tech, law, date_from). mean_time_years: how long, on average, until it fires once the trigger holds (0: at once). once: fires once per country (default). options: the choices, each with effects (gold, stability, prestige, legitimacy, war_exhaustion, research, set_flag, clear_flag, set_world_flag, claims, opinion {tag|neighbours|all: amount}, capital_pops, ruler_dies, tech, levies, message) and an ai_weight for countries the game runs.",
+ "events": [
+  {
+   "id": "low_flood",
+   "title": "The river fails",
+   "mean_time_years": 10,
+   "once": false,
+   "trigger": {
+    "all": [
+     {
+      "owns_feature": "river"
+     },
+     {
+      "not": {
+       "country_flag": "famine_relief"
+      }
+     }
+    ]
+   },
+   "text": "The flood has not come. The fields lie cracked under the sun, the granaries are watched by soldiers, and the priests say the gods are angry. The people look to the palace.",
+   "options": [
+    {
+     "text": "Open the royal granaries.",
+     "effects": {
+      "gold": -60,
+      "prestige": 5,
+      "stability": 1
+     },
+     "ai_weight": 2
+    },
+    {
+     "text": "Let the provinces fend for themselves.",
+     "effects": {
+      "stability": -1,
+      "capital_pops": -3
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "plague",
+   "title": "Pestilence in the city",
+   "mean_time_years": 20,
+   "once": false,
+   "trigger": {
+    "province_count": {
+     "min": 2
+    }
+   },
+   "text": "A sickness has come up the river with the traders. The dead are carried out of the city by the cartload, and the markets stand empty.",
+   "options": [
+    {
+     "text": "Close the gates and pray.",
+     "effects": {
+      "capital_pops": -4,
+      "stability": -1
+     },
+     "ai_weight": 1
+    },
+    {
+     "text": "Pay the healers and burn the dead.",
+     "effects": {
+      "gold": -40,
+      "capital_pops": -2
+     },
+     "ai_weight": 2
+    }
+   ]
+  },
+  {
+   "id": "comet",
+   "title": "A sign in the sky",
+   "mean_time_years": 30,
+   "once": false,
+   "text": "A star with a tail of fire hangs over the land for a month. The priests argue over its meaning; the people are afraid.",
+   "options": [
+    {
+     "text": "It heralds our ruler's greatness.",
+     "effects": {
+      "prestige": 10,
+      "legitimacy": 5
+     },
+     "ai_weight": 2
+    },
+    {
+     "text": "It is a warning. Offer sacrifices.",
+     "effects": {
+      "gold": -30,
+      "stability": 1
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "court_intrigue",
+   "title": "Whispers at court",
+   "mean_time_years": 8,
+   "once": false,
+   "trigger": {
+    "legitimacy": {
+     "max": 70
+    }
+   },
+   "text": "The ruler's cousins and the great families murmur that the throne was not rightly taken. A vizier is found with letters to a rival house.",
+   "options": [
+    {
+     "text": "Make an example of the traitors.",
+     "effects": {
+      "legitimacy": 10,
+      "stability": -1
+     },
+     "ai_weight": 2
+    },
+    {
+     "text": "Buy their loyalty with land and gold.",
+     "effects": {
+      "gold": -80,
+      "legitimacy": 15
+     },
+     "ai_weight": 1
+    },
+    {
+     "text": "Ignore the whispers.",
+     "effects": {
+      "legitimacy": -10
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "tin_caravan",
+   "title": "The tin caravan",
+   "mean_time_years": 8,
+   "once": false,
+   "trigger": {
+    "tech": "bronze_working"
+   },
+   "text": "A caravan of donkeys arrives from the east with tin, the rare half of bronze, and its merchants ask for a royal licence to trade in our markets.",
+   "options": [
+    {
+     "text": "Tax the trade.",
+     "effects": {
+      "gold": 50
+     },
+     "ai_weight": 2
+    },
+    {
+     "text": "Buy the tin for our smiths.",
+     "effects": {
+      "gold": -40,
+      "research": 60
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "temple_demand",
+   "title": "The gods demand a temple",
+   "mean_time_years": 15,
+   "trigger": {
+    "tech": "priesthood"
+   },
+   "text": "The high priest comes before the throne: the god's house is too small for his glory, and the god has said so in a dream.",
+   "options": [
+    {
+     "text": "Build it, in stone.",
+     "effects": {
+      "gold": -100,
+      "prestige": 10,
+      "stability": 1
+     },
+     "ai_weight": 2
+    },
+    {
+     "text": "The god can wait.",
+     "effects": {
+      "stability": -1,
+      "legitimacy": -5
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "famine_war",
+   "title": "The levies' fields lie fallow",
+   "mean_time_years": 3,
+   "once": false,
+   "trigger": {
+    "all": [
+     {
+      "at_war": true
+     },
+     {
+      "war_exhaustion": {
+       "min": 6
+      }
+     }
+    ]
+   },
+   "text": "With the men away at the war, the harvest rots in the fields and the women and old men cannot bring it in. The villages mutter against the war.",
+   "options": [
+    {
+     "text": "Send grain from the royal stores.",
+     "effects": {
+      "gold": -50,
+      "war_exhaustion": -2
+     },
+     "ai_weight": 2
+    },
+    {
+     "text": "The war must go on.",
+     "effects": {
+      "stability": -1
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "succession_dispute",
+   "title": "Two claimants",
+   "mean_time_years": 6,
+   "once": false,
+   "trigger": {
+    "all": [
+     {
+      "legitimacy": {
+       "max": 50
+      }
+     },
+     {
+      "at_war": false
+     }
+    ]
+   },
+   "text": "A brother of the old ruler has gathered followers in the provinces and names himself the true heir. The great men wait to see which way the wind blows.",
+   "options": [
+    {
+     "text": "March on the pretender.",
+     "effects": {
+      "stability": -1,
+      "legitimacy": 20,
+      "war_exhaustion": 2
+     },
+     "ai_weight": 2
+    },
+    {
+     "text": "Grant him a province and a title.",
+     "effects": {
+      "gold": -60,
+      "legitimacy": 10
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "merchant_colony",
+   "title": "A merchant colony",
+   "mean_time_years": 10,
+   "trigger": {
+    "any": [
+     {
+      "tech": "currency"
+     },
+     {
+      "tech": "diplomacy"
+     }
+    ]
+   },
+   "text": "Merchants of a far city ask leave to build a quarter of their own outside our walls, with their own judges and their own gods, in return for a share of all they sell.",
+   "options": [
+    {
+     "text": "Let them build.",
+     "effects": {
+      "gold": 30,
+      "research": 80,
+      "set_flag": [
+       "merchant_colony"
+      ]
+     },
+     "ai_weight": 2
+    },
+    {
+     "text": "Foreigners live under our law or not at all.",
+     "effects": {
+      "stability": 1
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "earthquake",
+   "title": "The earth shakes",
+   "mean_time_years": 40,
+   "once": false,
+   "trigger": {
+    "any": [
+     {
+      "owns_feature": "mountains"
+     },
+     {
+      "owns_feature": "hills"
+     }
+    ]
+   },
+   "text": "In the night the ground heaved and the walls of the palace came down. Fires burn in the lower town.",
+   "options": [
+    {
+     "text": "Rebuild, grander than before.",
+     "effects": {
+      "gold": -120,
+      "prestige": 5
+     },
+     "ai_weight": 1
+    },
+    {
+     "text": "Rebuild what we can.",
+     "effects": {
+      "gold": -40,
+      "capital_pops": -2
+     },
+     "ai_weight": 2
+    }
+   ]
+  },
+  {
+   "id": "royal_hunt",
+   "title": "The royal hunt",
+   "mean_time_years": 12,
+   "once": false,
+   "trigger": {
+    "ruler_age": {
+     "max": 50
+    }
+   },
+   "text": "The ruler rides out to hunt lions in the hills with the young men of the court, as kings have always done.",
+   "options": [
+    {
+     "text": "A great hunt: the lion falls to the royal spear.",
+     "effects": {
+      "prestige": 8,
+      "gold": -20
+     },
+     "ai_weight": 3
+    },
+    {
+     "text": "Stay in the palace; there is work to do.",
+     "effects": {
+      "research": 20
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "nomad_raid",
+   "title": "Raiders from the desert",
+   "mean_time_years": 7,
+   "once": false,
+   "trigger": {
+    "any": [
+     {
+      "owns_feature": "desert"
+     },
+     {
+      "owns_feature": "steppe"
+     }
+    ]
+   },
+   "text": "Nomads have fallen on the border villages, driving off the herds and burning the granaries before the garrison could stir.",
+   "options": [
+    {
+     "text": "Send the levies after them.",
+     "effects": {
+      "levies": 2,
+      "war_exhaustion": 1
+     },
+     "ai_weight": 1
+    },
+    {
+     "text": "Pay for the villages' losses.",
+     "effects": {
+      "gold": -40
+     },
+     "ai_weight": 2
+    }
+   ]
+  },
+  {
+   "id": "ruler_ill",
+   "title": "The ruler is ill",
+   "mean_time_years": 15,
+   "once": false,
+   "trigger": {
+    "ruler_age": {
+     "min": 55
+    }
+   },
+   "text": "The ruler has taken to bed with a fever. The physicians are at a loss and the priests keep vigil. The heir has sent for his friends.",
+   "options": [
+    {
+     "text": "Call every physician in the land.",
+     "effects": {
+      "gold": -50
+     },
+     "ai_weight": 2
+    },
+    {
+     "text": "It is in the hands of the gods.",
+     "effects": {
+      "ruler_dies": true,
+      "stability": -1
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "asiatics_delta",
+   "title": "Settlers from the east",
+   "mean_time_years": 10,
+   "trigger": {
+    "all": [
+     {
+      "tag": "EGY"
+     },
+     {
+      "date_from": "8215.1.1"
+     },
+     {
+      "owns_area": {
+       "area": "lower_egypt",
+       "min_share": 0.5
+      }
+     }
+    ]
+   },
+   "text": "Herdsmen and traders from Canaan have settled in numbers in the eastern Delta, at Avaris, with their own gods and their own chiefs. They are useful, and they are many.",
+   "options": [
+    {
+     "text": "Let them settle; tax them.",
+     "effects": {
+      "gold": 40,
+      "capital_pops": 4,
+      "set_flag": [
+       "asiatics_delta"
+      ]
+     },
+     "ai_weight": 2
+    },
+    {
+     "text": "Drive them back across the Sinai.",
+     "effects": {
+      "stability": -1,
+      "war_exhaustion": 1,
+      "opinion": {
+       "neighbours": -10
+      }
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "hyksos_rise",
+   "title": "The chiefs of foreign lands",
+   "mean_time_years": 40,
+   "trigger": {
+    "all": [
+     {
+      "tag": "EGY"
+     },
+     {
+      "country_flag": "asiatics_delta"
+     },
+     {
+      "any": [
+       {
+        "stability": {
+         "max": 0
+        }
+       },
+       {
+        "legitimacy": {
+         "max": 60
+        }
+       }
+      ]
+     }
+    ]
+   },
+   "text": "The Asiatic chiefs of Avaris no longer bow to the nomarchs. They call their leader king, and they have horses and chariots such as Egypt has never seen.",
+   "options": [
+    {
+     "text": "Learn their arts and bring them to heel.",
+     "effects": {
+      "tech": "chariotry",
+      "stability": -1,
+      "legitimacy": -10,
+      "clear_flag": [
+       "no_horses"
+      ]
+     },
+     "ai_weight": 2
+    },
+    {
+     "text": "Crush them now, whatever it costs.",
+     "effects": {
+      "war_exhaustion": 4,
+      "stability": -2,
+      "levies": 6
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "hammurabi_code",
+   "title": "The stele of the laws",
+   "mean_time_years": 5,
+   "trigger": {
+    "all": [
+     {
+      "tag": "BAB"
+     },
+     {
+      "tech": "code_of_laws"
+     },
+     {
+      "date_from": "8230.1.1"
+     }
+    ]
+   },
+   "text": "The king has had the judgments of the land carved on a pillar of black stone, the god Shamash handing him the rod and ring above them, so that the strong may not oppress the weak.",
+   "options": [
+    {
+     "text": "Set it up in the temple of Marduk.",
+     "effects": {
+      "prestige": 15,
+      "legitimacy": 15,
+      "research": 100
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "assyrian_karum",
+   "title": "The merchant houses of Ashur",
+   "mean_time_years": 8,
+   "trigger": {
+    "any": [
+     {
+      "tag": "ASR"
+     },
+     {
+      "tag": "KAN"
+     }
+    ]
+   },
+   "text": "The great merchant families of Ashur run donkey caravans of tin and cloth over the mountains to Kanesh and the cities of Anatolia, and their letters fill the archives. They ask the palace to guard the roads.",
+   "options": [
+    {
+     "text": "Guard the roads and tax the caravans.",
+     "effects": {
+      "gold": 60,
+      "research": 40
+     },
+     "ai_weight": 2
+    },
+    {
+     "text": "The palace will trade on its own account.",
+     "effects": {
+      "gold": 20,
+      "stability": -1
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "sea_trade",
+   "title": "Ships from Keftiu",
+   "mean_time_years": 10,
+   "once": false,
+   "trigger": {
+    "all": [
+     {
+      "owns_feature": "coast"
+     },
+     {
+      "tech": "sailing"
+     }
+    ]
+   },
+   "text": "Ships with painted eyes have come into the harbour with oil, wine and strange pottery, and their captains want copper and grain in return.",
+   "options": [
+    {
+     "text": "Trade, and tax the harbour.",
+     "effects": {
+      "gold": 35
+     },
+     "ai_weight": 2
+    },
+    {
+     "text": "Seize the cargo.",
+     "effects": {
+      "gold": 80,
+      "prestige": -5,
+      "opinion": {
+       "all": -10
+      }
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "vassal_restless",
+   "title": "A restless vassal",
+   "mean_time_years": 8,
+   "once": false,
+   "trigger": {
+    "all": [
+     {
+      "has_vassals": true
+     },
+     {
+      "legitimacy": {
+       "max": 80
+      }
+     }
+    ]
+   },
+   "text": "Word comes that one of our subject kings has stopped sending his tribute and is fortifying his city.",
+   "options": [
+    {
+     "text": "Remind him of his oath, with soldiers.",
+     "effects": {
+      "war_exhaustion": 1,
+      "prestige": 5
+     },
+     "ai_weight": 2
+    },
+    {
+     "text": "Forgive this year's tribute.",
+     "effects": {
+      "gold": -30,
+      "legitimacy": -5
+     },
+     "ai_weight": 1
+    }
+   ]
+  },
+  {
+   "id": "golden_age",
+   "title": "Years of plenty",
+   "mean_time_years": 20,
+   "once": false,
+   "trigger": {
+    "all": [
+     {
+      "stability": {
+       "min": 2
+      }
+     },
+     {
+      "at_war": false
+     }
+    ]
+   },
+   "text": "The floods have been good for seven years, the granaries overflow, the roads are safe, and poets say there was never such a reign.",
+   "options": [
+    {
+     "text": "Praise the gods and the ruler.",
+     "effects": {
+      "prestige": 10,
+      "gold": 50,
+      "capital_pops": 3
+     },
+     "ai_weight": 1
+    }
+   ]
+  }
+ ]
+}

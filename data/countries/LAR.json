@@ -1,90 +1,119 @@
 {
-	"_comment": "Larsa in 1800 BC: the strongest state of Sumer under Rim-Sin I, master of Ur, Eridu and the sea trade, about to swallow Isin.",
-	"tag": "LAR",
-	"name": "Larsa",
-	"adjective": "Larsan",
-	"color": [
-		200,
-		160,
-		60
-	],
-	"government": "Amorite kingdom",
-	"ruler_title": "King",
-	"capital": "Dhi-Qar",
-	"capital_name": "Larsa",
-	"gold": 120,
-	"laws": {
-		"government": "monarchy",
-		"succession": "primogeniture",
-		"citizenship": "ruling_culture",
-		"noncitizens": "tributaries",
-		"culture_policy": "tolerance",
-		"religion": "state_cult",
-		"legal_code": "codified",
-		"slavery": "legal",
-		"frontier": "open"
-	},
-	"techs": [
-		"monarchy",
-		"code_of_laws",
-		"writing",
-		"mathematics",
-		"masonry",
-		"sailing",
-		"calendar",
-		"diplomacy",
-		"bureaucracy",
-		"astronomy"
-	],
-	"ruler_names": [
-		"Rim-Sin",
-		"Warad-Sin",
-		"Kudur-Mabuk",
-		"Sin-iddinam",
-		"Nur-Adad",
-		"Gungunum"
-	],
-	"ruler_name_counts": {
-		"Rim-Sin": 1,
-		"Warad-Sin": 1,
-		"Kudur-Mabuk": 1,
-		"Sin-iddinam": 1,
-		"Nur-Adad": 1,
-		"Gungunum": 1
-	},
-	"start_provinces": [
-		{
-			"provinces": [
-				"Dhi-Qar",
-				"Al-Muthannia",
-				"Al-Basrah",
-				"Maysan"
-			],
-			"control": "core"
-		},
-		{
-			"provinces": [
-				"An-Najaf"
-			],
-			"control": "absorbed",
-			"since": "8181.1.1"
-		}
-	],
-	"ruler": {
-		"name": "Rim-Sin I",
-		"full_name": "Rim-Sin, king of Larsa, king of Sumer and Akkad",
-		"dynasty": "Dynasty of Kudur-Mabuk",
-		"birth": "8141.1.1",
-		"population": {
-			"province": "Dhi-Qar",
-			"culture": "asian",
-			"religion": "pagan",
-			"occupation": "peasants"
-		}
-	},
-	"claims": [
-		"Al-Qādisiyyah",
-		"Babil",
-		"Al-Basrah"
-	]
+  "_comment": "Larsa in 1800 BC: the strongest state of Sumer under Rim-Sin I, master of Ur, Eridu and the sea trade, about to swallow Isin.",
+  "tag": "LAR",
+  "name": "Larsa",
+  "adjective": "Larsan",
+  "color": [
+    200,
+    160,
+    60
+  ],
+  "government": "Amorite kingdom",
+  "ruler_title": "King",
+  "capital": "Dhi-Qar",
+  "capital_name": "Larsa",
+  "gold": 120,
+  "laws": {
+    "government": "monarchy",
+    "succession": "primogeniture",
+    "citizenship": "ruling_culture",
+    "noncitizens": "tributaries",
+    "culture_policy": "tolerance",
+    "religion": "state_cult",
+    "legal_code": "codified",
+    "slavery": "legal",
+    "frontier": "open"
+  },
+  "techs": [
+    "monarchy",
+    "code_of_laws",
+    "writing",
+    "mathematics",
+    "masonry",
+    "sailing",
+    "calendar",
+    "diplomacy",
+    "bureaucracy",
+    "astronomy"
+  ],
+  "ruler_names": [
+    "Rim-Sin",
+    "Warad-Sin",
+    "Kudur-Mabuk",
+    "Sin-iddinam",
+    "Nur-Adad",
+    "Gungunum"
+  ],
+  "ruler_name_counts": {
+    "Rim-Sin": 1,
+    "Warad-Sin": 1,
+    "Kudur-Mabuk": 1,
+    "Sin-iddinam": 1,
+    "Nur-Adad": 1,
+    "Gungunum": 1
+  },
+  "start_provinces": [
+    {
+      "provinces": [
+        "Dhi-Qar",
+        "Al-Muthannia",
+        "Al-Basrah",
+        "Maysan"
+      ],
+      "control": "core"
+    },
+    {
+      "provinces": [
+        "An-Najaf"
+      ],
+      "control": "absorbed",
+      "since": "8181.1.1"
+    }
+  ],
+  "ruler": {
+    "name": "Rim-Sin I",
+    "full_name": "Rim-Sin, king of Larsa, king of Sumer and Akkad",
+    "dynasty": "Dynasty of Kudur-Mabuk",
+    "birth": "8141.1.1",
+    "population": {
+      "province": "Dhi-Qar",
+      "culture": "asian",
+      "religion": "pagan",
+      "occupation": "peasants"
+    }
+  },
+  "claims": [
+    "Al-Qādisiyyah",
+    "Babil",
+    "Al-Basrah"
+  ],
+  "missions": [
+    {
+      "id": "lar_isin",
+      "title": "Rival Isin",
+      "text": "Isin claims the kingship of Sumer. End the quarrel.",
+      "requires": {
+        "owns_province": "Al-Qādisiyyah"
+      },
+      "requires_text": "Own Al-Qādisiyyah (Isin)",
+      "reward": {
+        "prestige": 15,
+        "legitimacy": 10
+      }
+    },
+    {
+      "id": "lar_babylon",
+      "title": "The Upstart Babylon",
+      "text": "Hammurabi's city grows bold. Take it before it takes us.",
+      "after": "lar_isin",
+      "requires": {
+        "owns_province": "Babil"
+      },
+      "requires_text": "Own Babil (Babylon)",
+      "reward": {
+        "prestige": 20,
+        "gold": 150
+      }
+    }
+  ]
 }

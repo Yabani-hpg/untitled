@@ -1,86 +1,128 @@
 {
-	"_comment": "Babylon in 1800 BC: a modest Amorite city-kingdom on the Euphrates under Sin-muballit, father of Hammurabi, holding Babylon, Sippar and Kish; hemmed in by Larsa, Eshnunna and Assyria.",
-	"tag": "BAB",
-	"name": "Babylon",
-	"adjective": "Babylonian",
-	"color": [
-		60,
-		120,
-		200
-	],
-	"government": "Amorite kingdom",
-	"ruler_title": "King",
-	"capital": "Babil",
-	"capital_name": "Babylon",
-	"gold": 40,
-	"laws": {
-		"government": "monarchy",
-		"succession": "primogeniture",
-		"citizenship": "ruling_culture",
-		"noncitizens": "tributaries",
-		"culture_policy": "tolerance",
-		"religion": "state_cult",
-		"legal_code": "codified",
-		"slavery": "legal",
-		"frontier": "open"
-	},
-	"techs": [
-		"monarchy",
-		"code_of_laws",
-		"writing",
-		"mathematics",
-		"masonry",
-		"sailing",
-		"calendar",
-		"diplomacy",
-		"bureaucracy"
-	],
-	"ruler_names": [
-		"Hammurabi",
-		"Samsu-iluna",
-		"Abi-eshuh",
-		"Ammi-ditana",
-		"Ammi-saduqa",
-		"Samsu-ditana",
-		"Sin-muballit",
-		"Apil-Sin"
-	],
-	"ruler_name_counts": {
-		"Hammurabi": 0,
-		"Samsu-iluna": 0,
-		"Abi-eshuh": 0,
-		"Ammi-ditana": 0,
-		"Ammi-saduqa": 0,
-		"Samsu-ditana": 0,
-		"Sin-muballit": 1,
-		"Apil-Sin": 1
-	},
-	"start_provinces": [
-		{
-			"provinces": [
-				"Babil",
-				"Baghdad",
-				"Karbala'"
-			],
-			"control": "core"
-		}
-	],
-	"ruler": {
-		"name": "Sin-muballit",
-		"full_name": "Sin-muballit, king of Babylon",
-		"dynasty": "First Dynasty of Babylon",
-		"birth": "8143.1.1",
-		"population": {
-			"province": "Babil",
-			"culture": "asian",
-			"religion": "pagan",
-			"occupation": "peasants"
-		}
-	},
-	"claims": [
-		"Al-Qādisiyyah",
-		"Diyala",
-		"Dhi-Qar",
-		"Al-Anbar"
-	]
+  "_comment": "Babylon in 1800 BC: a modest Amorite city-kingdom on the Euphrates under Sin-muballit, father of Hammurabi, holding Babylon, Sippar and Kish; hemmed in by Larsa, Eshnunna and Assyria.",
+  "tag": "BAB",
+  "name": "Babylon",
+  "adjective": "Babylonian",
+  "color": [
+    60,
+    120,
+    200
+  ],
+  "government": "Amorite kingdom",
+  "ruler_title": "King",
+  "capital": "Babil",
+  "capital_name": "Babylon",
+  "gold": 40,
+  "laws": {
+    "government": "monarchy",
+    "succession": "primogeniture",
+    "citizenship": "ruling_culture",
+    "noncitizens": "tributaries",
+    "culture_policy": "tolerance",
+    "religion": "state_cult",
+    "legal_code": "codified",
+    "slavery": "legal",
+    "frontier": "open"
+  },
+  "techs": [
+    "monarchy",
+    "code_of_laws",
+    "writing",
+    "mathematics",
+    "masonry",
+    "sailing",
+    "calendar",
+    "diplomacy",
+    "bureaucracy"
+  ],
+  "ruler_names": [
+    "Hammurabi",
+    "Samsu-iluna",
+    "Abi-eshuh",
+    "Ammi-ditana",
+    "Ammi-saduqa",
+    "Samsu-ditana",
+    "Sin-muballit",
+    "Apil-Sin"
+  ],
+  "ruler_name_counts": {
+    "Hammurabi": 0,
+    "Samsu-iluna": 0,
+    "Abi-eshuh": 0,
+    "Ammi-ditana": 0,
+    "Ammi-saduqa": 0,
+    "Samsu-ditana": 0,
+    "Sin-muballit": 1,
+    "Apil-Sin": 1
+  },
+  "start_provinces": [
+    {
+      "provinces": [
+        "Babil",
+        "Baghdad",
+        "Karbala'"
+      ],
+      "control": "core"
+    }
+  ],
+  "ruler": {
+    "name": "Sin-muballit",
+    "full_name": "Sin-muballit, king of Babylon",
+    "dynasty": "First Dynasty of Babylon",
+    "birth": "8143.1.1",
+    "population": {
+      "province": "Babil",
+      "culture": "asian",
+      "religion": "pagan",
+      "occupation": "peasants"
+    }
+  },
+  "claims": [
+    "Al-Qādisiyyah",
+    "Diyala",
+    "Dhi-Qar",
+    "Al-Anbar"
+  ],
+  "missions": [
+    {
+      "id": "bab_sumer",
+      "title": "Lord of Sumer",
+      "text": "Larsa holds the old cities of the south. Babylon's king must rule them.",
+      "requires": {
+        "owns_province": "Dhi-Qar"
+      },
+      "requires_text": "Own Dhi-Qar (Larsa)",
+      "reward": {
+        "prestige": 15,
+        "legitimacy": 10
+      }
+    },
+    {
+      "id": "bab_akkad",
+      "title": "Lord of Akkad",
+      "text": "Eshnunna across the Diyala is Babylon's rival for the north.",
+      "requires": {
+        "owns_province": "Diyala"
+      },
+      "requires_text": "Own Diyala (Eshnunna)",
+      "reward": {
+        "prestige": 10,
+        "gold": 100
+      }
+    },
+    {
+      "id": "bab_laws",
+      "title": "The Just King",
+      "text": "A great realm needs a great law.",
+      "after": "bab_sumer",
+      "requires": {
+        "tech": "code_of_laws"
+      },
+      "requires_text": "Know Code of laws",
+      "reward": {
+        "stability": 1,
+        "research": 40
+      }
+    }
+  ]
 }

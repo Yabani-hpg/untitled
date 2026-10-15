@@ -1,98 +1,150 @@
 {
-	"_comment": "The Kingdom of Upper Mesopotamia in 1800 BC: Shamshi-Adad I, an Amorite adventurer who took Ashur and Ekallatum, ruling from Shubat-Enlil in the Khabur; Mari is his next prize.",
-	"tag": "ASR",
-	"name": "Assyria",
-	"adjective": "Assyrian",
-	"color": [
-		150,
-		150,
-		160
-	],
-	"government": "Amorite kingdom",
-	"ruler_title": "King",
-	"capital": "Hasaka (Al Haksa)",
-	"capital_name": "Shubat-Enlil",
-	"gold": 100,
-	"laws": {
-		"government": "monarchy",
-		"succession": "primogeniture",
-		"citizenship": "ruling_culture",
-		"noncitizens": "tributaries",
-		"culture_policy": "tolerance",
-		"religion": "state_cult",
-		"legal_code": "codified",
-		"slavery": "legal",
-		"frontier": "open"
-	},
-	"techs": [
-		"monarchy",
-		"code_of_laws",
-		"writing",
-		"mathematics",
-		"masonry",
-		"sailing",
-		"calendar",
-		"diplomacy",
-		"bureaucracy"
-	],
-	"ruler_names": [
-		"Shamshi-Adad",
-		"Ishme-Dagan",
-		"Yasmah-Adad",
-		"Puzur-Ashur",
-		"Erishum",
-		"Ilu-shuma",
-		"Ashur-nirari",
-		"Adad-nirari"
-	],
-	"ruler_name_counts": {
-		"Shamshi-Adad": 1,
-		"Ishme-Dagan": 0,
-		"Yasmah-Adad": 0,
-		"Puzur-Ashur": 2,
-		"Erishum": 2,
-		"Ilu-shuma": 1,
-		"Ashur-nirari": 0,
-		"Adad-nirari": 0
-	},
-	"start_provinces": [
-		{
-			"provinces": [
-				"Hasaka (Al Haksa)",
-				"Ninawa",
-				"Sala ad-Din"
-			],
-			"control": "core"
-		},
-		{
-			"provinces": [
-				"At-Ta'mim",
-				"Arbil",
-				"Dihok"
-			],
-			"control": "absorbed",
-			"since": "8192.1.1"
-		}
-	],
-	"ruler": {
-		"name": "Shamshi-Adad I",
-		"full_name": "Shamshi-Adad, king of the universe, king of Upper Mesopotamia",
-		"dynasty": "House of Shamshi-Adad",
-		"birth": "8136.1.1",
-		"population": {
-			"province": "Hasaka (Al Haksa)",
-			"culture": "asian",
-			"religion": "pagan",
-			"occupation": "peasants"
-		}
-	},
-	"claims": [
-		"Dayr Az Zawr",
-		"Ar Raqqah",
-		"Diyala",
-		"At-Ta'mim"
-	],
-	"allies": [
-		"QTN"
-	]
+  "_comment": "The Kingdom of Upper Mesopotamia in 1800 BC: Shamshi-Adad I, an Amorite adventurer who took Ashur and Ekallatum, ruling from Shubat-Enlil in the Khabur; Mari is his next prize.",
+  "tag": "ASR",
+  "name": "Assyria",
+  "adjective": "Assyrian",
+  "color": [
+    150,
+    150,
+    160
+  ],
+  "government": "Amorite kingdom",
+  "ruler_title": "King",
+  "capital": "Hasaka (Al Haksa)",
+  "capital_name": "Shubat-Enlil",
+  "gold": 100,
+  "laws": {
+    "government": "monarchy",
+    "succession": "primogeniture",
+    "citizenship": "ruling_culture",
+    "noncitizens": "tributaries",
+    "culture_policy": "tolerance",
+    "religion": "state_cult",
+    "legal_code": "codified",
+    "slavery": "legal",
+    "frontier": "open"
+  },
+  "techs": [
+    "monarchy",
+    "code_of_laws",
+    "writing",
+    "mathematics",
+    "masonry",
+    "sailing",
+    "calendar",
+    "diplomacy",
+    "bureaucracy"
+  ],
+  "ruler_names": [
+    "Shamshi-Adad",
+    "Ishme-Dagan",
+    "Yasmah-Adad",
+    "Puzur-Ashur",
+    "Erishum",
+    "Ilu-shuma",
+    "Ashur-nirari",
+    "Adad-nirari"
+  ],
+  "ruler_name_counts": {
+    "Shamshi-Adad": 1,
+    "Ishme-Dagan": 0,
+    "Yasmah-Adad": 0,
+    "Puzur-Ashur": 2,
+    "Erishum": 2,
+    "Ilu-shuma": 1,
+    "Ashur-nirari": 0,
+    "Adad-nirari": 0
+  },
+  "start_provinces": [
+    {
+      "provinces": [
+        "Hasaka (Al Haksa)",
+        "Ninawa",
+        "Sala ad-Din"
+      ],
+      "control": "core"
+    },
+    {
+      "provinces": [
+        "At-Ta'mim",
+        "Arbil",
+        "Dihok"
+      ],
+      "control": "absorbed",
+      "since": "8192.1.1"
+    }
+  ],
+  "ruler": {
+    "name": "Shamshi-Adad I",
+    "full_name": "Shamshi-Adad, king of the universe, king of Upper Mesopotamia",
+    "dynasty": "House of Shamshi-Adad",
+    "birth": "8136.1.1",
+    "population": {
+      "province": "Hasaka (Al Haksa)",
+      "culture": "asian",
+      "religion": "pagan",
+      "occupation": "peasants"
+    }
+  },
+  "claims": [
+    "Dayr Az Zawr",
+    "Ar Raqqah",
+    "Diyala",
+    "At-Ta'mim"
+  ],
+  "allies": [
+    "QTN"
+  ],
+  "missions": [
+    {
+      "id": "asr_mari",
+      "title": "The Middle Euphrates",
+      "text": "Mari controls the river road to the west. Take it.",
+      "requires": {
+        "owns_province": "Dayr Az Zawr"
+      },
+      "requires_text": "Own Dayr Az Zawr (Mari)",
+      "reward": {
+        "prestige": 10,
+        "gold": 100
+      }
+    },
+    {
+      "id": "asr_assur",
+      "title": "Assur Restored",
+      "text": "The old city of Assur and the Tigris cities belong to Shamshi-Adad's house.",
+      "requires": {
+        "all": [
+          {
+            "owns_province": "Sala ad-Din"
+          },
+          {
+            "owns_province": "At-Ta'mim"
+          },
+          {
+            "stability": {
+              "min": 1
+            }
+          }
+        ]
+      },
+      "requires_text": "Own Sala ad-Din and At-Ta'mim at stability 1 or more",
+      "reward": {
+        "legitimacy": 10,
+        "research": 30
+      }
+    },
+    {
+      "id": "asr_karum",
+      "title": "The Karum of Kanesh",
+      "text": "The tin and textile trade with Anatolia is our wealth. Keep the merchants' colonies ours.",
+      "requires": {
+        "country_flag": "karum_founded"
+      },
+      "requires_text": "Found a karum (decision)",
+      "reward": {
+        "gold": 150
+      }
+    }
+  ]
 }
