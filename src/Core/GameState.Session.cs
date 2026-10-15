@@ -141,6 +141,9 @@ public partial class GameState : IWorld
 			c.CoalitionAgainst = null;
 			c.Loans.Clear();
 			c.BankruptUntil = default;
+			c.Fabricating.Clear();
+			c.Guarantees.Clear();
+			c.Marriages.Clear();
 			c.EstateLoyalty.Clear();
 			c.IdeaGroups.Clear();
 			c.Ideas.Clear();

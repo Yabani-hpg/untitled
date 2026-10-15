@@ -181,6 +181,10 @@ public partial class DiplomacyPanel : PanelContainer
 		if (DiplomacyRules.HasTruce(us, c.Tag, gs.Date)) parts.Add("truce");
 		if (gs.AreNeighbours(us.Tag, c.Tag)) parts.Add("neighbour");
 		if (us.Claims.Any(id => gs.Provinces[id]?.OwnerTag == c.Tag)) parts.Add("we have claims");
+		if (us.Guarantees.Contains(c.Tag)) parts.Add("we guarantee them");
+		if (c.Guarantees.Contains(us.Tag)) parts.Add("guarantees us");
+		if (us.Marriages.ContainsKey(c.Tag)) parts.Add("royal marriage");
+		if (us.Fabricating.Keys.Any(id => gs.Provinces[id]?.OwnerTag == c.Tag)) parts.Add("fabricating a claim");
 		if (us.Rivals.Contains(c.Tag)) parts.Add("our rival");
 		else if (c.Rivals.Contains(us.Tag)) parts.Add("counts us a rival");
 		if (c.CoalitionAgainst == us.Tag) parts.Add("in a coalition against us");
@@ -337,6 +341,71 @@ public partial class DiplomacyPanel : PanelContainer
 			vassal.TooltipText = why ?? "They become our vassal: tribute, and their levies in our wars";
 			vassal.Pressed += () => { if (!gs.OfferVassalage(c.Tag, out string r)) _status.Text = r; };
 			buttons.AddChild(vassal);
+		}
+		// guarantees and marriages
+		if (us.Guarantees.Contains(c.Tag))
+		{
+			var withdraw = HudStyle.Button("Withdraw guarantee", BodyFont, 13);
+			withdraw.TooltipText = "They will think worse of us";
+			withdraw.Pressed += () => gs.WithdrawGuarantee(c.Tag);
+			buttons.AddChild(withdraw);
+		}
+		else
+		{
+			string why = gs.GuaranteeObstacle(us, c);
+			var guarantee = HudStyle.Button("Guarantee independence", BodyFont, 13);
+			guarantee.Disabled = why != null;
+			guarantee.TooltipText = why ?? "We join their side whenever they are attacked; they think better of us";
+			guarantee.Pressed += () => { if (!gs.Guarantee(c.Tag, out string r)) _status.Text = r; };
+			buttons.AddChild(guarantee);
+		}
+		if (us.Marriages.ContainsKey(c.Tag))
+		{
+			var brk = HudStyle.Button("Break royal marriage", BodyFont, 13);
+			brk.TooltipText = $"Until {gs.Definitions.DefaultCalendar.Format(us.Marriages[c.Tag])} otherwise; breaking it costs prestige and their goodwill";
+			brk.Pressed += () => gs.BreakMarriage(c.Tag);
+			buttons.AddChild(brk);
+		}
+		else
+		{
+			string why = gs.MarriageObstacle(us, c);
+			var marry = HudStyle.Button("Royal marriage", BodyFont, 13);
+			marry.Disabled = why != null;
+			marry.TooltipText = why ?? $"Our houses joined: opinion +{DiplomacyRules.MarriageOpinion} both ways and a little legitimacy, for {DiplomacyRules.MarriageYears} years";
+			marry.Pressed += () => { if (!gs.RoyalMarriage(c.Tag, out string r)) _status.Text = r; };
+			buttons.AddChild(marry);
+		}
+		// fabricating claims along the border
+		var fabricable = gs.FabricableProvinces(us, c).OrderByDescending(p => p.TotalUnits).ToList();
+		var working = us.Fabricating.Where(kv => gs.Provinces[kv.Key]?.OwnerTag == c.Tag).ToList();
+		foreach (var (id, progress) in working)
+		{
+			var fabRow = new HBoxContainer();
+			fabRow.AddThemeConstantOverride("separation", 8);
+			actions.AddChild(fabRow);
+			fabRow.AddChild(HudStyle.Body($"Fabricating a claim on {gs.Provinces[id].Name}: {progress:0}% (+{DiplomacyRules.FabricationPerMonth:0} a month)", BodyFont, 13, HudStyle.Gold));
+			int pid = id;
+			var stop = HudStyle.Button("Recall", BodyFont, 12);
+			stop.Pressed += () => gs.StopFabricating(pid);
+			fabRow.AddChild(stop);
+		}
+		if (fabricable.Count > 0)
+		{
+			var fabRow = new HBoxContainer();
+			fabRow.AddThemeConstantOverride("separation", 8);
+			actions.AddChild(fabRow);
+			var pick = new OptionButton { FocusMode = FocusModeEnum.None };
+			if (BodyFont != null) pick.AddThemeFontOverride("font", BodyFont);
+			pick.AddThemeFontSizeOverride("font_size", 13);
+			foreach (Province p in fabricable)
+				pick.AddItem($"{p.Name} ({p.TotalUnits * PopGroup.PeoplePerUnit:N0} people)", p.Id);
+			fabRow.AddChild(pick);
+			string why = gs.FabricateObstacle(us, fabricable[0]);
+			var fab = HudStyle.Button("Fabricate claim", BodyFont, 13);
+			fab.Disabled = why != null;
+			fab.TooltipText = why ?? $"A diplomat forges a claim: {100 / DiplomacyRules.FabricationPerMonth:0} months, then a cause for war and the land cheaper to take; they think {DiplomacyRules.FabricationOpinion} of it";
+			fab.Pressed += () => { if (!gs.FabricateClaim(pick.GetSelectedId(), out string r)) _status.Text = r; };
+			fabRow.AddChild(fab);
 		}
 		var claims = us.Claims.Where(id => gs.Provinces[id]?.OwnerTag == c.Tag).Select(id => gs.Provinces[id].Name).ToList();
 		if (claims.Count > 0)

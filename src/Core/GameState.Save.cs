@@ -107,6 +107,15 @@ public partial class GameState
 			w.WriteStartArray("done");
 			foreach (string f in c.Done) w.WriteStringValue(f);
 			w.WriteEndArray();
+			w.WriteStartObject("fabricating");
+			foreach (var (id, progress) in c.Fabricating) w.WriteNumber(id.ToString(), Math.Round(progress, 2));
+			w.WriteEndObject();
+			w.WriteStartArray("guarantees");
+			foreach (string t in c.Guarantees) w.WriteStringValue(t);
+			w.WriteEndArray();
+			w.WriteStartObject("marriages");
+			foreach (var (t, until) in c.Marriages) w.WriteNumber(t, until.Day);
+			w.WriteEndObject();
 			w.WriteStartArray("rivals");
 			foreach (string t in c.Rivals) w.WriteStringValue(t);
 			w.WriteEndArray();
@@ -414,6 +423,15 @@ public partial class GameState
 				c.Done.Clear();
 				if (e.TryGetProperty("done", out JsonElement dn))
 					foreach (JsonElement f in dn.EnumerateArray()) c.Done.Add(f.GetString());
+				c.Fabricating.Clear();
+				if (e.TryGetProperty("fabricating", out JsonElement fb))
+					foreach (JsonProperty kv in fb.EnumerateObject()) c.Fabricating[int.Parse(kv.Name)] = kv.Value.GetDouble();
+				c.Guarantees.Clear();
+				if (e.TryGetProperty("guarantees", out JsonElement gu))
+					foreach (JsonElement t in gu.EnumerateArray()) c.Guarantees.Add(t.GetString());
+				c.Marriages.Clear();
+				if (e.TryGetProperty("marriages", out JsonElement ma))
+					foreach (JsonProperty kv in ma.EnumerateObject()) c.Marriages[kv.Name] = new GameDate(kv.Value.GetInt64());
 				c.Rivals.Clear();
 				if (e.TryGetProperty("rivals", out JsonElement rv))
 					foreach (JsonElement t in rv.EnumerateArray()) c.Rivals.Add(t.GetString());

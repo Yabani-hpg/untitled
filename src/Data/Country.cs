@@ -112,6 +112,12 @@ public sealed class Country
 	public HashSet<string> Ideas { get; } = new();
 	public double IdeaPoints { get; set; }
 	public double IdeaShare { get; set; } = Untitled.Rules.IdeaRules.DefaultShare;
+	/// <summary>Claims being fabricated: province id to progress (0..100).</summary>
+	public Dictionary<int, double> Fabricating { get; } = new();
+	/// <summary>Countries whose independence this one guarantees.</summary>
+	public HashSet<string> Guarantees { get; } = new();
+	/// <summary>Royal marriages, and when they end.</summary>
+	public Dictionary<string, GameDate> Marriages { get; } = new();
 	/// <summary>Loans taken, oldest first.</summary>
 	public List<Loan> Loans { get; } = new();
 	/// <summary>Until when the crown's credit and tax suffer after a bankruptcy.</summary>

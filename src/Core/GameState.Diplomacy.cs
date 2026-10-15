@@ -39,7 +39,7 @@ public partial class GameState
 	public double TributeOf(Country vassal) => vassal.OverlordTag == null ? 0 : vassal.LastLedger.Tax * WarRules.TributeShare;
 
 	/// <summary>Diplomats a country has free: its total less those courting tribes and countries.</summary>
-	public int FreeDiplomats(Country c) => TribeRules.DiplomatsOf(c) - c.ImprovingRelations.Count - c.ImprovingCountryRelations.Count;
+	public int FreeDiplomats(Country c) => TribeRules.DiplomatsOf(c) - c.ImprovingRelations.Count - c.ImprovingCountryRelations.Count - c.Fabricating.Count;
 
 	// ------------------------------------------------------------------------------------ set-up
 
@@ -204,6 +204,13 @@ public partial class GameState
 			attacker.Legitimacy = Math.Max(0, attacker.Legitimacy - 10);
 			foreach (Country o in SettledCountries.Where(o => o != attacker && o != defender && AreNeighbours(o.Tag, attacker.Tag)))
 				DiplomacyRules.AddModifier(o, attacker.Tag, "Made war without cause", -15, Date, 10);
+		}
+		// those who guaranteed the defender stand by it
+		foreach (Country g in SettledCountries.Where(g => g.Guarantees.Contains(defender.Tag) && g != attacker && !war.Includes(g.Tag) && !g.Allies.Contains(attacker.Tag) && g.OverlordTag == null))
+		{
+			war.Defenders.Add(g.Tag);
+			if (g.Tag == PlayerTag)
+				Notify($"We guaranteed {defender.Name}: we are at war with {attacker.Name}.");
 		}
 		// vassals follow their overlord; allies answer the call: the defender's first, then the attacker's
 		foreach (var (leader, side) in new[] { (defender, war.Defenders), (attacker, war.Attackers) })
@@ -516,6 +523,7 @@ public partial class GameState
 			StateRules.MonthlyStep(c, AtWar(c.Tag));
 		}
 		RunCoalitionStep();
+		RunFabricationStep();
 		foreach (War w in _wars.Values)
 			WarRules.UpdateScore(w, _countries, _provinces);
 		EmitSignal(SignalName.DiplomacyChanged);

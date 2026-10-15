@@ -143,6 +143,16 @@ public partial class Outliner : PanelContainer
 				Row(text, color, tip, action);
 		}
 
+		if (c.Fabricating.Count > 0)
+		{
+			Header($"Claims being fabricated ({c.Fabricating.Count})");
+			foreach (var (id, progress) in c.Fabricating)
+			{
+				Province p = gs.GetProvince(id);
+				string owner = p?.OwnerTag;
+				Row($"{p?.Name} ({gs.GetCountry(owner)?.Name}) · {progress:0}%", HudStyle.Text, "Open the diplomacy window", () => Diplomacy()?.Open(owner));
+			}
+		}
 		var armies = gs.ArmiesOf(c.Tag).OrderBy(a => a.IsFleet).ThenBy(a => a.Name).ToList();
 		Header($"Armies and fleets ({armies.Count})");
 		if (armies.Count == 0)

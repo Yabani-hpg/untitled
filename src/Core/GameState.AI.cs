@@ -24,6 +24,7 @@ public partial class GameState
 		{
 			AiDiplomacy(c);
 			AiRivals(c);
+			AiActions(c);
 			AiTrade(c);
 			AiNavy(c);
 			if (AtWar(c.Tag))

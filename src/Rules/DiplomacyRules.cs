@@ -35,6 +35,9 @@ public static class DiplomacyRules
 	/// <summary>Coalitions: aggression needed to join; members needed and strength (against the aggressor's side) to strike.</summary>
 	public const double CoalitionThreshold = 50, CoalitionStrikeRatio = 0.8;
 	public const int CoalitionMinMembers = 2;
+	/// <summary>Fabricated claims: progress a month toward 100, and what the owner thinks of it.</summary>
+	public const double FabricationPerMonth = 5;
+	public const int FabricationOpinion = -15, GuaranteeOpinion = 10, MarriageOpinion = 15, MarriageOpinionNeeded = 0, MarriageYears = 25;
 
 	/// <summary>Where a country's opinion of another settles with nothing else going on.</summary>
 	public static int BaseOpinion(Country of, Country other, bool neighbours)
