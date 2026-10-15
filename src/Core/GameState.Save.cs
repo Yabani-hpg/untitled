@@ -97,6 +97,7 @@ public partial class GameState
 			if (c.OverlordTag != null)
 			{
 				w.WriteString("overlord", c.OverlordTag);
+				w.WriteString("subject", c.Subject.ToString().ToLowerInvariant());
 				w.WriteNumber("vassal_since", c.VassalSince.Day);
 			}
 			w.WriteNumber("legitimacy", Math.Round(c.Legitimacy, 2));
@@ -455,6 +456,7 @@ public partial class GameState
 				c.Crownland = e.TryGetProperty("crownland", out JsonElement cl) ? cl.GetDouble() : EstateRules.StartCrownland;
 				c.OverlordTag = e.TryGetProperty("overlord", out JsonElement ov) && _countries.ContainsKey(ov.GetString()) ? ov.GetString() : null;
 				c.VassalSince = e.TryGetProperty("vassal_since", out JsonElement vs) ? new GameDate(vs.GetInt64()) : default;
+				c.Subject = e.TryGetProperty("subject", out JsonElement sk) && Enum.TryParse(sk.GetString(), true, out SubjectKind kind) ? kind : SubjectKind.Vassal;
 				c.Legitimacy = e.TryGetProperty("legitimacy", out JsonElement lg) ? lg.GetDouble() : 100;
 				c.WarExhaustion = e.TryGetProperty("war_exhaustion", out JsonElement we) ? we.GetDouble() : 0;
 				c.EventFlags.Clear();

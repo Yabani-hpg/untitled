@@ -30,8 +30,10 @@ public static class WarRules
 	public const double ClaimDiscount = 0.6;
 	/// <summary>Score cost of making the loser a vassal: this, plus this much again for every province it has.</summary>
 	public const double VassalizeCostBase = 30, VassalizeCostPerProvince = 8;
-	/// <summary>Share of a vassal's tax paid to its overlord each month.</summary>
-	public const double TributeShare = 0.25;
+	/// <summary>Share of a vassal's tax paid to its overlord each month, and a tributary's.</summary>
+	public const double TributeShare = 0.25, TributaryShare = 0.15;
+	/// <summary>Score cost of making the loser a tributary: this, plus this much again for every province it has.</summary>
+	public const double TributaryCostBase = 15, TributaryCostPerProvince = 4;
 	/// <summary>Years a vassal must have been one before it can be annexed.</summary>
 	public const int YearsBeforeAnnex = 10;
 	/// <summary>Score cost of gold: one point for this much.</summary>
@@ -134,6 +136,8 @@ public static class WarRules
 		if (terms.ReleaseVassals) cost += ReleaseVassalsCost;
 		if (terms.Vassalize)
 			cost += VassalizeCostBase + VassalizeCostPerProvince * provinces.Count(p => p?.OwnerTag != null && loserSide.Contains(p.OwnerTag));
+		if (terms.Tributary)
+			cost += TributaryCostBase + TributaryCostPerProvince * provinces.Count(p => p?.OwnerTag != null && loserSide.Contains(p.OwnerTag));
 		foreach (int id in terms.Provinces)
 		{
 			Province p = provinces[id];

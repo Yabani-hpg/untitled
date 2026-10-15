@@ -25,7 +25,7 @@ public partial class GameState
 			return "They are our ally";
 		if (us.OverlordTag == them.Tag || them.OverlordTag == us.Tag)
 			return "Not between a lord and his vassal";
-		if (us.OverlordTag != null)
+		if (us.FollowsOverlord)
 			return "A vassal has its overlord's rivals";
 		double ours = WarRules.Strength(us, _provinces, _armies.Values, Date), theirs = WarRules.Strength(them, _provinces, _armies.Values, Date);
 		if (theirs < ours * DiplomacyRules.RivalMinStrength)
@@ -133,7 +133,7 @@ public partial class GameState
 			return $"Their aggression must frighten us more ({AggressionOf(us, them.Tag):0} of {DiplomacyRules.CoalitionThreshold})";
 		if (us.Allies.Contains(them.Tag) || us.OverlordTag == them.Tag || them.OverlordTag == us.Tag)
 			return "Not against an ally, overlord or vassal";
-		if (us.OverlordTag != null)
+		if (us.FollowsOverlord)
 			return "A vassal follows its overlord";
 		if (AtWarWith(us.Tag, them.Tag))
 			return "We are at war with them already";
@@ -197,7 +197,7 @@ public partial class GameState
 		// coalitions strike when they outweigh their target
 		foreach (Country target in settled)
 		{
-			var members = CoalitionAgainst(target.Tag).Where(m => !AtWarWith(m.Tag, target.Tag) && !DiplomacyRules.HasTruce(m, target.Tag, Date) && m.OverlordTag == null).ToList();
+			var members = CoalitionAgainst(target.Tag).Where(m => !AtWarWith(m.Tag, target.Tag) && !DiplomacyRules.HasTruce(m, target.Tag, Date) && !m.FollowsOverlord).ToList();
 			if (members.Count < DiplomacyRules.CoalitionMinMembers || AtWar(target.Tag) && members.Any(m => target.Allies.Contains(m.Tag)))
 				continue;
 			double theirs = WarRules.SideStrength(members.Select(m => m.Tag), _countries, _provinces, _armies.Values, Date);

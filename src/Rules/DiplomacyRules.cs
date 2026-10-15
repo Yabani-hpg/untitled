@@ -115,7 +115,7 @@ public static class DiplomacyRules
 	{
 		if (us.Allies.Contains(them.Tag))
 			return "Already our ally";
-		if (us.OverlordTag != null || them.OverlordTag != null)
+		if (us.FollowsOverlord || them.FollowsOverlord)
 			return "Vassals make no alliances of their own";
 		if (wars.Any(w => w.AreEnemies(us.Tag, them.Tag)))
 			return "We are at war with them";

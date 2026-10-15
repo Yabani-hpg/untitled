@@ -10,6 +10,13 @@ namespace Untitled.Data;
 /// data/countries/TAG.json can add its government, capital, ruler and dynamic flags.
 /// The rest is live game state.
 /// </summary>
+/// <summary>
+/// Kinds of subject: a vassal pays tribute, follows its overlord to war and may in time be annexed; a march pays
+/// nothing and can't be annexed, but holds the border with stronger levies and defences; a tributary pays tribute
+/// but keeps its own wars and alliances, and neither side fights the other's wars.
+/// </summary>
+public enum SubjectKind { Vassal, March, Tributary }
+
 public sealed class Country
 {
 	public string Tag { get; }
@@ -91,6 +98,10 @@ public sealed class Country
 	public string OverlordTag { get; set; }
 	/// <summary>Since when it has been a vassal.</summary>
 	public GameDate VassalSince { get; set; }
+	/// <summary>What kind of subject it is to its overlord.</summary>
+	public SubjectKind Subject { get; set; } = SubjectKind.Vassal;
+	/// <summary>Whether it follows an overlord to war and makes none of its own: a vassal or march, but not a tributary.</summary>
+	public bool FollowsOverlord => OverlordTag != null && Subject != SubjectKind.Tributary;
 	/// <summary>Flags set by events and decisions ("hyksos_arrived").</summary>
 	public HashSet<string> EventFlags { get; } = new();
 	/// <summary>Events that fire once and have fired, decisions taken, missions done.</summary>

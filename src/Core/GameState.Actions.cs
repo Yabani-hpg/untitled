@@ -92,7 +92,7 @@ public partial class GameState
 			return "No such country";
 		if (us.Guarantees.Contains(them.Tag))
 			return "Already guaranteed";
-		if (us.OverlordTag != null || them.OverlordTag != null)
+		if (us.FollowsOverlord || them.FollowsOverlord)
 			return "Not for vassals";
 		if (AtWarWith(us.Tag, them.Tag))
 			return "We are at war with them";

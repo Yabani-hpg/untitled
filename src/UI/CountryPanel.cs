@@ -248,10 +248,10 @@ public partial class CountryPanel : PanelContainer
 		if (c.CoalitionAgainst != null)
 			Row("Coalition", $"we stand against {gs.GetCountry(c.CoalitionAgainst)?.Name} with {gs.CoalitionAgainst(c.CoalitionAgainst).Count() - 1} others", HudStyle.Gold);
 		if (c.OverlordTag != null)
-			Row("Overlord", $"{gs.GetCountry(c.OverlordTag)?.Name} · we pay {gs.TributeOf(c):0.0} gold a month", HudStyle.Bad);
+			Row("Overlord", $"{gs.GetCountry(c.OverlordTag)?.Name} · we are its {SubjectRules.Word(c.Subject)}{(gs.TributeOf(c) > 0 ? $", paying {gs.TributeOf(c):0.0} gold a month" : "")}", HudStyle.Bad);
 		var vassals = gs.VassalsOf(c.Tag).ToList();
 		if (vassals.Count > 0)
-			Row("Vassals", string.Join(", ", vassals.Select(v => $"{v.Name} ({gs.TributeOf(v):0.0} gold)")));
+			Row("Subjects", string.Join(", ", vassals.Select(v => $"{v.Name} ({SubjectRules.Word(v.Subject)}{(gs.TributeOf(v) > 0 ? $", {gs.TributeOf(v):0.0} gold" : "")})")));
 		Row("Allied tribes", string.Join(", ", gs.Tribes.Values.Where(t => t.AlliedTag == c.Tag).Select(t => t.Name)) is { Length: > 0 } a ? a : "None");
 		var actions = new HBoxContainer();
 		actions.AddThemeConstantOverride("separation", 6);

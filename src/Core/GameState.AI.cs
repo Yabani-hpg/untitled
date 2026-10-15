@@ -90,7 +90,7 @@ public partial class GameState
 				AnnexVassal(c, v);
 		}
 		// war: press a claim or take revenge on a neighbour we outmatch (vassals make no war)
-		if (AtWar(c.Tag) || c.Gold < 20 || c.OverlordTag != null)
+		if (AtWar(c.Tag) || c.Gold < 20 || c.FollowsOverlord)
 			return;
 		foreach (Country target in neighbours.OrderByDescending(o => c.Rivals.Contains(o.Tag) ? 1 : 0).ThenBy(_ => _rng.Next()))
 		{
@@ -259,6 +259,15 @@ public partial class GameState
 				return terms;
 			terms.Vassalize = false;
 		}
+		// a bigger loser we hold no claims on is made a tributary instead, when the score allows
+		if (loserLeaderFirst != null && loserLeaderFirst.OverlordTag == null && winner.OverlordTag == null
+			&& ProvincesOf(loserLeaderFirst.Tag).Count() * 2 <= ProvincesOf(winner.Tag).Count()
+			&& !winner.Claims.Any(id => _provinces[id]?.OwnerTag == loserLeaderFirst.Tag))
+		{
+			terms.Tributary = true;
+			if (WarRules.TermsCost(terms, winner, losers, _countries, _provinces) > score)
+				terms.Tributary = false;
+		}
 		var candidates = WarRules.Demandable(war, winnerSide, _provinces)
 			.OrderByDescending(p => winner.Claims.Contains(p.Id) ? 2 : 0 + (p.OccupierTag != null ? 1 : 0))
 			.ThenBy(p => WarRules.Value(p, GetCountry(p.OwnerTag))).ToList();
@@ -316,6 +325,8 @@ public partial class GameState
 			parts.Add(string.Join(", ", terms.Provinces.Select(id => GetProvince(id)?.Name)));
 		if (terms.Gold > 0)
 			parts.Add($"{terms.Gold:0} gold");
+		if (terms.Vassalize) parts.Add("vassalage");
+		if (terms.Tributary) parts.Add("tribute");
 		if (terms.Humiliate)
 			parts.Add("a humbling before the world");
 		if (terms.AnnulAlliances) parts.Add("the annulment of their alliances");

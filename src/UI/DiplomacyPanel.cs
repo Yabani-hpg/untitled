@@ -174,9 +174,9 @@ public partial class DiplomacyPanel : PanelContainer
 	{
 		var parts = new List<string>();
 		if (gs.AtWarWith(us.Tag, c.Tag)) parts.Add("at war with us");
-		if (c.OverlordTag == us.Tag) parts.Add("our vassal");
+		if (c.OverlordTag == us.Tag) parts.Add($"our {SubjectRules.Word(c.Subject)}");
 		else if (us.OverlordTag == c.Tag) parts.Add("our overlord");
-		else if (c.OverlordTag != null) parts.Add($"vassal of {gs.GetCountry(c.OverlordTag)?.Name}");
+		else if (c.OverlordTag != null) parts.Add($"{SubjectRules.Word(c.Subject)} of {gs.GetCountry(c.OverlordTag)?.Name}");
 		if (us.Allies.Contains(c.Tag)) parts.Add("ally");
 		if (DiplomacyRules.HasTruce(us, c.Tag, gs.Date)) parts.Add("truce");
 		if (gs.AreNeighbours(us.Tag, c.Tag)) parts.Add("neighbour");
@@ -215,8 +215,8 @@ public partial class DiplomacyPanel : PanelContainer
 		facts.AddChild(HudStyle.Body($"{owned.Count} provinces · {owned.Sum(p => p.TotalUnits) * PopGroup.PeoplePerUnit:N0} people · capital {gs.CapitalText(c)}", BodyFont, 13));
 		facts.AddChild(HudStyle.Body($"Strength {WarRules.Strength(c, gs.Provinces, gs.Armies.Values, gs.Date):0} regiments (ours {WarRules.Strength(us, gs.Provinces, gs.Armies.Values, gs.Date):0}) · prestige {c.Prestige:0}", BodyFont, 13));
 		facts.AddChild(HudStyle.Body("Allies: " + (c.Allies.Count > 0 ? string.Join(", ", c.Allies.Select(t => gs.GetCountry(t)?.Name)) : "none")
-			+ (c.OverlordTag != null ? $" · vassal of {gs.GetCountry(c.OverlordTag)?.Name}" : "")
-			+ (gs.VassalsOf(c.Tag).Any() ? $" · vassals: {string.Join(", ", gs.VassalsOf(c.Tag).Select(v => v.Name))}" : ""), BodyFont, 13, HudStyle.Muted));
+			+ (c.OverlordTag != null ? $" · {SubjectRules.Word(c.Subject)} of {gs.GetCountry(c.OverlordTag)?.Name}" : "")
+			+ (gs.VassalsOf(c.Tag).Any() ? $" · subjects: {string.Join(", ", gs.VassalsOf(c.Tag).Select(v => $"{v.Name} ({SubjectRules.Word(v.Subject)})"))}" : ""), BodyFont, 13, HudStyle.Muted));
 		var rivalsOf = c.Rivals.Select(t => gs.GetCountry(t)?.Name).Where(n => n != null).ToList();
 		var coalition = gs.CoalitionAgainst(c.Tag).ToList();
 		facts.AddChild(HudStyle.Body("Rivals: " + (rivalsOf.Count > 0 ? string.Join(", ", rivalsOf) : "none")
@@ -325,13 +325,38 @@ public partial class DiplomacyPanel : PanelContainer
 		buttons.AddChild(war);
 		if (c.OverlordTag == us.Tag)
 		{
-			string why = gs.AnnexObstacle(us, c);
-			var annex = HudStyle.Button("Annex", BodyFont, 13);
-			annex.Disabled = why != null;
-			annex.TooltipText = why ?? "Their provinces become ours (conquered, with separatism); our neighbours and other vassals think worse of us";
-			annex.Pressed += () => { if (!gs.Annex(c.Tag, out string r)) _status.Text = r; };
-			buttons.AddChild(annex);
-			actions.AddChild(HudStyle.Body($"They pay us {gs.TributeOf(c):0.0} gold a month in tribute and follow us to war.", BodyFont, 12, HudStyle.Muted));
+			if (c.Subject == SubjectKind.Vassal)
+			{
+				string why = gs.AnnexObstacle(us, c);
+				var annex = HudStyle.Button("Annex", BodyFont, 13);
+				annex.Disabled = why != null;
+				annex.TooltipText = why ?? "Their provinces become ours (conquered, with separatism); our neighbours and other vassals think worse of us";
+				annex.Pressed += () => { if (!gs.Annex(c.Tag, out string r)) _status.Text = r; };
+				buttons.AddChild(annex);
+				string whyMarch = gs.MarchObstacle(us, c);
+				var march = HudStyle.Button("Make a march", BodyFont, 13);
+				march.Disabled = whyMarch != null;
+				march.TooltipText = whyMarch ?? $"They pay no tribute and can never be annexed, but hold the border: a larger levy ({SubjectRules.MarchLevies:P0} more of their people) and {SubjectRules.MarchDefense:P0} stronger in defence";
+				march.Pressed += () => { if (!gs.MakeMarch(c.Tag, out string r)) _status.Text = r; };
+				buttons.AddChild(march);
+			}
+			else if (c.Subject == SubjectKind.March)
+			{
+				var revoke = HudStyle.Button("Revoke the march", BodyFont, 13);
+				revoke.TooltipText = $"They become a plain vassal again, paying tribute · they think {SubjectRules.RevokeMarchOpinion} worse of us";
+				revoke.Pressed += () => { if (!gs.RevokeMarch(c.Tag, out string r)) _status.Text = r; };
+				buttons.AddChild(revoke);
+			}
+			var release = HudStyle.Button("Release", BodyFont, 13);
+			release.TooltipText = $"They go free, and think {SubjectRules.ReleaseOpinion:+0} of us for it";
+			release.Pressed += () => { if (!gs.ReleaseSubject(c.Tag, out string r)) _status.Text = r; };
+			buttons.AddChild(release);
+			actions.AddChild(HudStyle.Body(c.Subject switch
+			{
+				SubjectKind.March => "Our march: they pay no tribute, follow us to war and hold the border with stronger levies and defences.",
+				SubjectKind.Tributary => $"Our tributary: they pay us {gs.TributeOf(c):0.0} gold a month but keep their own wars and alliances; neither of us fights the other's wars.",
+				_ => $"They pay us {gs.TributeOf(c):0.0} gold a month in tribute and follow us to war.",
+			}, BodyFont, 12, HudStyle.Muted));
 		}
 		else
 		{
@@ -498,6 +523,10 @@ public partial class DiplomacyPanel : PanelContainer
 		if (BodyFont != null) vassalTick.AddThemeFontOverride("font", BodyFont);
 		vassalTick.AddThemeFontSizeOverride("font_size", 13);
 		vassalTick.Visible = enemyLeader?.OverlordTag == null && us.OverlordTag == null;
+		var tributaryTick = new CheckBox { Text = $"Make {enemyLeader?.Name} our tributary", FocusMode = FocusModeEnum.None };
+		if (BodyFont != null) tributaryTick.AddThemeFontOverride("font", BodyFont);
+		tributaryTick.AddThemeFontSizeOverride("font_size", 13);
+		tributaryTick.Visible = vassalTick.Visible;
 		var humbleTick = new CheckBox { Text = $"Humble {enemyLeader?.Name} before the world", FocusMode = FocusModeEnum.None };
 		if (BodyFont != null) humbleTick.AddThemeFontOverride("font", BodyFont);
 		humbleTick.AddThemeFontSizeOverride("font_size", 13);
@@ -521,7 +550,7 @@ public partial class DiplomacyPanel : PanelContainer
 		Extra("Free their vassals", $"Their vassals go free and think well of us · costs {WarRules.ReleaseVassalsCost:0} score", enemyLeader != null && gs.VassalsOf(enemyLeader.Tag).Any(), (t, on) => t.ReleaseVassals = on);
 		PeaceTerms Terms()
 		{
-			var t = new PeaceTerms { Gold = goldBox.Value, Vassalize = vassalTick.ButtonPressed, Humiliate = humbleTick.ButtonPressed };
+			var t = new PeaceTerms { Gold = goldBox.Value, Vassalize = vassalTick.ButtonPressed, Tributary = tributaryTick.ButtonPressed && !vassalTick.ButtonPressed, Humiliate = humbleTick.ButtonPressed };
 			foreach (var (tick, set) in extraTicks)
 				set(t, tick.ButtonPressed);
 			t.Provinces.AddRange(chosen.Where(id => demandable.Any(p => p.Id == id)));
@@ -546,10 +575,14 @@ public partial class DiplomacyPanel : PanelContainer
 			tick.Toggled += on => { if (on) chosen.Add(id); else chosen.Remove(id); UpdateCost(); };
 			grid.AddChild(tick);
 		}
-		vassalTick.Toggled += _ => UpdateCost();
+		vassalTick.Toggled += on => { if (on) tributaryTick.ButtonPressed = false; UpdateCost(); };
 		var vassalOnly = new PeaceTerms { Vassalize = true };
 		vassalTick.TooltipText = $"They keep their land but pay tribute and follow us to war · costs {WarRules.TermsCost(vassalOnly, us, losers, gs.Countries, gs.Provinces):0} score";
 		peace.AddChild(vassalTick);
+		tributaryTick.Toggled += on => { if (on) vassalTick.ButtonPressed = false; UpdateCost(); };
+		var tributaryOnly = new PeaceTerms { Tributary = true };
+		tributaryTick.TooltipText = $"They pay us tribute but keep their own wars and alliances · costs {WarRules.TermsCost(tributaryOnly, us, losers, gs.Countries, gs.Provinces):0} score";
+		peace.AddChild(tributaryTick);
 		humbleTick.Toggled += _ => UpdateCost();
 		peace.AddChild(humbleTick);
 		foreach (var (tick, _) in extraTicks)

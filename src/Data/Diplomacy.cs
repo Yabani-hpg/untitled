@@ -61,8 +61,9 @@ public sealed class PeaceTerms
 	/// <summary>Provinces the winner takes (ids).</summary>
 	public List<int> Provinces { get; } = new();
 	public double Gold { get; set; }
-	/// <summary>The loser becomes the winner's vassal.</summary>
+	/// <summary>The loser becomes the winner's vassal, or its tributary.</summary>
 	public bool Vassalize { get; set; }
+	public bool Tributary { get; set; }
 	/// <summary>The loser is humbled before the world: prestige passes from it to the winner.</summary>
 	public bool Humiliate { get; set; }
 	/// <summary>The loser gives up its alliances; its claims on the winners' land; a tenth of its income for ten years; half its trade power to the winner for ten years; its vassals.</summary>
@@ -71,5 +72,5 @@ public sealed class PeaceTerms
 	public bool Reparations { get; set; }
 	public bool TradePower { get; set; }
 	public bool ReleaseVassals { get; set; }
-	public bool IsWhitePeace => Provinces.Count == 0 && Gold <= 0 && !Vassalize && !Humiliate && !AnnulAlliances && !RevokeClaims && !Reparations && !TradePower && !ReleaseVassals;
+	public bool IsWhitePeace => Provinces.Count == 0 && Gold <= 0 && !Vassalize && !Tributary && !Humiliate && !AnnulAlliances && !RevokeClaims && !Reparations && !TradePower && !ReleaseVassals;
 }
