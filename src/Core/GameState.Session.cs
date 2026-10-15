@@ -29,6 +29,8 @@ public enum MapMode
 	Deposits,
 	/// <summary>Each province's biome, with its relief (hills, mountains, impassable peaks) in stripes.</summary>
 	Terrain,
+	/// <summary>Trade nodes: where each province's goods are sold.</summary>
+	Trade,
 }
 
 // A game session: new game setup, the player's country, rulers, dynamic flags and the map mode.
@@ -133,6 +135,7 @@ public partial class GameState : IWorld
 			c.WarExhaustion = 0;
 			c.EventFlags.Clear();
 			c.Done.Clear();
+			c.Merchants.Clear();
 			if (c.Definition == null)
 				continue;
 			foreach (string f in c.Definition.StartFlags)
@@ -162,6 +165,7 @@ public partial class GameState : IWorld
 		SetUpTribeRelations();
 		_pendingEvents.Clear();
 		SetUpDiplomacy();
+		RecomputeTrade();
 		EnsureMenAndWomen();
 		foreach (Tribe t in _tribes.Values)
 		{

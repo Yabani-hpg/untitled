@@ -23,6 +23,7 @@ public partial class GameState
 		foreach (Country c in SettledCountries.Where(c => c.Tag != PlayerTag).ToList())
 		{
 			AiDiplomacy(c);
+			AiTrade(c);
 			if (AtWar(c.Tag))
 				AiWar(c);
 			else

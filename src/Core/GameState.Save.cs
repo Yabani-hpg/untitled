@@ -81,6 +81,16 @@ public partial class GameState
 			w.WriteStartArray("done");
 			foreach (string f in c.Done) w.WriteStringValue(f);
 			w.WriteEndArray();
+			w.WriteStartArray("merchants");
+			foreach (Merchant m in c.Merchants)
+			{
+				w.WriteStartObject();
+				w.WriteString("node", m.NodeId);
+				w.WriteString("task", m.Task.ToString());
+				if (m.ToNodeId != null) w.WriteString("to", m.ToNodeId);
+				w.WriteEndObject();
+			}
+			w.WriteEndArray();
 			w.WriteStartObject("opinions");
 			foreach (var (tag, o) in c.Opinions)
 				w.WriteNumber(tag, o);
@@ -358,6 +368,16 @@ public partial class GameState
 				c.Done.Clear();
 				if (e.TryGetProperty("done", out JsonElement dn))
 					foreach (JsonElement f in dn.EnumerateArray()) c.Done.Add(f.GetString());
+				c.Merchants.Clear();
+				if (e.TryGetProperty("merchants", out JsonElement ms))
+				{
+					foreach (JsonElement m in ms.EnumerateArray())
+					{
+						string node = m.GetProperty("node").GetString();
+						if (Definitions.TradeNodes.Exists(n => n.Id == node))
+							c.Merchants.Add(new Merchant(node, Enum.Parse<MerchantTask>(m.GetProperty("task").GetString()), m.TryGetProperty("to", out JsonElement to) ? to.GetString() : null));
+					}
+				}
 				c.Opinions.Clear();
 				foreach (JsonProperty o in opinions.EnumerateObject())
 					c.Opinions[o.Name] = o.Value.GetInt32();

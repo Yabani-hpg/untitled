@@ -81,6 +81,7 @@ public static partial class DataLoader
 				FoodYield = GetFloat(e, "food_yield", 0f),
 				WorkedBy = workedBy,
 				Origin = e.TryGetProperty("origin", out JsonElement origin) ? origin.GetString() : null,
+				Price = GetFloat(e, "price", 0f),
 			};
 			if (r.Category == ResourceCategory.Food && (r.FoodYield <= 0f || workedBy.Count == 0))
 				throw new DataException($"{where}: food resources need food_yield and worked_by");

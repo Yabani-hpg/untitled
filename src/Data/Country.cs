@@ -94,6 +94,8 @@ public sealed class Country
 	public HashSet<string> EventFlags { get; } = new();
 	/// <summary>Events that fire once and have fired, decisions taken, missions done.</summary>
 	public HashSet<string> Done { get; } = new();
+	/// <summary>Merchants at work, one per trade node at most.</summary>
+	public List<Merchant> Merchants { get; } = new();
 	/// <summary>Stability, -3..+3.</summary>
 	public int Stability { get; set; }
 	/// <summary>The ruler's legitimacy, 0..100.</summary>

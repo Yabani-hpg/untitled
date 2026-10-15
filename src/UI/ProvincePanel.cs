@@ -585,6 +585,19 @@ public partial class ProvincePanel : PanelContainer
 		ProductionReport report = GameState.Instance.GetProduction(p.Id);
 		Definitions defs = GameState.Instance.Definitions;
 
+		var tradeBox = Section("Trade");
+		TradeReport trade = GameState.Instance.Trade;
+		if (p.TradeNode == null)
+			tradeBox.AddChild(HudStyle.Body("Off the trade routes", BodyFont, 14, HudStyle.Muted));
+		else
+		{
+			NodeReport node = trade?.Of(p.TradeNode);
+			double value = trade?.ProvinceValue.GetValueOrDefault(p.Id) ?? 0;
+			tradeBox.AddChild(HudStyle.Body($"Sold in {p.TradeNode.Name}: {value:0.00} trade value a month", BodyFont, 14));
+			if (node != null && p.OwnerTag != null)
+				tradeBox.AddChild(HudStyle.Body($"{GameState.Instance.GetCountry(p.OwnerTag)?.Adjective} trade power there: {node.Share(p.OwnerTag):P0} of a node worth {node.Total:0.0}", BodyFont, 13, HudStyle.Muted));
+		}
+
 		var nr = Section("Non-renewable");
 		if (p.NonRenewable == null)
 			nr.AddChild(HudStyle.Body("No deposits", BodyFont, 14, HudStyle.Muted));

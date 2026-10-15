@@ -194,9 +194,10 @@ public partial class PlayerBar : PanelContainer
 		_ruler.Text = r == null ? c.Government : $"{c.RulerTitle} {r.Name}, {r.AgeOn(gs.Date)}";
 
 		var owned = gs.ProvincesOf(c.Tag).ToList();
-		var ledger = EconomyRules.MonthlyLedger(c, owned, gs.Tribes.Values, gs.Armies.Values, gs.Date);
+		var ledger = EconomyRules.MonthlyLedger(c, owned, gs.Tribes.Values, gs.Armies.Values, gs.Date, gs.Trade);
 		Set("gold", $"{c.Gold:N0}", $"{ledger.Balance:+0.0;-0.0}/month",
 			$"Treasury: {c.Gold:N0} gold\n\nGold a month:\n+{ledger.Tax:0.0} tax (tribesmen, nomads, priests and those under arms pay none)"
+			+ $"\n+{ledger.Trade:0.0} trade\n+{ledger.Production:0.0} production of our provinces"
 			+ $"\n-{ledger.Armies:0.0} armies\n-{ledger.Garrisons:0.0} garrisons\n-{ledger.Mercenaries:0.0} mercenaries",
 			ledger.Balance >= 0 ? HudStyle.Good : HudStyle.Bad);
 

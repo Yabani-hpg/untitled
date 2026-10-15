@@ -105,6 +105,7 @@ public static class SaveGames
 			file.GetLine();                                     // the header
 			using JsonDocument doc = JsonDocument.Parse(file.GetLine());
 			gs.ReadSave(doc.RootElement);
+			gs.RecomputeTrade();
 			GD.Print($"Loaded {path}: {gs.PlayerTag}, {gs.DateText}");
 			return true;
 		}

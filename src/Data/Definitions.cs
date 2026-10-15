@@ -49,6 +49,8 @@ public sealed class ResourceType
 	public IReadOnlyList<Occupation> WorkedBy { get; init; } = new List<Occupation>();
 	/// <summary>"natural" or "manufactured" (produced resources only).</summary>
 	public string Origin { get; init; }
+	/// <summary>Gold a unit fetches on the market.</summary>
+	public float Price { get; init; }
 
 	public bool IsWorkedBy(Occupation occupation)
 	{
@@ -169,6 +171,7 @@ public sealed class Definitions
 	/// <summary>Events and decisions (data/events.json, data/decisions.json), in file order.</summary>
 	public List<GameEvent> Events { get; } = new();
 	public List<Decision> Decisions { get; } = new();
+	public List<TradeNode> TradeNodes { get; } = new();
 	public GameEvent GetEvent(string id) => Events.Find(e => e.Id == id);
 	public Decision GetDecision(string id) => Decisions.Find(d => d.Id == id);
 

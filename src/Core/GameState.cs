@@ -118,6 +118,7 @@ public partial class GameState : Node
 		DataLoader.LoadUnits(Definitions, _provinceNames);
 		DataLoader.LoadEvents(Definitions, _provinceNames);
 		DataLoader.LoadDecisions(Definitions, _provinceNames);
+		DataLoader.LoadTradeNodes(Definitions, _provinces, _provinceNames);
 		LawRules.Defs = Definitions;
 		TechRules.Defs = Definitions;
 		int countryFiles = DataLoader.LoadCountryFiles(_countries, Definitions, _provinceNames);
@@ -296,7 +297,8 @@ public partial class GameState : Node
 		RunDiplomacyStep();
 		RunAiStep();
 		RunEventStep();
-		foreach (Country c in EconomyRules.MonthlyStep(_countries, _provinces, _tribes.Values, _armies.Values, Definitions, Date))
+		RecomputeTrade();
+		foreach (Country c in EconomyRules.MonthlyStep(_countries, _provinces, _tribes.Values, _armies.Values, Definitions, Date, Trade))
 		{
 			if (c.Tag == PlayerTag)
 				Notify("Our treasury is empty: the mercenaries we could not pay have gone home.");

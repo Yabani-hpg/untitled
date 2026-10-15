@@ -25,6 +25,7 @@ public partial class CountryPanel : PanelContainer
 	VBoxContainer _laws;
 	VBoxContainer _military;
 	VBoxContainer _decisions;
+	VBoxContainer _trade;
 	Label _title;
 	Label _status;
 
@@ -88,6 +89,7 @@ public partial class CountryPanel : PanelContainer
 		_laws = AddTab("Laws");
 		_military = AddTab("Military");
 		_decisions = AddTab("Decisions");
+		_trade = AddTab("Trade");
 
 		_status = HudStyle.Body("", BodyFont, 13, HudStyle.Muted);
 		root.AddChild(_status);
@@ -101,6 +103,7 @@ public partial class CountryPanel : PanelContainer
 		gs.TribesChanged += Refresh;
 		gs.ArmiesChanged += Refresh;
 		gs.DecisionsChanged += Refresh;
+		gs.TradeChanged += Refresh;
 	}
 
 	public override void _ExitTree()
@@ -114,6 +117,7 @@ public partial class CountryPanel : PanelContainer
 		gs.TribesChanged -= Refresh;
 		gs.ArmiesChanged -= Refresh;
 		gs.DecisionsChanged -= Refresh;
+		gs.TradeChanged -= Refresh;
 	}
 
 	void OnRulerChanged(string tag) => Refresh();
@@ -153,6 +157,7 @@ public partial class CountryPanel : PanelContainer
 		FillLaws(gs, c);
 		FillMilitary(gs, c);
 		FillDecisions(gs, c);
+		FillTrade(gs, c);
 	}
 
 	// ------------------------------------------------------------------------------------ Overview
@@ -187,7 +192,7 @@ public partial class CountryPanel : PanelContainer
 		ruler.AddChild(HudStyle.Body(c.Government, BodyFont, 13, HudStyle.Muted));
 
 		var owned = gs.ProvincesOf(c.Tag).ToList();
-		Ledger ledger = EconomyRules.MonthlyLedger(c, owned, gs.Tribes.Values, gs.Armies.Values, gs.Date);
+		Ledger ledger = EconomyRules.MonthlyLedger(c, owned, gs.Tribes.Values, gs.Armies.Values, gs.Date, gs.Trade);
 		long citizens = 0, others = 0;
 		foreach (PopGroup pop in owned.SelectMany(p => p.Pops))
 		{
@@ -215,7 +220,7 @@ public partial class CountryPanel : PanelContainer
 		Row("War exhaustion", $"{c.WarExhaustion:0.0} of {StateRules.MaxExhaustion:0}" + (gs.WarsOf(c.Tag).Any() ? $" · at war ({gs.WarsOf(c.Tag).Count()})" : ""), c.WarExhaustion >= 5 ? HudStyle.Bad : HudStyle.Text);
 		Row("Unrest", $"uprisings x{StateRules.UnrestFactor(c):0.00} · tax x{StateRules.TaxFactor(c):0.00}", StateRules.UnrestFactor(c) > 1.3 ? HudStyle.Bad : HudStyle.Muted);
 		Row("Treasury", $"{c.Gold:0} gold");
-		Row("Each month", $"{ledger.Balance:+0.0;-0.0} gold: +{ledger.Tax:0.0} tax, -{ledger.Armies:0.0} armies, -{ledger.Garrisons:0.0} garrisons, -{ledger.Mercenaries:0.0} mercenaries",
+		Row("Each month", $"{ledger.Balance:+0.0;-0.0} gold: +{ledger.Tax:0.0} tax, +{ledger.Trade:0.0} trade, +{ledger.Production:0.0} production, -{ledger.Armies:0.0} armies, -{ledger.Garrisons:0.0} garrisons, -{ledger.Mercenaries:0.0} mercenaries",
 			ledger.Balance >= 0 ? HudStyle.Good : HudStyle.Bad);
 		long men = owned.Sum(p => p.UnitsOf(Sex.Male)), women = owned.Sum(p => p.UnitsOf(Sex.Female));
 		Row("Men and women", $"{men * PopGroup.PeoplePerUnit:N0} men · {women * PopGroup.PeoplePerUnit:N0} women at home");
@@ -407,6 +412,90 @@ public partial class CountryPanel : PanelContainer
 				Refresh();
 			};
 			row.AddChild(b);
+		}
+	}
+
+	// ------------------------------------------------------------------------------------ Trade
+
+	void FillTrade(GameState gs, Country c)
+	{
+		Clear(_trade);
+		Label Text(string text, int size = 13, Color? color = null)
+		{
+			var l = HudStyle.Body(text, BodyFont, size, color ?? HudStyle.Muted);
+			l.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			l.CustomMinimumSize = new Vector2(480, 0);
+			return l;
+		}
+		VBoxContainer Section(string title)
+		{
+			var panel = new PanelContainer();
+			panel.AddThemeStyleboxOverride("panel", HudStyle.Section());
+			_trade.AddChild(panel);
+			var box = new VBoxContainer();
+			box.AddThemeConstantOverride("separation", 4);
+			panel.AddChild(box);
+			box.AddChild(HudStyle.Title(title, TitleFont, 17));
+			return box;
+		}
+		TradeReport trade = gs.Trade;
+		TradeNode home = gs.HomeNode(c);
+		var (income, production) = gs.TradeIncomeOf(c);
+		var head = Section("Merchants");
+		head.AddChild(Text("Every province's goods are sold in its trade node. We take a share of a node's value by our trade power there, "
+			+ $"at home ({home?.Name ?? "nowhere"}) and wherever a merchant collects; what no one collects flows downstream, steered by merchants, until an end node keeps it. "
+			+ $"{gs.FreeMerchants(c)} of our {gs.MerchantsOf(c)} merchants are free."));
+		head.AddChild(Text($"Trade brings us {income:0.0} gold a month, and the production of our provinces {production:0.0}.", 13, HudStyle.Gold));
+		var nodes = Section("Trade nodes within our reach");
+		if (trade == null)
+			return;
+		foreach (NodeReport r in trade.Nodes.Values.Where(r => TradeRules.InReach(c, r.Node, trade))
+			.OrderByDescending(r => r.Collected.GetValueOrDefault(c.Tag)).ThenByDescending(r => r.Total))
+		{
+			Merchant m = c.Merchants.Find(x => x.NodeId == r.Node.Id);
+			string id = r.Node.Id;
+			var row = new HBoxContainer();
+			row.AddThemeConstantOverride("separation", 10);
+			nodes.AddChild(row);
+			var col = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+			row.AddChild(col);
+			col.AddChild(HudStyle.Body(r.Node.Name + (r.Node == home ? " · our home node" : r.Node.End ? " · end node" : ""), BodyFont, 14, Colors.White));
+			string flow = r.Node.Downstream.Count > 0 ? "flows on to " + string.Join(", ", r.Node.Downstream.Select(d => d.Name)) : "keeps its value";
+			col.AddChild(Text($"Worth {r.Total:0.0} a month: {r.Local:0.0} made here, {r.Incoming:0.0} from upstream; {flow}.", 12));
+			string ours = $"Our power {r.Power.GetValueOrDefault(c.Tag):0.0} of {r.TotalPower:0.0} ({r.Share(c.Tag):P0})";
+			if (r.Collected.TryGetValue(c.Tag, out double got))
+				ours += $" · we collect {got * TradeRules.TradeIncomeFactor:0.0} gold";
+			if (m != null)
+				ours += m.Task == MerchantTask.Collect ? " · our merchant collects here" : $" · our merchant steers to {gs.GetTradeNode(m.ToNodeId)?.Name}";
+			col.AddChild(Text(ours, 12, m != null ? HudStyle.Gold : HudStyle.Muted));
+			var buttons = new VBoxContainer();
+			buttons.AddThemeConstantOverride("separation", 2);
+			row.AddChild(buttons);
+			void Send(string label, string tip, MerchantTask task, string to)
+			{
+				var b = HudStyle.Button(label, BodyFont, 12);
+				b.TooltipText = tip;
+				b.Pressed += () =>
+				{
+					if (!gs.PlaceMerchant(c.Tag, id, task, to, out string why))
+						_status.Text = why;
+					Refresh();
+				};
+				buttons.AddChild(b);
+			}
+			if (r.Node != home && (m == null || m.Task != MerchantTask.Collect))
+				Send("Collect", "Send a merchant to take our share of this node's value home", MerchantTask.Collect, null);
+			foreach (TradeNode d in r.Node.Downstream)
+			{
+				if (m == null || m.Task != MerchantTask.Steer || m.ToNodeId != d.Id)
+					Send($"Steer to {d.Name}", $"Send a merchant to push this node's uncollected value on to {d.Name}", MerchantTask.Steer, d.Id);
+			}
+			if (m != null)
+			{
+				var b = HudStyle.Button("Recall", BodyFont, 12);
+				b.Pressed += () => { gs.RecallMerchant(c.Tag, id); Refresh(); };
+				buttons.AddChild(b);
+			}
 		}
 	}
 

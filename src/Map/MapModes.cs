@@ -117,7 +117,7 @@ public partial class MapModes : Node
 		_stripes.Fill(new Color(0, 0, 0, 0));
 		foreach (Province p in gs.Provinces)
 		{
-			if (p == null || p.IsWater || p.Id >= PaletteSide * PaletteSide)
+			if (p == null || p.IsWater && mode != MapMode.Trade || p.Id >= PaletteSide * PaletteSide)
 				continue;
 			Color c = ColorFor(p, mode, gs);
 			if (focus != null)
@@ -193,6 +193,8 @@ public partial class MapModes : Node
 				return p.Biome == null ? new Color(Unowned, 0.35f) : new Color(p.Biome.Color, 0.85f);
 			case MapMode.Deposits:
 				return p.NonRenewable == null ? new Color(Unowned, 0.25f) : new Color(p.NonRenewable.Color, 0.85f);
+			case MapMode.Trade:
+				return p.TradeNode == null ? new Color(Unowned, p.IsWater ? 0.1f : 0.25f) : new Color(p.TradeNode.Color, p.IsWater ? 0.35f : 0.8f);
 			default:
 				return new Color(0, 0, 0, 0);
 		}

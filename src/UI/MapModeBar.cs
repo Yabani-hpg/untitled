@@ -43,6 +43,7 @@ public partial class MapModeBar : VBoxContainer
 		AddModeButton(row, MapMode.Political, "Political", "Who owns each province");
 		AddModeButton(row, MapMode.Culture, "Culture", "The main culture of each province");
 		AddModeButton(row, MapMode.Terrain, "Terrain", "Each province's biome, with hills, mountains and impassable peaks in stripes");
+		AddModeButton(row, MapMode.Trade, "Trade", "Trade nodes: where each province's goods are sold, and how the value flows");
 		var resources = HudStyle.Button("Resources", BodyFont, 13);
 		resources.TooltipText = "Food and non-renewable deposits";
 		resources.ToggleMode = true;
@@ -99,6 +100,8 @@ public partial class MapModeBar : VBoxContainer
 			MapMode.Terrain => defs.Biomes.Select(b => (b.Name, b.Color))
 				.Concat(defs.Reliefs.Where(r => Untitled.Map.MapModes.ReliefStripe(r) != null)
 					.Select(r => ($"{r.Name} (stripes)", Untitled.Map.MapModes.ReliefStripe(r).Value))),
+			MapMode.Trade => (GameState.Instance.Trade?.Nodes.Values.OrderByDescending(n => n.Total).Take(14)
+				.Select(n => ($"{n.Node.Name} ({n.Total:0})", n.Node.Color)) ?? Enumerable.Empty<(string, Color)>()),
 			_ => Enumerable.Empty<(string, Color)>(),
 		};
 		var list = entries.ToList();

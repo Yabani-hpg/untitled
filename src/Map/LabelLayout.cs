@@ -69,11 +69,11 @@ public static class LabelLayout
 			groupOfProvince[i] = -1;
 			countryGroup[i] = -1;
 			Province p = provinces[i];
-			if (!includeProvinces || p == null || p.IsSea)
+			if (!includeProvinces || p == null)
 				continue;
 			groupOfProvince[i] = texts.Count;
 			texts.Add(ShortName(p.Name));
-			kinds.Add(p.IsLake ? LabelKind.Lake : LabelKind.Province);
+			kinds.Add(p.IsWater ? LabelKind.Lake : LabelKind.Province);
 		}
 		if (includeCountries)
 		{

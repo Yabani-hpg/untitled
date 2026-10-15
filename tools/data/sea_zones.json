@@ -1,0 +1,1111 @@
+{
+ "_comment": "Sea zones: [lon, lat, name]. tools/split_seas.py gives every ocean pixel the nearest seed (on the sphere), then splits cells along coasts. straits: pairs of zones joined by a channel too narrow for the map, linked as if they shared a border.",
+ "zones": [
+  [
+   -4,
+   36.2,
+   "Alboran Sea"
+  ],
+  [
+   2,
+   39.5,
+   "Balearic Sea"
+  ],
+  [
+   -1,
+   37.5,
+   "Gulf of Valencia"
+  ],
+  [
+   4.5,
+   42.6,
+   "Gulf of Lion"
+  ],
+  [
+   8.8,
+   43.4,
+   "Ligurian Sea"
+  ],
+  [
+   11.5,
+   40.5,
+   "Tyrrhenian Sea"
+  ],
+  [
+   8,
+   38.5,
+   "Sardinian Sea"
+  ],
+  [
+   12.5,
+   36.3,
+   "Strait of Sicily"
+  ],
+  [
+   14.5,
+   34.5,
+   "Malta Channel"
+  ],
+  [
+   18,
+   32.3,
+   "Gulf of Sirte"
+  ],
+  [
+   18.5,
+   37.5,
+   "Ionian Sea"
+  ],
+  [
+   14.5,
+   43.8,
+   "Adriatic Sea"
+  ],
+  [
+   18.5,
+   41.3,
+   "Strait of Otranto"
+  ],
+  [
+   25,
+   35.3,
+   "Sea of Crete"
+  ],
+  [
+   25.3,
+   38.3,
+   "Aegean Sea"
+  ],
+  [
+   24.5,
+   40.3,
+   "Thracian Sea"
+  ],
+  [
+   28.2,
+   40.7,
+   "Sea of Marmara"
+  ],
+  [
+   33.5,
+   33.5,
+   "Levantine Sea"
+  ],
+  [
+   34,
+   35.9,
+   "Cilician Sea"
+  ],
+  [
+   29,
+   32.3,
+   "Egyptian Sea"
+  ],
+  [
+   22.5,
+   33.3,
+   "Libyan Sea"
+  ],
+  [
+   30.5,
+   43.5,
+   "Western Black Sea"
+  ],
+  [
+   37,
+   43,
+   "Eastern Black Sea"
+  ],
+  [
+   36.5,
+   46.2,
+   "Sea of Azov"
+  ],
+  [
+   33,
+   41.9,
+   "Southern Black Sea"
+  ],
+  [
+   33,
+   28.6,
+   "Gulf of Suez"
+  ],
+  [
+   34.7,
+   28.6,
+   "Gulf of Aqaba"
+  ],
+  [
+   35.8,
+   25.5,
+   "Northern Red Sea"
+  ],
+  [
+   38.5,
+   21,
+   "Central Red Sea"
+  ],
+  [
+   41,
+   16,
+   "Southern Red Sea"
+  ],
+  [
+   44.5,
+   12.4,
+   "Bab-el-Mandeb"
+  ],
+  [
+   49,
+   13,
+   "Gulf of Aden"
+  ],
+  [
+   49.8,
+   28.5,
+   "Northern Gulf"
+  ],
+  [
+   52.5,
+   25.3,
+   "Southern Gulf"
+  ],
+  [
+   56.6,
+   26.3,
+   "Strait of Hormuz"
+  ],
+  [
+   58.5,
+   24,
+   "Gulf of Oman"
+  ],
+  [
+   58,
+   19.5,
+   "Gulf of Masirah"
+  ],
+  [
+   54,
+   16,
+   "Hadramawt Coast"
+  ],
+  [
+   62,
+   20.5,
+   "Makran Coast"
+  ],
+  [
+   63,
+   15,
+   "Arabian Sea"
+  ],
+  [
+   51.5,
+   7,
+   "Somali Sea"
+  ],
+  [
+   67,
+   21.5,
+   "Gulf of Kutch"
+  ],
+  [
+   70,
+   18,
+   "Konkan Coast"
+  ],
+  [
+   73,
+   12,
+   "Laccadive Sea"
+  ],
+  [
+   73,
+   4,
+   "Maldives"
+  ],
+  [
+   79.5,
+   9,
+   "Gulf of Mannar"
+  ],
+  [
+   82,
+   15,
+   "Coromandel Coast"
+  ],
+  [
+   88,
+   16,
+   "Bay of Bengal"
+  ],
+  [
+   91,
+   20,
+   "Mouths of the Ganges"
+  ],
+  [
+   95,
+   12,
+   "Andaman Sea"
+  ],
+  [
+   41,
+   -7,
+   "Zanzibar Coast"
+  ],
+  [
+   42,
+   -18,
+   "Mozambique Channel"
+  ],
+  [
+   52,
+   -20,
+   "Mascarene Sea"
+  ],
+  [
+   35,
+   -28,
+   "Natal Coast"
+  ],
+  [
+   21,
+   -37,
+   "Cape of Good Hope"
+  ],
+  [
+   60,
+   -10,
+   "Western Indian Ocean"
+  ],
+  [
+   80,
+   -10,
+   "Central Indian Ocean"
+  ],
+  [
+   100,
+   -15,
+   "Eastern Indian Ocean"
+  ],
+  [
+   60,
+   -35,
+   "Southern Indian Ocean"
+  ],
+  [
+   90,
+   -40,
+   "Kerguelen Sea"
+  ],
+  [
+   -7.5,
+   36.4,
+   "Gulf of Cadiz"
+  ],
+  [
+   -10.5,
+   40,
+   "Portuguese Coast"
+  ],
+  [
+   -10,
+   44,
+   "Galician Sea"
+  ],
+  [
+   -4,
+   45.8,
+   "Bay of Biscay"
+  ],
+  [
+   -8,
+   50.5,
+   "Celtic Sea"
+  ],
+  [
+   -2,
+   50.2,
+   "English Channel"
+  ],
+  [
+   3,
+   54.5,
+   "Southern North Sea"
+  ],
+  [
+   2,
+   58.5,
+   "Northern North Sea"
+  ],
+  [
+   5,
+   65,
+   "Norwegian Sea"
+  ],
+  [
+   9,
+   58,
+   "Skagerrak"
+  ],
+  [
+   11.5,
+   56.5,
+   "Kattegat"
+  ],
+  [
+   18,
+   56,
+   "Baltic Sea"
+  ],
+  [
+   20,
+   62.5,
+   "Gulf of Bothnia"
+  ],
+  [
+   26,
+   60,
+   "Gulf of Finland"
+  ],
+  [
+   23.5,
+   57.7,
+   "Gulf of Riga"
+  ],
+  [
+   -5,
+   53.8,
+   "Irish Sea"
+  ],
+  [
+   -8,
+   57.5,
+   "Hebrides"
+  ],
+  [
+   -12,
+   52,
+   "Irish Coast"
+  ],
+  [
+   -20,
+   64,
+   "Iceland Sea"
+  ],
+  [
+   38,
+   72,
+   "Barents Sea"
+  ],
+  [
+   37,
+   65.5,
+   "White Sea"
+  ],
+  [
+   -12,
+   75,
+   "Greenland Sea"
+  ],
+  [
+   70,
+   76,
+   "Kara Sea"
+  ],
+  [
+   125,
+   77,
+   "Laptev Sea"
+  ],
+  [
+   160,
+   73,
+   "East Siberian Sea"
+  ],
+  [
+   -168,
+   70,
+   "Chukchi Sea"
+  ],
+  [
+   -140,
+   72,
+   "Beaufort Sea"
+  ],
+  [
+   -25,
+   45,
+   "Azores Sea"
+  ],
+  [
+   -30,
+   55,
+   "North Atlantic"
+  ],
+  [
+   -16,
+   28,
+   "Canary Current"
+  ],
+  [
+   -20,
+   16,
+   "Cape Verde Sea"
+  ],
+  [
+   -18,
+   12,
+   "Senegambia Coast"
+  ],
+  [
+   -10,
+   5,
+   "Grain Coast"
+  ],
+  [
+   0,
+   4,
+   "Gulf of Guinea"
+  ],
+  [
+   5,
+   3,
+   "Bight of Biafra"
+  ],
+  [
+   10,
+   -8,
+   "Angolan Coast"
+  ],
+  [
+   12,
+   -24,
+   "Namibian Coast"
+  ],
+  [
+   -10,
+   -20,
+   "South Atlantic"
+  ],
+  [
+   -25,
+   -35,
+   "Tristan Sea"
+  ],
+  [
+   -40,
+   -55,
+   "Scotia Sea"
+  ],
+  [
+   -58,
+   65,
+   "Davis Strait"
+  ],
+  [
+   -55,
+   57,
+   "Labrador Sea"
+  ],
+  [
+   -70,
+   73,
+   "Baffin Bay"
+  ],
+  [
+   -85,
+   60,
+   "Hudson Bay"
+  ],
+  [
+   -62,
+   48,
+   "Gulf of St Lawrence"
+  ],
+  [
+   -50,
+   45,
+   "Grand Banks"
+  ],
+  [
+   -68,
+   42.5,
+   "Gulf of Maine"
+  ],
+  [
+   -73,
+   37,
+   "Chesapeake Coast"
+  ],
+  [
+   -77,
+   32,
+   "Carolina Coast"
+  ],
+  [
+   -80,
+   25.3,
+   "Florida Straits"
+  ],
+  [
+   -75,
+   25,
+   "Bahamas"
+  ],
+  [
+   -94,
+   26,
+   "Western Gulf of Mexico"
+  ],
+  [
+   -87,
+   27,
+   "Eastern Gulf of Mexico"
+  ],
+  [
+   -93,
+   20,
+   "Bay of Campeche"
+  ],
+  [
+   -85.5,
+   21.5,
+   "Yucatan Channel"
+  ],
+  [
+   -80,
+   17,
+   "Western Caribbean"
+  ],
+  [
+   -75,
+   14,
+   "Caribbean Sea"
+  ],
+  [
+   -63,
+   14,
+   "Lesser Antilles"
+  ],
+  [
+   -73,
+   19.5,
+   "Windward Passage"
+  ],
+  [
+   -70,
+   12,
+   "Gulf of Venezuela"
+  ],
+  [
+   -55,
+   8,
+   "Guiana Coast"
+  ],
+  [
+   -47,
+   1,
+   "Amazon Mouth"
+  ],
+  [
+   -36,
+   -5,
+   "Northeast Brazil"
+  ],
+  [
+   -37,
+   -14,
+   "Bahia Coast"
+  ],
+  [
+   -42,
+   -24,
+   "Southeast Brazil"
+  ],
+  [
+   -52,
+   -33,
+   "Southern Brazil"
+  ],
+  [
+   -56,
+   -37,
+   "Rio de la Plata"
+  ],
+  [
+   -63,
+   -45,
+   "Patagonian Coast"
+  ],
+  [
+   -58,
+   -52,
+   "Falklands"
+  ],
+  [
+   -66,
+   -58,
+   "Drake Passage"
+  ],
+  [
+   -55,
+   -25,
+   "Western South Atlantic"
+  ],
+  [
+   -76,
+   -46,
+   "Chilean Archipelago"
+  ],
+  [
+   -73,
+   -35,
+   "Central Chile"
+  ],
+  [
+   -71,
+   -24,
+   "Atacama Coast"
+  ],
+  [
+   -78,
+   -12,
+   "Peruvian Coast"
+  ],
+  [
+   -82,
+   -3,
+   "Gulf of Guayaquil"
+  ],
+  [
+   -79,
+   6,
+   "Panama Bight"
+  ],
+  [
+   -89,
+   12,
+   "Central American Pacific"
+  ],
+  [
+   -95,
+   15,
+   "Gulf of Tehuantepec"
+  ],
+  [
+   -106,
+   20,
+   "Mexican Pacific"
+  ],
+  [
+   -111,
+   27.5,
+   "Gulf of California"
+  ],
+  [
+   -117,
+   29,
+   "Baja Coast"
+  ],
+  [
+   -120,
+   33.5,
+   "Southern California"
+  ],
+  [
+   -125,
+   39,
+   "Northern California"
+  ],
+  [
+   -126,
+   45,
+   "Oregon Coast"
+  ],
+  [
+   -128,
+   50,
+   "Vancouver Sea"
+  ],
+  [
+   -145,
+   58,
+   "Gulf of Alaska"
+  ],
+  [
+   -172,
+   58,
+   "Bering Sea"
+  ],
+  [
+   -178,
+   52,
+   "Aleutian Sea"
+  ],
+  [
+   -100,
+   -10,
+   "Eastern Pacific"
+  ],
+  [
+   -90,
+   -30,
+   "Southeast Pacific"
+  ],
+  [
+   100.5,
+   3,
+   "Strait of Malacca"
+  ],
+  [
+   111,
+   -5,
+   "Java Sea"
+  ],
+  [
+   113,
+   12,
+   "South China Sea"
+  ],
+  [
+   101.5,
+   9.5,
+   "Gulf of Thailand"
+  ],
+  [
+   107.5,
+   19.5,
+   "Gulf of Tonkin"
+  ],
+  [
+   109,
+   -10,
+   "Sunda Sea"
+  ],
+  [
+   127,
+   -5,
+   "Banda Sea"
+  ],
+  [
+   122,
+   3,
+   "Celebes Sea"
+  ],
+  [
+   120,
+   8,
+   "Sulu Sea"
+  ],
+  [
+   128,
+   16,
+   "Philippine Sea"
+  ],
+  [
+   127,
+   -11,
+   "Timor Sea"
+  ],
+  [
+   136,
+   -9,
+   "Arafura Sea"
+  ],
+  [
+   152,
+   -17,
+   "Coral Sea"
+  ],
+  [
+   160,
+   -38,
+   "Tasman Sea"
+  ],
+  [
+   146,
+   -40,
+   "Bass Strait"
+  ],
+  [
+   132,
+   -34,
+   "Great Australian Bight"
+  ],
+  [
+   113,
+   -25,
+   "Western Australian Coast"
+  ],
+  [
+   155,
+   -28,
+   "Eastern Australian Coast"
+  ],
+  [
+   119,
+   24,
+   "Taiwan Strait"
+  ],
+  [
+   125,
+   29,
+   "East China Sea"
+  ],
+  [
+   123,
+   36,
+   "Yellow Sea"
+  ],
+  [
+   120,
+   39,
+   "Bohai Sea"
+  ],
+  [
+   135,
+   40,
+   "Sea of Japan"
+  ],
+  [
+   129,
+   34.5,
+   "Korea Strait"
+  ],
+  [
+   142,
+   33,
+   "Kuroshio"
+  ],
+  [
+   150,
+   55,
+   "Sea of Okhotsk"
+  ],
+  [
+   160,
+   50,
+   "Kamchatka Sea"
+  ],
+  [
+   170,
+   -15,
+   "Melanesian Sea"
+  ],
+  [
+   178,
+   -30,
+   "Kermadec Sea"
+  ],
+  [
+   175,
+   -42,
+   "New Zealand Sea"
+  ],
+  [
+   145,
+   -5,
+   "Bismarck Sea"
+  ],
+  [
+   142,
+   10,
+   "Caroline Sea"
+  ],
+  [
+   170,
+   10,
+   "Marshall Sea"
+  ],
+  [
+   -160,
+   20,
+   "Hawaiian Sea"
+  ],
+  [
+   -150,
+   -15,
+   "Polynesian Sea"
+  ],
+  [
+   -130,
+   -30,
+   "South Pacific"
+  ],
+  [
+   -170,
+   35,
+   "North Pacific"
+  ],
+  [
+   -150,
+   45,
+   "Northeast Pacific"
+  ],
+  [
+   175,
+   40,
+   "Northwest Pacific"
+  ],
+  [
+   160,
+   20,
+   "Central Pacific"
+  ],
+  [
+   -130,
+   10,
+   "Clipperton Sea"
+  ],
+  [
+   0,
+   -55,
+   "Southern Ocean"
+  ],
+  [
+   80,
+   -55,
+   "Southern Indian Ocean South"
+  ],
+  [
+   160,
+   -55,
+   "Ross Sea Approaches"
+  ],
+  [
+   -120,
+   -55,
+   "Amundsen Sea"
+  ]
+ ],
+ "straits": [
+  [
+   "Sea of Marmara",
+   "Thracian Sea"
+  ],
+  [
+   "Sea of Marmara",
+   "Western Black Sea"
+  ],
+  [
+   "Sea of Azov",
+   "Eastern Black Sea"
+  ],
+  [
+   "Sea of Azov",
+   "Western Black Sea"
+  ],
+  [
+   "Gulf of Suez",
+   "Northern Red Sea"
+  ],
+  [
+   "Gulf of Aqaba",
+   "Northern Red Sea"
+  ],
+  [
+   "Alboran Sea",
+   "Gulf of Cadiz"
+  ],
+  [
+   "Bab-el-Mandeb",
+   "Gulf of Aden"
+  ],
+  [
+   "Southern Red Sea",
+   "Bab-el-Mandeb"
+  ],
+  [
+   "Strait of Hormuz",
+   "Gulf of Oman"
+  ],
+  [
+   "Southern Gulf",
+   "Strait of Hormuz"
+  ],
+  [
+   "Kattegat",
+   "Baltic Sea"
+  ],
+  [
+   "Skagerrak",
+   "Kattegat"
+  ],
+  [
+   "English Channel",
+   "Southern North Sea"
+  ],
+  [
+   "Strait of Sicily",
+   "Malta Channel"
+  ],
+  [
+   "Strait of Otranto",
+   "Ionian Sea"
+  ],
+  [
+   "Korea Strait",
+   "Sea of Japan"
+  ],
+  [
+   "Bohai Sea",
+   "Yellow Sea"
+  ],
+  [
+   "Strait of Malacca",
+   "Andaman Sea"
+  ],
+  [
+   "Strait of Malacca",
+   "Java Sea"
+  ],
+  [
+   "Sunda Sea",
+   "Java Sea"
+  ],
+  [
+   "Yucatan Channel",
+   "Western Gulf of Mexico"
+  ],
+  [
+   "Florida Straits",
+   "Eastern Gulf of Mexico"
+  ],
+  [
+   "Windward Passage",
+   "Caribbean Sea"
+  ],
+  [
+   "Bass Strait",
+   "Tasman Sea"
+  ],
+  [
+   "Gulf of California",
+   "Mexican Pacific"
+  ],
+  [
+   "Drake Passage",
+   "Scotia Sea"
+  ],
+  [
+   "Taiwan Strait",
+   "East China Sea"
+  ],
+  [
+   "Taiwan Strait",
+   "South China Sea"
+  ],
+  [
+   "Gulf of Mannar",
+   "Laccadive Sea"
+  ],
+  [
+   "Gulf of Mannar",
+   "Coromandel Coast"
+  ]
+ ]
+}

@@ -1,0 +1,832 @@
+{
+ "_comment": "Trade nodes. Every land province belongs to the node whose centre (or listed province) is nearest by land. Value flows along 'to' links; an end node keeps what reaches it.",
+ "nodes": [
+  {
+   "id": "memphis",
+   "name": "Lower Egypt",
+   "center": "Ineb-Hedj (Memphis)",
+   "to": [],
+   "color": "#bf5656",
+   "end": true
+  },
+  {
+   "id": "thebes",
+   "name": "Upper Egypt",
+   "center": "Waset (Thebes)",
+   "to": [
+    "memphis"
+   ],
+   "color": "#4e7ef2"
+  },
+  {
+   "id": "nubia",
+   "name": "Nubia",
+   "center": "Kerma",
+   "to": [
+    "thebes"
+   ],
+   "color": "#7fbf26"
+  },
+  {
+   "id": "sudan",
+   "name": "Upper Nile",
+   "center": "Khartoum",
+   "to": [
+    "nubia"
+   ],
+   "color": "#f26de1"
+  },
+  {
+   "id": "red_sea",
+   "name": "Red Sea and Punt",
+   "center": "Tigray",
+   "to": [
+    "thebes"
+   ],
+   "color": "#3ebfa9"
+  },
+  {
+   "id": "horn",
+   "name": "Horn of Africa",
+   "center": "Mudug",
+   "to": [
+    "red_sea"
+   ],
+   "color": "#f29930"
+  },
+  {
+   "id": "canaan",
+   "name": "Canaan",
+   "center": "Jerusalem",
+   "to": [
+    "memphis"
+   ],
+   "color": "#7056bf"
+  },
+  {
+   "id": "levant",
+   "name": "Byblos and Syria",
+   "center": "Mount Lebanon",
+   "to": [
+    "canaan",
+    "aleppo"
+   ],
+   "color": "#55f24e",
+   "provinces": [
+    "Nicosia",
+    "Limassol",
+    "Paphos",
+    "Northern Cyprus"
+   ]
+  },
+  {
+   "id": "aleppo",
+   "name": "Yamhad",
+   "center": "Aleppo",
+   "to": [
+    "mari"
+   ],
+   "color": "#bf2659"
+  },
+  {
+   "id": "mari",
+   "name": "Middle Euphrates",
+   "center": "Dayr Az Zawr",
+   "to": [
+    "babylon"
+   ],
+   "color": "#6dc0f2"
+  },
+  {
+   "id": "assur",
+   "name": "Assyria",
+   "center": "Ninawa",
+   "to": [
+    "mari",
+    "babylon"
+   ],
+   "color": "#b4bf3e",
+   "provinces": [
+    "Hasaka (Al Haksa)"
+   ]
+  },
+  {
+   "id": "babylon",
+   "name": "Babylon",
+   "center": "Babil",
+   "to": [],
+   "color": "#c930f2",
+   "end": true
+  },
+  {
+   "id": "sumer",
+   "name": "Sumer",
+   "center": "Dhi-Qar",
+   "to": [
+    "babylon"
+   ],
+   "color": "#56bf8a"
+  },
+  {
+   "id": "elam",
+   "name": "Elam",
+   "center": "Khuzestan",
+   "to": [
+    "sumer"
+   ],
+   "color": "#f2704e"
+  },
+  {
+   "id": "gulf",
+   "name": "Dilmun and the Gulf",
+   "center": "Ash Sharqiyah",
+   "to": [
+    "sumer"
+   ],
+   "color": "#2633bf"
+  },
+  {
+   "id": "magan",
+   "name": "Magan",
+   "center": "Muscat",
+   "to": [
+    "gulf"
+   ],
+   "color": "#9ff26d"
+  },
+  {
+   "id": "arabia",
+   "name": "Arabia",
+   "center": "Al Madinah",
+   "to": [
+    "canaan",
+    "red_sea"
+   ],
+   "color": "#bf3e94"
+  },
+  {
+   "id": "anatolia",
+   "name": "Kanesh",
+   "center": "Kayseri",
+   "to": [
+    "aleppo"
+   ],
+   "color": "#30eaf2"
+  },
+  {
+   "id": "ionia",
+   "name": "Troy and Ionia",
+   "center": "Izmir",
+   "to": [
+    "anatolia",
+    "aegean"
+   ],
+   "color": "#bfa456"
+  },
+  {
+   "id": "aegean",
+   "name": "Aegean",
+   "center": "Attiki",
+   "to": [
+    "levant"
+   ],
+   "color": "#994ef2",
+   "provinces": [
+    "Kriti",
+    "Notio Aigaio",
+    "Voreio Aigaio"
+   ]
+  },
+  {
+   "id": "balkans",
+   "name": "Balkans",
+   "center": "Kentriki Makedonia",
+   "to": [
+    "aegean"
+   ],
+   "color": "#26bf3f"
+  },
+  {
+   "id": "danube",
+   "name": "Danube",
+   "center": "Wien",
+   "to": [
+    "balkans"
+   ],
+   "color": "#f26d7e"
+  },
+  {
+   "id": "italy",
+   "name": "Italy",
+   "center": "Roma",
+   "to": [
+    "aegean",
+    "west_med"
+   ],
+   "color": "#3e74bf"
+  },
+  {
+   "id": "west_med",
+   "name": "Western Sea",
+   "center": "Palermo",
+   "to": [
+    "aegean"
+   ],
+   "color": "#baf230"
+  },
+  {
+   "id": "maghreb",
+   "name": "Maghreb",
+   "center": "Nabeul",
+   "to": [
+    "west_med"
+   ],
+   "color": "#be56bf"
+  },
+  {
+   "id": "iberia",
+   "name": "Iberia",
+   "center": "Sevilla",
+   "to": [
+    "west_med"
+   ],
+   "color": "#4ef2c2"
+  },
+  {
+   "id": "gaul",
+   "name": "Gaul",
+   "center": "Haute-Garonne",
+   "to": [
+    "italy",
+    "iberia"
+   ],
+   "color": "#bf6526"
+  },
+  {
+   "id": "britain",
+   "name": "Britain",
+   "center": "Gloucestershire",
+   "to": [
+    "gaul"
+   ],
+   "color": "#7d6df2"
+  },
+  {
+   "id": "north_sea",
+   "name": "North Sea",
+   "center": "Hamburg",
+   "to": [
+    "gaul",
+    "danube"
+   ],
+   "color": "#54bf3e"
+  },
+  {
+   "id": "baltic",
+   "name": "Baltic",
+   "center": "Stockholm",
+   "to": [
+    "north_sea"
+   ],
+   "color": "#f2308a"
+  },
+  {
+   "id": "rus",
+   "name": "Forest Rus",
+   "center": "Novgorod",
+   "to": [
+    "baltic",
+    "steppe"
+   ],
+   "color": "#56a5bf"
+  },
+  {
+   "id": "steppe",
+   "name": "Pontic Steppe",
+   "center": "Odessa",
+   "to": [
+    "balkans",
+    "caucasus"
+   ],
+   "color": "#f2ea4e"
+  },
+  {
+   "id": "caucasus",
+   "name": "Caucasus",
+   "center": "Kakheti",
+   "to": [
+    "assur"
+   ],
+   "color": "#8b26bf"
+  },
+  {
+   "id": "volga",
+   "name": "Volga",
+   "center": "Tatarstan",
+   "to": [
+    "steppe"
+   ],
+   "color": "#6df29e"
+  },
+  {
+   "id": "media",
+   "name": "Media",
+   "center": "Kermanshah",
+   "to": [
+    "assur",
+    "elam"
+   ],
+   "color": "#bf483e"
+  },
+  {
+   "id": "persia",
+   "name": "Persia",
+   "center": "Fars",
+   "to": [
+    "elam"
+   ],
+   "color": "#3059f2"
+  },
+  {
+   "id": "bactria",
+   "name": "Bactria and Margiana",
+   "center": "Balkh",
+   "to": [
+    "media",
+    "indus"
+   ],
+   "color": "#8bbf56"
+  },
+  {
+   "id": "tarim",
+   "name": "Tarim Basin",
+   "center": "Xinjiang",
+   "to": [
+    "bactria",
+    "shaanxi"
+   ],
+   "color": "#f24ed0"
+  },
+  {
+   "id": "altai",
+   "name": "Altai",
+   "center": "Gorno-Altay",
+   "to": [
+    "tarim",
+    "volga"
+   ],
+   "color": "#26bfb1"
+  },
+  {
+   "id": "siberia",
+   "name": "Siberia",
+   "center": "Omsk",
+   "to": [
+    "volga"
+   ],
+   "color": "#f2bf6d"
+  },
+  {
+   "id": "indus",
+   "name": "Meluhha",
+   "center": "Sind",
+   "to": [
+    "magan",
+    "persia"
+   ],
+   "color": "#683ebf"
+  },
+  {
+   "id": "punjab",
+   "name": "Punjab",
+   "center": "Haryana",
+   "to": [
+    "indus"
+   ],
+   "color": "#30f237"
+  },
+  {
+   "id": "ganges",
+   "name": "Ganges",
+   "center": "Delhi",
+   "to": [
+    "punjab"
+   ],
+   "color": "#bf5670"
+  },
+  {
+   "id": "deccan",
+   "name": "Deccan",
+   "center": "Gujarat",
+   "to": [
+    "indus"
+   ],
+   "color": "#4ea8f2"
+  },
+  {
+   "id": "bengal",
+   "name": "Bengal",
+   "center": "Dhaka",
+   "to": [
+    "ganges"
+   ],
+   "color": "#a6bf26"
+  },
+  {
+   "id": "henan",
+   "name": "Yellow River",
+   "center": "Henan",
+   "to": [],
+   "color": "#e06df2",
+   "end": true
+  },
+  {
+   "id": "shaanxi",
+   "name": "Wei Valley",
+   "center": "Shaanxi",
+   "to": [
+    "henan"
+   ],
+   "color": "#3ebf88"
+  },
+  {
+   "id": "yangtze",
+   "name": "Yangtze",
+   "center": "Hubei",
+   "to": [
+    "henan"
+   ],
+   "color": "#f26730"
+  },
+  {
+   "id": "sichuan",
+   "name": "Sichuan",
+   "center": "Sichuan",
+   "to": [
+    "yangtze"
+   ],
+   "color": "#5656bf"
+  },
+  {
+   "id": "yunnan",
+   "name": "Yunnan",
+   "center": "Yunnan",
+   "to": [
+    "sichuan"
+   ],
+   "color": "#7ff24e"
+  },
+  {
+   "id": "south_china",
+   "name": "South China",
+   "center": "Guangdong",
+   "to": [
+    "yangtze"
+   ],
+   "color": "#bf2680"
+  },
+  {
+   "id": "mongolia",
+   "name": "Mongolia",
+   "center": "Ulaanbaatar",
+   "to": [
+    "henan"
+   ],
+   "color": "#6de2f2"
+  },
+  {
+   "id": "korea",
+   "name": "Korea",
+   "center": "Seoul",
+   "to": [
+    "henan"
+   ],
+   "color": "#bfa83e"
+  },
+  {
+   "id": "japan",
+   "name": "Japan",
+   "center": "Nara",
+   "to": [
+    "korea"
+   ],
+   "color": "#9830f2"
+  },
+  {
+   "id": "burma",
+   "name": "Irrawaddy",
+   "center": "Mandalay",
+   "to": [
+    "yunnan",
+    "bengal"
+   ],
+   "color": "#56bf6f"
+  },
+  {
+   "id": "siam",
+   "name": "Chao Phraya",
+   "center": "Bangkok Metropolis",
+   "to": [
+    "burma"
+   ],
+   "color": "#f24e56"
+  },
+  {
+   "id": "vietnam",
+   "name": "Red River",
+   "center": "Thanh Hóa",
+   "to": [
+    "south_china"
+   ],
+   "color": "#265abf"
+  },
+  {
+   "id": "malaya",
+   "name": "Malaya",
+   "center": "Melaka",
+   "to": [
+    "siam"
+   ],
+   "color": "#c1f26d"
+  },
+  {
+   "id": "java",
+   "name": "Java",
+   "center": "Jawa Tengah",
+   "to": [
+    "malaya"
+   ],
+   "color": "#bf3eb5"
+  },
+  {
+   "id": "sahara",
+   "name": "Sahara",
+   "center": "Agadez",
+   "to": [
+    "memphis",
+    "maghreb"
+   ],
+   "color": "#30f2c8"
+  },
+  {
+   "id": "west_africa",
+   "name": "Niger Bend",
+   "center": "Timbuktu",
+   "to": [
+    "sahara"
+   ],
+   "color": "#bf8956"
+  },
+  {
+   "id": "guinea",
+   "name": "Gulf of Guinea",
+   "center": "Ashanti",
+   "to": [
+    "west_africa"
+   ],
+   "color": "#6f4ef2"
+  },
+  {
+   "id": "chad",
+   "name": "Lake Chad",
+   "center": "Kanem",
+   "to": [
+    "sahara"
+   ],
+   "color": "#34bf26"
+  },
+  {
+   "id": "congo",
+   "name": "Congo",
+   "center": "Kinshasa City",
+   "to": [
+    "guinea"
+   ],
+   "color": "#f26da0"
+  },
+  {
+   "id": "east_africa",
+   "name": "East Africa",
+   "center": "Rift Valley",
+   "to": [
+    "red_sea"
+   ],
+   "color": "#3e95bf"
+  },
+  {
+   "id": "zambezi",
+   "name": "Zambezi",
+   "center": "Harare",
+   "to": [
+    "east_africa"
+   ],
+   "color": "#ebf230"
+  },
+  {
+   "id": "cape",
+   "name": "The Cape",
+   "center": "Western Cape",
+   "to": [
+    "zambezi"
+   ],
+   "color": "#a456bf"
+  },
+  {
+   "id": "mexico",
+   "name": "Mexico",
+   "center": "México",
+   "to": [],
+   "color": "#4ef298",
+   "end": true
+  },
+  {
+   "id": "maya",
+   "name": "Maya Lowlands",
+   "center": "Petén",
+   "to": [
+    "mexico"
+   ],
+   "color": "#bf3e26"
+  },
+  {
+   "id": "oaxaca",
+   "name": "Oaxaca",
+   "center": "Oaxaca",
+   "to": [
+    "mexico"
+   ],
+   "color": "#6d7ef2"
+  },
+  {
+   "id": "north_mexico",
+   "name": "Northern Mexico",
+   "center": "Chihuahua",
+   "to": [
+    "mexico"
+   ],
+   "color": "#75bf3e"
+  },
+  {
+   "id": "southwest",
+   "name": "Southwest",
+   "center": "Arizona",
+   "to": [
+    "north_mexico"
+   ],
+   "color": "#f230bb"
+  },
+  {
+   "id": "california",
+   "name": "California",
+   "center": "California",
+   "to": [
+    "southwest"
+   ],
+   "color": "#56bfbe"
+  },
+  {
+   "id": "mississippi",
+   "name": "Mississippi",
+   "center": "Illinois",
+   "to": [
+    "north_mexico"
+   ],
+   "color": "#f2c14e"
+  },
+  {
+   "id": "appalachia",
+   "name": "Appalachia",
+   "center": "Ohio",
+   "to": [
+    "mississippi"
+   ],
+   "color": "#6426bf"
+  },
+  {
+   "id": "northeast",
+   "name": "Northeast",
+   "center": "New York",
+   "to": [
+    "appalachia"
+   ],
+   "color": "#6df27c"
+  },
+  {
+   "id": "plains",
+   "name": "Great Plains",
+   "center": "North Dakota",
+   "to": [
+    "mississippi"
+   ],
+   "color": "#bf3e54"
+  },
+  {
+   "id": "pacific_nw",
+   "name": "Pacific Northwest",
+   "center": "Washington",
+   "to": [
+    "plains"
+   ],
+   "color": "#308bf2"
+  },
+  {
+   "id": "canada",
+   "name": "Canada",
+   "center": "Québec",
+   "to": [
+    "northeast"
+   ],
+   "color": "#a6bf56"
+  },
+  {
+   "id": "caribbean",
+   "name": "Caribbean",
+   "center": "Guantánamo",
+   "to": [
+    "maya"
+   ],
+   "color": "#e94ef2"
+  },
+  {
+   "id": "andes",
+   "name": "Andes",
+   "center": "Cusco",
+   "to": [],
+   "color": "#26bf8a",
+   "end": true
+  },
+  {
+   "id": "peru_coast",
+   "name": "Peruvian Coast",
+   "center": "Lima",
+   "to": [
+    "andes"
+   ],
+   "color": "#f29d6d"
+  },
+  {
+   "id": "colombia",
+   "name": "Colombia",
+   "center": "Boyacá",
+   "to": [
+    "peru_coast"
+   ],
+   "color": "#473ebf"
+  },
+  {
+   "id": "venezuela",
+   "name": "Venezuela",
+   "center": "Carabobo",
+   "to": [
+    "caribbean",
+    "colombia"
+   ],
+   "color": "#5af230"
+  },
+  {
+   "id": "amazon",
+   "name": "Amazon",
+   "center": "Pará",
+   "to": [
+    "andes"
+   ],
+   "color": "#bf568b"
+  },
+  {
+   "id": "brazil",
+   "name": "Brazil",
+   "center": "Bahia",
+   "to": [
+    "amazon"
+   ],
+   "color": "#4ed1f2"
+  },
+  {
+   "id": "plata",
+   "name": "La Plata",
+   "center": "Buenos Aires",
+   "to": [
+    "andes"
+   ],
+   "color": "#bfb026"
+  },
+  {
+   "id": "chile",
+   "name": "Chile",
+   "center": "Región Metropolitana de Santiago",
+   "to": [
+    "andes"
+   ],
+   "color": "#be6df2"
+  },
+  {
+   "id": "australia",
+   "name": "Australia",
+   "center": "Queensland",
+   "to": [
+    "java"
+   ],
+   "color": "#3ebf67"
+  }
+ ]
+}
