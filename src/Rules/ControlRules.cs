@@ -169,9 +169,9 @@ public static class ControlRules
 	public static double UprisingChance(Province p, Country owner, GameDate today)
 	{
 		double separatism = Separatism(p, today, owner);
+		double laws = Math.Max(0, 1 + LawRules.Mod(owner, "uprising")) * StateRules.UnrestFactor(owner);
 		if (separatism <= 0)
-			return 0;
-		double laws = Math.Max(0, 1 + LawRules.Mod(owner, "uprising"));
+			return p.IsCore ? StateRules.CoreUprisingChance(owner) * Math.Max(0, 1 + LawRules.Mod(owner, "uprising")) : 0;
 		if (p.Control.Kind == ControlKind.Subjugated)
 		{
 			// nomads rise when they feel strong against the garrison holding them down
@@ -199,9 +199,9 @@ public static class ControlRules
 		var events = new List<ControlEvent>();
 		foreach (Province p in provinces)
 		{
-			if (p == null || p.Control == null || p.IsCore || !countries.TryGetValue(p.OwnerTag, out Country owner))
+			if (p == null || p.Control == null || !countries.TryGetValue(p.OwnerTag, out Country owner))
 				continue;
-			if (YearsBetween(p.Control.Since, today) >= CoringYears(owner))
+			if (!p.IsCore && YearsBetween(p.Control.Since, today) >= CoringYears(owner))
 			{
 				MilitaryRules.SendHome(p.Control.Garrison, provinces, rng);
 				p.Control = new ProvinceControl { Kind = ControlKind.Core, Since = p.Control.Since };

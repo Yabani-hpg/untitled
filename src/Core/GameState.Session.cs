@@ -125,6 +125,9 @@ public partial class GameState : IWorld
 				c.RulerNameCounts[name] = n;
 			c.LevyTemplate.Clear();
 			c.NextArmyNumber = 1;
+			c.Stability = c.Definition != null ? 1 : 0;
+			c.Legitimacy = 100;
+			c.WarExhaustion = 0;
 			if (c.Definition == null)
 				continue;
 			foreach (StartProvince sp in c.Definition.StartProvinces)

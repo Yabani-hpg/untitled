@@ -174,6 +174,9 @@ public partial class DiplomacyPanel : PanelContainer
 	{
 		var parts = new List<string>();
 		if (gs.AtWarWith(us.Tag, c.Tag)) parts.Add("at war with us");
+		if (c.OverlordTag == us.Tag) parts.Add("our vassal");
+		else if (us.OverlordTag == c.Tag) parts.Add("our overlord");
+		else if (c.OverlordTag != null) parts.Add($"vassal of {gs.GetCountry(c.OverlordTag)?.Name}");
 		if (us.Allies.Contains(c.Tag)) parts.Add("ally");
 		if (DiplomacyRules.HasTruce(us, c.Tag, gs.Date)) parts.Add("truce");
 		if (gs.AreNeighbours(us.Tag, c.Tag)) parts.Add("neighbour");
@@ -204,7 +207,9 @@ public partial class DiplomacyPanel : PanelContainer
 		var owned = gs.ProvincesOf(c.Tag).ToList();
 		facts.AddChild(HudStyle.Body($"{owned.Count} provinces · {owned.Sum(p => p.TotalUnits) * PopGroup.PeoplePerUnit:N0} people · capital {gs.CapitalText(c)}", BodyFont, 13));
 		facts.AddChild(HudStyle.Body($"Strength {WarRules.Strength(c, gs.Provinces, gs.Armies.Values, gs.Date):0} regiments (ours {WarRules.Strength(us, gs.Provinces, gs.Armies.Values, gs.Date):0}) · prestige {c.Prestige:0}", BodyFont, 13));
-		facts.AddChild(HudStyle.Body("Allies: " + (c.Allies.Count > 0 ? string.Join(", ", c.Allies.Select(t => gs.GetCountry(t)?.Name)) : "none"), BodyFont, 13, HudStyle.Muted));
+		facts.AddChild(HudStyle.Body("Allies: " + (c.Allies.Count > 0 ? string.Join(", ", c.Allies.Select(t => gs.GetCountry(t)?.Name)) : "none")
+			+ (c.OverlordTag != null ? $" · vassal of {gs.GetCountry(c.OverlordTag)?.Name}" : "")
+			+ (gs.VassalsOf(c.Tag).Any() ? $" · vassals: {string.Join(", ", gs.VassalsOf(c.Tag).Select(v => v.Name))}" : ""), BodyFont, 13, HudStyle.Muted));
 		var goTo = HudStyle.Button("Go to", BodyFont, 12);
 		goTo.Pressed += () => MapCamera.FocusProvince(GetNodeOrNull<Node3D>(CameraRigPath ?? new NodePath()), c.CapitalId);
 		facts.AddChild(goTo);
@@ -271,6 +276,25 @@ public partial class DiplomacyPanel : PanelContainer
 				_status.Text = reason;
 		};
 		buttons.AddChild(war);
+		if (c.OverlordTag == us.Tag)
+		{
+			string why = gs.AnnexObstacle(us, c);
+			var annex = HudStyle.Button("Annex", BodyFont, 13);
+			annex.Disabled = why != null;
+			annex.TooltipText = why ?? "Their provinces become ours (conquered, with separatism); our neighbours and other vassals think worse of us";
+			annex.Pressed += () => { if (!gs.Annex(c.Tag, out string r)) _status.Text = r; };
+			buttons.AddChild(annex);
+			actions.AddChild(HudStyle.Body($"They pay us {gs.TributeOf(c):0.0} gold a month in tribute and follow us to war.", BodyFont, 12, HudStyle.Muted));
+		}
+		else
+		{
+			string why = gs.VassalageObstacle(us, c);
+			var vassal = HudStyle.Button("Offer vassalage", BodyFont, 13);
+			vassal.Disabled = why != null;
+			vassal.TooltipText = why ?? "They become our vassal: tribute, and their levies in our wars";
+			vassal.Pressed += () => { if (!gs.OfferVassalage(c.Tag, out string r)) _status.Text = r; };
+			buttons.AddChild(vassal);
+		}
 		var claims = us.Claims.Where(id => gs.Provinces[id]?.OwnerTag == c.Tag).Select(id => gs.Provinces[id].Name).ToList();
 		if (claims.Count > 0)
 			actions.AddChild(HudStyle.Body("Our claims on their land: " + string.Join(", ", claims), BodyFont, 12, HudStyle.Muted));
@@ -353,9 +377,13 @@ public partial class DiplomacyPanel : PanelContainer
 		peace.AddChild(grid);
 		var costLabel = HudStyle.Body("", BodyFont, 14);
 		var goldBox = new SpinBox { MinValue = 0, MaxValue = Math.Max(0, Math.Floor(enemyLeader?.Gold ?? 0)), Step = 5, Suffix = "gold", Value = _peaceGold.GetValueOrDefault(w.Id) };
+		var vassalTick = new CheckBox { Text = $"Make {enemyLeader?.Name} our vassal", FocusMode = FocusModeEnum.None };
+		if (BodyFont != null) vassalTick.AddThemeFontOverride("font", BodyFont);
+		vassalTick.AddThemeFontSizeOverride("font_size", 13);
+		vassalTick.Visible = enemyLeader?.OverlordTag == null && us.OverlordTag == null;
 		PeaceTerms Terms()
 		{
-			var t = new PeaceTerms { Gold = goldBox.Value };
+			var t = new PeaceTerms { Gold = goldBox.Value, Vassalize = vassalTick.ButtonPressed };
 			t.Provinces.AddRange(chosen.Where(id => demandable.Any(p => p.Id == id)));
 			return t;
 		}
@@ -378,6 +406,10 @@ public partial class DiplomacyPanel : PanelContainer
 			tick.Toggled += on => { if (on) chosen.Add(id); else chosen.Remove(id); UpdateCost(); };
 			grid.AddChild(tick);
 		}
+		vassalTick.Toggled += _ => UpdateCost();
+		var vassalOnly = new PeaceTerms { Vassalize = true };
+		vassalTick.TooltipText = $"They keep their land but pay tribute and follow us to war · costs {WarRules.TermsCost(vassalOnly, us, losers, gs.Countries, gs.Provinces):0} score";
+		peace.AddChild(vassalTick);
 		var goldRow = new HBoxContainer();
 		goldRow.AddThemeConstantOverride("separation", 8);
 		goldRow.AddChild(HudStyle.Body("Gold:", BodyFont, 13, HudStyle.Muted));

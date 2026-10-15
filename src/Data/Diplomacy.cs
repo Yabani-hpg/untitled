@@ -56,5 +56,7 @@ public sealed class PeaceTerms
 	/// <summary>Provinces the winner takes (ids).</summary>
 	public List<int> Provinces { get; } = new();
 	public double Gold { get; set; }
-	public bool IsWhitePeace => Provinces.Count == 0 && Gold <= 0;
+	/// <summary>The loser becomes the winner's vassal.</summary>
+	public bool Vassalize { get; set; }
+	public bool IsWhitePeace => Provinces.Count == 0 && Gold <= 0 && !Vassalize;
 }

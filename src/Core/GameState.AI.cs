@@ -42,6 +42,13 @@ public partial class GameState
 
 	void AiDiplomacy(Country c)
 	{
+		// a steady realm first: stability bought when it is low and the treasury allows
+		int provinces = ProvincesOf(c.Tag).Count();
+		if (c.Stability < 1 && c.Gold > StateRules.StabilityCost(c, provinces) * 2)
+		{
+			c.Gold -= StateRules.StabilityCost(c, provinces);
+			StateRules.ChangeStability(c, 1);
+		}
 		var settled = SettledCountries.Where(o => o != c).ToList();
 		var neighbours = settled.Where(o => AreNeighbours(c.Tag, o.Tag)).ToList();
 
@@ -70,8 +77,14 @@ public partial class GameState
 			}
 		}
 
-		// war: press a claim or take revenge on a neighbour we outmatch
-		if (AtWar(c.Tag) || c.Gold < 20)
+		// a vassal of long standing that loves us is taken in
+		foreach (Country v in VassalsOf(c.Tag).ToList())
+		{
+			if (AnnexObstacle(c, v) == null && _rng.NextDouble() < 0.1)
+				AnnexVassal(c, v);
+		}
+		// war: press a claim or take revenge on a neighbour we outmatch (vassals make no war)
+		if (AtWar(c.Tag) || c.Gold < 20 || c.OverlordTag != null)
 			return;
 		foreach (Country target in neighbours.OrderBy(_ => _rng.Next()))
 		{
@@ -229,6 +242,16 @@ public partial class GameState
 	{
 		var terms = new PeaceTerms();
 		var losers = winnerSide > 0 ? war.Defenders : war.Attackers;
+		Country loserLeaderFirst = GetCountry(winnerSide > 0 ? war.DefenderTag : war.AttackerTag);
+		// a small loser is made a vassal when the score allows and it has no overlord
+		if (loserLeaderFirst != null && loserLeaderFirst.OverlordTag == null && winner.OverlordTag == null
+			&& ProvincesOf(loserLeaderFirst.Tag).Count() <= 3 && ProvincesOf(loserLeaderFirst.Tag).Count() * 3 <= ProvincesOf(winner.Tag).Count())
+		{
+			terms.Vassalize = true;
+			if (WarRules.TermsCost(terms, winner, losers, _countries, _provinces) <= score)
+				return terms;
+			terms.Vassalize = false;
+		}
 		var candidates = WarRules.Demandable(war, winnerSide, _provinces)
 			.OrderByDescending(p => winner.Claims.Contains(p.Id) ? 2 : 0 + (p.OccupierTag != null ? 1 : 0))
 			.ThenBy(p => WarRules.Value(p, GetCountry(p.OwnerTag))).ToList();

@@ -91,6 +91,9 @@ public partial class GameState
 		};
 		_characters[heir.Id] = heir;
 		c.Ruler = heir;
+		c.Legitimacy = StateRules.SuccessionLegitimacy(LawRules.Choice(c, "succession"), newDynasty);
+		if (newDynasty)
+			StateRules.ChangeStability(c, -1);
 
 		if (c.Tag == PlayerTag)
 		{

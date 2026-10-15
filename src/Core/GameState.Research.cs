@@ -72,6 +72,37 @@ public partial class GameState
 			+ (unlocks.Count > 0 ? $" It opens: {string.Join(", ", unlocks)}." : ""));
 	}
 
+	/// <summary>The player spends gold to raise stability a point.</summary>
+	public bool RaiseStability(out string reason)
+	{
+		Country c = PlayerCountry;
+		reason = null;
+		if (c == null || !StateRules.CanRaiseStability(c, ProvincesOf(c.Tag).Count(), out reason))
+			return false;
+		c.Gold -= StateRules.StabilityCost(c, ProvincesOf(c.Tag).Count());
+		StateRules.ChangeStability(c, 1);
+		Notify($"Stability rises to {c.Stability:+0;-0;0}: {StateRules.StabilityText(c.Stability).ToLowerInvariant()}.");
+		EmitSignal(SignalName.LawsChanged);
+		return true;
+	}
+
+	/// <summary>The player spends gold on the soldiers' families and the temples, easing war exhaustion by one.</summary>
+	public bool RelieveExhaustion(out string reason)
+	{
+		Country c = PlayerCountry;
+		reason = null;
+		if (c == null || c.WarExhaustion < 1)
+			reason = "The realm is not weary of war";
+		else if (c.Gold < StateRules.ExhaustionReliefCost)
+			reason = $"Costs {StateRules.ExhaustionReliefCost:0} gold; we have {c.Gold:0}";
+		if (reason != null)
+			return false;
+		c.Gold -= StateRules.ExhaustionReliefCost;
+		c.WarExhaustion -= 1;
+		EmitSignal(SignalName.LawsChanged);
+		return true;
+	}
+
 	/// <summary>The monthly research step for every settled country.</summary>
 	void RunResearchStep()
 	{

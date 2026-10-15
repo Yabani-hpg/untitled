@@ -67,7 +67,7 @@ public static class EconomyRules
 			if (pop.Occupation.Taxed)
 				tax += pop.Units * TaxPerUnit * (LawRules.IsCitizen(owner, pop) ? 1 : noncitizens);
 		}
-		return Math.Max(0, tax * (1 + LawRules.Mod(owner, "tax")) * (1 - ControlRules.Separatism(p, today, owner)));
+		return Math.Max(0, tax * (1 + LawRules.Mod(owner, "tax")) * StateRules.TaxFactor(owner) * (1 - ControlRules.Separatism(p, today, owner)));
 	}
 
 	public static Ledger MonthlyLedger(Country c, IEnumerable<Province> owned, IEnumerable<Tribe> tribes, IEnumerable<Army> armies, GameDate today)

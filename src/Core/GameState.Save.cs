@@ -67,6 +67,14 @@ public partial class GameState
 			w.WriteNumber("research_stockpile", Math.Round(c.ResearchStockpile, 3));
 			w.WriteNumber("next_army", c.NextArmyNumber);
 			w.WriteNumber("prestige", Math.Round(c.Prestige, 2));
+			w.WriteNumber("stability", c.Stability);
+			if (c.OverlordTag != null)
+			{
+				w.WriteString("overlord", c.OverlordTag);
+				w.WriteNumber("vassal_since", c.VassalSince.Day);
+			}
+			w.WriteNumber("legitimacy", Math.Round(c.Legitimacy, 2));
+			w.WriteNumber("war_exhaustion", Math.Round(c.WarExhaustion, 2));
 			w.WriteStartObject("opinions");
 			foreach (var (tag, o) in c.Opinions)
 				w.WriteNumber(tag, o);
@@ -330,6 +338,11 @@ public partial class GameState
 			if (e.TryGetProperty("opinions", out JsonElement opinions))
 			{
 				c.Prestige = e.TryGetProperty("prestige", out JsonElement pr) ? pr.GetDouble() : 0;
+				c.Stability = e.TryGetProperty("stability", out JsonElement st) ? st.GetInt32() : 0;
+				c.OverlordTag = e.TryGetProperty("overlord", out JsonElement ov) && _countries.ContainsKey(ov.GetString()) ? ov.GetString() : null;
+				c.VassalSince = e.TryGetProperty("vassal_since", out JsonElement vs) ? new GameDate(vs.GetInt64()) : default;
+				c.Legitimacy = e.TryGetProperty("legitimacy", out JsonElement lg) ? lg.GetDouble() : 100;
+				c.WarExhaustion = e.TryGetProperty("war_exhaustion", out JsonElement we) ? we.GetDouble() : 0;
 				c.Opinions.Clear();
 				foreach (JsonProperty o in opinions.EnumerateObject())
 					c.Opinions[o.Name] = o.Value.GetInt32();

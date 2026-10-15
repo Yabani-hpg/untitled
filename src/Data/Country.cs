@@ -86,6 +86,16 @@ public sealed class Country
 	public HashSet<int> Claims { get; } = new();
 	/// <summary>Prestige, -100..100: won in battle and in peace, lost in defeat; the world's opinion of us follows it.</summary>
 	public double Prestige { get; set; }
+	/// <summary>The country it is a vassal of, or null: it pays tribute, follows its overlord to war and makes no war of its own.</summary>
+	public string OverlordTag { get; set; }
+	/// <summary>Since when it has been a vassal.</summary>
+	public GameDate VassalSince { get; set; }
+	/// <summary>Stability, -3..+3.</summary>
+	public int Stability { get; set; }
+	/// <summary>The ruler's legitimacy, 0..100.</summary>
+	public double Legitimacy { get; set; } = 100;
+	/// <summary>War exhaustion, 0..20.</summary>
+	public double WarExhaustion { get; set; }
 
 	/// <summary>The flag flown now (see <see cref="Flags"/>).</summary>
 	public FlagDefinition CurrentFlag { get; set; }

@@ -205,13 +205,36 @@ public partial class CountryPanel : PanelContainer
 		Row("People", $"{(citizens + others) * PopGroup.PeoplePerUnit:N0}");
 		Row("Citizens", $"{citizens * PopGroup.PeoplePerUnit:N0} ({LawRules.Option(c, gs.Definitions.GetLaw("citizenship"))?.Name})");
 		Row("Non-citizens", $"{others * PopGroup.PeoplePerUnit:N0} ({LawRules.Option(c, gs.Definitions.GetLaw("noncitizens"))?.Name})");
+		Row("Stability", $"{c.Stability:+0;-0;0} · {StateRules.StabilityText(c.Stability)}", c.Stability >= 0 ? HudStyle.Good : HudStyle.Bad);
+		Row("Legitimacy", $"{c.Legitimacy:0} · prestige {c.Prestige:+0;-0;0}", c.Legitimacy >= 60 ? HudStyle.Text : HudStyle.Bad);
+		Row("War exhaustion", $"{c.WarExhaustion:0.0} of {StateRules.MaxExhaustion:0}" + (gs.WarsOf(c.Tag).Any() ? $" · at war ({gs.WarsOf(c.Tag).Count()})" : ""), c.WarExhaustion >= 5 ? HudStyle.Bad : HudStyle.Text);
+		Row("Unrest", $"uprisings x{StateRules.UnrestFactor(c):0.00} · tax x{StateRules.TaxFactor(c):0.00}", StateRules.UnrestFactor(c) > 1.3 ? HudStyle.Bad : HudStyle.Muted);
 		Row("Treasury", $"{c.Gold:0} gold");
 		Row("Each month", $"{ledger.Balance:+0.0;-0.0} gold: +{ledger.Tax:0.0} tax, -{ledger.Armies:0.0} armies, -{ledger.Garrisons:0.0} garrisons, -{ledger.Mercenaries:0.0} mercenaries",
 			ledger.Balance >= 0 ? HudStyle.Good : HudStyle.Bad);
 		long men = owned.Sum(p => p.UnitsOf(Sex.Male)), women = owned.Sum(p => p.UnitsOf(Sex.Female));
 		Row("Men and women", $"{men * PopGroup.PeoplePerUnit:N0} men · {women * PopGroup.PeoplePerUnit:N0} women at home");
 		Row("Under arms", $"{MilitaryRules.UnderArms(c, gs.Armies.Values, owned)} regiments · {gs.AvailableLevies(c)} more to levy · {TribeRules.Mercenaries(gs.Tribes.Values, c.Tag)} mercenaries");
+		if (c.OverlordTag != null)
+			Row("Overlord", $"{gs.GetCountry(c.OverlordTag)?.Name} · we pay {gs.TributeOf(c):0.0} gold a month", HudStyle.Bad);
+		var vassals = gs.VassalsOf(c.Tag).ToList();
+		if (vassals.Count > 0)
+			Row("Vassals", string.Join(", ", vassals.Select(v => $"{v.Name} ({gs.TributeOf(v):0.0} gold)")));
 		Row("Allied tribes", string.Join(", ", gs.Tribes.Values.Where(t => t.AlliedTag == c.Tag).Select(t => t.Name)) is { Length: > 0 } a ? a : "None");
+		var actions = new HBoxContainer();
+		actions.AddThemeConstantOverride("separation", 6);
+		_overview.AddChild(actions);
+		double stabCost = StateRules.StabilityCost(c, owned.Count);
+		var stab = HudStyle.Button($"Raise stability ({stabCost:0} gold)", BodyFont, 13);
+		stab.Disabled = !StateRules.CanRaiseStability(c, owned.Count, out string why);
+		stab.TooltipText = why ?? "Gifts to the temples and the great men: the realm settles";
+		stab.Pressed += () => _status.Text = gs.RaiseStability(out string r) ? "" : r;
+		actions.AddChild(stab);
+		var relief = HudStyle.Button($"Ease war exhaustion ({StateRules.ExhaustionReliefCost:0} gold)", BodyFont, 13);
+		relief.Disabled = c.WarExhaustion < 1 || c.Gold < StateRules.ExhaustionReliefCost;
+		relief.TooltipText = "Pay the soldiers' families and the temples: exhaustion falls by one";
+		relief.Pressed += () => _status.Text = gs.RelieveExhaustion(out string r) ? "" : r;
+		actions.AddChild(relief);
 	}
 
 	static string Kind(ControlKind? k) => k switch

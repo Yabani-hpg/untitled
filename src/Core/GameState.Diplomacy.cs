@@ -34,6 +34,10 @@ public partial class GameState
 	public War WarBetween(string a, string b) => _wars.Values.FirstOrDefault(w => w.AreEnemies(a, b));
 	public bool AreNeighbours(string a, string b) => DiplomacyRules.Neighbours(a, b, _provinces);
 
+	public IEnumerable<Country> VassalsOf(string tag) => _countries.Values.Where(c => c.OverlordTag == tag && c.CapitalId > 0);
+	/// <summary>Tribute a vassal pays its overlord a month.</summary>
+	public double TributeOf(Country vassal) => vassal.OverlordTag == null ? 0 : vassal.LastLedger.Tax * WarRules.TributeShare;
+
 	/// <summary>Diplomats a country has free: its total less those courting tribes and countries.</summary>
 	public int FreeDiplomats(Country c) => TribeRules.DiplomatsOf(c) - c.ImprovingRelations.Count - c.ImprovingCountryRelations.Count;
 
@@ -54,6 +58,7 @@ public partial class GameState
 			c.Claims.Clear();
 			c.ImprovingCountryRelations.Clear();
 			c.Prestige = 0;
+			c.OverlordTag = null;
 			foreach (int id in c.Definition?.Claims ?? new())
 				c.Claims.Add(id);
 		}
@@ -133,6 +138,7 @@ public partial class GameState
 		if (c == null || them == null || !c.Allies.Remove(tag))
 			return;
 		them.Allies.Remove(c.Tag);
+		StateRules.ChangeStability(c, -1);
 		foreach (Country x in new[] { c, them })
 			x.OpinionModifiers.GetValueOrDefault(x == c ? tag : c.Tag)?.RemoveAll(m => m.Reason == "Allied");
 		DiplomacyRules.AddModifier(them, c.Tag, "Broke our alliance", -40, Date, 10);
@@ -154,6 +160,12 @@ public partial class GameState
 	{
 		if (them == null || them.CapitalId <= 0 || them == us)
 			return "No such country";
+		if (us.OverlordTag != null)
+			return $"A vassal of {GetCountry(us.OverlordTag)?.Name} makes no war of its own";
+		if (them.OverlordTag == us.Tag)
+			return "They are our vassal";
+		if (them.OverlordTag != null && them.OverlordTag != us.Tag)
+			them = GetCountry(them.OverlordTag);     // war on a vassal is war on its overlord
 		if (AtWarWith(us.Tag, them.Tag))
 			return "Already at war with them";
 		if (us.Allies.Contains(them.Tag))
@@ -171,7 +183,10 @@ public partial class GameState
 		reason = c == null ? "No country" : WarObstacle(c, them);
 		if (reason != null)
 			return false;
-		StartWar(c, them, BestCasusBelli(c, them));
+		CasusBelli cb = BestCasusBelli(c, them);
+		if (them.OverlordTag != null)
+			them = GetCountry(them.OverlordTag);
+		StartWar(c, them, cb);
 		return true;
 	}
 
@@ -185,12 +200,19 @@ public partial class GameState
 		DiplomacyRules.AddModifier(defender, attacker.Tag, "Attacked us", -60, Date);
 		if (cb == CasusBelli.Conquest)
 		{
+			StateRules.ChangeStability(attacker, -2);          // war without cause shakes the realm
+			attacker.Legitimacy = Math.Max(0, attacker.Legitimacy - 10);
 			foreach (Country o in SettledCountries.Where(o => o != attacker && o != defender && AreNeighbours(o.Tag, attacker.Tag)))
 				DiplomacyRules.AddModifier(o, attacker.Tag, "Made war without cause", -15, Date, 10);
 		}
-		// allies answer the call: the defender's first, then the attacker's
+		// vassals follow their overlord; allies answer the call: the defender's first, then the attacker's
 		foreach (var (leader, side) in new[] { (defender, war.Defenders), (attacker, war.Attackers) })
 		{
+			foreach (Country v in VassalsOf(leader.Tag))
+			{
+				if (!war.Includes(v.Tag))
+					side.Add(v.Tag);
+			}
 			foreach (string allyTag in leader.Allies.ToList())
 			{
 				Country ally = GetCountry(allyTag);
@@ -295,6 +317,19 @@ public partial class GameState
 			loser.Gold -= paid;
 			winner.Gold += paid;
 		}
+		if (terms.Vassalize && loser.OverlordTag == null && winner.OverlordTag == null)
+		{
+			loser.OverlordTag = winner.Tag;
+			loser.VassalSince = Date;
+			foreach (string ally in loser.Allies.ToList())
+			{
+				loser.Allies.Remove(ally);                // a vassal has its overlord's friends and enemies
+				GetCountry(ally)?.Allies.Remove(loser.Tag);
+			}
+			DiplomacyRules.AddModifier(loser, winner.Tag, "Made us their vassal", -30, Date);
+			foreach (Country v in VassalsOf(loser.Tag).ToList())
+				v.OverlordTag = null;                      // its own vassals go free
+		}
 		foreach (Province p in _provinces)
 		{
 			if (p != null && (p.OccupierTag != null && (winners.Contains(p.OccupierTag) || losers.Contains(p.OccupierTag)) || p.SiegerTag != null && (winners.Contains(p.SiegerTag) || losers.Contains(p.SiegerTag))))
@@ -315,6 +350,9 @@ public partial class GameState
 		{
 			winner.Prestige = Math.Clamp(winner.Prestige + WarRules.PrestigeForVictory, -100, 100);
 			loser.Prestige = Math.Clamp(loser.Prestige - WarRules.PrestigeForVictory, -100, 100);
+			loser.Legitimacy = Math.Max(0, loser.Legitimacy - 10);
+			if (terms.Provinces.Count > 0)
+				StateRules.ChangeStability(loser, -1);
 		}
 		// armies left in what is now foreign land go home
 		foreach (Army a in _armies.Values.Where(a => winners.Contains(a.OwnerTag) || losers.Contains(a.OwnerTag)).ToList())
@@ -325,6 +363,7 @@ public partial class GameState
 		}
 		_wars.Remove(war.Id);
 		string what = terms.IsWhitePeace ? "a white peace" : string.Join(" and ", new[] {
+			terms.Vassalize ? "its independence, becoming a vassal" : null,
 			taken.Count > 0 ? $"{(taken.Count == 1 ? "the province of " : "the provinces of ")}{string.Join(", ", taken)}" : null,
 			terms.Gold > 0 ? $"{terms.Gold:0} gold" : null }.Where(s => s != null));
 		if (war.Includes(PlayerTag) || AreNeighbours(PlayerTag, winner.Tag) || AreNeighbours(PlayerTag, loser.Tag))
@@ -341,14 +380,114 @@ public partial class GameState
 		EmitSignal(SignalName.ArmiesChanged);
 	}
 
+	// ------------------------------------------------------------------------------------ subjects
+
+	/// <summary>Why we can't offer a country vassalage, or null: it must be small beside us and fond of us.</summary>
+	public string VassalageObstacle(Country us, Country them)
+	{
+		if (them == null || them.CapitalId <= 0 || them == us)
+			return "No such country";
+		if (them.OverlordTag == us.Tag)
+			return "Already our vassal";
+		if (them.OverlordTag != null)
+			return $"A vassal of {GetCountry(them.OverlordTag)?.Name} already";
+		if (us.OverlordTag != null)
+			return "A vassal cannot take vassals";
+		if (AtWarWith(us.Tag, them.Tag))
+			return "We are at war with them";
+		double ours = WarRules.Strength(us, _provinces, _armies.Values, Date), theirs = WarRules.Strength(them, _provinces, _armies.Values, Date);
+		if (ours < theirs * 5 || ProvincesOf(us.Tag).Count() < ProvincesOf(them.Tag).Count() * 3)
+			return "They would bow only to a realm many times their size";
+		if (DiplomacyRules.Opinion(them, us.Tag) < 70)
+			return $"They must think 70 or better of us (now {DiplomacyRules.Opinion(them, us.Tag)})";
+		return null;
+	}
+
+	/// <summary>The player offers a small, friendly country vassalage: tribute and protection.</summary>
+	public bool OfferVassalage(string tag, out string reason)
+	{
+		Country us = PlayerCountry, them = GetCountry(tag);
+		reason = us == null ? "No country" : VassalageObstacle(us, them);
+		if (reason != null)
+			return false;
+		them.OverlordTag = us.Tag;
+		them.VassalSince = Date;
+		foreach (string ally in them.Allies.ToList())
+		{
+			them.Allies.Remove(ally);
+			GetCountry(ally)?.Allies.Remove(them.Tag);
+		}
+		Notify($"{them.Name} accepts the protection of {us.Name} and becomes our vassal.");
+		EmitSignal(SignalName.DiplomacyChanged);
+		return true;
+	}
+
+	public string AnnexObstacle(Country us, Country vassal)
+	{
+		if (vassal == null || vassal.OverlordTag != us.Tag)
+			return "Not our vassal";
+		double years = (Date.Day - vassal.VassalSince.Day) / 365.2425;
+		if (years < WarRules.YearsBeforeAnnex)
+			return $"Our vassal for {years:0} years; {WarRules.YearsBeforeAnnex} are needed";
+		if (DiplomacyRules.Opinion(vassal, us.Tag) < 50)
+			return $"They must think 50 or better of us (now {DiplomacyRules.Opinion(vassal, us.Tag)})";
+		if (AtWar(vassal.Tag))
+			return "Not while they are at war";
+		return null;
+	}
+
+	/// <summary>A vassal of long standing is taken into the realm: its provinces become ours, conquered.</summary>
+	public bool Annex(string tag, out string reason)
+	{
+		Country us = PlayerCountry, vassal = GetCountry(tag);
+		reason = us == null ? "No country" : AnnexObstacle(us, vassal);
+		if (reason != null)
+			return false;
+		AnnexVassal(us, vassal);
+		return true;
+	}
+
+	void AnnexVassal(Country us, Country vassal)
+	{
+		foreach (Province p in ProvincesOf(vassal.Tag).ToList())
+		{
+			p.OwnerTag = us.Tag;
+			p.Control = new ProvinceControl { Kind = ControlKind.Conquered, Since = Date };
+		}
+		foreach (Army a in ArmiesOf(vassal.Tag).ToList())
+		{
+			MilitaryRules.SendHome(a.Regiments, _provinces, _rng);
+			RemoveArmy(a);
+		}
+		us.Gold += Math.Max(0, vassal.Gold);
+		vassal.Gold = 0;
+		vassal.OverlordTag = null;
+		vassal.CapitalId = 0;
+		foreach (Country o in SettledCountries.Where(o => o != us && (o.OverlordTag == us.Tag || AreNeighbours(o.Tag, us.Tag))))
+			DiplomacyRules.AddModifier(o, us.Tag, "Swallowed a vassal", -20, Date, 10);
+		if (us.Tag == PlayerTag || AreNeighbours(PlayerTag, us.Tag))
+			Notify($"{us.Name} annexes its vassal {vassal.Name}.");
+		RefreshFlags();
+		EmitSignal(SignalName.DiplomacyChanged);
+		EmitSignal(SignalName.OwnershipChanged);
+	}
+
 	// ------------------------------------------------------------------------------------ monthly
 
-	/// <summary>Opinions drift, truces lapse, war scores are reckoned.</summary>
+	/// <summary>Opinions drift, truces lapse, tribute is paid, war scores are reckoned.</summary>
 	void RunDiplomacyStep()
 	{
 		var settled = SettledCountries.ToList();
 		foreach (Country c in settled)
 		{
+			if (c.OverlordTag != null && GetCountry(c.OverlordTag) is Country overlord && overlord.CapitalId > 0)
+			{
+				double tribute = TributeOf(c);
+				c.Gold -= tribute;
+				overlord.Gold += tribute;
+			}
+			else if (c.OverlordTag != null)
+				c.OverlordTag = null;                    // the overlord is gone
 			foreach (Country o in settled)
 			{
 				if (o != c)
@@ -357,6 +496,7 @@ public partial class GameState
 			foreach (string t in c.Truces.Where(kv => kv.Value <= Date).Select(kv => kv.Key).ToList())
 				c.Truces.Remove(t);
 			c.Prestige *= 0.995;
+			StateRules.MonthlyStep(c, AtWar(c.Tag));
 		}
 		foreach (War w in _wars.Values)
 			WarRules.UpdateScore(w, _countries, _provinces);

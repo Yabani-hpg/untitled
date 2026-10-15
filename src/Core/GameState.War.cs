@@ -114,6 +114,8 @@ public partial class GameState
 			Country winner = result.AttackerWon ? ao : dO, loser = result.AttackerWon ? dO : ao;
 			winner.Prestige = Math.Clamp(winner.Prestige + 3, -100, 100);
 			loser.Prestige = Math.Clamp(loser.Prestige - 3, -100, 100);
+			StateRules.BattleExhaustion(ao, aLost, _armies.Values.Where(x => x.OwnerTag == ao.Tag).Sum(x => x.Men) + aLost);
+			StateRules.BattleExhaustion(dO, dLost, _armies.Values.Where(x => x.OwnerTag == dO.Tag).Sum(x => x.Men) + dLost);
 		}
 		foreach (Army a in result.AttackerWon ? defenders : attackers)
 			Retreat(a);
