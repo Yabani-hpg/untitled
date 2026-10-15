@@ -7,10 +7,10 @@ using Untitled.Data;
 namespace Untitled.Rules;
 
 /// <summary>A settled country's monthly accounts, in gold.</summary>
-public readonly record struct Ledger(double Tax, double Garrisons, double Mercenaries, double Armies = 0, double Trade = 0, double Production = 0, double Interest = 0)
+public readonly record struct Ledger(double Tax, double Garrisons, double Mercenaries, double Armies = 0, double Trade = 0, double Production = 0, double Interest = 0, double Advisors = 0)
 {
 	public double Income => Tax + Trade + Production;
-	public double Balance => Income - Garrisons - Mercenaries - Armies - Interest;
+	public double Balance => Income - Garrisons - Mercenaries - Armies - Interest - Advisors;
 }
 
 /// <summary>An unsettled country's monthly food accounts.</summary>
@@ -86,7 +86,7 @@ public static class EconomyRules
 		}
 		double upkeep = armies.Where(a => a.OwnerTag == c.Tag).Sum(MilitaryRules.Upkeep);
 		return new Ledger(tax, garrisons, TribeRules.Mercenaries(tribes, c.Tag) * MercenaryPayOf(c), upkeep,
-			trade?.Income.GetValueOrDefault(c.Tag) ?? 0, trade?.Production.GetValueOrDefault(c.Tag) ?? 0, c.Loans.Sum(l => l.Amount * l.Rate / 12));
+			trade?.Income.GetValueOrDefault(c.Tag) ?? 0, trade?.Production.GetValueOrDefault(c.Tag) ?? 0, c.Loans.Sum(l => l.Amount * l.Rate / 12), AdvisorRules.Salaries(c));
 	}
 
 	/// <summary>Gold a month a country pays each regiment of mercenaries (its laws may make them cheaper).</summary>

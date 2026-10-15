@@ -27,6 +27,7 @@ public partial class CountryPanel : PanelContainer
 	VBoxContainer _decisions;
 	VBoxContainer _trade;
 	VBoxContainer _estates;
+	VBoxContainer _court;
 	Label _title;
 	Label _status;
 
@@ -92,6 +93,7 @@ public partial class CountryPanel : PanelContainer
 		_decisions = AddTab("Decisions");
 		_trade = AddTab("Trade");
 		_estates = AddTab("Estates");
+		_court = AddTab("Court");
 
 		_status = HudStyle.Body("", BodyFont, 13, HudStyle.Muted);
 		root.AddChild(_status);
@@ -161,6 +163,7 @@ public partial class CountryPanel : PanelContainer
 		FillDecisions(gs, c);
 		FillTrade(gs, c);
 		FillEstates(gs, c);
+		FillCourt(gs, c);
 	}
 
 	// ------------------------------------------------------------------------------------ Overview
@@ -225,7 +228,7 @@ public partial class CountryPanel : PanelContainer
 		Row("Treasury", $"{c.Gold:0} gold" + (c.IsBankrupt(gs.Date) ? $" · bankrupt until {gs.Definitions.DefaultCalendar.Format(c.BankruptUntil)}: tax at {EconomyRules.BankruptTaxFactor:P0}" : ""), c.IsBankrupt(gs.Date) ? HudStyle.Bad : HudStyle.Text);
 		if (c.Loans.Count > 0)
 			Row("Debt", $"{c.Loans.Count} loans, {c.Debt:0} gold, {ledger.Interest:0.0} interest a month · the oldest ({c.Loans[0].Amount:0} at {c.Loans[0].Rate:P0}) falls due {gs.Definitions.DefaultCalendar.Format(c.Loans[0].Due)}", HudStyle.Bad);
-		Row("Each month", $"{ledger.Balance:+0.0;-0.0} gold: +{ledger.Tax:0.0} tax, +{ledger.Trade:0.0} trade, +{ledger.Production:0.0} production, -{ledger.Armies:0.0} armies, -{ledger.Garrisons:0.0} garrisons, -{ledger.Mercenaries:0.0} mercenaries" + (ledger.Interest > 0 ? $", -{ledger.Interest:0.0} interest" : ""),
+		Row("Each month", $"{ledger.Balance:+0.0;-0.0} gold: +{ledger.Tax:0.0} tax, +{ledger.Trade:0.0} trade, +{ledger.Production:0.0} production, -{ledger.Armies:0.0} armies, -{ledger.Garrisons:0.0} garrisons, -{ledger.Mercenaries:0.0} mercenaries" + (ledger.Interest > 0 ? $", -{ledger.Interest:0.0} interest" : "") + (ledger.Advisors > 0 ? $", -{ledger.Advisors:0.0} advisors" : ""),
 			ledger.Balance >= 0 ? HudStyle.Good : HudStyle.Bad);
 		long men = owned.Sum(p => p.UnitsOf(Sex.Male)), women = owned.Sum(p => p.UnitsOf(Sex.Female));
 		Row("Men and women", $"{men * PopGroup.PeoplePerUnit:N0} men · {women * PopGroup.PeoplePerUnit:N0} women at home");
@@ -588,6 +591,72 @@ public partial class CountryPanel : PanelContainer
 				b.Pressed += () => { if (!(granted ? gs.RevokePrivilege(id, out string r) : gs.GrantPrivilege(id, out r))) _status.Text = r; };
 				row.AddChild(b);
 			}
+		}
+	}
+
+	// ------------------------------------------------------------------------------------ Court
+
+	void FillCourt(GameState gs, Country c)
+	{
+		Clear(_court);
+		Label Text(string text, int size = 13, Color? color = null)
+		{
+			var l = HudStyle.Body(text, BodyFont, size, color ?? HudStyle.Muted);
+			l.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+			l.CustomMinimumSize = new Vector2(560, 0);
+			return l;
+		}
+		VBoxContainer Section(string title)
+		{
+			var panel = new PanelContainer();
+			panel.AddThemeStyleboxOverride("panel", HudStyle.Section());
+			_court.AddChild(panel);
+			var box = new VBoxContainer();
+			box.AddThemeConstantOverride("separation", 4);
+			panel.AddChild(box);
+			box.AddChild(HudStyle.Title(title, TitleFont, 17));
+			return box;
+		}
+		Control Person(Advisor a, string action, string tip, bool enabled, System.Action onPress)
+		{
+			var row = new HBoxContainer();
+			row.AddThemeConstantOverride("separation", 10);
+			var portrait = new TextureRect { Texture = HudStyle.Texture(a.Portrait), ExpandMode = TextureRect.ExpandModeEnum.IgnoreSize, StretchMode = TextureRect.StretchModeEnum.KeepAspectCentered };
+			var frame = HudStyle.Framed(portrait);
+			frame.CustomMinimumSize = new Vector2(44, 56);
+			row.AddChild(frame);
+			var col = new VBoxContainer { SizeFlagsHorizontal = SizeFlags.ExpandFill };
+			row.AddChild(col);
+			col.AddChild(HudStyle.Body($"{a.Name}, {a.AgeOn(gs.Date)} · {a.Type.Name}", BodyFont, 14, Colors.White));
+			col.AddChild(Text($"Skill {new string('★', a.Skill)}{new string('☆', AdvisorRules.MaxSkill - a.Skill)} · {AdvisorRules.Describe(a)} · {AdvisorRules.Salary(a):0} gold a month · {a.Type.Description}", 12));
+			var b = HudStyle.Button(action, BodyFont, 12);
+			b.SizeFlagsVertical = SizeFlags.ShrinkCenter;
+			b.Disabled = !enabled;
+			b.TooltipText = tip;
+			b.Pressed += () => onPress();
+			row.AddChild(b);
+			return row;
+		}
+		var court = Section("The court");
+		court.AddChild(Text($"{c.RulerTitle} {c.Ruler?.Name} of the house of {c.Ruler?.Dynasty}, aged {c.Ruler?.AgeOn(gs.Date)}. One advisor of each kind may serve: admin, diplomatic and military. They cost {AdvisorRules.Salaries(c):0} gold a month in all."));
+		foreach (string category in AdvisorRules.Categories)
+		{
+			Advisor a = AdvisorRules.Hired(c, category);
+			if (a == null)
+				court.AddChild(Text($"No {category} advisor serves.", 13, HudStyle.Bad));
+			else
+			{
+				int id = a.Id;
+				court.AddChild(Person(a, "Dismiss", "They leave the court", true, () => gs.DismissAdvisor(id)));
+			}
+		}
+		var pool = Section("Candidates");
+		pool.AddChild(Text("Those who offer their service this year; new faces come each January."));
+		foreach (Advisor a in c.Candidates.OrderBy(a => a.Type.Category).ThenByDescending(a => a.Skill))
+		{
+			string why = gs.HireObstacle(c, a);
+			int id = a.Id;
+			pool.AddChild(Person(a, "Hire", why ?? "Take them into the court", why == null, () => { if (!gs.HireAdvisor(id, out string r)) _status.Text = r; }));
 		}
 	}
 

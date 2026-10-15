@@ -204,7 +204,7 @@ public partial class PlayerBar : PanelContainer
 		Set("gold", $"{c.Gold:N0}", $"{ledger.Balance:+0.0;-0.0}/month",
 			$"Treasury: {c.Gold:N0} gold\n\nGold a month:\n+{ledger.Tax:0.0} tax (tribesmen, nomads, priests and those under arms pay none)"
 			+ $"\n+{ledger.Trade:0.0} trade\n+{ledger.Production:0.0} production of our provinces"
-			+ $"\n-{ledger.Armies:0.0} armies\n-{ledger.Garrisons:0.0} garrisons\n-{ledger.Mercenaries:0.0} mercenaries" + (ledger.Interest > 0 ? $"\n-{ledger.Interest:0.0} interest on {c.Loans.Count} loans" : ""),
+			+ $"\n-{ledger.Armies:0.0} armies\n-{ledger.Garrisons:0.0} garrisons\n-{ledger.Mercenaries:0.0} mercenaries" + (ledger.Interest > 0 ? $"\n-{ledger.Interest:0.0} interest on {c.Loans.Count} loans" : "") + (ledger.Advisors > 0 ? $"\n-{ledger.Advisors:0.0} advisors" : ""),
 			ledger.Balance >= 0 ? HudStyle.Good : HudStyle.Bad);
 
 		long men = owned.Sum(p => p.UnitsOf(Sex.Male)) * (long)PopGroup.PeoplePerUnit;

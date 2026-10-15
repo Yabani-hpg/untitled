@@ -175,6 +175,8 @@ public sealed class Definitions
 	public List<TradeNode> TradeNodes { get; } = new();
 	public List<Estate> Estates { get; } = new();
 	public List<IdeaGroup> IdeaGroups { get; } = new();
+	public List<AdvisorType> AdvisorTypes { get; } = new();
+	public AdvisorType GetAdvisorType(string id) => AdvisorTypes.Find(t => t.Id == id);
 	public IdeaGroup GetIdeaGroup(string id) => IdeaGroups.Find(g => g.Id == id);
 	public Idea GetIdea(string id) => IdeaGroups.SelectMany(g => g.Ideas).FirstOrDefault(i => i.Id == id);
 	public Estate GetEstate(string id) => Estates.Find(e => e.Id == id);

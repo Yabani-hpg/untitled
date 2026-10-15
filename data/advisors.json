@@ -1,0 +1,117 @@
+{
+ "_comment": "Advisor kinds. Each gives its modifier times the advisor's skill (1 to 3). One advisor of each category (admin, diplomatic, military) may serve at a time; salary rises with skill.",
+ "types": [
+  {
+   "id": "treasurer",
+   "name": "Treasurer",
+   "category": "admin",
+   "modifier": "tax",
+   "value": 0.04,
+   "description": "Keeps the accounts and squeezes the tax."
+  },
+  {
+   "id": "master_of_scribes",
+   "name": "Master of Scribes",
+   "category": "admin",
+   "modifier": "research",
+   "value": 0.03,
+   "description": "Heads the schools and the archives."
+  },
+  {
+   "id": "steward",
+   "name": "Steward of Works",
+   "category": "admin",
+   "modifier": "building_cost",
+   "value": -0.06,
+   "description": "Sees the crown's buildings up cheaply."
+  },
+  {
+   "id": "chancellor",
+   "name": "Chancellor",
+   "category": "admin",
+   "modifier": "stability_cost",
+   "value": -0.08,
+   "description": "Settles the quarrels of the great."
+  },
+  {
+   "id": "chief_priest",
+   "name": "Chief Priest",
+   "category": "admin",
+   "modifier": "uprising",
+   "value": -0.06,
+   "description": "The gods' favour keeps the people quiet."
+  },
+  {
+   "id": "envoy",
+   "name": "Chief Envoy",
+   "category": "diplomatic",
+   "modifier": "diplomacy_opinion",
+   "value": 4,
+   "description": "Known and liked in every court."
+  },
+  {
+   "id": "spymaster",
+   "name": "Spymaster",
+   "category": "diplomatic",
+   "modifier": "claim_speed",
+   "value": 0.2,
+   "description": "Forges claims and finds what is hidden."
+  },
+  {
+   "id": "master_of_trade",
+   "name": "Master of Trade",
+   "category": "diplomatic",
+   "modifier": "trade_power",
+   "value": 0.05,
+   "description": "Knows every caravan master and shipowner."
+  },
+  {
+   "id": "marriage_broker",
+   "name": "Marriage Broker",
+   "category": "diplomatic",
+   "modifier": "alliance_chance",
+   "value": 0.08,
+   "description": "Arranges the matches that bind kings."
+  },
+  {
+   "id": "general",
+   "name": "Captain-General",
+   "category": "military",
+   "modifier": "army_attack",
+   "value": 0.04,
+   "description": "Leads the charge."
+  },
+  {
+   "id": "master_of_walls",
+   "name": "Master of Walls",
+   "category": "military",
+   "modifier": "army_defense",
+   "value": 0.04,
+   "description": "Holds the ground."
+  },
+  {
+   "id": "quartermaster",
+   "name": "Quartermaster",
+   "category": "military",
+   "modifier": "army_speed",
+   "value": 0.06,
+   "description": "Feeds and moves the army."
+  },
+  {
+   "id": "master_of_engines",
+   "name": "Master of Engines",
+   "category": "military",
+   "modifier": "siege",
+   "value": 0.08,
+   "description": "Brings the walls down."
+  },
+  {
+   "id": "master_of_levies",
+   "name": "Master of Levies",
+   "category": "military",
+   "modifier": "levy_share",
+   "value": 0.02,
+   "description": "Calls up more of the people."
+  }
+ ]
+}

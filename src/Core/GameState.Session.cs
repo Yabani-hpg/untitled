@@ -142,6 +142,8 @@ public partial class GameState : IWorld
 			c.Loans.Clear();
 			c.BankruptUntil = default;
 			c.Fabricating.Clear();
+			c.Advisors.Clear();
+			c.Candidates.Clear();
 			c.Guarantees.Clear();
 			c.Marriages.Clear();
 			c.EstateLoyalty.Clear();
@@ -179,6 +181,9 @@ public partial class GameState : IWorld
 		CreateTribes();
 		SetUpTribeRelations();
 		_pendingEvents.Clear();
+		_nextAdvisorId = 1;
+		foreach (Country c in SettledCountries)
+			RefreshCandidates(c, true);
 		SetUpDiplomacy();
 		RecomputeTrade();
 		EnsureMenAndWomen();

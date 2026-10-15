@@ -107,6 +107,22 @@ public partial class GameState
 			w.WriteStartArray("done");
 			foreach (string f in c.Done) w.WriteStringValue(f);
 			w.WriteEndArray();
+			foreach (var (key, list) in new[] { ("advisors", c.Advisors), ("candidates", c.Candidates) })
+			{
+				w.WriteStartArray(key);
+				foreach (Advisor a in list)
+				{
+					w.WriteStartObject();
+					w.WriteNumber("id", a.Id);
+					w.WriteString("name", a.Name);
+					if (a.Portrait != null) w.WriteString("portrait", a.Portrait);
+					w.WriteString("type", a.Type.Id);
+					w.WriteNumber("skill", a.Skill);
+					w.WriteNumber("birth", a.Birth.Day);
+					w.WriteEndObject();
+				}
+				w.WriteEndArray();
+			}
 			w.WriteStartObject("fabricating");
 			foreach (var (id, progress) in c.Fabricating) w.WriteNumber(id.ToString(), Math.Round(progress, 2));
 			w.WriteEndObject();
@@ -423,6 +439,29 @@ public partial class GameState
 				c.Done.Clear();
 				if (e.TryGetProperty("done", out JsonElement dn))
 					foreach (JsonElement f in dn.EnumerateArray()) c.Done.Add(f.GetString());
+				foreach (var (key, list) in new[] { ("advisors", c.Advisors), ("candidates", c.Candidates) })
+				{
+					list.Clear();
+					if (!e.TryGetProperty(key, out JsonElement arr))
+						continue;
+					foreach (JsonElement a in arr.EnumerateArray())
+					{
+						AdvisorType type = Definitions.GetAdvisorType(a.GetProperty("type").GetString());
+						if (type == null)
+							continue;
+						var advisor = new Advisor
+						{
+							Id = a.GetProperty("id").GetInt32(),
+							Name = a.GetProperty("name").GetString(),
+							Portrait = a.TryGetProperty("portrait", out JsonElement po) ? po.GetString() : null,
+							Type = type,
+							Skill = a.GetProperty("skill").GetInt32(),
+							Birth = new GameDate(a.GetProperty("birth").GetInt64()),
+						};
+						list.Add(advisor);
+						_nextAdvisorId = Math.Max(_nextAdvisorId, advisor.Id + 1);
+					}
+				}
 				c.Fabricating.Clear();
 				if (e.TryGetProperty("fabricating", out JsonElement fb))
 					foreach (JsonProperty kv in fb.EnumerateObject()) c.Fabricating[int.Parse(kv.Name)] = kv.Value.GetDouble();

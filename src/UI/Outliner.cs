@@ -134,6 +134,9 @@ public partial class Outliner : PanelContainer
 			alerts.Add(("An idea can be bought", HudStyle.Gold, "Idea points enough for the next idea", () => GetNodeOrNull<ResearchPanel>("../ResearchPanel")?.ShowIdeas()));
 		else if (c.IdeaGroups.Count < IdeaRules.Slots(c))
 			alerts.Add(("An idea slot is free", HudStyle.Muted, "Take up an idea group", () => GetNodeOrNull<ResearchPanel>("../ResearchPanel")?.ShowIdeas()));
+		int emptySlots = AdvisorRules.Categories.Count(cat => AdvisorRules.Hired(c, cat) == null && c.Candidates.Any(a => a.Type.Category == cat && gs.HireObstacle(c, a) == null));
+		if (emptySlots > 0)
+			alerts.Add(($"{emptySlots} advisor seat{(emptySlots > 1 ? "s" : "")} empty", HudStyle.Muted, "Candidates wait in the Court tab", () => CountryPanel()?.Toggle(6)));
 		if (c.ResearchQueue.Count == 0)
 			alerts.Add(("Nothing is being researched", HudStyle.Bad, "Choose a technology", () => GetNodeOrNull<ResearchPanel>("../ResearchPanel")?.Toggle()));
 		if (alerts.Count > 0)

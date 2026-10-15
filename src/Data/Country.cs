@@ -118,6 +118,9 @@ public sealed class Country
 	public HashSet<string> Guarantees { get; } = new();
 	/// <summary>Royal marriages, and when they end.</summary>
 	public Dictionary<string, GameDate> Marriages { get; } = new();
+	/// <summary>Advisors at court, and the candidates waiting to be hired.</summary>
+	public List<Advisor> Advisors { get; } = new();
+	public List<Advisor> Candidates { get; } = new();
 	/// <summary>Loans taken, oldest first.</summary>
 	public List<Loan> Loans { get; } = new();
 	/// <summary>Until when the crown's credit and tax suffer after a bankruptcy.</summary>
