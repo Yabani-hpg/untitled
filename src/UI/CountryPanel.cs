@@ -801,7 +801,7 @@ public partial class CountryPanel : PanelContainer
 				grid.AddChild(HudStyle.Body($"{t.Attack:0.0#}", BodyFont, 13));
 				grid.AddChild(HudStyle.Body($"{t.Defense:0.0#}", BodyFont, 13));
 				grid.AddChild(HudStyle.Body($"{t.Speed:0} km/day", BodyFont, 13));
-				grid.AddChild(HudStyle.Body($"{t.Cost:0} · {t.Upkeep:0.0#}/month", BodyFont, 13));
+				grid.AddChild(HudStyle.Body($"{t.Cost:0} · {t.Upkeep * MilitaryRules.UpkeepScale:0.0#}/month", BodyFont, 13));
 				var share = new SpinBox { MinValue = 0, MaxValue = 100, Step = 5, Value = template.GetValueOrDefault(t), Suffix = "%" };
 				string id = t.Id;
 				share.ValueChanged += v =>

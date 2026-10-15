@@ -84,6 +84,8 @@ public sealed class Province
 	public ResourceType Food { get; set; }
 	/// <summary>Production buildings, at most one per type.</summary>
 	public List<Building> Buildings { get; } = new();
+	/// <summary>Public works the government has raised here.</summary>
+	public List<Work> Works { get; } = new();
 	/// <summary>The trade node this province's goods are sold in (set when the world loads).</summary>
 	public TradeNode TradeNode { get; set; }
 

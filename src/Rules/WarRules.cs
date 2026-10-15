@@ -37,7 +37,7 @@ public static class WarRules
 	/// <summary>Years a vassal must have been one before it can be annexed.</summary>
 	public const int YearsBeforeAnnex = 10;
 	/// <summary>Score cost of gold: one point for this much.</summary>
-	public const double GoldPerScorePoint = 10;
+	public const double GoldPerScorePoint = 4;
 	/// <summary>Score cost of humbling the loser, and the prestige that passes from it to the winner.</summary>
 	public const double HumiliateCost = 10, HumiliatePrestige = 25;
 	/// <summary>Score costs of the other terms, and how long reparations and ceded trade power last.</summary>

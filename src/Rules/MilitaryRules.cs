@@ -96,7 +96,7 @@ public static class MilitaryRules
 		if (p.OwnerTag != c.Tag || p.Control == null || p.OccupierTag != null || p.Control.Kind == ControlKind.Subjugated || !CanServe(c, pop))
 			return 0;
 		double w = LawRules.IsCitizen(c, pop) ? 1 : Math.Clamp(LawRules.Mod(c, "noncitizen_manpower"), 0, 1);
-		return w * (1 - ControlRules.Separatism(p, today, c));
+		return w * (1 - ControlRules.Separatism(p, today, c)) * Math.Max(0, 1 + WorkRules.Mod(p, "levies"));
 	}
 
 	/// <summary>Units at home who could be levied, weighted as <see cref="LevyWeight"/>.</summary>
@@ -337,7 +337,9 @@ public static class MilitaryRules
 	}
 
 	/// <summary>Gold a month for an army's regiments.</summary>
-	public static double Upkeep(Army a) => a.Regiments.Sum(r => r.Type.Upkeep);
+	/// <summary>Gold a month a regiment costs: its type's upkeep, times this.</summary>
+	public const double UpkeepScale = 8;
+	public static double Upkeep(Army a) => a.Regiments.Sum(r => r.Type.Upkeep) * UpkeepScale;
 
 	/// <summary>"1st", "2nd", "3rd", "4th"...</summary>
 	public static string Ordinal(int n) =>

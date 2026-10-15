@@ -169,9 +169,10 @@ public static class ControlRules
 	public static double UprisingChance(Province p, Country owner, GameDate today)
 	{
 		double separatism = Separatism(p, today, owner);
-		double laws = Math.Max(0, 1 + LawRules.Mod(owner, "uprising")) * StateRules.UnrestFactor(owner);
+		double works = Math.Max(0, 1 + WorkRules.Mod(p, "unrest"));
+		double laws = Math.Max(0, 1 + LawRules.Mod(owner, "uprising")) * StateRules.UnrestFactor(owner) * works;
 		if (separatism <= 0)
-			return p.IsCore ? StateRules.CoreUprisingChance(owner) * Math.Max(0, 1 + LawRules.Mod(owner, "uprising")) : 0;
+			return p.IsCore ? StateRules.CoreUprisingChance(owner) * Math.Max(0, 1 + LawRules.Mod(owner, "uprising")) * works : 0;
 		if (p.Control.Kind == ControlKind.Subjugated)
 		{
 			// nomads rise when they feel strong against the garrison holding them down

@@ -17,7 +17,7 @@ public static class FortRules
 	public const double UpkeepPerLevel = 0.3;
 
 	/// <summary>Siege days are multiplied by this.</summary>
-	public static double SiegeFactor(Province p) => 1 + (p?.FortLevel ?? 0);
+	public static double SiegeFactor(Province p) => (1 + (p?.FortLevel ?? 0)) * (p == null ? 1 : System.Math.Max(0.1, 1 + WorkRules.Mod(p, "defense")));
 
 	/// <summary>Dice for the province's own side defending behind its walls.</summary>
 	public static int DefenceDice(Province p) => p?.FortLevel ?? 0;

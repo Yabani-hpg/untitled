@@ -17,7 +17,7 @@ public static class StateRules
 	public const int MinStability = -3, MaxStability = 3;
 	public const double MaxExhaustion = 20;
 	/// <summary>Gold to raise stability a point: this much, times (stability + 4), times the realm's size.</summary>
-	public const double StabilityCostBase = 20;
+	public const double StabilityCostBase = 6;
 	/// <summary>Gold to lower war exhaustion by one.</summary>
 	public const double ExhaustionReliefCost = 30;
 	/// <summary>Exhaustion a month at war, and its fall a month at peace.</summary>

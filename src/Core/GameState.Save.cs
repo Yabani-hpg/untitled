@@ -348,6 +348,12 @@ public partial class GameState
 				w.WriteNumber("siege", Math.Round(p.SiegeProgress, 2));
 			}
 			if (p.FortLevel > 0) w.WriteNumber("fort", p.FortLevel);
+			if (p.Works.Count > 0)
+			{
+				w.WriteStartArray("works");
+				foreach (Work work in p.Works) w.WriteStringValue(work.Id);
+				w.WriteEndArray();
+			}
 			w.WriteStartArray("features");
 			foreach (string f in p.Features)
 				w.WriteStringValue(f);
@@ -679,6 +685,17 @@ public partial class GameState
 			p.SiegerTag = e.TryGetProperty("sieger", out JsonElement sg) && _countries.ContainsKey(sg.GetString()) ? sg.GetString() : null;
 			p.SiegeProgress = p.SiegerTag != null && e.TryGetProperty("siege", out JsonElement sp) ? sp.GetDouble() : 0;
 			p.FortLevel = e.TryGetProperty("fort", out JsonElement ft) ? ft.GetInt32() : 0;
+			p.Works.Clear();
+			if (e.TryGetProperty("works", out JsonElement wk))
+			{
+				foreach (JsonElement id in wk.EnumerateArray())
+				{
+					if (Definitions.GetWork(id.GetString()) is Work work)
+						p.Works.Add(work);
+					else
+						warnings.Add($"province {p.Id}: unknown work '{id.GetString()}'");
+				}
+			}
 			p.Features.Clear();
 			foreach (JsonElement f in e.GetProperty("features").EnumerateArray())
 				p.Features.Add(f.GetString());

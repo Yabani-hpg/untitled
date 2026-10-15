@@ -48,9 +48,9 @@ public sealed class TradeReport
 public static class TradeRules
 {
 	/// <summary>Trade value collected turns into this much gold.</summary>
-	public const double TradeIncomeFactor = 0.3;
+	public const double TradeIncomeFactor = 0.08;
 	/// <summary>A province's owner earns this share of its trade value as production income.</summary>
-	public const double ProductionIncomeFactor = 0.2;
+	public const double ProductionIncomeFactor = 0.05;
 	/// <summary>Share of food made that is surplus for sale.</summary>
 	public const double FoodSurplusShare = EconomyRules.FoodSurplusShare;
 	/// <summary>Trade power a merchant brings.</summary>
@@ -98,7 +98,7 @@ public static class TradeRules
 		if (p.HasFeature("coast")) power += 1;
 		if (p.HasFeature("river")) power += 0.5;
 		if (owner.CapitalId == p.Id) power += 2;
-		return power * Math.Max(0.1, 1 + TechRules.Mod(owner, "trade_power") + LawRules.Mod(owner, "trade_power"));
+		return power * Math.Max(0.1, 1 + TechRules.Mod(owner, "trade_power") + LawRules.Mod(owner, "trade_power") + WorkRules.Mod(p, "trade_power"));
 	}
 
 	/// <summary>The node a country collects in without a merchant: its capital's.</summary>

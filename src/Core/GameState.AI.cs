@@ -83,6 +83,7 @@ public partial class GameState
 		}
 
 		AiForts(c);
+		AiWorks(c);
 		// a vassal of long standing that loves us is taken in
 		foreach (Country v in VassalsOf(c.Tag).ToList())
 		{

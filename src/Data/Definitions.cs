@@ -180,6 +180,11 @@ public sealed class Definitions
 	public List<Disaster> Disasters { get; } = new();
 	public List<Institution> Institutions { get; } = new();
 	public Institution GetInstitution(string id) => Institutions.Find(i => i.Id == id);
+	/// <summary>Public works (data/works.json), and how many a province has room for.</summary>
+	public List<Work> Works { get; } = new();
+	public Work GetWork(string id) => Works.Find(w => w.Id == id);
+	public int WorkSlotUnits { get; set; } = 6;
+	public int MaxWorkSlots { get; set; } = 8;
 	public double InstitutionPenalty { get; set; } = 0.25;
 	public double EmbraceCostPerProvince { get; set; } = 4;
 	public double EmbraceCostMin { get; set; } = 50;

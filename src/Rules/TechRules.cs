@@ -69,6 +69,9 @@ public static class TechRules
 		int soldiers = armies.Where(a => a.OwnerTag == c.Tag).Sum(a => a.Regiments.Count) + owned.Sum(p => p.Control?.Garrison.Count ?? 0);
 		if (soldiers > 0)
 			sources.Add(new Source("Soldiers under arms", soldiers, soldiers * SoldierResearch));
+		double academies = WorkRules.Flat(owned, "research");
+		if (academies > 0)
+			sources.Add(new Source("Academies and libraries", owned.Count(p => p.Works.Any(w => w.Modifiers.ContainsKey("research"))), academies));
 		double bonus = 1 + Math.Max(-0.9, LawRules.Mod(c, "research"));
 		return (sources.Sum(s => s.Points) * bonus, sources);
 	}

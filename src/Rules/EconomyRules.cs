@@ -29,11 +29,11 @@ public readonly record struct FoodLedger(double Surplus, double WarBands, double
 public static class EconomyRules
 {
 	/// <summary>Gold a month from each population unit (1000 people) of settled people.</summary>
-	public const double TaxPerUnit = 0.1;
+	public const double TaxPerUnit = 0.025;
 	/// <summary>Gold a month for each regiment standing in a garrison.</summary>
 	public const double GarrisonUpkeep = 0.2;
 	/// <summary>Gold a month for each regiment of hired tribal warriors.</summary>
-	public const double MercenaryPay = 0.5;
+	public const double MercenaryPay = 1.5;
 	/// <summary>Gold for a building's first level; each further level costs this much more.</summary>
 	public const double BuildCostPerLevel = 25;
 	public const double StartingGold = 200;
@@ -73,7 +73,7 @@ public static class EconomyRules
 			if (pop.Occupation.Taxed)
 				tax += pop.Units * TaxPerUnit * (LawRules.IsCitizen(owner, pop) ? 1 : noncitizens);
 		}
-		return Math.Max(0, tax * (1 + LawRules.Mod(owner, "tax")) * StateRules.TaxFactor(owner) * (1 - ControlRules.Separatism(p, today, owner)) * (owner.IsBankrupt(today) ? BankruptTaxFactor : 1));
+		return Math.Max(0, tax * (1 + LawRules.Mod(owner, "tax") + WorkRules.Mod(p, "tax")) * StateRules.TaxFactor(owner) * (1 - ControlRules.Separatism(p, today, owner)) * (owner.IsBankrupt(today) ? BankruptTaxFactor : 1));
 	}
 
 	public static Ledger MonthlyLedger(Country c, IEnumerable<Province> owned, IEnumerable<Tribe> tribes, IEnumerable<Army> armies, GameDate today, TradeReport trade = null)

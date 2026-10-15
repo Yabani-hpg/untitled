@@ -15,7 +15,7 @@ public static class AdvisorRules
 	public const int MaxSkill = 3, CandidatesPerCategory = 2;
 
 	/// <summary>Gold a month an advisor asks.</summary>
-	public static double Salary(Advisor a) => 2 + 3 * a.Skill * a.Skill;
+	public static double Salary(Advisor a) => 0.5 + 1.0 * a.Skill * a.Skill;
 
 	public static Advisor Hired(Country c, string category) => c.Advisors.FirstOrDefault(a => a.Type.Category == category);
 

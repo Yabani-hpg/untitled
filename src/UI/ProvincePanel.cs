@@ -302,6 +302,8 @@ public partial class ProvincePanel : PanelContainer
 				box.AddChild(FortRow(p, player));
 			if (owner != null && owner == player && NavalRules.IsHarbour(p))
 				box.AddChild(ShipyardRow(p, player));
+			if (p.Works.Count > 0 || owner != null && owner == player)
+				box.AddChild(WorksBlock(p, owner, player));
 			if (!p.IsCore)
 			{
 				double separatism = ControlRules.Separatism(p, gs.Date, owner);
@@ -510,6 +512,40 @@ public partial class ProvincePanel : PanelContainer
 		return row;
 	}
 
+	/// <summary>Public works standing here, and those the player could raise.</summary>
+	Control WorksBlock(Province p, Country owner, Country player)
+	{
+		GameState gs = GameState.Instance;
+		var box = new VBoxContainer();
+		box.AddThemeConstantOverride("separation", 2);
+		box.AddChild(HudStyle.Body($"Public works · {p.Works.Count} of {WorkRules.Slots(p)} slots", BodyFont, 13, HudStyle.Muted));
+		foreach (Work w in p.Works)
+			box.AddChild(HudStyle.Body($"{w.Name}: {WorkRules.Describe(w)}", BodyFont, 12));
+		if (owner == null || owner != player)
+			return box;
+		var grid = new GridContainer { Columns = 3 };
+		grid.AddThemeConstantOverride("h_separation", 6);
+		grid.AddThemeConstantOverride("v_separation", 4);
+		foreach (Work w in WorkRules.Options(p, player))
+		{
+			string why = WorkRules.Obstacle(p, w, player);
+			var b = HudStyle.Button($"{w.Name} ({WorkRules.Cost(w, player):0})", BodyFont, 12);
+			b.Disabled = why != null;
+			b.TooltipText = $"{w.Description}\n{WorkRules.Describe(w)}{(w.Upgrades != null ? $" · replaces the {w.Upgrades.Name.ToLowerInvariant()}" : "")}" + (why != null ? $"\n{why}" : "");
+			string id = w.Id;
+			b.Pressed += () =>
+			{
+				if (!gs.BuildWork(p.Id, id, out string r))
+					gs.Notify(r);
+				Refresh();
+			};
+			grid.AddChild(b);
+		}
+		if (grid.GetChildCount() > 0)
+			box.AddChild(grid);
+		return box;
+	}
+
 	/// <summary>The harbour: ships the player can build here, at their cost.</summary>
 	Control ShipyardRow(Province p, Country player)
 	{
@@ -528,7 +564,7 @@ public partial class ProvincePanel : PanelContainer
 		{
 			var b = HudStyle.Button($"Build {t.Name.ToLowerInvariant()} ({t.Cost:0} gold)", BodyFont, 12);
 			b.Disabled = player.Gold < t.Cost;
-			b.TooltipText = $"{t.Description}\nAttack {t.Attack:0.0#} · defense {t.Defense:0.0#} · {t.Speed:0} km a day · carries {t.Capacity} regiments · trade power {t.TradePower:0.0#} · upkeep {t.Upkeep:0.00} a month";
+			b.TooltipText = $"{t.Description}\nAttack {t.Attack:0.0#} · defense {t.Defense:0.0#} · {t.Speed:0} km a day · carries {t.Capacity} regiments · trade power {t.TradePower:0.0#} · upkeep {t.Upkeep * MilitaryRules.UpkeepScale:0.00} a month";
 			string id = t.Id;
 			b.Pressed += () =>
 			{
