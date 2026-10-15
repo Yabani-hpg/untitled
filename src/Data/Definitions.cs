@@ -178,6 +178,11 @@ public sealed class Definitions
 	public List<AdvisorType> AdvisorTypes { get; } = new();
 	public List<ReformTier> ReformTiers { get; } = new();
 	public List<Disaster> Disasters { get; } = new();
+	public List<Institution> Institutions { get; } = new();
+	public Institution GetInstitution(string id) => Institutions.Find(i => i.Id == id);
+	public double InstitutionPenalty { get; set; } = 0.25;
+	public double EmbraceCostPerProvince { get; set; } = 4;
+	public double EmbraceCostMin { get; set; } = 50;
 	public Disaster GetDisaster(string id) => Disasters.Find(d => d.Id == id);
 	public Reform GetReform(string id) => ReformTiers.SelectMany(t => t.Reforms).FirstOrDefault(r => r.Id == id);
 	public AdvisorType GetAdvisorType(string id) => AdvisorTypes.Find(t => t.Id == id);

@@ -123,6 +123,12 @@ public partial class GameState
 				}
 				w.WriteEndArray();
 			}
+			w.WriteStartArray("institutions");
+			foreach (string id in c.Institutions) w.WriteStringValue(id);
+			w.WriteEndArray();
+			w.WriteStartObject("institution_progress");
+			foreach (var (id, p) in c.InstitutionProgress) w.WriteNumber(id, Math.Round(p, 2));
+			w.WriteEndObject();
 			w.WriteStartObject("disaster_progress");
 			foreach (var (id, p) in c.DisasterProgress) w.WriteNumber(id, Math.Round(p, 2));
 			w.WriteEndObject();
@@ -480,6 +486,12 @@ public partial class GameState
 						_nextAdvisorId = Math.Max(_nextAdvisorId, advisor.Id + 1);
 					}
 				}
+				c.Institutions.Clear();
+				if (e.TryGetProperty("institutions", out JsonElement ins))
+					foreach (JsonElement id in ins.EnumerateArray()) c.Institutions.Add(id.GetString());
+				c.InstitutionProgress.Clear();
+				if (e.TryGetProperty("institution_progress", out JsonElement ipr))
+					foreach (JsonProperty kv in ipr.EnumerateObject()) c.InstitutionProgress[kv.Name] = kv.Value.GetDouble();
 				c.DisasterProgress.Clear();
 				if (e.TryGetProperty("disaster_progress", out JsonElement dp))
 					foreach (JsonProperty kv in dp.EnumerateObject()) c.DisasterProgress[kv.Name] = kv.Value.GetDouble();

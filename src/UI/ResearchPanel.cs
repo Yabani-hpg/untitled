@@ -336,6 +336,35 @@ public partial class ResearchPanel : PanelContainer
 			+ $"\nAt war (an army in the field), military technology is researched {TechRules.WarMilitaryBoost:P0} faster{(war ? ": we are at war" : "")}.";
 		head.AddChild(rate);
 		box.AddChild(HudStyle.Body("All technologies, military, admin and science, share these points.", BodyFont, 12, HudStyle.Muted));
+		// institutions: those we lack make technology dearer
+		var known = gs.Definitions.Institutions.Where(i => InstitutionRules.Exists(i, gs.Date)).ToList();
+		if (known.Count > 0)
+		{
+			double factor = InstitutionRules.CostFactor(c, gs.Definitions, gs.Date);
+			box.AddChild(HudStyle.Body($"Institutions: technology costs us x{factor:0.00}" + (factor > 1 ? $" for the {InstitutionRules.Missing(c, gs.Definitions, gs.Date).Count()} we lack" : ""), BodyFont, 12, factor > 1 ? HudStyle.Bad : HudStyle.Good));
+			foreach (Institution i in known)
+			{
+				var row = new HBoxContainer();
+				row.AddThemeConstantOverride("separation", 8);
+				box.AddChild(row);
+				bool has = InstitutionRules.Has(c, i);
+				var l = HudStyle.Body($"{(has ? "✔" : "·")} {i.Name}" + (has ? "" : $": spread {InstitutionRules.Progress(c, i):0}%"), BodyFont, 12, has ? HudStyle.Good : HudStyle.Muted);
+				l.TooltipText = i.Description;
+				l.MouseFilter = MouseFilterEnum.Pass;
+				l.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+				row.AddChild(l);
+				if (!has)
+				{
+					string why = gs.EmbraceObstacle(c, i);
+					var b = HudStyle.Button($"Embrace ({InstitutionRules.EmbraceCost(c, gs.Definitions, gs.ProvincesOf(c.Tag).Count()):0} gold)", BodyFont, 11);
+					b.Disabled = why != null;
+					b.TooltipText = why ?? "Take the institution into the realm";
+					string id = i.Id;
+					b.Pressed += () => { if (!gs.EmbraceInstitution(id, out string r)) _status.Text = r; };
+					row.AddChild(b);
+				}
+			}
+		}
 
 		if (t == null)
 			box.AddChild(HudStyle.Body(c.ResearchQueue.Count > 0 ? "Nothing in the queue can be researched yet: the points are stockpiled"
@@ -348,11 +377,11 @@ public partial class ResearchPanel : PanelContainer
 			name.SizeFlagsHorizontal = SizeFlags.ExpandFill;
 			row.AddChild(name);
 			int? months = TechRules.MonthsLeft(c, t, war);
-			row.AddChild(HudStyle.Body($"{TechRules.Progress(c, t):0} / {t.Cost:0}" + (months is int m ? $" · {Duration(m)}" : "")
+			row.AddChild(HudStyle.Body($"{TechRules.Progress(c, t):0} / {TechRules.CostOf(c, t):0}" + (months is int m ? $" · {Duration(m)}" : "")
 				+ (t.Category == TechCategory.Military && war ? " (war +50%)" : ""), BodyFont, 12, HudStyle.Muted));
 			box.AddChild(new ProgressBar
 			{
-				MinValue = 0, MaxValue = t.Cost, Value = TechRules.Progress(c, t), ShowPercentage = false,
+				MinValue = 0, MaxValue = TechRules.CostOf(c, t), Value = TechRules.Progress(c, t), ShowPercentage = false,
 				CustomMinimumSize = new Vector2(0, 8),
 			});
 		}
@@ -394,7 +423,7 @@ public partial class ResearchPanel : PanelContainer
 				continue;
 			n++;
 			double rate = TechRules.Rate(c, t, points, war);
-			months += rate > 0 ? (t.Cost - TechRules.Progress(c, t)) / rate : double.PositiveInfinity;
+			months += rate > 0 ? (TechRules.CostOf(c, t) - TechRules.Progress(c, t)) / rate : double.PositiveInfinity;
 			var item = new PanelContainer { MouseFilter = MouseFilterEnum.Stop };
 			var style = new StyleBoxFlat { BgColor = new Color(0.16f, 0.12f, 0.08f, 0.95f), BorderColor = CategoryColors[t.Category] };
 			style.SetBorderWidthAll(t == current ? 2 : 1);
@@ -421,7 +450,7 @@ public partial class ResearchPanel : PanelContainer
 			x.TooltipText = "Take it out of the queue (with what is queued after it that builds on it); its progress is kept";
 			x.Pressed += () => OnChosen(id, true);
 			row.AddChild(x);
-			item.TooltipText = $"{t.Name} ({t.Category}): {TechRules.Progress(c, t):0} of {t.Cost:0} points"
+			item.TooltipText = $"{t.Name} ({t.Category}): {TechRules.Progress(c, t):0} of {TechRules.CostOf(c, t):0} points"
 				+ (t == current ? "\nOur research flows into it now." : ready ? "" : $"\nWaiting: {why}. The points go to the first technology after it that can take them.");
 			flow.AddChild(item);
 		}
@@ -556,9 +585,9 @@ public partial class TechTree : Control
 		string line = state switch
 		{
 			State.Known => "Known",
-			State.Researching => $"{progress:0} / {t.Cost:0}" + (TechRules.MonthsLeft(c, t, TechRules.AtWar(c, gs.Armies.Values)) is int m ? $" · {(m < 24 ? $"{m} months" : $"{m / 12} years")}" : ""),
-			State.Queued => $"#{c.ResearchQueue.IndexOf(t.Id) + 1} in the queue · {t.Cost:0} points" + (progress > 0 ? $" ({progress:0} done)" : ""),
-			_ => $"{t.Cost:0} points" + (progress > 0 ? $" ({progress:0} done)" : ""),
+			State.Researching => $"{progress:0} / {TechRules.CostOf(c, t):0}" + (TechRules.MonthsLeft(c, t, TechRules.AtWar(c, gs.Armies.Values)) is int m ? $" · {(m < 24 ? $"{m} months" : $"{m / 12} years")}" : ""),
+			State.Queued => $"#{c.ResearchQueue.IndexOf(t.Id) + 1} in the queue · {TechRules.CostOf(c, t):0} points" + (progress > 0 ? $" ({progress:0} done)" : ""),
+			_ => $"{TechRules.CostOf(c, t):0} points" + (progress > 0 ? $" ({progress:0} done)" : ""),
 		};
 		var status = HudStyle.Body(line, BodyFont, 11, state == State.Known ? accent.Lightened(0.45f) : HudStyle.Muted);
 		status.MouseFilter = MouseFilterEnum.Ignore;
@@ -578,7 +607,7 @@ public partial class TechTree : Control
 		{
 			box.AddChild(new ProgressBar
 			{
-				MinValue = 0, MaxValue = t.Cost, Value = progress, ShowPercentage = false,
+				MinValue = 0, MaxValue = TechRules.CostOf(c, t), Value = progress, ShowPercentage = false,
 				CustomMinimumSize = new Vector2(0, 5), MouseFilter = MouseFilterEnum.Ignore,
 			});
 		}
@@ -594,7 +623,7 @@ public partial class TechTree : Control
 
 	static string Tooltip(GameState gs, Country c, Tech t, State state)
 	{
-		var lines = new List<string> { $"{t.Name} ({t.Category}, {t.Cost:0} points)", t.Description };
+		var lines = new List<string> { $"{t.Name} ({t.Category}, {TechRules.CostOf(c, t):0} points)", t.Description };
 		if (t.Requires.Count > 0)
 			lines.Add("Builds on: " + string.Join(", ", t.Requires.Select(r => r.Name + (TechRules.Knows(c, r) ? " ✔" : " ✘"))));
 		if (t.Condition != null)

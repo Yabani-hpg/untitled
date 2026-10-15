@@ -92,6 +92,10 @@ public static class TechRules
 
 	public static double Progress(Country c, Tech t) => c.ResearchProgress.GetValueOrDefault(t.Id);
 
+	/// <summary>The date the costs are reckoned at (set each month by the game): institutions the country lacks make technology dearer.</summary>
+	public static GameDate Today { get; set; }
+	public static double CostOf(Country c, Tech t) => Defs == null ? t.Cost : t.Cost * InstitutionRules.CostFactor(c, Defs, Today);
+
 	/// <summary>The technology research points flow into now: the first in the queue that can take them.</summary>
 	public static Tech Current(Country c, IWorld world) =>
 		c.ResearchQueue.Select(id => Defs?.GetTech(id)).FirstOrDefault(t => t != null && CanResearch(c, t, world, out _));
@@ -150,7 +154,7 @@ public static class TechRules
 
 	/// <summary>The technologies a country could put points into now, cheapest first.</summary>
 	public static List<Tech> Available(Country c, IWorld world) =>
-		Defs.Techs.Where(t => CanResearch(c, t, world, out _)).OrderBy(t => t.Cost - Progress(c, t)).ToList();
+		Defs.Techs.Where(t => CanResearch(c, t, world, out _)).OrderBy(t => CostOf(c, t) - Progress(c, t)).ToList();
 
 	/// <summary>
 	/// Spends points on the queue: they flow into the first technology that can take them; one finished,
@@ -164,7 +168,7 @@ public static class TechRules
 		{
 			// a military technology at war takes in points faster: work out how many of ours it needs
 			double factor = Rate(c, t, 1, atWar);
-			double need = (t.Cost - Progress(c, t)) / factor;
+			double need = (CostOf(c, t) - Progress(c, t)) / factor;
 			if (points < need)
 			{
 				c.ResearchProgress[t.Id] = Progress(c, t) + points * factor;
@@ -184,6 +188,7 @@ public static class TechRules
 	/// </summary>
 	public static List<Tech> MonthlyStep(Country c, IReadOnlyCollection<Province> owned, IEnumerable<Army> armies, IWorld world, bool player)
 	{
+		Today = world.Date;
 		var armyList = armies.ToList();
 		var (points, _) = MonthlyPoints(c, owned, armyList);
 		c.LastResearch = points;
@@ -202,7 +207,7 @@ public static class TechRules
 	public static int? MonthsLeft(Country c, Tech t, bool atWar)
 	{
 		double rate = Rate(c, t, c.LastResearch, atWar);
-		return rate <= 0 ? null : (int)Math.Ceiling((t.Cost - Progress(c, t)) / rate);
+		return rate <= 0 ? null : (int)Math.Ceiling((CostOf(c, t) - Progress(c, t)) / rate);
 	}
 
 	/// <summary>What knowing a technology opens: unit types and law options that require it.</summary>

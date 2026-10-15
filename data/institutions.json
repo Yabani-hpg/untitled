@@ -1,0 +1,64 @@
+{
+ "_comment": "Institutions, Paradox style. Each appears in its year (Holocene; 8800 = 1200 BC): countries knowing its origin technology embrace it at once, others see it spread (faster beside countries that have it) and embrace it for gold. Every institution a country lacks after its year makes technology cost more.",
+ "penalty": 0.25,
+ "embrace_cost_per_province": 4,
+ "embrace_cost_min": 50,
+ "institutions": [
+  {
+   "id": "iron_working",
+   "name": "Iron working",
+   "description": "Smiths who can work the grey metal: tools and weapons cheaper and harder than bronze.",
+   "year": 8800,
+   "origin_tech": "iron_working"
+  },
+  {
+   "id": "alphabet",
+   "name": "The alphabet",
+   "description": "A score of signs in place of hundreds: writing for merchants and soldiers, not scribes alone.",
+   "year": 9000,
+   "origin_tech": "alphabet"
+  },
+  {
+   "id": "coinage",
+   "name": "Coinage",
+   "description": "Metal of known weight and purity, stamped by the state.",
+   "year": 9400,
+   "origin_tech": "currency"
+  },
+  {
+   "id": "philosophy",
+   "name": "Philosophy",
+   "description": "Reasoned inquiry into nature and the good: schools, debate and proof.",
+   "year": 9600,
+   "origin_tech": "philosophy"
+  },
+  {
+   "id": "paper",
+   "name": "Paper",
+   "description": "Cheap writing material: records, letters and books for the many.",
+   "year": 10100,
+   "origin_tech": "paper"
+  },
+  {
+   "id": "printing",
+   "name": "Printing",
+   "description": "Books by the thousand from a single setting of type.",
+   "year": 11450,
+   "origin_tech": "printing_press"
+  },
+  {
+   "id": "scientific_method",
+   "name": "The scientific method",
+   "description": "Knowledge tested by experiment and shared in journals.",
+   "year": 11650,
+   "origin_tech": "scientific_method"
+  },
+  {
+   "id": "industry",
+   "name": "Industry",
+   "description": "Machines driven by steam; manufactories and railways.",
+   "year": 11800,
+   "origin_tech": "steam_power"
+  }
+ ]
+}

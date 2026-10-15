@@ -130,6 +130,9 @@ public sealed class Country
 	/// <summary>War reparations owed (to whom, until when): a tenth of income a month. Trade power ceded (to whom, until when): half of ours in every node.</summary>
 	public Dictionary<string, GameDate> Reparations { get; } = new();
 	public Dictionary<string, GameDate> TradePowerCeded { get; } = new();
+	/// <summary>Institutions embraced, and how far the others have spread (0..100).</summary>
+	public HashSet<string> Institutions { get; } = new();
+	public Dictionary<string, double> InstitutionProgress { get; } = new();
 	/// <summary>Loans taken, oldest first.</summary>
 	public List<Loan> Loans { get; } = new();
 	/// <summary>Until when the crown's credit and tax suffer after a bankruptcy.</summary>

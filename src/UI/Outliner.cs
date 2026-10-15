@@ -143,6 +143,8 @@ public partial class Outliner : PanelContainer
 			alerts.Add(($"Disaster: {gs.Definitions.GetDisaster(id)?.Name}", HudStyle.Bad, gs.Definitions.GetDisaster(id)?.Description, () => CountryPanel()?.Toggle(0)));
 		foreach (var (id, progress) in c.DisasterProgress.Where(kv => kv.Value >= 25))
 			alerts.Add(($"{gs.Definitions.GetDisaster(id)?.Name} brews: {progress:0}%", HudStyle.Gold, gs.Definitions.GetDisaster(id)?.Description, () => CountryPanel()?.Toggle(0)));
+		foreach (Institution inst in gs.Definitions.Institutions.Where(i => gs.EmbraceObstacle(c, i) == null))
+			alerts.Add(($"{inst.Name} can be embraced", HudStyle.Gold, "Technology costs less once it is", () => GetNodeOrNull<ResearchPanel>("../ResearchPanel")?.Toggle()));
 		if (c.ResearchQueue.Count == 0)
 			alerts.Add(("Nothing is being researched", HudStyle.Bad, "Choose a technology", () => GetNodeOrNull<ResearchPanel>("../ResearchPanel")?.Toggle()));
 		if (alerts.Count > 0)

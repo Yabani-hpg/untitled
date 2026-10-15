@@ -147,6 +147,8 @@ public partial class GameState : IWorld
 			c.Advisors.Clear();
 			c.Reforms.Clear();
 			c.DisasterProgress.Clear();
+			c.Institutions.Clear();
+			c.InstitutionProgress.Clear();
 			c.ActiveDisasters.Clear();
 			c.ReformProgress = 0;
 			c.Candidates.Clear();
